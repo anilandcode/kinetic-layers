@@ -1,0 +1,197 @@
+/* ============================================================
+   Signal Arc — portable section styles.
+   Prefix: .sa-  |  Every value resolves to a palette token.
+   Lift this <style> block and the <section> together and the
+   section works anywhere tokens.css is present.
+   ============================================================ */
+
+.sa {
+  /* Typography is declared here, not inherited, so this section keeps
+     the type it was designed with wherever it is dropped. */
+  --font-display: ui-serif, "Iowan Old Style", "Palatino Linotype",
+                  Palatino, "Book Antiqua", Georgia, serif;
+  --font-body:    ui-sans-serif, -apple-system, BlinkMacSystemFont,
+                  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono:    ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+                  Consolas, "Liberation Mono", monospace;
+  --tracking-tight: -0.021em;
+  font-family: var(--font-body);
+  color: var(--text);
+
+  --sa-panel-glow: transparent;
+  background:
+    radial-gradient(120% 90% at 12% 0%, var(--accent-soft) 0%, transparent 58%),
+    var(--base);
+  padding-block: clamp(3rem, 8vw, 6.5rem);
+  overflow: clip;
+}
+
+.sa__grid {
+  width: 100%; max-width: var(--page-max);
+  margin-inline: auto; padding-inline: var(--page-gutter);
+  display: grid; gap: clamp(2.5rem, 6vw, 4.5rem); align-items: center;
+}
+/* Asymmetric by intent: the copy column leads, the proof panel supports. */
+@media (min-width: 62rem) {
+  .sa__grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
+}
+
+.sa__eyebrow {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-family: var(--font-mono); font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--accent);
+}
+.sa__eyebrow::before {
+  content: ""; width: 22px; height: 2px; background: var(--signal);
+}
+
+.sa__title {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: var(--step-6); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin-top: var(--sp-4);
+}
+.sa__title em {
+  font-style: normal;
+  background: linear-gradient(transparent 62%, var(--signal-soft) 62%);
+}
+
+.sa__lede {
+  margin-top: var(--sp-5); font-size: var(--step-1);
+  line-height: var(--leading-snug); color: var(--text-muted); max-width: 46ch;
+}
+
+.sa__actions {
+  margin-top: var(--sp-6);
+  display: flex; flex-wrap: wrap; gap: var(--sp-4); align-items: center;
+}
+.sa__btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  min-height: 48px; padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-pill); border: 1px solid transparent;
+  font-weight: 600; text-decoration: none; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+}
+.sa__btn:active { transform: translateY(1px); }
+.sa__btn--go { background: var(--signal); color: var(--on-signal); }
+.sa__btn--go:hover { background: var(--signal-deep); }
+.sa__btn--quiet { color: var(--accent); border-color: var(--line-strong); }
+.sa__btn--quiet:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+.sa__trust {
+  margin-top: var(--sp-6); padding-top: var(--sp-5);
+  border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: var(--sp-3) var(--sp-6);
+  font-size: var(--step--1); color: var(--text-faint);
+}
+.sa__trust span { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.sa__trust span::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); opacity: 0.6;
+}
+
+/* --- Proof panel ----------------------------------------- */
+.sa__panel {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  padding: clamp(var(--sp-5), 3vw, var(--sp-6));
+  isolation: isolate;
+}
+/* Pointer-responsive emphasis. The glow is driven by two custom
+   properties the script updates; with no pointer, or with reduced
+   motion, it simply never turns on. */
+.sa__panel::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    260px circle at var(--sa-x, 50%) var(--sa-y, 0%),
+    var(--sa-panel-glow), transparent 70%);
+  transition: background var(--dur-mid) var(--ease-out);
+}
+
+.sa__panel-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--sp-3); margin-bottom: var(--sp-5);
+}
+.sa__panel-title {
+  font-family: var(--font-mono); font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--text-faint); font-weight: 400;
+}
+.sa__panel-note { font-size: var(--step--1); color: var(--text-faint); }
+
+.sa__tabs {
+  display: flex; gap: var(--sp-2); flex-wrap: wrap;
+  margin-bottom: var(--sp-5);
+}
+.sa__tab {
+  min-height: 40px; padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--line-strong); border-radius: var(--r-pill);
+  background: transparent; color: var(--text-muted);
+  font-size: var(--step--1); cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+.sa__tab:hover { border-color: var(--accent); color: var(--accent); }
+.sa__tab[aria-selected="true"] {
+  background: var(--accent); border-color: var(--accent); color: var(--on-accent);
+}
+
+.sa__figure { font-family: var(--font-display); font-weight: 600;
+  font-size: var(--step-6); line-height: 1; letter-spacing: var(--tracking-tight); }
+.sa__figure sup { font-size: 0.42em; vertical-align: super; color: var(--signal); }
+.sa__caption {
+  margin-top: var(--sp-3); font-size: var(--step--1);
+  color: var(--text-muted); line-height: var(--leading-snug); max-width: 34ch;
+}
+
+/* Bars carry a written value as well as a length, so the panel is
+   readable when colour and proportion are not available. */
+.sa__bars { margin-top: var(--sp-5); display: grid; gap: var(--sp-3); }
+.sa__bar { display: grid; grid-template-columns: 1fr auto; gap: var(--sp-2) var(--sp-4);
+  align-items: center; font-size: var(--step--1); }
+.sa__bar-label { color: var(--text-muted); }
+.sa__bar-value { font-family: var(--font-mono); color: var(--text); }
+.sa__bar-track {
+  grid-column: 1 / -1; height: 8px; border-radius: var(--r-pill);
+  background: var(--base-sunk); overflow: hidden;
+}
+.sa__bar-fill {
+  /* A span is inline by default, and an inline box ignores height and
+     scales nothing. Blockify it before asking it to be a bar. */
+  display: block;
+  height: 100%; border-radius: inherit; background: var(--accent);
+  transform-origin: left center; transform: scaleX(var(--fill, 0));
+  transition: transform var(--dur-slow) var(--ease-soft);
+}
+.sa__bar:first-child .sa__bar-fill { background: var(--signal); }
+
+.sa__panel-foot {
+  margin-top: var(--sp-6); padding-top: var(--sp-4);
+  border-top: 1px solid var(--line);
+  font-size: var(--step--1); color: var(--text-faint);
+}
+
+/* Entrance. Scoped to visitors who accept motion, so the opacity: 0
+   starting state is never applied to anyone whose browser might not run
+   the animation that clears it. */
+@media (prefers-reduced-motion: no-preference) {
+  .sa__copy > *, .sa__panel {
+    opacity: 0; transform: translateY(var(--reveal-shift));
+    animation: sa-rise var(--dur-slow) var(--ease-soft) forwards;
+  }
+  .sa__copy > *:nth-child(1) { animation-delay: 40ms; }
+  .sa__copy > *:nth-child(2) { animation-delay: 90ms; }
+  .sa__copy > *:nth-child(3) { animation-delay: 140ms; }
+  .sa__copy > *:nth-child(4) { animation-delay: 190ms; }
+  .sa__copy > *:nth-child(5) { animation-delay: 240ms; }
+  .sa__panel { animation-delay: 160ms; }
+  @keyframes sa-rise { to { opacity: 1; transform: none; } }
+}

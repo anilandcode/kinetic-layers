@@ -1,0 +1,642 @@
+/* ============================================================
+   Site styles — dark bento.
+   Depends on tokens.css. Class names used by the scripts
+   (.reveal, [data-offer], .btn__busy, .form__status, .no-js)
+   are unchanged from the previous skin on purpose.
+   ============================================================ */
+
+/* --- Reset ------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body, h1, h2, h3, h4, p, figure, blockquote, ul, ol, dl, dd { margin: 0; }
+ul[class], ol[class] { list-style: none; padding: 0; }
+img, svg, video { display: block; max-width: 100%; height: auto; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* --- Page -------------------------------------------------- */
+body {
+  position: relative;
+  background: var(--base);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+}
+/* Grain sits above the ground and below everything else, so large
+   black areas have some tooth to them. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--grain);
+  pointer-events: none;
+}
+body > * { position: relative; z-index: 1; }
+
+/* --- Focus ------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: var(--r-sm);
+}
+:focus:not(:focus-visible) { outline: none; }
+
+.skip-link {
+  position: absolute;
+  left: var(--sp-4); top: var(--sp-4);
+  z-index: 100;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--mint);
+  color: var(--on-accent);
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* --- Layout primitives ------------------------------------- */
+.shell {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+.band { padding-block: var(--band-y); }
+.band--tight { padding-block: calc(var(--band-y) * 0.6); }
+
+/* A band that carries a bloom behind its content. The bloom is kept inside
+   the band's own box: reaching past it forced a horizontal scrollbar, and
+   the gradient's falloff already does the softening on its own. */
+.glow { position: relative; isolation: isolate; }
+.glow::before {
+  content: "";
+  position: absolute;
+  inset: -18% 0 auto 0;
+  height: 78%;
+  z-index: -1;
+  background: var(--glow-mint);
+  pointer-events: none;
+}
+.glow--violet::before { background: var(--glow-violet); }
+.glow--cyan::before   { background: var(--glow-cyan); }
+
+.section-head { max-width: 52ch; margin-bottom: var(--sp-7); }
+.section-head > * + * { margin-top: var(--sp-4); }
+
+/* --- Type -------------------------------------------------- */
+/* An outlined pill with a live dot — the small status marker the
+   reference language uses above headlines. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.eyebrow::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 0 3px rgba(53, 224, 161, 0.16);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+h1.display { font-size: var(--step-6); }
+h2.display { font-size: var(--step-4); }
+h3.display { font-size: var(--step-2); }
+
+/* Gradient emphasis on a single word, the way the references treat
+   the one word that carries the promise. */
+.grad {
+  background: linear-gradient(96deg, var(--mint) 0%, var(--cyan) 52%, var(--violet) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* If the clip is unsupported the word must not vanish. */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .grad { color: var(--mint); background: none; }
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: var(--leading-snug);
+  color: var(--text-muted);
+  max-width: 54ch;
+}
+.prose { max-width: var(--measure); color: var(--text-muted); }
+.prose > * + * { margin-top: var(--sp-4); }
+
+/* --- Buttons ----------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-5);
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-mid) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+.btn:active { transform: translateY(1px); }
+
+.btn--primary {
+  background: var(--mint);
+  color: var(--on-signal);
+  box-shadow: 0 0 0 0 rgba(53, 224, 161, 0.4);
+}
+.btn--primary:hover {
+  background: var(--mint-deep);
+  box-shadow: 0 8px 30px -8px rgba(53, 224, 161, 0.55);
+}
+
+.btn--secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.btn--secondary:hover { border-color: var(--line-bright); background: var(--surface-2); }
+
+.btn--block { width: 100%; }
+
+.cta-row { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+
+/* --- Header ------------------------------------------------ */
+.site-header {
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--base) 82%, transparent);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  min-height: 68px;
+}
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  color: var(--text);
+  text-decoration: none;
+}
+.wordmark svg { flex: none; }
+.header-note {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--text-faint);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+@media (max-width: 33rem) { .header-note { display: none; } }
+
+/* --- Hero -------------------------------------------------- */
+.hero { padding-block: clamp(3rem, 8vw, 6.5rem) var(--band-y); }
+.hero__grid { display: grid; gap: clamp(2.5rem, 5vw, 4rem); align-items: center; }
+@media (min-width: 64rem) {
+  .hero__grid { grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr); }
+}
+.hero__copy > * + * { margin-top: var(--sp-5); }
+.hero__copy .cta-row { margin-top: var(--sp-6); }
+
+.hero__figure {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2xl);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--base-sunk) 100%);
+  box-shadow: var(--shadow-lg), var(--inner-hairline);
+  overflow: hidden;
+}
+.hero__figure svg { width: 100%; height: auto; }
+
+/* Small trust row under the CTAs. */
+.trust {
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-5);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--text-faint);
+}
+.trust span { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.trust span::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--mint); opacity: 0.8;
+}
+
+/* --- Bento ------------------------------------------------- */
+.bento {
+  display: grid;
+  gap: var(--bento-gap);
+  grid-template-columns: 1;
+}
+@media (min-width: 40rem) { .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .bento { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (min-width: 64rem) {
+  .bento > .span-2 { grid-column: span 2; }
+  .bento > .span-3 { grid-column: span 3; }
+  .bento > .span-4 { grid-column: span 4; }
+  .bento > .span-6 { grid-column: span 6; }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  padding: var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  box-shadow: var(--inner-hairline);
+  overflow: hidden;
+  transition:
+    border-color var(--dur-mid) var(--ease-out),
+    background-color var(--dur-mid) var(--ease-out),
+    transform var(--dur-mid) var(--ease-out);
+}
+.card:hover, .card:focus-within {
+  border-color: var(--line-bright);
+  background: var(--surface-2);
+  transform: translateY(-2px);
+}
+
+/* The visual sits above the words and bleeds to the card edges. It grows
+   to absorb whatever height the tallest card in the row imposes, which is
+   what stops a short card from ending in a slab of dead black. */
+.card__viz {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 150px;
+  margin: calc(var(--sp-5) * -1) calc(var(--sp-5) * -1) var(--sp-5);
+  background: var(--base-sunk);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+/* The art centres in whatever box it is given rather than stretching. */
+.card__viz svg { width: 100%; height: 100%; }
+/* Text below the visual must not be squeezed by it. */
+.card__n, .card__title, .card__body, .card__foot { flex: 0 0 auto; }
+
+.card__n {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide);
+  color: var(--mint);
+  margin-bottom: var(--sp-3);
+}
+.card__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--step-1);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+}
+.card__body { margin-top: var(--sp-3); font-size: var(--step--1); color: var(--text-muted); }
+.card__foot { margin-top: auto; padding-top: var(--sp-4); }
+
+/* --- Chips ------------------------------------------------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.chip--mint   { border-color: color-mix(in srgb, var(--mint) 40%, transparent);   color: var(--mint);   background: var(--mint-soft); }
+.chip--violet { border-color: color-mix(in srgb, var(--violet) 40%, transparent); color: var(--violet); background: var(--violet-soft); }
+.chip--cyan   { border-color: color-mix(in srgb, var(--cyan) 40%, transparent);   color: var(--cyan);   background: var(--cyan-soft); }
+.chip-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+
+/* --- Concept cards ----------------------------------------- */
+.concepts { display: grid; gap: var(--bento-gap); }
+@media (min-width: 56rem) { .concepts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.concept {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--inner-hairline);
+  transition:
+    border-color var(--dur-mid) var(--ease-out),
+    box-shadow var(--dur-mid) var(--ease-out),
+    transform var(--dur-mid) var(--ease-out);
+}
+.concept:hover, .concept:focus-within {
+  border-color: var(--line-bright);
+  box-shadow: var(--shadow-lg), var(--inner-hairline);
+  transform: translateY(-3px);
+}
+/* The schematics inside are drawn in the light palette, because the
+   sections they represent are. Framing them on a pale plate is honest
+   about that rather than recolouring them to match the site. */
+.concept__preview {
+  aspect-ratio: 16 / 10;
+  background: #f4f2ee;
+  border-bottom: 1px solid var(--line);
+}
+.concept__preview svg { width: 100%; height: 100%; }
+.concept__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  flex: 1;
+}
+.concept__job {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-faint);
+}
+.concept__body p { color: var(--text-muted); font-size: var(--step--1); }
+.concept__link {
+  margin-top: auto;
+  padding-top: var(--sp-3);
+  align-self: flex-start;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  color: var(--mint);
+  text-underline-offset: 4px;
+}
+.concept__link::after {
+  content: " \2192";
+  display: inline-block;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.concept:hover .concept__link::after { transform: translateX(3px); }
+
+.tag {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 2px var(--sp-3);
+  border-radius: var(--r-pill);
+  border: 1px solid color-mix(in srgb, var(--violet) 40%, transparent);
+  background: var(--violet-soft);
+  color: var(--violet);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+/* --- Offer / variant --------------------------------------- */
+/* Both variants exist in the DOM; exactly one is ever painted.
+   The attribute is set by an inline script before first paint. */
+[data-offer] { display: none; }
+html[data-variant="a"] [data-offer="a"],
+html[data-variant="b"] [data-offer="b"] { display: block; }
+
+/* Busy state. Swapping the label by attribute keeps the two variant
+   spans intact; rewriting the button's text would destroy them. */
+.btn__busy { display: none; }
+.btn[data-busy] [data-offer] { display: none; }
+.btn[data-busy] .btn__busy { display: block; }
+
+.offer { display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); align-items: start; }
+@media (min-width: 64rem) { .offer { grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr); } }
+
+.offer-card {
+  position: relative;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-xl);
+  padding: clamp(var(--sp-5), 3vw, var(--sp-6));
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(53, 224, 161, 0.10), transparent 70%),
+    var(--surface);
+  box-shadow: var(--shadow-md), var(--inner-hairline);
+}
+.offer-card > * + * { margin-top: var(--sp-4); }
+.price {
+  font-family: var(--font-display);
+  font-size: var(--step-5);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--tracking-tight);
+}
+.price small {
+  display: block;
+  margin-top: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 400;
+  letter-spacing: var(--tracking-flat);
+  color: var(--text-faint);
+}
+.includes { display: grid; gap: var(--sp-3); }
+/* Not a grid: an inline element inside a grid container is promoted to
+   a grid item and leaves the sentence it belonged to. */
+.includes li {
+  position: relative;
+  padding-left: 1.4em;
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  line-height: var(--leading-snug);
+}
+.includes li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.5em;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 0 3px rgba(53, 224, 161, 0.14);
+}
+
+/* --- Form -------------------------------------------------- */
+.form {
+  display: grid;
+  gap: var(--sp-5);
+  padding: clamp(var(--sp-5), 3vw, var(--sp-6));
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  box-shadow: var(--inner-hairline);
+}
+.field { display: grid; gap: var(--sp-2); }
+.field > label,
+.fieldset > legend {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0;
+}
+.hint { font-size: var(--step--1); color: var(--text-faint); }
+.hint a { color: var(--text-muted); }
+
+.input, .textarea, .select {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--base-sunk);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  color: var(--text);
+  font-family: var(--font-mono);
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+.textarea { min-height: 108px; resize: vertical; line-height: var(--leading-snug); }
+.input:hover, .textarea:hover { border-color: var(--line-bright); }
+.input:focus, .textarea:focus { background: var(--base); }
+.input::placeholder, .textarea::placeholder { color: var(--text-faint); }
+
+.fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: var(--sp-3); }
+.choices { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.choice { position: relative; display: inline-flex; }
+.choice input { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; }
+.choice span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--base-sunk);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+.choice:hover span { border-color: var(--line-bright); color: var(--text); }
+.choice input:checked + span {
+  background: var(--mint);
+  border-color: var(--mint);
+  color: var(--on-accent);
+}
+.choice input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+.consent {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sp-3);
+  align-items: start;
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  line-height: var(--leading-snug);
+}
+.consent input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--mint); }
+
+.form__status {
+  font-size: var(--step--1);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-strong);
+  background: var(--base-sunk);
+  color: var(--text-muted);
+}
+.form__status[hidden] { display: none; }
+.form__status--error { border-color: var(--danger); color: var(--danger); }
+.form__status--ok { border-color: var(--mint); color: var(--mint); }
+
+/* --- Transparency note ------------------------------------- */
+.note {
+  border-left: 2px solid var(--mint);
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-5);
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  max-width: 60ch;
+}
+.note strong { color: var(--text); }
+
+/* --- Footer ------------------------------------------------ */
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding-block: var(--sp-7);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--text-faint);
+}
+.site-footer__inner {
+  display: flex; flex-wrap: wrap; gap: var(--sp-4);
+  justify-content: space-between; align-items: center;
+}
+.site-footer a { color: var(--text-muted); }
+
+/* --- Reveal ------------------------------------------------ */
+/* The hidden starting state only exists for visitors who accept motion.
+   Anyone who asked for less never gets opacity: 0 applied at all, so the
+   content cannot be stranded invisible by a stalled observer, a disabled
+   animation engine, or scripting that failed to load. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(var(--reveal-shift));
+    transition:
+      opacity var(--dur-slow) var(--ease-soft),
+      transform var(--dur-slow) var(--ease-soft);
+  }
+  .reveal.is-in { opacity: 1; transform: none; }
+  .no-js .reveal { opacity: 1; transform: none; }
+}
+
+/* --- Utility ----------------------------------------------- */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

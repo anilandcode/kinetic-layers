@@ -1,0 +1,162 @@
+/* ============================================================
+   Proof Ledger — portable section styles.
+   Prefix: .pl-  |  Ships light and dark from the same tokens.
+
+   The chart is a real <table>. Nothing is duplicated for screen
+   readers, and with stylesheets off it degrades to the data it
+   was always made of.
+   ============================================================ */
+
+.pl {
+  /* Typography is declared here, not inherited, so this section keeps
+     the type it was designed with wherever it is dropped. */
+  --font-display: ui-serif, "Iowan Old Style", "Palatino Linotype",
+                  Palatino, "Book Antiqua", Georgia, serif;
+  --font-body:    ui-sans-serif, -apple-system, BlinkMacSystemFont,
+                  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono:    ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+                  Consolas, "Liberation Mono", monospace;
+  --tracking-tight: -0.021em;
+  font-family: var(--font-body);
+
+  background: var(--base);
+  color: var(--text);
+  padding-block: clamp(3rem, 8vw, 6.5rem);
+  transition: background-color var(--dur-mid) var(--ease-out),
+              color var(--dur-mid) var(--ease-out);
+}
+.pl__shell {
+  width: 100%; max-width: var(--page-max);
+  margin-inline: auto; padding-inline: var(--page-gutter);
+}
+
+.pl__head { max-width: 54ch; }
+.pl__eyebrow {
+  font-family: var(--font-mono); font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--accent);
+}
+.pl__title {
+  margin-top: var(--sp-4);
+  font-family: var(--font-display); font-weight: 600;
+  font-size: var(--step-4); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+.pl__intro {
+  margin-top: var(--sp-4); color: var(--text-muted);
+  font-size: var(--step-1); line-height: var(--leading-snug); max-width: 48ch;
+}
+
+/* --- Tier one: the headline figures ---------------------- */
+/* Largest type in the section. Nothing else competes with it. */
+.pl__figures {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  display: grid; gap: var(--sp-6);
+  border-top: 2px solid var(--accent);
+  padding-top: var(--sp-6);
+}
+@media (min-width: 46rem) { .pl__figures { grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--sp-7); } }
+
+.pl__figure dt {
+  font-family: var(--font-mono); font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--text-faint);
+}
+.pl__figure dd {
+  margin: var(--sp-3) 0 0;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: var(--step-6); line-height: 1;
+  letter-spacing: var(--tracking-tight);
+}
+.pl__figure dd sup { font-size: 0.38em; vertical-align: super; color: var(--signal); }
+.pl__figure p {
+  margin-top: var(--sp-3); font-size: var(--step--1);
+  color: var(--text-muted); line-height: var(--leading-snug); max-width: 30ch;
+}
+
+/* --- Tier two: the chart --------------------------------- */
+.pl__panel {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  display: grid; gap: clamp(2rem, 5vw, 3.5rem); align-items: start;
+}
+@media (min-width: 62rem) { .pl__panel { grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); } }
+
+.pl__chart-wrap {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-lg); padding: clamp(var(--sp-5), 3vw, var(--sp-6));
+  overflow-x: auto;
+}
+.pl__chart { width: 100%; border-collapse: collapse; text-align: left; }
+.pl__chart caption {
+  caption-side: top; text-align: left; margin-bottom: var(--sp-5);
+  font-family: var(--font-mono); font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--text-faint);
+}
+/* Column headers matter to a screen reader and would only add noise
+   on screen, where the caption and row labels already say it. */
+.pl__chart thead th {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+.pl__chart tbody tr { border-top: 1px solid var(--line); }
+.pl__chart tbody tr:first-child { border-top: 0; }
+/* Auto table layout would size the value column to its text, leaving the
+   bars a fraction of the room they should have. Shrink the label column
+   and let the value column claim the rest. */
+.pl__chart th[scope="row"] {
+  width: 1%;
+  padding: var(--sp-4) var(--sp-4) var(--sp-4) 0;
+  font-weight: 600; font-size: var(--step--1); white-space: nowrap;
+  vertical-align: middle;
+}
+.pl__chart td {
+  width: 99%;
+  padding: var(--sp-4) 0;
+  font-family: var(--font-mono); font-size: var(--step--1);
+  white-space: nowrap; vertical-align: middle;
+}
+/* The bar is decoration on a cell that already states its value.
+   Remove the CSS and the number is still there. */
+.pl__chart td::before {
+  content: ""; display: block; height: 10px; margin-bottom: var(--sp-2);
+  width: calc(var(--fill, 0) * 100%); min-width: 3px;
+  border-radius: var(--r-pill);
+  background: var(--line-strong);
+  transform-origin: left center;
+}
+/* The bar is already at full width without this; the animation only
+   decides how it gets there. */
+@media (prefers-reduced-motion: no-preference) {
+  .pl__chart td::before { animation: pl-grow var(--dur-slow) var(--ease-soft) both; }
+}
+.pl__chart tr[data-emphasis] td::before { background: var(--signal); }
+.pl__chart tr[data-emphasis] th[scope="row"] { color: var(--signal); }
+@keyframes pl-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.pl__method {
+  margin-top: var(--sp-5); padding-top: var(--sp-4);
+  border-top: 1px solid var(--line);
+  font-size: var(--step--1); color: var(--text-faint); line-height: var(--leading-snug);
+}
+
+/* --- Tier three: the attributed quote -------------------- */
+.pl__quote {
+  border-left: 3px solid var(--accent);
+  padding-left: var(--sp-5);
+}
+.pl__quote blockquote {
+  font-family: var(--font-display); font-size: var(--step-2);
+  line-height: var(--leading-snug); letter-spacing: var(--tracking-tight);
+}
+.pl__quote figcaption {
+  margin-top: var(--sp-4); font-size: var(--step--1); color: var(--text-muted);
+}
+.pl__quote figcaption strong { color: var(--text); display: block; }
+
+.pl__foot {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  padding-top: var(--sp-5); border-top: 1px solid var(--line);
+  font-size: var(--step--1); color: var(--text-faint);
+}

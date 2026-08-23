@@ -1,0 +1,188 @@
+/* ============================================================
+   Studio Current — portable section styles.
+   Prefix: .sc-
+
+   The plates are original SVG compositions standing in for client
+   photography. They are cropped with the same rules a photo would
+   be, so the treatment is what is being demonstrated, not the art.
+   ============================================================ */
+
+.sc {
+  /* Typography is declared here, not inherited, so this section keeps
+     the type it was designed with wherever it is dropped. */
+  --font-display: ui-serif, "Iowan Old Style", "Palatino Linotype",
+                  Palatino, "Book Antiqua", Georgia, serif;
+  --font-body:    ui-sans-serif, -apple-system, BlinkMacSystemFont,
+                  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono:    ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+                  Consolas, "Liberation Mono", monospace;
+  --tracking-tight: -0.021em;
+  font-family: var(--font-body);
+  color: var(--text);
+
+  background: var(--base);
+  padding-block: clamp(3rem, 8vw, 6.5rem);
+}
+.sc__shell {
+  width: 100%; max-width: var(--page-max);
+  margin-inline: auto; padding-inline: var(--page-gutter);
+}
+
+.sc__head { max-width: 52ch; }
+.sc__eyebrow {
+  font-family: var(--font-mono); font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--accent);
+}
+.sc__title {
+  margin-top: var(--sp-4);
+  font-family: var(--font-display); font-weight: 600;
+  font-size: var(--step-4); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+.sc__intro {
+  margin-top: var(--sp-4); color: var(--text-muted);
+  font-size: var(--step-1); line-height: var(--leading-snug); max-width: 46ch;
+}
+
+/* --- Narrative sequence ---------------------------------- */
+.sc__seq {
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+  list-style: none; padding: 0;
+  display: grid; gap: clamp(2.5rem, 6vw, 4.5rem);
+  counter-reset: sc-step;
+}
+.sc__step {
+  counter-increment: sc-step;
+  display: grid; gap: clamp(1.5rem, 4vw, 3rem); align-items: center;
+}
+@media (min-width: 54rem) {
+  .sc__step { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  /* Alternate the reading rhythm without reordering the DOM, so the
+     sequence stays in narrative order for a screen reader. */
+  .sc__step:nth-child(even) .sc__plate { order: -1; }
+}
+
+.sc__step-body > * + * { margin-top: var(--sp-4); }
+.sc__step-n {
+  display: inline-flex; align-items: center; gap: var(--sp-3);
+  font-family: var(--font-mono); font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--accent);
+}
+.sc__step-n::before {
+  content: counter(sc-step, decimal-leading-zero);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--accent); color: var(--accent);
+}
+.sc__step-title {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: var(--step-2); line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+}
+.sc__step-body p { color: var(--text-muted); max-width: 42ch; }
+.sc__step-meta {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2);
+  padding-top: var(--sp-2);
+}
+.sc__chip {
+  padding: 3px var(--sp-3); border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-mono); font-size: var(--step--1);
+  color: var(--text-faint);
+}
+
+/* --- Plate: the responsive image treatment --------------- */
+/* Art-directed by ratio: taller on a phone, wider on a desktop.
+   The SVG is cropped with slice, exactly as object-fit: cover would
+   crop a photograph, so swapping in a real image changes nothing. */
+.sc__plate {
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  overflow: hidden;
+}
+@media (min-width: 34rem) { .sc__plate { aspect-ratio: 16 / 10; } }
+@media (min-width: 54rem) { .sc__plate { aspect-ratio: 5 / 4; } }
+.sc__plate svg { width: 100%; height: 100%; display: block; }
+
+/* --- Testimonial ----------------------------------------- */
+.sc__quote {
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+  padding: clamp(var(--sp-5), 4vw, var(--sp-7));
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--r-xl);
+}
+.sc__quote blockquote {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: var(--step-3); line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight); max-width: 34ch;
+}
+.sc__quote figcaption { margin-top: var(--sp-5); font-size: var(--step--1); opacity: 0.82; }
+.sc__quote figcaption strong { display: block; opacity: 1; }
+
+/* --- Modular service CTA --------------------------------- */
+/* Composes from however many .sc__service items are present. */
+.sc__services {
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+  padding-top: var(--sp-6);
+  border-top: 2px solid var(--accent);
+  display: grid; gap: var(--sp-5);
+}
+@media (min-width: 48rem) { .sc__services { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+.sc__service {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  transition: border-color var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out);
+}
+.sc__service:hover, .sc__service:focus-within {
+  border-color: var(--accent); box-shadow: var(--shadow-md);
+}
+.sc__service h3 {
+  font-family: var(--font-display); font-weight: 600; font-size: var(--step-1);
+  letter-spacing: var(--tracking-tight);
+}
+.sc__service p { font-size: var(--step--1); color: var(--text-muted); }
+.sc__service-from {
+  font-family: var(--font-mono); font-size: var(--step--1); color: var(--text-faint);
+}
+.sc__service a {
+  margin-top: auto; padding-top: var(--sp-3);
+  align-self: flex-start; font-weight: 600; color: var(--accent);
+  text-underline-offset: 4px;
+}
+.sc__service a::after {
+  content: " \2192"; display: inline-block;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.sc__service:hover a::after { transform: translateX(3px); }
+
+.sc__close {
+  margin-top: var(--sp-6);
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: space-between; gap: var(--sp-4);
+}
+.sc__close p { color: var(--text-muted); max-width: 44ch; }
+.sc__cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 48px; padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-pill); background: var(--signal); color: var(--on-signal);
+  font-weight: 600; text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.sc__cta:hover { background: var(--signal-deep); }
+
+.sc__foot {
+  margin-top: clamp(2rem, 4vw, 3rem); padding-top: var(--sp-5);
+  border-top: 1px solid var(--line);
+  font-size: var(--step--1); color: var(--text-faint);
+}
