@@ -1,0 +1,480 @@
+/* ============================================================
+   Kiln — design tokens
+   Ported from the "AI Marketplace Website Planning" design system.
+
+   Two modes that share a hue family: dark is the product (library,
+   item pages, checkout), light is the story (pricing, onboarding,
+   docs). They are never mixed on one screen.
+
+   Note on the accent: the design-system sheet specifies lime
+   #C3C233, but every page design that followed it uses the softer
+   sage #B9CE95. The pages win — they are the later, more specific
+   artifact — so sage is the accent and lime is kept for the places
+   the system sheet itself calls for it.
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  /* --- Dark: the vault ------------------------------------- */
+  --void:        #0F0F0D;
+  --surface:     #141412;
+  --surface-2:   #121210;
+  --raised:      #1B1A16;
+  --hairline:    #1F1E19;
+  --hairline-2:  #23221C;
+  --hairline-3:  #26251F;
+  --line:        #2C2A24;
+  --line-bright: #3A3830;
+
+  --ink:         #F6F4EE;
+  --ink-2:       #E4E1D9;
+  --ink-3:       #C9C6BE;
+  --muted:       #94918A;
+  /* The design specifies #6E6B64 here, which measures 3.61:1 on --void —
+     under AA for the 10–12px metadata this token carries. Lifted to the
+     nearest warm grey that clears 4.5:1 on --void, --surface and --raised. */
+  --faint:       #89857B;
+
+  /* Accent — sage. The only saturated colour on a dark screen:
+     it marks unlocks, the primary action and the active filter. */
+  --sage:        #B9CE95;
+  --sage-bright: #D3E3B4;
+  --sage-ink:    #E8F0D8;
+  --sage-deep:   #12130A;
+  --sage-line:   rgba(185, 206, 149, 0.40);
+  --sage-line-2: rgba(185, 206, 149, 0.30);
+  --sage-fill:   linear-gradient(135deg, rgba(185, 206, 149, 0.28), rgba(185, 206, 149, 0.10));
+
+  --lime:        #C3C233;   /* system sheet accent, kept for parity */
+  --olive:       #5D6F2D;
+
+  /* --- Light: the storefront -------------------------------- */
+  --ivory:       #FAF8F4;
+  --card:        #FFFFFF;
+  --cream:       #F5FFDD;
+  --cream-line:  #E1EBBE;
+  --beige:       #EDE7DF;
+  --l-hairline:  #E4DFD5;
+  --l-hairline-2:#DDD7CB;
+  --l-ink:       #1E1C1A;
+  --l-ink-2:     #4A4740;
+  --l-muted:     #6E6A62;
+  --l-faint:     #8C877D;
+  --forest:      #183A15;
+  --forest-ink:  #3D4A16;
+
+  /* --- Form ------------------------------------------------- */
+  /* 14px on cards, 10px on buttons, 99px on pills. 1px hairlines
+     only — no shadows on dark, one soft shadow allowed on light. */
+  --r-card:   13px;
+  --r-inner:  9px;
+  --r-btn:    10px;
+  --r-pill:   99px;
+  --r-lg:     18px;
+  --r-xl:     22px;
+
+  /* --- Grid ------------------------------------------------- */
+  --page-max: 1360px;
+  --gutter:   40px;
+
+  /* --- Motion ----------------------------------------------- */
+  /* 160ms border and colour transitions. No parallax, no
+     scroll-jacking. */
+  --t-fast: 160ms;
+  --t-mid:  180ms;
+  --ease:   cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+
+@media (max-width: 720px) {
+  :root { --gutter: 20px; }
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, h4, p, figure, blockquote, ul, ol, dl, dd { margin: 0; }
+ul[class], ol[class] { list-style: none; padding: 0; }
+img, svg, video { display: block; max-width: 100%; height: auto; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+body {
+  background: var(--void);
+  color: var(--ink);
+  font-family: var(--font-sora), Sora, system-ui, sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+::selection { background: var(--sage); color: var(--sage-deep); }
+
+a { color: var(--sage); text-decoration: none; }
+a:hover { color: var(--sage-bright); }
+
+:focus-visible {
+  outline: 2px solid var(--sage);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* ============================================================
+   Layout primitives
+   ============================================================ */
+
+.shell {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.mono {
+  font-family: var(--font-mono), "Geist Mono", ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.serif {
+  font-family: var(--font-serif), "Source Serif 4", Georgia, serif;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px; top: 16px;
+  z-index: 100;
+  background: var(--sage);
+  color: var(--sage-deep);
+  border-radius: var(--r-pill);
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  transform: translateY(-200%);
+  transition: transform var(--t-fast) var(--ease);
+}
+.skip-link:focus { transform: translateY(0); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================
+   Controls
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  /* A bare <button> otherwise inherits the UA buttonface fill, which under
+     color-scheme: dark is a mid grey slab. */
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  padding: 13px 24px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    filter var(--t-fast) var(--ease),
+    transform var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease),
+    background-color var(--t-fast) var(--ease);
+}
+.btn:hover { filter: brightness(1.15); }
+.btn:active { transform: translateY(1px); }
+
+/* The sage fill is a translucent wash over the page, not a
+   decorative gradient background — the system's "no gradient
+   backgrounds" rule is about surfaces, not control fills. */
+.btn--primary {
+  background: var(--sage-fill);
+  border-color: var(--sage-line);
+  color: var(--sage-ink);
+  backdrop-filter: blur(8px);
+}
+.btn--ghost {
+  border-color: var(--line);
+  color: var(--ink);
+}
+.btn--quiet {
+  border-color: var(--hairline-3);
+  color: var(--ink-3);
+}
+.btn--block { width: 100%; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono), "Geist Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: var(--r-pill);
+  padding: 7px 13px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--t-fast) var(--ease);
+}
+.pill:hover { filter: brightness(1.15); }
+.pill:active { transform: translateY(1px); }
+.pill[aria-pressed="true"],
+.pill.is-on {
+  background: var(--sage-fill);
+  border-color: rgba(185, 206, 149, 0.45);
+  color: var(--sage-ink);
+  backdrop-filter: blur(8px);
+}
+.pill--muted { border-color: var(--hairline-3); }
+
+/* Non-interactive metadata chip. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+  background: rgba(246, 244, 238, 0.05);
+  border: 1px solid var(--hairline-2);
+  border-radius: var(--r-pill);
+  padding: 6px 13px;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+.chip--sage {
+  background: linear-gradient(135deg, rgba(185, 206, 149, 0.26), rgba(185, 206, 149, 0.09));
+  border-color: var(--sage-line);
+  color: var(--sage-ink);
+  text-transform: none;
+}
+
+/* ============================================================
+   Motion
+   ============================================================ */
+
+/* GSAP sets these inline once it takes over. The starting state is
+   only applied for visitors who accept motion, so nothing can be
+   stranded invisible if the animation never runs. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero] > *,
+  [data-reveal] { opacity: 0; }
+  html.no-js [data-hero] > *,
+  html.no-js [data-reveal] { opacity: 1; }
+}
+
+[data-preview-inner] {
+  will-change: transform;
+  transition: transform 500ms var(--ease);
+}
+[data-card]:hover [data-preview-inner] { transform: scale(1.045); }
+
+/* Page-transition veil, driven by the nav interceptor. */
+#km-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: #0B0B0A;
+  pointer-events: none;
+  opacity: 0;
+}
+
+@media (max-width: 1180px) {
+  [data-hide-narrow] { display: none !important; }
+}
+
+/* ============================================================
+   Asset card
+   ============================================================ */
+
+.kiln-card {
+  display: block;
+  border-radius: var(--r-card);
+  padding: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    background-color var(--t-mid) var(--ease),
+    border-color var(--t-mid) var(--ease);
+}
+.kiln-card:hover,
+.kiln-card:focus-visible {
+  border-color: var(--line);
+  background: #161613;
+}
+
+/* ============================================================
+   Masonry
+   The library is a 3-up masonry so tall scenes and wide pages
+   both sit right. CSS columns, so the ragged heights come free.
+   ============================================================ */
+
+.kiln-masonry {
+  columns: 3;
+  column-gap: 26px;
+}
+.kiln-masonry > * {
+  break-inside: avoid;
+  margin-bottom: 26px;
+}
+@media (max-width: 1080px) { .kiln-masonry { columns: 2; } }
+@media (max-width: 720px)  { .kiln-masonry { columns: 1; } }
+
+/* Even grid, used where the design calls for equal cards. */
+.kiln-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+}
+
+/* ============================================================
+   Promo cards in the library stream
+   ============================================================ */
+
+.kiln-promo {
+  border-radius: var(--r-card);
+  border: 1px solid var(--hairline-3);
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+}
+.kiln-promo--upgrade {
+  background:
+    radial-gradient(120% 90% at 85% 0%, rgba(185,206,149,0.16), rgba(20,20,17,0) 62%),
+    var(--surface);
+  min-height: 380px;
+}
+.kiln-promo--hire {
+  background:
+    radial-gradient(110% 80% at 10% 0%, rgba(185,206,149,0.13), rgba(18,18,16,0) 58%),
+    #121210;
+  min-height: 320px;
+  justify-content: center;
+  gap: 14px;
+}
+.kiln-promo--news {
+  background: linear-gradient(200deg, #1B1B18, #111110 60%);
+  min-height: 340px;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* ============================================================
+   Light mode surface
+   Pricing, onboarding and docs live here. Same grid, same type,
+   warm neutrals, forest green doing the work sage does on dark.
+   ============================================================ */
+
+/* Values here come from Homepage Light, which is warmer than the system
+   sheet's light column. The page is the later artifact, so it wins. */
+.kiln-light {
+  --void:        #F6F4EE;
+  --surface:     #EAE5D9;
+  --surface-2:   #EFEBE1;
+  --hairline:    #DCD6C7;
+  --hairline-2:  #DAD3C3;
+  --hairline-3:  #D3CCBB;
+  --line:        #CBC3B0;
+  --line-bright: #C3BAA6;
+
+  --ink:         #16180F;
+  --ink-2:       #3D4033;
+  --ink-3:       #3D4033;
+  /* #6A6A5F in the design. Clears AA on the ivory page but lands at 4.0:1
+     on the warmer promo fills, so it is darkened a step to hold on both. */
+  --muted:       #625F55;
+  /* #8A887E in the design, 3.23:1 on ivory. Darkened to clear 4.5:1 on the
+     page, the card and the sunk band alike. */
+  --faint:       #66645A;
+
+  --sage:        #46602C;
+  --sage-bright: #2B3A1B;
+  --sage-ink:    #2B3A1B;
+  --sage-line:   rgba(74, 102, 44, 0.34);
+  --sage-line-2: rgba(74, 102, 44, 0.30);
+  --sage-fill:   linear-gradient(135deg, rgba(74, 102, 44, 0.20), rgba(74, 102, 44, 0.06));
+
+  background: var(--void);
+  color: var(--ink);
+  color-scheme: light;
+}
+body > .kiln-light { min-height: 100vh; }
+/* The light treatment lives on a wrapper, so the document behind it would
+   still paint the dark ground — visible on overscroll and anywhere the
+   wrapper does not reach. Let the body follow its child. */
+/* Direct child only. A nested .kiln-light — the light swatch card on the
+   design-system page — must not repaint the whole document. */
+body:has(> .kiln-light) { background: #F6F4EE; color-scheme: light; }
+.kiln-light ::selection { background: #46602C; color: #F6F4EE; }
+/* sage/sage-deep is light-on-dark; in this treatment sage *is* the dark, so
+   the pair has to flip rather than invert. */
+.kiln-light .skip-link { background: #183A15; color: #F6F4EE; }
+/* Hover brightens on dark; on paper it has to darken instead. */
+.kiln-light .btn:hover,
+.kiln-light .pill:hover { filter: brightness(0.965); }
+.kiln-light .kiln-card:hover,
+.kiln-light .kiln-card:focus-visible { background: #E6E1D4; border-color: var(--line); }
+.kiln-light .chip {
+  color: var(--muted);
+  background: rgba(22, 24, 15, 0.05);
+  border-color: var(--hairline-2);
+}
+.kiln-light .kiln-promo--upgrade {
+  background: radial-gradient(120% 90% at 85% 0%, rgba(74,102,44,0.10), rgba(20,20,17,0) 62%), #EAE5D9;
+}
+.kiln-light .kiln-promo--hire {
+  background: radial-gradient(110% 80% at 10% 0%, rgba(74,102,44,0.09), rgba(18,18,16,0) 58%), #EFEBE1;
+}
+.kiln-light .kiln-promo--news {
+  background: linear-gradient(200deg, #E7E2D6, #F1EDE3 60%);
+}
+.kiln-light .chip--cream {
+  background: var(--cream);
+  border-color: var(--cream-line);
+  color: var(--forest-ink);
+}
+.kiln-light .chip--forest {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--cream);
+}
+
+
+/* ============================================================
+   Narrow viewports
+   The design specifies desktop only; these are the rules that keep
+   it upright below that, without changing anything above 1180px.
+   ============================================================ */
+
+/* Hero: copy column beside the vault stats, stacking before it squashes. */
+.kiln-hero {
+  display: grid;
+  gap: 64px;
+  align-items: end;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+}
+@media (max-width: 900px) {
+  .kiln-hero { grid-template-columns: 1fr; gap: 40px; align-items: start; }
+}
+
+/* The nav keeps shedding secondary controls as it narrows; the wordmark
+   and the one primary action are the last things standing. */
+@media (max-width: 620px) {
+  [data-hide-small] { display: none !important; }
+  .site-nav { gap: 12px !important; }
+}

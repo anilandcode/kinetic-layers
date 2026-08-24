@@ -1,0 +1,208 @@
+/* The plan document keeps its own palette and type — it is the brief that
+   produced the site, not part of it. */
+
+.page {
+  --p-void: #08080a;
+  --p-card: #0e0e11;
+  --p-line: #1e1e21;
+  --p-line-2: #2a2a2e;
+  --p-ink: #e8e6e3;
+  --p-ink-2: #c9c5c1;
+  --p-muted: #9b9793;
+  /* #6e6a66 in the source document, 3.59:1 on the card. Lifted to clear AA
+     on both the page ground and the card. */
+  --p-faint: #827e79;
+  --p-lime: #c9c733;
+
+  background: var(--p-void);
+  color: var(--p-ink);
+  font-family: var(--plan-body), Inter, system-ui, sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+}
+
+.inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 96px 7vw 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 104px;
+}
+
+.header { display: flex; flex-direction: column; gap: 28px; }
+
+.eyebrow {
+  font-family: var(--font-mono), "Geist Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--p-lime);
+}
+
+.h1 {
+  font-family: var(--plan-display), "Instrument Serif", Georgia, serif;
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.02;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  max-width: 900px;
+  text-wrap: pretty;
+}
+
+.lede { font-size: 19px; line-height: 1.6; color: var(--p-muted); max-width: 620px; }
+
+.section { display: flex; flex-direction: column; gap: 32px; }
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  border-bottom: 1px solid var(--p-line);
+  padding-bottom: 16px;
+}
+.sectionHead h2 {
+  font-size: clamp(24px, 2.6vw, 30px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.num {
+  font-family: var(--font-mono), "Geist Mono", ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--p-lime);
+}
+
+.pull {
+  font-size: clamp(19px, 2vw, 22px);
+  line-height: 1.5;
+  max-width: 760px;
+  font-weight: 300;
+  text-wrap: pretty;
+}
+.pull em { font-style: normal; color: var(--p-lime); }
+
+.note { font-size: 17px; line-height: 1.6; color: var(--p-muted); max-width: 720px; }
+.note b { color: var(--p-ink); font-weight: 400; }
+
+.body { font-size: 16px; line-height: 1.55; color: var(--p-ink-2); }
+.small { font-size: 14px; line-height: 1.5; color: var(--p-muted); }
+
+.label,
+.labelAccent {
+  font-family: var(--font-mono), "Geist Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--p-faint);
+}
+.labelAccent { color: var(--p-lime); }
+
+.mono {
+  font-family: var(--font-mono), "Geist Mono", ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--p-faint);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 20px;
+}
+
+.card,
+.outline {
+  border: 1px solid var(--p-line);
+  border-radius: 14px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card { background: var(--p-card); }
+
+.names {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 16px;
+}
+.nameTitle { font-size: 26px; letter-spacing: -0.02em; }
+
+.stack { display: flex; flex-direction: column; gap: 14px; }
+
+.shelf {
+  display: grid;
+  grid-template-columns: minmax(140px, 180px) 1fr;
+  gap: 28px;
+  border: 1px solid var(--p-line);
+  border-radius: 14px;
+  padding: 26px;
+  align-items: start;
+}
+@media (max-width: 640px) { .shelf { grid-template-columns: 1fr; gap: 14px; } }
+
+.shelfName { font-size: 20px; }
+.shelfNum {
+  font-family: var(--font-mono), "Geist Mono", ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--p-lime);
+  margin-top: 6px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  font-family: var(--font-mono), "Geist Mono", ui-monospace, monospace;
+  font-size: 11px;
+}
+.tags span {
+  border: 1px solid var(--p-line-2);
+  border-radius: 99px;
+  padding: 5px 11px;
+  color: var(--p-muted);
+}
+
+.callout {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 20px;
+  border-left: 2px solid var(--p-lime);
+}
+
+.rows { display: flex; flex-direction: column; }
+
+.row {
+  display: grid;
+  grid-template-columns: 56px 1fr 220px;
+  gap: 20px;
+  padding: 20px 0;
+  border-top: 1px solid var(--p-line);
+  align-items: baseline;
+}
+.row:last-child { border-bottom: 1px solid var(--p-line); }
+@media (max-width: 800px) { .row { grid-template-columns: 40px 1fr; } .row > :last-child { grid-column: 2; } }
+
+.rowTitle { font-size: 19px; margin-bottom: 6px; }
+
+.open {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border: 1px solid var(--p-lime);
+  border-radius: 16px;
+  padding: 36px;
+}
+.openList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--p-ink-2);
+  max-width: 760px;
+  list-style: none;
+  padding: 0;
+}
