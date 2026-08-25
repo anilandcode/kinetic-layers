@@ -8,14 +8,14 @@ import { getSettings } from "@/lib/sanity/queries";
 
 export const metadata: Metadata = {
   title: "Join",
-  description: "Start with twelve free assets. No card needed.",
+  description: "Start with the free assets. No card needed.",
   robots: { index: false, follow: false },
 };
 
-const PERKS = [
-  "All 240 assets and every source file",
-  "Nine new assets every Thursday",
-  "All 18 collections",
+const perks = (s: { totalAssets: number; collectionCount: number }) => [
+  `All ${s.totalAssets} assets and every source file`,
+  "New assets every Thursday",
+  `All ${s.collectionCount} collections`,
   "Commercial use in unlimited client projects",
 ];
 
@@ -109,7 +109,7 @@ export default async function Join({
             <div style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline-3)", background: "var(--surface)", padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
               <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>What unlimited opens</span>
               <ul style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {PERKS.map((p) => (
+                {perks(settings).map((p) => (
                   <li key={p} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
                     <span aria-hidden="true" style={{ fontSize: 12, color: "var(--sage)", paddingTop: 3 }}>✦</span>
                     <span style={{ fontSize: 15, lineHeight: 1.5, color: "var(--ink-2)" }}>{p}</span>

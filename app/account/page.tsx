@@ -3,9 +3,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Avatar, Footer, Nav } from "@/components/kiln/Chrome";
 import DownloadFilter from "@/components/kiln/DownloadFilter";
+import DownloadAgain from "@/components/kiln/DownloadAgain";
 import { getViewer } from "@/lib/kiln/viewer";
 import { createClient } from "@/lib/supabase/server";
-import { getSettings } from "@/lib/sanity/queries";
+import { getAssets, getSettings } from "@/lib/sanity/queries";
 
 export const metadata: Metadata = { title: "Account", robots: { index: false, follow: false } };
 
@@ -23,12 +24,13 @@ export default async function Account({ searchParams }: { searchParams: Promise<
 
   /* Every one of these reads through RLS, so they can only ever return this
      user's rows — the filter is the policy, not the query. */
-  const [{ data: downloads }, { data: savedCollections }, { data: savedAssets }, settings] =
+  const [{ data: downloads }, { data: savedCollections }, { data: savedAssets }, settings, catalogue] =
     await Promise.all([
       supabase.from("downloads").select("*").order("created_at", { ascending: false }).limit(50),
       supabase.from("saved_collections").select("collection_slug, created_at").order("created_at", { ascending: false }),
       supabase.from("saved_assets").select("asset_slug, created_at").order("created_at", { ascending: false }),
       getSettings(),
+      getAssets(),
     ]);
 
   const rows = downloads ?? [];
@@ -36,7 +38,17 @@ export default async function Account({ searchParams }: { searchParams: Promise<
   const unique = new Set(rows.map((d) => d.asset_slug)).size;
   const savedTotal = (savedCollections?.length ?? 0) + (savedAssets?.length ?? 0);
 
-  const filtered = kind ? rows.filter((d) => (d.asset_name ?? "").length > 0) : rows;
+  /* A download row records the slug, not the type — type lives in Sanity. This
+     resolves it at render rather than denormalising a column, which also means
+     rows written before today filter correctly instead of only new ones. */
+  const typeOf = new Map(catalogue.map((a) => [a.slug, a.type]));
+
+  /* The chips used to be a hardcoded "Templates / Scenes / Prompts", which
+     matched none of the eight types the catalogue actually uses. Deriving them
+     from what this user has downloaded means no chip is ever empty and no type
+     is ever missing. */
+  const kinds = [...new Set(rows.map((d) => typeOf.get(d.asset_slug)).filter(Boolean))].sort() as string[];
+  const filtered = kind ? rows.filter((d) => typeOf.get(d.asset_slug) === kind) : rows;
 
   return (
     <>
@@ -66,7 +78,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           <Stat label="Downloaded" value={String(unique)} note={`of ${settings.totalAssets} assets`} big />
           <Stat label="This month" value={String(thisMonth)} note={thisMonth === 1 ? "1 file" : `${thisMonth} files`} big />
           <Stat label="Saved" value={String(savedTotal)} note="assets and collections" big />
-          <Stat label="Plan" value={viewer.unlimited ? "Unlimited" : "Free"} note={viewer.unlimited ? "full vault" : "12 rotating assets"} />
+          <Stat label="Plan" value={viewer.unlimited ? "Unlimited" : "Free"} note={viewer.unlimited ? "full vault" : `${settings.freeThisMonth} free assets`} />
         </section>
 
         <div
@@ -78,15 +90,22 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 22px", background: "var(--surface-2)", borderBottom: "1px solid #1A1917", flexWrap: "wrap" }}>
               <h2 style={{ fontSize: 17, fontWeight: 500 }}>Downloads</h2>
               <div style={{ flex: 1 }} />
-              <DownloadFilter active={kind ?? "All"} />
+              <DownloadFilter active={kind ?? ""} kinds={kinds} />
             </div>
 
             {filtered.length === 0 ? (
               <div style={{ padding: "40px 22px", display: "flex", flexDirection: "column", gap: 14, alignItems: "flex-start" }}>
                 <p style={{ fontSize: 15, color: "var(--muted)" }}>
-                  Nothing downloaded yet. The twelve free assets are a good place to start.
+                  Nothing downloaded yet.{" "}
+                  {settings.freeThisMonth > 0
+                    ? `The ${settings.freeThisMonth} free assets are a good place to start.`
+                    : "Free assets appear here as they are published."}
                 </p>
-                <Link data-nav href="/?free=1" className="btn btn--ghost">Browse the free twelve</Link>
+                {settings.freeThisMonth > 0 && (
+                  <Link data-nav href="/?free=1" className="btn btn--ghost">
+                    Browse the free {settings.freeThisMonth}
+                  </Link>
+                )}
               </div>
             ) : (
               <ul>
@@ -103,9 +122,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                     <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
                       {new Date(d.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase()}
                     </span>
-                    <Link data-nav href={`/item/${d.asset_slug}`} className="btn btn--ghost" style={{ fontSize: 13, padding: "7px 15px", color: "var(--ink-3)" }}>
-                      Download again
-                    </Link>
+                    <DownloadAgain slug={d.asset_slug} file={d.file_name} />
                   </li>
                 ))}
               </ul>
@@ -138,7 +155,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
                 {viewer.unlimited
                   ? `Renews ${viewer.periodEnd ? new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "automatically"}. Cancel any time and keep every file you downloaded.`
-                  : `Twelve rotating assets, refreshed monthly. Unlimited opens all ${settings.totalAssets} and every source file.`}
+                  : `${settings.freeThisMonth} free assets. Unlimited opens all ${settings.totalAssets} and every source file.`}
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
                 {!viewer.unlimited && (

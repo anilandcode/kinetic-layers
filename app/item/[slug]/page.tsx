@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAsset, getAssetSlugs, getRelated } from "@/lib/sanity/queries";
+import { getAsset, getAssetSlugs, getRelated, getSettings } from "@/lib/sanity/queries";
 import { getViewer, gateReason } from "@/lib/kiln/viewer";
 import { createClient } from "@/lib/supabase/server";
 import ItemView from "@/components/kiln/ItemView";
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [asset, viewer] = await Promise.all([getAsset(slug), getViewer()]);
+  const [asset, viewer, settings] = await Promise.all([getAsset(slug), getViewer(), getSettings()]);
   if (!asset) notFound();
 
   const related = await getRelated(slug);
@@ -44,6 +44,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       viewer={viewer}
       gate={gateReason(viewer, asset)}
       saved={saved}
+      monthlyPrice={settings.monthlyPrice}
     />
   );
 }

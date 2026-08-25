@@ -4,28 +4,31 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Settings, Viewer } from "@/lib/kiln/types";
 
-const FREE_FEATURES = [
-  "12 assets, rotating on the first of each month",
+/* These read the live counts rather than repeating them. A hardcoded "All 240
+   assets" beside a price pulled from settings is a promise that silently stops
+   being true the moment the catalogue differs — which it did. */
+const freeFeatures = (s: Settings) => [
+  `${s.freeThisMonth} assets, free to any account`,
   "Full output files, partial source",
   "Personal projects only",
   "No card required",
 ];
 
-const PAID_FEATURES = [
-  "All 240 assets across the eight shelves",
+const paidFeatures = (s: Settings) => [
+  `All ${s.totalAssets} assets across the shelves`,
   "Every source file: prompts, scenes, weights, configs",
-  "Nine new assets every Thursday",
-  "All 18 collections",
+  "New assets every Thursday",
+  `All ${s.collectionCount} collections`,
   "Commercial use in unlimited client projects",
   "One asset request a month",
 ];
 
-const ROWS = [
-  { label: "Assets available", free: "12", paid: "240" },
+const rows = (s: Settings) => [
+  { label: "Assets available", free: String(s.freeThisMonth), paid: String(s.totalAssets) },
   { label: "New drops every Thursday", free: "—", paid: "Included" },
   { label: "Source files & prompt text", free: "Partial", paid: "Everything" },
   { label: "Commercial use in client work", free: "—", paid: "Unlimited" },
-  { label: "Collections", free: "—", paid: "All 18" },
+  { label: "Collections", free: "—", paid: `All ${s.collectionCount}` },
   { label: "Keep downloads after cancelling", free: "Yes", paid: "Yes" },
   { label: "Request an asset", free: "—", paid: "One per month" },
 ];
@@ -49,7 +52,7 @@ const FAQ = [
   },
   {
     q: "How often is it updated?",
-    a: "Nine new assets every Thursday, plus fixes to anything already in the vault.",
+    a: "New assets every Thursday, plus fixes to anything already in the vault.",
   },
 ];
 
@@ -87,7 +90,8 @@ export default function PricingBody({ settings, viewer }: { settings: Settings; 
                 textWrap: "pretty",
               }}
             >
-              Twelve free forever. The other 228 for the price of one stock scene.
+              {settings.freeThisMonth} free forever. The other{" "}
+              {Math.max(0, settings.totalAssets - settings.freeThisMonth)} for the price of one stock scene.
             </h1>
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", maxWidth: 500 }}>
               Cancel any time and keep every file you already downloaded. No seats, no credits, no
@@ -166,12 +170,12 @@ export default function PricingBody({ settings, viewer }: { settings: Settings; 
               </span>
               <span style={{ fontSize: 44, fontWeight: 500, letterSpacing: "-0.03em" }}>$0</span>
               <span style={{ fontSize: 14, color: "var(--muted)" }}>
-                12 rotating assets, refreshed monthly.
+                {settings.freeThisMonth} assets, free to any account.
               </span>
             </div>
             <div style={{ height: 1, background: "var(--hairline)" }} />
             <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {FREE_FEATURES.map((f) => (
+              {freeFeatures(settings).map((f) => (
                 <li key={f} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
                   <span
                     className="mono"
@@ -186,7 +190,7 @@ export default function PricingBody({ settings, viewer }: { settings: Settings; 
             </ul>
             <div style={{ flex: 1 }} />
             <Link data-nav href="/" className="btn btn--ghost" style={{ marginTop: 8 }}>
-              Browse the free twelve
+              Browse the free {settings.freeThisMonth}
             </Link>
           </div>
 
@@ -239,7 +243,7 @@ export default function PricingBody({ settings, viewer }: { settings: Settings; 
             <div style={{ height: 1, background: "#232219" }} />
 
             <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {PAID_FEATURES.map((f) => (
+              {paidFeatures(settings).map((f) => (
                 <li key={f} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
                   <span aria-hidden="true" style={{ fontSize: 12, color: "var(--sage)", paddingTop: 3 }}>
                     ✦
@@ -298,7 +302,7 @@ export default function PricingBody({ settings, viewer }: { settings: Settings; 
                 </tr>
               </thead>
               <tbody>
-                {ROWS.map((r) => (
+                {rows(settings).map((r) => (
                   <tr key={r.label} style={{ borderTop: "1px solid #1A1917" }}>
                     <th
                       scope="row"

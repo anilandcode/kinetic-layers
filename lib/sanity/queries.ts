@@ -113,24 +113,43 @@ export async function getDrops(): Promise<Drop[]> {
   );
 }
 
+/**
+ * Site-wide numbers.
+ *
+ * The counts are COUNTED, not stored. A settings document holding "240 assets"
+ * is a number that starts out aspirational and stays wrong forever — the hero
+ * claimed 240 while the dataset held 15, which is the loudest way for a real
+ * site to read as a mockup. Only the things that genuinely are settings —
+ * prices, the drop label — come from the document.
+ */
 export async function getSettings(): Promise<Settings> {
   const s = await sanity.fetch<Settings | null>(
-    groq`*[_type == "settings"][0] {
-      totalAssets, freeThisMonth, addedThisWeek, monthlyPrice, annualPrice, currentDrop, collectionCount
+    groq`{
+      "doc": *[_type == "settings"][0]{ monthlyPrice, annualPrice, currentDrop },
+      "totalAssets": count(*[_type == "asset"]),
+      "freeThisMonth": count(*[_type == "asset" && free == true]),
+      "collectionCount": count(*[_type == "collection"]),
+      "addedThisWeek": count(*[_type == "asset" && publishedAt > $weekAgo])
+    }{
+      "monthlyPrice": doc.monthlyPrice,
+      "annualPrice": doc.annualPrice,
+      "currentDrop": doc.currentDrop,
+      totalAssets, freeThisMonth, collectionCount, addedThisWeek
     }`,
-    {},
-    opts(["settings"])
+    { weekAgo: new Date(Date.now() - 7 * 864e5).toISOString() },
+    opts(["settings", "asset", "collection"])
   );
-  /* Falls back rather than throwing: an empty dataset should still render a
-     site, not a stack trace. */
+  /* Counts fall back to 0, not to a flattering guess: an honest empty shelf
+     beats an invented full one, and an empty dataset should still render a
+     site rather than a stack trace. */
   return {
-    totalAssets: s?.totalAssets ?? 240,
-    freeThisMonth: s?.freeThisMonth ?? 12,
-    addedThisWeek: s?.addedThisWeek ?? 9,
+    totalAssets: s?.totalAssets ?? 0,
+    freeThisMonth: s?.freeThisMonth ?? 0,
+    addedThisWeek: s?.addedThisWeek ?? 0,
     monthlyPrice: s?.monthlyPrice ?? 24,
     annualPrice: s?.annualPrice ?? 240,
-    currentDrop: s?.currentDrop ?? "019",
-    collectionCount: s?.collectionCount ?? 18,
+    currentDrop: s?.currentDrop ?? "001",
+    collectionCount: s?.collectionCount ?? 0,
   };
 }
 

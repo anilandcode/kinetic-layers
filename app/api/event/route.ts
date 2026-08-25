@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   if (!event) return noContent; // unknown name: drop it quietly
 
   try {
-    await getDb()
+    const { error } = await getDb()
       .from("events")
       .insert({
         event,
@@ -56,8 +56,12 @@ export async function POST(request: Request) {
         detail: clean(payload.detail, 60) || null,
         visitor: await visitorHash(request),
       });
-  } catch {
-    // Tracking must never surface to the visitor.
+    /* Never shown to the visitor, but never swallowed either. A check
+       constraint rejecting a new event name left this table holding nothing
+       but page_views for a whole release, with no error anywhere to say so. */
+    if (error) console.error("event insert rejected:", event, error.code, error.message);
+  } catch (err) {
+    console.error("event insert threw:", err instanceof Error ? err.message : err);
   }
 
   return noContent;

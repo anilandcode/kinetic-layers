@@ -5,6 +5,8 @@ import { Footer, Nav } from "@/components/kiln/Chrome";
 import AssetCard from "@/components/kiln/AssetCard";
 import { getCollection, getCollectionSlugs } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kiln/viewer";
+import { createClient } from "@/lib/supabase/server";
+import SaveButton from "@/components/kiln/SaveButton";
 
 /* The design links Collections straight to an item and never draws the
    collection itself. This is that missing page. */
@@ -24,6 +26,19 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const { slug } = await params;
   const [collection, viewer] = await Promise.all([getCollection(slug), getViewer()]);
   if (!collection) notFound();
+
+  /* Reads through the viewer's own session, so RLS decides what comes back
+     rather than this query being trusted to filter. */
+  let saved = false;
+  if (viewer) {
+    const supabase = await createClient();
+    const { data } = (await supabase!
+      .from("saved_collections")
+      .select("collection_slug")
+      .eq("collection_slug", slug)
+      .maybeSingle()) ?? { data: null };
+    saved = Boolean(data);
+  }
 
   return (
     <>
@@ -48,8 +63,20 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             {collection.blurb && (
               <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", maxWidth: 540 }}>{collection.blurb}</p>
             )}
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
               {collection.tags.map((t) => <span className="chip" key={t}>{t}</span>)}
+            </div>
+
+            {/* The only place a collection can be saved. Without this the
+                account page's saved-collections list could never fill. */}
+            <div>
+              <SaveButton
+                kind="collection"
+                slug={collection.slug}
+                saved={saved}
+                signedIn={Boolean(viewer)}
+                labels={{ on: "Saved — remove", off: "Save this collection" }}
+              />
             </div>
           </div>
         </section>

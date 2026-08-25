@@ -22,7 +22,7 @@ import {
 type Mode = "signup" | "signin" | "magic" | "reset";
 
 const HEADING: Record<Mode, string> = {
-  signup: "Start with twelve free assets.",
+  signup: "Start with the free assets.",
   signin: "Welcome back.",
   magic: "We’ll email you a link.",
   reset: "Reset your password.",

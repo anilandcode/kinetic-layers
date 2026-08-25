@@ -107,7 +107,14 @@ export default function KilnMotion() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const onClick = (evt: MouseEvent) => {
-      if (evt.defaultPrevented || evt.metaKey || evt.ctrlKey || evt.shiftKey || evt.button !== 0) {
+      if (
+        evt.defaultPrevented ||
+        evt.metaKey ||
+        evt.ctrlKey ||
+        evt.shiftKey ||
+        evt.altKey ||
+        evt.button !== 0
+      ) {
         return;
       }
       const target = evt.target as HTMLElement | null;
@@ -115,7 +122,19 @@ export default function KilnMotion() {
       const href = link?.getAttribute("href");
       if (!link || !href || href.startsWith("#") || href.startsWith("http")) return;
 
+      /* A link that opens elsewhere, or downloads, is not a route change — and
+         swallowing it would break it outright. */
+      if (link.target && link.target !== "_self") return;
+      if (link.hasAttribute("download")) return;
+
+      /* preventDefault alone was not enough. This listener sits on the
+         document, so in the bubble phase Next's own Link handler has already
+         run and navigated — then the veil finishes and pushes the same route a
+         second time. Capturing, and stopping propagation before the anchor
+         sees the click, leaves exactly one navigation. */
       evt.preventDefault();
+      evt.stopPropagation();
+
       if (reduced) {
         router.push(href);
         return;
@@ -135,8 +154,8 @@ export default function KilnMotion() {
       });
     };
 
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
+    document.addEventListener("click", onClick, { capture: true });
+    return () => document.removeEventListener("click", onClick, { capture: true });
   }, [router]);
 
   /* Lift the veil once the new route has painted. */

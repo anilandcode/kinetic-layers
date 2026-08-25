@@ -241,6 +241,10 @@ function NewsPromo() {
     const body = new FormData();
     body.set("email", email);
     body.set("source", "library-news-card");
+    /* Submitting a form whose button says "Subscribe", under copy stating what
+       arrives and how often, IS the opt-in. Without this the row was stored and
+       the provider was never told, so nobody was actually subscribed. */
+    body.set("consent", "1");
     try {
       const res = await fetch("/api/subscribe", { method: "POST", body, headers: { Accept: "application/json" } });
       setState(res.ok ? "sent" : "error");
@@ -255,7 +259,7 @@ function NewsPromo() {
         Fresh drops, every Thursday.
       </h3>
       <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)", marginBottom: 8 }}>
-        Nine new assets and what they were built for, once a week.
+        New assets and what they were built for, once a week.
       </p>
       {state === "sent" ? (
         <p style={{ fontSize: 15, color: "var(--sage-ink)" }}>
@@ -282,7 +286,14 @@ function NewsPromo() {
               color: "var(--ink)",
             }}
           />
-          <button type="submit" disabled={state === "sending"} className="btn" style={{ borderColor: "#35332B", color: "var(--ink)" }}>
+          <button
+            type="submit"
+            data-track="form_submit"
+            data-track-detail="newsletter"
+            disabled={state === "sending"}
+            className="btn"
+            style={{ borderColor: "#35332B", color: "var(--ink)" }}
+          >
             {state === "sending" ? "Sending…" : "Subscribe"}
           </button>
           {state === "error" && (
@@ -293,7 +304,8 @@ function NewsPromo() {
         </>
       )}
       <span style={{ fontSize: 12, lineHeight: 1.5, color: "var(--faint)" }}>
-        One email a week. Unsubscribe whenever.
+        Subscribing adds you to the Thursday email. One a week, nothing else,
+        unsubscribe from any of them.
       </span>
     </form>
   );

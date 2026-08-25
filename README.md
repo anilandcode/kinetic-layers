@@ -51,7 +51,11 @@ downloads are not, and live in a private Supabase bucket that only
 
 ## The gate
 
-One function decides, in `lib/kiln/viewer.ts`:
+One function decides, in `lib/kiln/viewer.ts`, and **both** halves of the gate
+ask it — `/api/download` for the files and `/api/prompt` for the text. There is
+deliberately no second copy of the rule, because for a while there was no
+second *caller*: the gate refused correctly and granted nothing, so a paying
+subscriber saw the same two-line preview as a stranger.
 
 ```
 canDownload(viewer, asset)
@@ -60,7 +64,7 @@ canDownload(viewer, asset)
 ```
 
 The item page asks it to decide which of three states to draw. `/api/download`
-asks it again before signing anything. A hidden button is not a paywall — the
+and `/api/prompt` each ask it again before releasing anything. A hidden button is not a paywall — the
 route is what actually stops a file walking out, and it never trusts the client
 beyond the slug.
 
@@ -115,6 +119,14 @@ every auth path reports that accounts are not connected rather than throwing.
 That is deliberate — a missing key should not take down a page that had no need
 of a user.
 
+## Known placeholder
+
+The catalogue is 15 invented assets with fabricated specs, and the files in
+Storage are text placeholders that say so when you open them. Every seam around
+them is real — swapping in genuine prompts, files and renders is a content job
+with no code changes. `/license` is a plain-English draft that has **not** been
+through legal review, and says so on the page.
+
 ## Still to wire
 
 1. **Google and GitHub OAuth.** The buttons are built and say so plainly until
@@ -148,26 +160,39 @@ hover one card exactly 1 video request, that card's clip, then it plays
 
 ## Verified
 
-Build clean, 36 routes. Across `/`, `/light`, `/collections`,
-`/collections/[slug]`, `/item/[slug]`, `/account`, `/join`, `/pricing`, `/plan`
-and `/design-system`, at 375 and 1600: zero contrast failures, no horizontal
-overflow, no image missing an `alt`, zero external requests.
+Build clean, 38 routes. Across `/`, `/light`, `/collections`,
+`/collections/[slug]`, `/item/[slug]`, `/account`, `/pricing`, `/plan`,
+`/license`, `/changelog` and `/design-system`, at 375 and 1600: zero contrast
+failures, no horizontal overflow, no image missing an `alt`.
 
-The gate was tested by calling `/api/download` as each persona, not by looking
-at the UI:
+The gate was tested by calling both routes as each persona, and — the part that
+was missed the first time — by checking what comes **back**, not only what is
+refused:
 
 ```
-                     anonymous   free plan   unlimited
-paid asset            401         403         200 signed
-free asset            401         200 signed  200 signed
-unknown slug          404         404         404
+                       anonymous   free plan        unlimited
+/api/prompt  free        401         200, 882 ch      200, 882 ch
+/api/prompt  paid        401         403              200, 882 ch
+/api/download free       401         200 signed       200 signed
+/api/download paid       401         403              200 signed
+unknown slug             404         404              404
 ```
 
-The signed URL returns bytes; the same object path without the token is
-refused with 400. RLS was checked by signing in as one user through the
-publishable key and reading every table: the service key sees both users'
-rows, the signed-in user sees only their own, naming the other user's id
-returns nothing, and a self-upgrade `update` on `entitlements` changes no rows.
+The unlocked prompt was then confirmed to render: 882 characters on screen,
+no blur, copy control present. Asking for each of the six files by name returns
+six different objects rather than `files[0]` six times.
+
+Account filters were checked per type against the real catalogue —
+`?kind=PROMPT` returns only the prompt downloads, an unknown kind returns
+nothing. RLS: the service key sees every row, a signed-in user sees only their
+own, and a self-upgrade `update` on `entitlements` changes nothing.
+
+Media: 15 videos on the home page, all with an empty `src`, zero video requests
+on load, exactly one on hover, 268 KB total, posters served from
+`kiln-media.pages.dev`.
+
+Analytics land: `page_view`, `search`, `gate_hit`, `unlock_click` and
+`download` all reach the `events` table with useful detail.
 
 
 ## Archive

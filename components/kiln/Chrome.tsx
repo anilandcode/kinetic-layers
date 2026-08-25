@@ -163,10 +163,21 @@ export function Footer({ light = false }: { light?: boolean }) {
             </Link>
           ))}
         </nav>
-        <div style={{ display: "flex", gap: 24 }}>
-          <span>License</span>
-          <span>Changelog</span>
-          <span>Contact</span>
+        {/* These were three bare <span>s styled to read as links. Text that
+            looks clickable and is not is worse than no link at all. */}
+        <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+          <Link data-nav href="/license" style={{ color: "inherit" }}>
+            License
+          </Link>
+          <Link data-nav href="/changelog" style={{ color: "inherit" }}>
+            Changelog
+          </Link>
+          <a
+            href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@example.com"}`}
+            style={{ color: "inherit" }}
+          >
+            Contact
+          </a>
         </div>
       </div>
     </footer>

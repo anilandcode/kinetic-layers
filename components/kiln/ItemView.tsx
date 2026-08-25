@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Footer, Nav } from "./Chrome";
 import AssetCard from "./AssetCard";
 import type { Asset, Viewer } from "@/lib/kiln/types";
 import PreviewMedia from "./PreviewMedia";
+import SaveButton from "./SaveButton";
+import { track } from "@/lib/track";
 
 /**
  * Item page.
@@ -23,16 +25,18 @@ export default function ItemView({
   viewer,
   gate,
   saved: initiallySaved,
+  monthlyPrice,
 }: {
   asset: Asset;
   related: Asset[];
   viewer: Viewer | null;
   gate: Gate;
   saved: boolean;
+  monthlyPrice: number;
 }) {
   const [shot, setShot] = useState(0);
-  const [saved, setSaved] = useState(initiallySaved);
-  const [busy, setBusy] = useState(false);
+  /* `true` means the main button; a string means that named file's row. */
+  const [busy, setBusy] = useState<boolean | string>(false);
   const [notice, setNotice] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
 
   /* An anonymous visitor on a paid asset needs an account *and* a
@@ -54,14 +58,19 @@ export default function ItemView({
     : [{ label: "Preview", gradient: asset.g, poster: asset.poster, clip: asset.clip }];
   const current = shots[Math.min(shot, shots.length - 1)];
 
-  async function download() {
-    setBusy(true);
+  /**
+   * `name` picks a single file from the manifest. Omitting it takes the first,
+   * which is what the big button does. Busy state is keyed by file name rather
+   * than a single boolean, so downloading one row does not grey out the others.
+   */
+  async function download(name?: string) {
+    setBusy(name ?? true);
     setNotice(null);
     try {
       const res = await fetch("/api/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: asset.slug }),
+        body: JSON.stringify({ slug: asset.slug, file: name }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -70,28 +79,13 @@ export default function ItemView({
       }
       /* The signed URL is short-lived, so it is used immediately rather than
          held in state where it could go stale. */
+      track("download", `${asset.slug}:${json.name}`);
       window.location.href = json.url;
       setNotice({ kind: "ok", text: `Downloading ${json.name}.` });
     } catch {
       setNotice({ kind: "error", text: "Network trouble. Try again." });
     } finally {
       setBusy(false);
-    }
-  }
-
-  async function toggleSave() {
-    if (!viewer) return;
-    const next = !saved;
-    setSaved(next); // optimistic
-    try {
-      const res = await fetch("/api/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kind: "asset", slug: asset.slug, saved: next }),
-      });
-      if (!res.ok) setSaved(!next);
-    } catch {
-      setSaved(!next);
     }
   }
 
@@ -222,44 +216,68 @@ export default function ItemView({
                 aria-label="Files included"
                 style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 12, paddingTop: 14 }}
               >
-                {asset.files.map((f) => (
-                  <div
-                    key={f.name}
-                    style={{
-                      borderRadius: "var(--r-card)",
-                      border: "1px solid var(--hairline)",
-                      background: "var(--surface-2)",
-                      padding: "18px 20px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 16,
-                    }}
-                  >
-                    <div style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 0 }}>
-                      <span style={{ fontSize: 15, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {f.name}
-                      </span>
-                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
-                        {f.meta}
-                      </span>
-                    </div>
-                    <span
-                      className="mono"
+                {asset.files.map((f) => {
+                  /* Each row downloads its own file. These were display-only
+                     cards, so every file in the manifest handed you the first
+                     one — the route already took a file name, the UI just never
+                     sent it. Locked visitors get the same card, inert and
+                     labelled, rather than a button that only ever refuses. */
+                  const rowBusy = busy === f.name;
+                  const Row = gate === "open" ? "button" : "div";
+                  return (
+                    <Row
+                      key={f.name}
+                      {...(gate === "open"
+                        ? {
+                            type: "button" as const,
+                            onClick: () => download(f.name),
+                            disabled: busy !== false,
+                            "aria-label": `Download ${f.name}`,
+                          }
+                        : {})}
                       style={{
-                        fontSize: 10,
-                        letterSpacing: "0.1em",
-                        color: "var(--muted)",
-                        border: "1px solid var(--hairline-3)",
-                        borderRadius: "var(--r-pill)",
-                        padding: "5px 11px",
-                        whiteSpace: "nowrap",
+                        borderRadius: "var(--r-card)",
+                        border: "1px solid var(--hairline)",
+                        background: "var(--surface-2)",
+                        padding: "18px 20px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 16,
+                        textAlign: "left",
+                        width: "100%",
+                        font: "inherit",
+                        color: "inherit",
+                        cursor: gate === "open" ? "pointer" : "default",
+                        opacity: busy !== false && !rowBusy ? 0.55 : 1,
+                        transition: "opacity var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease)",
                       }}
                     >
-                      {f.tag}
-                    </span>
-                  </div>
-                ))}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 0 }}>
+                        <span style={{ fontSize: 15, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {f.name}
+                        </span>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
+                          {rowBusy ? "PREPARING…" : f.meta}
+                        </span>
+                      </div>
+                      <span
+                        className="mono"
+                        style={{
+                          fontSize: 10,
+                          letterSpacing: "0.1em",
+                          color: "var(--muted)",
+                          border: "1px solid var(--hairline-3)",
+                          borderRadius: "var(--r-pill)",
+                          padding: "5px 11px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {gate === "open" ? (rowBusy ? "···" : "GET") : f.tag}
+                      </span>
+                    </Row>
+                  );
+                })}
               </section>
             ) : null}
           </div>
@@ -301,23 +319,40 @@ export default function ItemView({
                   ? "Every file, including the source. Yours to keep even if you cancel."
                   : gate === "needs-account"
                     ? "This one is free — it just needs an account so your downloads have somewhere to live."
-                    : "Download the scene, both integrations and every source file. $24 a month for the whole vault."}
+                    : `Download every source file. $${monthlyPrice} a month for the whole vault.`}
               </span>
 
               {gate === "open" ? (
-                <button type="button" className="btn btn--primary" onClick={download} disabled={busy} style={{ fontSize: 15, padding: "15px 22px" }}>
-                  {busy ? "Preparing…" : "Download"}
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  /* Wrapped, so the click event is not passed as a file name. */
+                  onClick={() => download()}
+                  disabled={busy !== false}
+                  style={{ fontSize: 15, padding: "15px 22px" }}
+                >
+                  {busy === true ? "Preparing…" : "Download"}
                 </button>
               ) : (
-                <Link data-nav href={unlockHref} className="btn btn--primary" style={{ fontSize: 15, padding: "15px 22px" }}>
+                <Link
+                  data-nav
+                  data-track="unlock_click"
+                  data-track-detail={`${gate}:${asset.slug}`}
+                  href={unlockHref}
+                  className="btn btn--primary"
+                  style={{ fontSize: 15, padding: "15px 22px" }}
+                >
                   {unlockLabel}
                 </Link>
               )}
 
               {viewer ? (
-                <button type="button" className="btn btn--quiet" onClick={toggleSave}>
-                  {saved ? "Saved — remove" : "Save for later"}
-                </button>
+                <SaveButton
+                  kind="asset"
+                  slug={asset.slug}
+                  saved={initiallySaved}
+                  signedIn={Boolean(viewer)}
+                />
               ) : (
                 <Link data-nav href={`/join?next=/item/${asset.slug}`} className="btn btn--quiet">
                   Save for later
@@ -410,13 +445,63 @@ export default function ItemView({
 /**
  * The prompt gate.
  *
- * Two real lines, then progressive blur — never a flat overlay. The character
- * count is true, and it is the only thing about the hidden text that reaches
- * the browser: the rest of the prompt is never sent until the gate opens.
+ * Locked: two real lines, then progressive blur — never a flat overlay. The
+ * character count is true, and it is the only thing about the hidden text that
+ * reaches the browser.
+ *
+ * Open: the prompt is fetched from /api/prompt and shown in full. This is the
+ * half that was missing — the gate refused correctly but granted nothing, so an
+ * unlimited subscriber saw the same two lines as a stranger. The fetch happens
+ * on mount rather than behind another button, because someone entitled to the
+ * prompt came here to read it.
  */
 function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unlockHref: string }) {
   const lines = (asset.promptPreview ?? "").split("\n").filter(Boolean);
   const hidden = Math.max(0, (asset.promptLength ?? 0) - (asset.promptPreview?.length ?? 0));
+
+  const [full, setFull] = useState<string | null>(null);
+  const [failed, setFailed] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (gate !== "open") {
+      /* Recorded where the visitor actually meets the paywall, which is the
+         number worth watching during validation. */
+      track("gate_hit", `${gate}:${asset.slug}`);
+      return;
+    }
+    let live = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/prompt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: asset.slug }),
+        });
+        const json = await res.json();
+        if (!live) return;
+        if (res.ok) setFull(json.prompt);
+        else setFailed(json.message ?? "Could not load the prompt.");
+      } catch {
+        if (live) setFailed("Network trouble loading the prompt.");
+      }
+    })();
+    return () => {
+      live = false;
+    };
+  }, [gate, asset.slug]);
+
+  async function copy() {
+    if (!full) return;
+    try {
+      await navigator.clipboard.writeText(full);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* Clipboard is permission-gated and can simply refuse. The text is on
+         screen and selectable either way, so this needs no error state. */
+    }
+  }
 
   return (
     <section
@@ -432,9 +517,21 @@ function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unl
         gap: 14,
       }}
     >
-      <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
-        The prompt
-      </span>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+        <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
+          The prompt
+        </span>
+        {gate === "open" && full && (
+          <button
+            type="button"
+            onClick={copy}
+            className="btn btn--ghost"
+            style={{ padding: "6px 12px", fontSize: 12 }}
+          >
+            {copied ? "Copied" : "Copy"}
+          </button>
+        )}
+      </div>
 
       <div
         className="mono"
@@ -453,9 +550,27 @@ function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unl
           letterSpacing: 0,
         }}
       >
-        {lines.map((l, i) => (
-          <span key={i}>{l}</span>
-        ))}
+        {/* Open and loaded: the whole thing, whitespace intact. */}
+        {gate === "open" && full ? (
+          <pre
+            style={{
+              margin: 0,
+              font: "inherit",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+              color: "var(--ink-2)",
+            }}
+          >
+            {full}
+          </pre>
+        ) : (
+          lines.map((l, i) => <span key={i}>{l}</span>)
+        )}
+
+        {gate === "open" && !full && !failed && (
+          <span style={{ color: "var(--faint)" }}>Loading the rest…</span>
+        )}
+        {gate === "open" && failed && <span style={{ color: "var(--faint)" }}>{failed}</span>}
 
         {gate !== "open" && hidden > 0 && (
           <>
@@ -490,7 +605,7 @@ function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unl
 
       <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
         {gate === "open"
-          ? "The full prompt ships in the download, alongside the output it produced."
+          ? `${(full ?? "").length.toLocaleString()} characters, yours to edit. It also ships in the download.`
           : "Two real lines, then the rest. The count is exact — there is something behind it."}
       </p>
     </section>

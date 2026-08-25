@@ -14,11 +14,19 @@ export const VARIANTS = ["a", "b"] as const;
 
 export const EVENT_NAMES = [
   "page_view",
-  "concept_click",
   "cta_click",
   "form_start",
   "form_submit",
   "qualified_submit",
+  /* Kiln. The four questions worth answering during validation: what do people
+     look for, what do they reach for, where does the paywall stop them, and
+     does being stopped send them to pricing or away. */
+  "search",
+  "download",
+  "gate_hit",
+  "unlock_click",
+  /* From the earlier demand test. Kept so old rows stay readable. */
+  "concept_click",
 ] as const;
 
 export type Role = (typeof ROLES)[number];

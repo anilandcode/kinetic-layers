@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Sora, Source_Serif_4, Geist_Mono } from "next/font/google";
 import KilnMotion from "@/components/kiln/KilnMotion";
+import Analytics from "@/components/kiln/Analytics";
 import "./globals.css";
 
 /**
@@ -31,7 +32,7 @@ const mono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Kiln — two hundred and forty things worth stealing",
+    default: "Kiln — a library worth stealing from",
     template: "%s — Kiln",
   },
   description:
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <KilnMotion />
+        <Analytics />
         {children}
       </body>
     </html>

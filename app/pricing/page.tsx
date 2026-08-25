@@ -4,10 +4,13 @@ import PricingBody from "@/components/kiln/PricingBody";
 import { getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kiln/viewer";
 
-export const metadata: Metadata = {
-  title: "Pricing",
-  description: "Twelve free forever. The other 228 for the price of one stock scene.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await getSettings();
+  return {
+    title: "Pricing",
+    description: `${s.freeThisMonth} free forever. The rest for $${s.monthlyPrice} a month.`,
+  };
+}
 
 export default async function Pricing() {
   const [settings, viewer] = await Promise.all([getSettings(), getViewer()]);

@@ -4,6 +4,7 @@ import { Footer, Nav } from "@/components/kiln/Chrome";
 import Library from "@/components/kiln/Library";
 import { getAssets, getDrops, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kiln/viewer";
+import { Spell } from "@/lib/kiln/words";
 import type { Drop, Mood, Shelf } from "@/lib/kiln/types";
 
 /**
@@ -74,7 +75,7 @@ export default async function HomeView({
                 textWrap: "pretty",
               }}
             >
-              Two hundred and forty things worth stealing.
+              {Spell(settings.totalAssets)} things worth stealing.
             </h1>
 
             <p style={{ fontSize: 18, lineHeight: 1.65, color: "var(--muted)", maxWidth: 480 }}>
@@ -154,7 +155,7 @@ export default async function HomeView({
                 textWrap: "pretty",
               }}
             >
-              Twelve are free. The other two hundred and twenty-eight are ${settings.monthlyPrice}.
+              ${settings.freeThisMonth} are free. The other ${Math.max(0, settings.totalAssets - settings.freeThisMonth)} are $${settings.monthlyPrice} a month.
             </h2>
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", maxWidth: 460 }}>
               One subscription, the whole vault, every source file. Cancel and keep everything you
@@ -196,7 +197,7 @@ function DropsSection({ drops }: { drops: Drop[] }) {
             Every Thursday
           </span>
           <h2 style={{ fontSize: "clamp(28px, 3.4vw, 40px)", lineHeight: 1.12, fontWeight: 500, letterSpacing: "-0.025em" }}>
-            Nine new assets a week, and nothing that didn&rsquo;t ship somewhere first.
+            New assets every week, and nothing that didn&rsquo;t ship somewhere first.
           </h2>
           <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--muted)", maxWidth: 440 }}>
             Each drop is built for a real brief, used on a real page, then cleaned up and filed. If it

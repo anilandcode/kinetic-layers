@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Asset } from "@/lib/kiln/types";
+import { track } from "@/lib/track";
 
 /**
  * ⌘K search over the real catalogue.
@@ -90,6 +91,10 @@ function Palette({ onClose }: { onClose: () => void }) {
         const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
         const json = await res.json();
         setHits(json.hits ?? []);
+        /* Recorded after the results land, so the detail carries what was
+           searched AND whether it found anything — a query returning nothing
+           is the more useful signal of the two. */
+        track("search", `${q}:${(json.hits ?? []).length}`);
         setState("done");
       } catch (err) {
         if ((err as Error).name !== "AbortError") setState("done");
