@@ -1,4 +1,4 @@
-import type { Asset, Mood, Shelf } from "./types";
+import type { Asset, Category, Mood, Shelf, Theme } from "./types";
 
 /**
  * Faceted counts for the library filters.
@@ -14,11 +14,13 @@ import type { Asset, Mood, Shelf } from "./types";
  * they do that we did not.
  */
 
-export type Filters = { shelf?: Shelf; mood?: Mood; freeOnly?: boolean };
+export type Filters = { shelf?: Shelf; mood?: Mood; category?: Category; theme?: Theme; freeOnly?: boolean };
 
 const matches = (a: Asset, f: Filters) =>
   (!f.shelf || a.shelf === f.shelf) &&
   (!f.mood || a.mood === f.mood) &&
+  (!f.category || a.category === f.category) &&
+  (!f.theme || a.theme === f.theme) &&
   (!f.freeOnly || a.free);
 
 export function applyFilters(all: Asset[], f: Filters): Asset[] {
@@ -28,6 +30,8 @@ export function applyFilters(all: Asset[], f: Filters): Asset[] {
 export type Facets = {
   shelf: Record<string, number>;
   mood: Record<string, number>;
+  category: Record<string, number>;
+  theme: Record<string, number>;
   free: number;
   /** Total with every current filter applied — what the grid actually shows. */
   matching: number;
@@ -38,6 +42,8 @@ export function countFacets(all: Asset[], f: Filters): Facets {
      so a chip's number answers "what would I get if I picked this instead". */
   const forShelf = all.filter((a) => matches(a, { ...f, shelf: undefined }));
   const forMood = all.filter((a) => matches(a, { ...f, mood: undefined }));
+  const forCategory = all.filter((a) => matches(a, { ...f, category: undefined }));
+  const forTheme = all.filter((a) => matches(a, { ...f, theme: undefined }));
   const forFree = all.filter((a) => matches(a, { ...f, freeOnly: false }));
 
   const tally = (rows: Asset[], key: (a: Asset) => string) =>
@@ -50,6 +56,11 @@ export function countFacets(all: Asset[], f: Filters): Facets {
   return {
     shelf: { All: forShelf.length, ...tally(forShelf, (a) => a.shelf) },
     mood: tally(forMood, (a) => a.mood),
+    /* Only values that actually occur are tallied, so the chip list is drawn
+       from the catalogue rather than from an aspirational enum — the same
+       reason DownloadFilter derives its options. */
+    category: tally(forCategory.filter((a) => a.category), (a) => a.category!),
+    theme: tally(forTheme.filter((a) => a.theme), (a) => a.theme!),
     free: forFree.filter((a) => a.free).length,
     matching: applyFilters(all, f).length,
   };

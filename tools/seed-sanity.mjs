@@ -32,22 +32,23 @@ const drops = [
 }));
 
 /* --- Assets ---------------------------------------------------------- */
+/* name, type, stack, shelf, mood, free, height, tint, category, theme */
 const raw = [
-  ["Volumetric Drift", "3D SCENE", "THREE.JS", "Motion", "Luxe", true, 230, "#1D2410"],
-  ["Editorial Landing 04", "TEMPLATE", "NEXT · TW", "Build", "Editorial", false, 300, "#242014"],
-  ["Cold Open", "PROMPT", "CLAUDE", "Build", "Technical", true, 170, "#10241A"],
-  ["Soft Static Field", "BACKGROUND", "WEBGL", "Motion", "Organic", false, 200, "#1A1D26"],
-  ["Brutal Grid Pack", "TEMPLATE", "ASTRO", "Build", "Brutalist", false, 260, "#26221A"],
-  ["Ash & Ember 24", "IMAGE PACK", "MIDJOURNEY", "Craft", "Luxe", false, 320, "#2A1C12"],
-  ["Research Swarm", "MCP / AGENT", "CLAUDE · MCP", "Build", "Technical", true, 180, "#141C24"],
-  ["Chrome Liquid", "3D SCENE", "R3F", "Motion", "Luxe", false, 280, "#1E1E24"],
-  ["Paper Grain LoRA", "LORA", "FLUX", "Craft", "Organic", false, 210, "#241F16"],
-  ["Slow Pan Loop", "VIDEO", "RUNWAY", "Motion", "Editorial", false, 250, "#161D18"],
-  ["Terminal Hero", "TEMPLATE", "NEXT · TW", "Build", "Technical", true, 190, "#131614"],
-  ["Warm Studio Set", "IMAGE PACK", "FLUX", "Craft", "Organic", false, 290, "#2A2318"],
-  ["Refactor Pass", "PROMPT", "CURSOR", "Build", "Technical", false, 165, "#1A1A1E"],
-  ["Playful Blocks", "BACKGROUND", "CSS", "Motion", "Playful", true, 220, "#20240F"],
-  ["Marble Depth", "3D SCENE", "THREE.JS", "Motion", "Luxe", false, 270, "#1C1A22"],
+  ["Volumetric Drift", "3D SCENE", "THREE.JS", "Motion", "Luxe", true, 230, "#1D2410", "Hero", "Dark"],
+  ["Editorial Landing 04", "TEMPLATE", "NEXT · TW", "Build", "Editorial", false, 300, "#242014", "Landing page", "Light"],
+  ["Cold Open", "PROMPT", "CLAUDE", "Build", "Technical", true, 170, "#10241A", "Hero", "Dark"],
+  ["Soft Static Field", "BACKGROUND", "WEBGL", "Motion", "Organic", false, 200, "#1A1D26", "Background", "Dark"],
+  ["Brutal Grid Pack", "TEMPLATE", "ASTRO", "Build", "Brutalist", false, 260, "#26221A", "Portfolio", "Light"],
+  ["Ash & Ember 24", "IMAGE PACK", "MIDJOURNEY", "Craft", "Luxe", false, 320, "#2A1C12", "Editorial", "Dark"],
+  ["Research Swarm", "MCP / AGENT", "CLAUDE · MCP", "Build", "Technical", true, 180, "#141C24", "Workflow", "Dark"],
+  ["Chrome Liquid", "3D SCENE", "R3F", "Motion", "Luxe", false, 280, "#1E1E24", "Hero", "Dark"],
+  ["Paper Grain LoRA", "LORA", "FLUX", "Craft", "Organic", false, 210, "#241F16", "Texture", "Light"],
+  ["Slow Pan Loop", "VIDEO", "RUNWAY", "Motion", "Editorial", false, 250, "#161D18", "Background", "Dark"],
+  ["Terminal Hero", "TEMPLATE", "NEXT · TW", "Build", "Technical", true, 190, "#131614", "SaaS", "Dark"],
+  ["Warm Studio Set", "IMAGE PACK", "FLUX", "Craft", "Organic", false, 290, "#2A2318", "Ecommerce", "Light"],
+  ["Refactor Pass", "PROMPT", "CURSOR", "Build", "Technical", false, 165, "#1A1A1E", "Workflow", "Dark"],
+  ["Playful Blocks", "BACKGROUND", "CSS", "Motion", "Playful", true, 220, "#20240F", "Background", "Light"],
+  ["Marble Depth", "3D SCENE", "THREE.JS", "Motion", "Luxe", false, 270, "#1C1A22", "Hero", "Dark"],
 ];
 
 const TAGLINE = {
@@ -93,7 +94,7 @@ const SHOTS = [
   ["Dust layer only", "#241F16"],
 ];
 
-const assets = raw.map(([name, type, stack, shelf, mood, free, h, tint]) => ({
+const assets = raw.map(([name, type, stack, shelf, mood, free, h, tint, category, theme], i) => ({
   _id: `asset-${slugify(name)}`,
   _type: "asset",
   name,
@@ -102,6 +103,8 @@ const assets = raw.map(([name, type, stack, shelf, mood, free, h, tint]) => ({
   stack,
   shelf,
   mood,
+  category,
+  theme,
   free,
   tagline: TAGLINE[type] ?? "Built for a real brief, shipped, then cleaned up and filed.",
   previewHeight: h,
@@ -144,8 +147,14 @@ const assets = raw.map(([name, type, stack, shelf, mood, free, h, tint]) => ({
       ],
     },
   ],
-  drop: { _type: "reference", _ref: drops[0]._id },
-  publishedAt: new Date("2026-08-20").toISOString(),
+  /* Spread across the three shipped drops rather than filing everything under
+     one. With all fifteen in a single drop, "From the same drop" was true but
+     told you nothing, and getRelated could not distinguish a sibling from a
+     stranger. The fourth drop is tagged SOON and deliberately holds nothing. */
+  drop: { _type: "reference", _ref: drops[i % 3]._id },
+  /* Staggered, so "newest" is a real ordering. Every asset previously shared
+     one timestamp, which left the sort arbitrary and stable only by accident. */
+  publishedAt: new Date(Date.UTC(2026, 7, 20) - i * 36e5 * 20).toISOString(),
 }));
 
 /* --- Collections ------------------------------------------------------ */

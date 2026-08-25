@@ -40,7 +40,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   return (
     <ItemView
       asset={asset}
-      related={related}
+      related={related.assets}
+      relatedReason={related.reason}
       viewer={viewer}
       gate={gateReason(viewer, asset)}
       saved={saved}

@@ -22,7 +22,7 @@ import type { Asset, Collection, Drop, Settings } from "@/lib/kiln/types";
  */
 const ASSET_CARD = groq`{
   "slug": slug.current,
-  name, type, stack, shelf, mood, free, tagline,
+  name, type, stack, shelf, mood, category, theme, free, tagline,
   "h": coalesce(previewHeight, 220),
   "g": coalesce(gradient, "linear-gradient(155deg,#1D2410,#0F0F0D 65%)"),
   poster, clip, aspect,
@@ -31,7 +31,7 @@ const ASSET_CARD = groq`{
 
 const ASSET_FULL = groq`{
   "slug": slug.current,
-  name, type, stack, shelf, mood, free, tagline, body,
+  name, type, stack, shelf, mood, category, theme, free, tagline, body,
   "h": coalesce(previewHeight, 220),
   "g": coalesce(gradient, "linear-gradient(155deg,#1D2410,#0F0F0D 65%)"),
   poster, clip, aspect,
@@ -81,13 +81,42 @@ export async function getAssetSlugs(): Promise<string[]> {
   return ask<string[]>([], groq`*[_type == "asset" && defined(slug.current)].slug.current`, {}, opts(["asset"]));
 }
 
-export async function getRelated(slug: string, limit = 4): Promise<Asset[]> {
-  return ask<Asset[]>(
-    [],
-    groq`*[_type == "asset" && slug.current != $slug] | order(publishedAt desc) [0...$limit] ${ASSET_CARD}`,
+export type Related = { assets: Asset[]; reason: "drop" | "shelf" | "newest" };
+
+/**
+ * Genuinely related assets.
+ *
+ * This used to be `*[slug.current != $slug] | order(publishedAt desc)[0...4]` —
+ * the four newest others, ignoring drop, collection, shelf and mood entirely,
+ * while the item page headed them "From the same drop". The query was fine; the
+ * claim was false.
+ *
+ * Now it prefers the same drop, falls back to the same shelf, and only then to
+ * newest — and reports WHICH, so the heading can say what is actually true
+ * rather than asserting a relationship that may not exist. One round trip:
+ * all three candidate sets come back together and the choice happens here.
+ */
+export async function getRelated(slug: string, limit = 4): Promise<Related> {
+  const r = await ask<{ drop: Asset[]; shelf: Asset[]; newest: Asset[] } | null>(
+    null,
+    groq`*[_type == "asset" && slug.current == $slug][0] {
+      "drop": *[_type == "asset" && slug.current != $slug && drop._ref == ^.drop._ref]
+        | order(publishedAt desc) [0...$limit] ${ASSET_CARD},
+      "shelf": *[_type == "asset" && slug.current != $slug && shelf == ^.shelf]
+        | order(publishedAt desc) [0...$limit] ${ASSET_CARD},
+      "newest": *[_type == "asset" && slug.current != $slug]
+        | order(publishedAt desc) [0...$limit] ${ASSET_CARD}
+    }`,
     { slug, limit },
-    opts(["asset"])
+    opts(["asset", `asset:${slug}`])
   );
+  if (!r) return { assets: [], reason: "newest" };
+
+  /* A single sibling is a thin claim to make a heading out of, so a drop or
+     shelf has to offer at least two before it earns the label. */
+  if (r.drop?.length >= 2) return { assets: r.drop, reason: "drop" };
+  if (r.shelf?.length >= 2) return { assets: r.shelf, reason: "shelf" };
+  return { assets: r.newest ?? [], reason: "newest" };
 }
 
 export async function getCollections(): Promise<Collection[]> {

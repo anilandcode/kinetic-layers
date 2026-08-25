@@ -7,6 +7,11 @@
  */
 
 export type Shelf = "Build" | "Motion" | "Craft";
+export type Theme = "Dark" | "Light";
+/** What the asset is FOR — the question a visitor arrives with. */
+export type Category =
+  | "Hero" | "Landing page" | "Portfolio" | "SaaS" | "Agency"
+  | "Ecommerce" | "Dashboard" | "Editorial" | "Background" | "Texture" | "Workflow";
 export type Mood = "Luxe" | "Technical" | "Editorial" | "Organic" | "Brutalist" | "Playful";
 
 export const SHELVES: Array<"All" | Shelf> = ["All", "Build", "Motion", "Craft"];
@@ -23,6 +28,8 @@ export type Asset = {
   stack: string;
   shelf: Shelf;
   mood: Mood;
+  category?: Category;
+  theme?: Theme;
   free: boolean;
   tagline?: string;
   /** Masonry height in px — the grid is deliberately ragged. */

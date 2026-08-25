@@ -15,6 +15,16 @@ import { defineField, defineType, type SchemaTypeDefinition } from "sanity";
 const SHELVES = ["Build", "Motion", "Craft"] as const;
 const MOODS = ["Luxe", "Technical", "Editorial", "Organic", "Brutalist", "Playful"] as const;
 
+/* What the asset is FOR, as opposed to what it is (`type`) or which shelf it
+   sits on. Both reference libraries lead with this — it is the question a
+   visitor actually arrives with. */
+const CATEGORIES = [
+  "Hero", "Landing page", "Portfolio", "SaaS", "Agency",
+  "Ecommerce", "Dashboard", "Editorial", "Background", "Texture", "Workflow",
+] as const;
+
+const THEMES = ["Dark", "Light"] as const;
+
 /**
  * Preview media is stored as a *path*, not an uploaded Sanity asset.
  *
@@ -121,6 +131,18 @@ const asset = defineType({
       type: "string",
       options: { list: [...MOODS] },
       validation: (r) => r.required(),
+    }),
+    defineField({
+      name: "category",
+      title: "Used for",
+      type: "string",
+      options: { list: [...CATEGORIES] },
+      description: "What a visitor came looking for. Drives the main filter row.",
+    }),
+    defineField({
+      name: "theme",
+      type: "string",
+      options: { list: [...THEMES] },
     }),
     defineField({
       name: "free",

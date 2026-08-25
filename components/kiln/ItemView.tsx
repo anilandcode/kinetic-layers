@@ -22,6 +22,7 @@ type Gate = "open" | "needs-account" | "needs-unlimited";
 export default function ItemView({
   asset,
   related,
+  relatedReason = "newest",
   viewer,
   gate,
   saved: initiallySaved,
@@ -29,6 +30,8 @@ export default function ItemView({
 }: {
   asset: Asset;
   related: Asset[];
+  /** Which relationship actually holds, so the heading can say the true one. */
+  relatedReason?: "drop" | "shelf" | "newest";
   viewer: Viewer | null;
   gate: Gate;
   saved: boolean;
@@ -423,7 +426,13 @@ export default function ItemView({
         {related.length > 0 && (
           <section data-reveal className="shell" style={{ paddingBlock: "64px 90px" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", paddingBottom: 20, gap: 20 }}>
-              <h2 style={{ fontSize: 26, fontWeight: 500, letterSpacing: "-0.02em" }}>From the same drop</h2>
+              <h2 style={{ fontSize: 26, fontWeight: 500, letterSpacing: "-0.02em" }}>
+                {relatedReason === "drop"
+                  ? "From the same drop"
+                  : relatedReason === "shelf"
+                    ? `More from the ${asset.shelf} shelf`
+                    : "Recently added"}
+              </h2>
               <Link data-nav href="/collections" className="mono" style={{ fontSize: 10 }}>
                 See the collections
               </Link>

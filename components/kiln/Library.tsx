@@ -44,7 +44,14 @@ export default function Library({
 
   const shelf = (params.get("shelf") ?? "All") as "All" | Shelf;
   const mood = params.get("mood") as Mood | null;
+  const category = params.get("category");
+  const theme = params.get("theme");
   const freeOnly = params.get("free") === "1";
+
+  /* Drawn from what the catalogue actually holds, in a stable order, so no
+     chip is ever offered for a category nothing has been filed under. */
+  const categories = Object.keys(facets.category).sort();
+  const themes = Object.keys(facets.theme).sort();
 
   function setParam(key: string, value: string | null) {
     const next = new URLSearchParams(params.toString());
@@ -89,6 +96,60 @@ export default function Library({
           borderBottom: "1px solid var(--hairline)",
         }}
       >
+        {/* "Used for" leads, because it is the question a visitor arrives
+            with — both reference libraries put it first. It only draws when
+            there is more than one answer to choose between. */}
+        {categories.length > 1 && (
+          <div
+            className="shell"
+            style={{ paddingTop: 12, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}
+          >
+            <div role="group" aria-label="Used for" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button
+                type="button"
+                className="pill"
+                aria-pressed={!category}
+                onClick={() => setParam("category", null)}
+              >
+                All uses
+                <Count n={facets.matching} />
+              </button>
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  className="pill"
+                  aria-pressed={category === c}
+                  onClick={() => setParam("category", category === c ? null : c)}
+                >
+                  {c}
+                  <Count n={facets.category[c] ?? 0} />
+                </button>
+              ))}
+            </div>
+
+            {themes.length > 1 && (
+              <>
+                <span aria-hidden="true" style={{ width: 1, height: 22, background: "var(--hairline-3)", margin: "0 6px" }} />
+                <div role="group" aria-label="Theme" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {themes.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      className="pill pill--muted"
+                      aria-pressed={theme === t}
+                      onClick={() => setParam("theme", theme === t ? null : t)}
+                    >
+                      {t}
+                      <Count n={facets.theme[t] ?? 0} />
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         <div
           className="shell"
           style={{ paddingBlock: 14, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}
