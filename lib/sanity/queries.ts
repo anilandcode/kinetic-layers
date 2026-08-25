@@ -17,7 +17,7 @@ const ASSET_CARD = groq`{
   name, type, stack, shelf, mood, free, tagline,
   "h": coalesce(previewHeight, 220),
   "g": coalesce(gradient, "linear-gradient(155deg,#1D2410,#0F0F0D 65%)"),
-  "cover": cover.asset->url
+  poster, clip, aspect
 }`;
 
 const ASSET_FULL = groq`{
@@ -25,8 +25,8 @@ const ASSET_FULL = groq`{
   name, type, stack, shelf, mood, free, tagline, body,
   "h": coalesce(previewHeight, 220),
   "g": coalesce(gradient, "linear-gradient(155deg,#1D2410,#0F0F0D 65%)"),
-  "cover": cover.asset->url,
-  "shots": coalesce(shots[]{ label, gradient, "image": image.asset->url }, []),
+  poster, clip, aspect,
+  "shots": coalesce(shots[]{ label, gradient, poster, clip }, []),
   "specs": coalesce(specs[]{ k, v }, []),
   "files": coalesce(files[]{ name, meta, tag, bytes }, []),
   "promptLength": length(coalesce(promptBody, "")),
@@ -71,7 +71,7 @@ export async function getCollections(): Promise<Collection[]> {
       "tags": coalesce(tags, []),
       "h": coalesce(previewHeight, 230),
       "g": coalesce(gradient, "linear-gradient(150deg,#242014,#0F0F0D 62%)"),
-      "cover": cover.asset->url,
+      poster, clip, aspect,
       "items": count(assets),
       "free": count(assets[]->[free == true])
     }`,
@@ -87,7 +87,7 @@ export async function getCollection(slug: string): Promise<(Collection & { asset
       "tags": coalesce(tags, []),
       "h": coalesce(previewHeight, 230),
       "g": coalesce(gradient, "linear-gradient(150deg,#242014,#0F0F0D 62%)"),
-      "cover": cover.asset->url,
+      poster, clip, aspect,
       "items": count(assets),
       "free": count(assets[]->[free == true]),
       "assets": coalesce(assets[]-> ${ASSET_CARD}, [])

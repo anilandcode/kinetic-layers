@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Asset } from "@/lib/kiln/types";
+import PreviewMedia from "./PreviewMedia";
 
 /**
  * The atom of the whole product.
@@ -36,7 +37,15 @@ export default function AssetCard({
           background: asset.g,
         }}
       >
-        <div data-preview-inner style={{ width: "100%", height: "100%", background: asset.g }} />
+        <div data-preview-inner style={{ width: "100%", height: "100%" }}>
+          <PreviewMedia
+            gradient={asset.g}
+            poster={asset.poster}
+            clip={asset.clip}
+            alt=""
+            style={{ width: "100%", height: "100%" }}
+          />
+        </div>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "16px 4px 0" }}>

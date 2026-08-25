@@ -487,3 +487,40 @@ body:has(> .kiln-light) { background: #F6F4EE; color-scheme: light; }
   [data-hide-small] { display: none !important; }
   .site-nav { gap: 12px !important; }
 }
+
+/* ---------------------------------------------------------------------------
+   Preview media — components/kiln/PreviewMedia.tsx
+
+   The gradient is the element's own background, so it paints on the first
+   frame with no request. Poster and clip stack on top of it absolutely, which
+   means the box is sized by its container and nothing reflows when either one
+   arrives late.
+--------------------------------------------------------------------------- */
+.kiln-media {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.kiln-media__img,
+.kiln-media__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* The clip fades up over its own poster rather than cutting, so the swap at
+   the moment of hover is not a flash. It starts transparent because the first
+   decoded frame can land before playback actually begins. */
+.kiln-media__video {
+  opacity: 0;
+  transition: opacity var(--t-mid) var(--ease);
+}
+.kiln-media__video[data-playing="true"] { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kiln-media__video { transition: none; }
+}

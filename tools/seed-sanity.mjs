@@ -106,11 +106,19 @@ const assets = raw.map(([name, type, stack, shelf, mood, free, h, tint]) => ({
   tagline: TAGLINE[type] ?? "Built for a real brief, shipped, then cleaned up and filed.",
   previewHeight: h,
   gradient: `linear-gradient(155deg,${tint},#0F0F0D 62%)`,
+  /* Paths, not URLs — lib/kiln/media.ts resolves them against whichever host
+     NEXT_PUBLIC_MEDIA_BASE names. tools/make-dummy-media.mjs writes exactly
+     these names, so the two stay in step without a manifest. */
+  poster: `${slugify(name)}/card.webp`,
+  clip: `${slugify(name)}/card.mp4`,
+  aspect: 1.6,
   shots: SHOTS.map(([label, g], i) => ({
     _key: `shot-${i}`,
     _type: "shot",
     label,
     gradient: `linear-gradient(150deg,${g},#0F0F0D 64%)`,
+    poster: `${slugify(name)}/shot-${i + 1}.webp`,
+    clip: `${slugify(name)}/shot-${i + 1}.mp4`,
   })),
   specs: [
     { _key: "s1", _type: "specRow", k: "Type", v: type },
@@ -159,6 +167,9 @@ const collections = [
   tags,
   previewHeight: h,
   gradient: `linear-gradient(150deg,${tint},#0F0F0D 62%)`,
+  poster: `collections/${slugify(name)}/card.webp`,
+  clip: `collections/${slugify(name)}/card.mp4`,
+  aspect: 1.6,
   assets: members.map((m, i) => ({
     _key: `a-${i}`,
     _type: "reference",

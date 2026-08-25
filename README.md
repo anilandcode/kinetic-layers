@@ -12,13 +12,28 @@ entitlement and files.
 The split matters, and it is not arbitrary:
 
 ```
-Sanity          the catalogue — assets, collections, drops, site numbers.
-                Public dataset, edited in the Studio, no token needed to read.
+Sanity          the catalogue — assets, collections, drops, site numbers,
+                and the *paths* of preview media. No binaries.
+
+Cloudflare R2   preview posters and looping clips. PUBLIC bucket.
+                Zero egress cost, which is the whole reason it is here.
 
 Supabase auth   users, sessions, OAuth.
 Supabase db     profiles, entitlements, downloads, saved items.
 Supabase store  the actual downloadable files. PRIVATE bucket, signed URLs.
 ```
+
+**Why previews are on R2 and not a media SaaS.** Previews are served on every
+visit, so bandwidth is the recurring cost, not storage. R2 charges nothing for
+egress at any volume; a credit-pooled free tier (Cloudinary and friends) draws
+storage, bandwidth and transforms from one budget, so traffic competes with the
+library for the same allowance — and on the free plan the penalty for running
+out is the account being disabled, not a bill. Both motionsites.ai and
+getlayers.ai serve from Cloudflare for the same reason.
+
+Derivatives are baked once at upload with ffmpeg, so there is no transformation
+CDN in the request path. `lib/kiln/media.ts` resolves a stored path against
+`NEXT_PUBLIC_MEDIA_BASE`; moving hosts is one environment variable.
 
 **Why the files are not in Sanity.** Sanity's asset CDN is public by URL. The
 paywall is the product, so a gated file has to sit behind something that can
@@ -59,6 +74,9 @@ npm run dev
 | `npm run studio` | Sanity Studio, locally |
 | `npm run studio:deploy` | Publish the Studio to `<project>.sanity.studio` |
 | `npm run seed` | Re-seed the catalogue from `tools/seed-sanity.mjs` |
+| `npm run media` | Generate dummy posters + clips into `public/preview/` |
+| `npm run media:upload` | Mirror `public/preview/` into the R2 bucket |
+| `node --env-file=.env.local tools/qa-personas.mjs --create` | Free + unlimited test accounts |
 | `node tools/seed-storage.mjs` | Put placeholder files in the private bucket |
 | `node tools/apply-migration.mjs <file.sql>` | Apply a migration directly over Postgres |
 
@@ -71,7 +89,7 @@ problems and the app keeps only the read client.
 
 | Variable | Notes |
 | --- | --- |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | `b0s07szo` |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | `8vxxthrc` |
 | `NEXT_PUBLIC_SANITY_DATASET` | `production` |
 | `SANITY_REVALIDATE_SECRET` | Shared with the Sanity webhook |
 | `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
@@ -80,6 +98,8 @@ problems and the app keeps only the read client.
 | `SUPABASE_DB_PASSWORD` | Only for `tools/apply-migration.mjs` |
 | `KILN_ADMIN_TOKEN` | Guards `/api/admin/grant` |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Offered when a form fails to send |
+| `NEXT_PUBLIC_MEDIA_BASE` | `/preview` locally; the R2 public URL in production |
+| `R2_*` | Upload script only. The app never talks to R2, it only builds URLs |
 
 Without the Supabase keys the site still renders: the catalogue is public, and
 every auth path reports that accounts are not connected rather than throwing.
@@ -98,16 +118,47 @@ of a user.
    download path runs end to end. Replace the object at the same path in the
    `assets` bucket and the site serves the real thing with no code change.
 
+## How previews load
+
+Grid cards render a gradient immediately, a lazy WebP poster on top, and a
+`<video>` with **no `src` at all** until someone reaches for it. On the item
+page one clip plays on purpose, which is also the only way a phone sees motion —
+the grid withholds video from coarse pointers entirely, and from anyone who
+asked for reduced motion.
+
+Measured on the built site, not assumed:
+
+```
+/ at 1600      15 cards · 15 videos, all with an empty src · 0 video requests
+               15 posters · 312 KB total page · 0 external requests
+hover one card exactly 1 video request, that card's clip, then it plays
+/ at 375       0 <video> elements rendered at all · 0 video requests
+/item/[slug]   hero clip autoplays · 4 real thumbnails · 413 KB
+```
+
 ## Verified
 
-Build clean, 36 routes. Across `/`, `/light`, `/item/[slug]`, `/collections`,
-`/collections/[slug]`, `/account`, `/join`, `/pricing`, `/plan` and
-`/design-system`, at 375 and 1600: zero contrast failures, no horizontal
-overflow, no unreachable controls, zero external requests.
+Build clean, 36 routes. Across `/`, `/light`, `/collections`,
+`/collections/[slug]`, `/item/[slug]`, `/account`, `/join`, `/pricing`, `/plan`
+and `/design-system`, at 375 and 1600: zero contrast failures, no horizontal
+overflow, no image missing an `alt`, zero external requests.
 
-The gate was tested by calling `/api/download` directly, not by looking at the
-UI: free and paid assets both refused without a session, unknown slug 404s, and
-an unsigned read of the Storage bucket is rejected.
+The gate was tested by calling `/api/download` as each persona, not by looking
+at the UI:
+
+```
+                     anonymous   free plan   unlimited
+paid asset            401         403         200 signed
+free asset            401         200 signed  200 signed
+unknown slug          404         404         404
+```
+
+The signed URL returns bytes; the same object path without the token is
+refused with 400. RLS was checked by signing in as one user through the
+publishable key and reading every table: the service key sees both users'
+rows, the signed-in user sees only their own, naming the other user's id
+returns nothing, and a self-upgrade `update` on `entitlements` changes no rows.
+
 
 ## Archive
 

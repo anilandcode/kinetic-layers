@@ -16,6 +16,10 @@ next-env.d.ts
 .env
 .env*.local
 .env.production
+# Backups of the above are still secrets — .env*.local does not catch
+# ".env.local.bak", and a stray copy is the easiest way to leak a key.
+.env*.bak
+*.env.bak
 
 # vercel
 .vercel
@@ -36,3 +40,6 @@ yarn-error.log*
 
 # supabase cli scratch state — machine-local, rewritten on every link
 supabase/.temp/
+
+# Generated preview media — rebuild with tools/make-dummy-media.mjs
+public/preview/

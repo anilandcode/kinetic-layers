@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Footer, Nav } from "./Chrome";
 import AssetCard from "./AssetCard";
 import type { Asset, Viewer } from "@/lib/kiln/types";
+import PreviewMedia from "./PreviewMedia";
 
 /**
  * Item page.
@@ -50,7 +51,7 @@ export default function ItemView({
 
   const shots = asset.shots?.length
     ? asset.shots
-    : [{ label: "Preview", gradient: asset.g, image: undefined }];
+    : [{ label: "Preview", gradient: asset.g, poster: asset.poster, clip: asset.clip }];
   const current = shots[Math.min(shot, shots.length - 1)];
 
   async function download() {
@@ -131,24 +132,23 @@ export default function ItemView({
           {/* --- Gallery --- */}
           <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
             <div data-hero style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div
+              <PreviewMedia
+                key={current.label}
                 id="shot"
+                gradient={current.gradient ?? asset.g}
+                poster={current.poster}
+                clip={current.clip}
+                alt={`${asset.name} — ${current.label}`}
+                /* One clip, on a page the visitor navigated to on purpose.
+                   This is also the only way a phone ever sees motion, since
+                   the grid deliberately withholds it from coarse pointers. */
+                play="auto"
+                priority
                 style={{
                   height: 520,
                   borderRadius: "var(--r-card)",
-                  overflow: "hidden",
-                  background: current.image ? undefined : current.gradient ?? asset.g,
-                  position: "relative",
                 }}
               >
-                {current.image && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={current.image}
-                    alt={`${asset.name} — ${current.label}`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                )}
                 <span
                   className="mono"
                   style={{
@@ -167,7 +167,7 @@ export default function ItemView({
                 >
                   {current.label}
                 </span>
-              </div>
+              </PreviewMedia>
 
               {shots.length > 1 && (
                 <div role="group" aria-label="Preview shots" style={{ display: "flex", gap: 10 }}>
@@ -183,13 +183,22 @@ export default function ItemView({
                         height: 74,
                         borderRadius: "var(--r-inner)",
                         cursor: "pointer",
+                        padding: 0,
                         background: s.gradient ?? asset.g,
                         border: 0,
                         outline: `1px solid ${i === shot ? "rgba(185,206,149,0.55)" : "transparent"}`,
                         outlineOffset: 2,
                         transition: "outline-color var(--t-mid) var(--ease)",
+                        overflow: "hidden",
                       }}
-                    />
+                    >
+                      <PreviewMedia
+                        gradient={s.gradient ?? asset.g}
+                        poster={s.poster}
+                        alt=""
+                        style={{ width: "100%", height: "100%", borderRadius: "inherit" }}
+                      />
+                    </button>
                   ))}
                 </div>
               )}

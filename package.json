@@ -11,7 +11,9 @@
     "readout": "node tools/readout.mjs",
     "studio": "sanity dev",
     "studio:deploy": "sanity deploy",
-    "seed": "node tools/seed-sanity.mjs /tmp/kiln-seed.ndjson && sanity dataset import /tmp/kiln-seed.ndjson production --replace"
+    "seed": "node tools/seed-sanity.mjs /tmp/kiln-seed.ndjson && sanity dataset import /tmp/kiln-seed.ndjson production --replace",
+    "media": "node --env-file=.env.local tools/make-dummy-media.mjs",
+    "media:upload": "node --env-file=.env.local tools/upload-r2.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -25,13 +27,14 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1117.0",
+    "@sanity/vision": "^4.22.1",
     "@types/node": "^22.10.7",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "pg": "^8.23.0",
-    "typescript": "^5.7.3",
     "sanity": "^4.22.1",
-    "@sanity/vision": "^4.22.1",
-    "styled-components": "^6.5.3"
+    "styled-components": "^6.5.3",
+    "typescript": "^5.7.3"
   }
 }

@@ -12,7 +12,7 @@ export type Mood = "Luxe" | "Technical" | "Editorial" | "Organic" | "Brutalist" 
 export const SHELVES: Array<"All" | Shelf> = ["All", "Build", "Motion", "Craft"];
 export const MOODS: Mood[] = ["Luxe", "Technical", "Editorial", "Organic", "Brutalist", "Playful"];
 
-export type Shot = { label: string; gradient?: string; image?: string };
+export type Shot = { label: string; gradient?: string; poster?: string; clip?: string };
 export type SpecRow = { k: string; v: string };
 export type FileEntry = { name: string; meta?: string; tag?: string; bytes?: number };
 
@@ -27,9 +27,14 @@ export type Asset = {
   tagline?: string;
   /** Masonry height in px — the grid is deliberately ragged. */
   h: number;
-  /** Preview fill, standing in until a real render exists. */
+  /** Preview fill. Paints instantly, and is the fallback when there is no render. */
   g: string;
-  cover?: string;
+  /** Still frame, path relative to NEXT_PUBLIC_MEDIA_BASE. */
+  poster?: string;
+  /** Looping clip, attached on intent rather than on load. */
+  clip?: string;
+  /** width/height of the media, so the card reserves the right box. */
+  aspect?: number;
   body?: unknown;
   shots?: Shot[];
   specs?: SpecRow[];
@@ -49,7 +54,9 @@ export type Collection = {
   tags: string[];
   h: number;
   g: string;
-  cover?: string;
+  poster?: string;
+  clip?: string;
+  aspect?: number;
   items: number;
   free: number;
 };

@@ -5,6 +5,7 @@ import CollectionFilter from "@/components/kiln/CollectionFilter";
 import { getCollections, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kiln/viewer";
 import type { Shelf } from "@/lib/kiln/types";
+import PreviewMedia from "@/components/kiln/PreviewMedia";
 
 export const metadata: Metadata = {
   title: "Collections",
@@ -66,7 +67,9 @@ export default async function Collections({
           {list.map((c) => (
             <Link data-nav data-card data-reveal key={c.slug} href={`/collections/${c.slug}`} className="kiln-card" aria-label={`${c.name} — ${c.items} items`}>
               <div style={{ height: c.h, borderRadius: "var(--r-inner)", overflow: "hidden" }}>
-                <div data-preview-inner style={{ width: "100%", height: "100%", background: c.g }} />
+                <div data-preview-inner style={{ width: "100%", height: "100%" }}>
+                  <PreviewMedia gradient={c.g} poster={c.poster} clip={c.clip} alt="" style={{ width: "100%", height: "100%" }} />
+                </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "16px 4px 0" }}>
                 <span style={{ fontSize: 19, fontWeight: 500, letterSpacing: "-0.015em", color: "var(--ink)" }}>{c.name}</span>
