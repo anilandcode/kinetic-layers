@@ -18,7 +18,7 @@
  *   node --env-file=.env.local tools/make-dummy-media.mjs
  */
 import { execFile } from "node:child_process";
-import { mkdir, rm, readdir, stat, unlink } from "node:fs/promises";
+import { mkdir, rm, readdir, stat, unlink, writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import path from "node:path";
 import sharp from "sharp";
@@ -114,6 +114,14 @@ const main = async () => {
     }
     process.stdout.write(".");
   }
+
+  /* Pages reads this at deploy time. Harmless anywhere else — R2 and Sanity
+     just see one more small file they never serve. */
+  await writeFile(
+    path.join(OUT, "_headers"),
+    "/*\n  Cache-Control: public, max-age=31536000, immutable\n" +
+      "  Access-Control-Allow-Origin: *\n  X-Content-Type-Options: nosniff\n"
+  );
 
   let bytes = 0;
   const walk = async (d) => {

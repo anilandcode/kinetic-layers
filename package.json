@@ -13,7 +13,8 @@
     "studio:deploy": "sanity deploy",
     "seed": "node tools/seed-sanity.mjs /tmp/kiln-seed.ndjson && sanity dataset import /tmp/kiln-seed.ndjson production --replace",
     "media": "node --env-file=.env.local tools/make-dummy-media.mjs",
-    "media:upload": "node --env-file=.env.local tools/upload-r2.mjs"
+    "media:upload": "node --env-file=.env.local tools/upload-r2.mjs",
+    "media:deploy": "wrangler pages deploy public/preview --project-name kiln-media --branch main --commit-dirty=true"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

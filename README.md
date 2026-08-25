@@ -15,15 +15,23 @@ The split matters, and it is not arbitrary:
 Sanity          the catalogue — assets, collections, drops, site numbers,
                 and the *paths* of preview media. No binaries.
 
-Cloudflare R2   preview posters and looping clips. PUBLIC bucket.
-                Zero egress cost, which is the whole reason it is here.
+Cloudflare      preview posters and looping clips, on Pages at
+Pages           kiln-media.pages.dev. Public, unlimited bandwidth, free.
 
 Supabase auth   users, sessions, OAuth.
 Supabase db     profiles, entitlements, downloads, saved items.
 Supabase store  the actual downloadable files. PRIVATE bucket, signed URLs.
 ```
 
-**Why previews are on R2 and not a media SaaS.** Previews are served on every
+**Why Pages and not R2.** R2 was the first choice and is still the better
+long-term home — it is object storage, so uploads are per-object rather than a
+folder redeploy. But enabling R2 requires a payment method on the account even
+for the free tier, and Pages does not. Pages free serves unlimited bandwidth
+from the same CDN, caps at 20,000 files and 25 MiB each (this catalogue is 134
+files at ~30 KB), and needs no card. `NEXT_PUBLIC_MEDIA_BASE` is the only thing
+that would change if you move to R2 later.
+
+**Why not a media SaaS.** Previews are served on every
 visit, so bandwidth is the recurring cost, not storage. R2 charges nothing for
 egress at any volume; a credit-pooled free tier (Cloudinary and friends) draws
 storage, bandwidth and transforms from one budget, so traffic competes with the
@@ -75,7 +83,8 @@ npm run dev
 | `npm run studio:deploy` | Publish the Studio to `<project>.sanity.studio` |
 | `npm run seed` | Re-seed the catalogue from `tools/seed-sanity.mjs` |
 | `npm run media` | Generate dummy posters + clips into `public/preview/` |
-| `npm run media:upload` | Mirror `public/preview/` into the R2 bucket |
+| `npm run media:deploy` | Push `public/preview/` to Cloudflare Pages |
+| `npm run media:upload` | Mirror `public/preview/` into an R2 bucket (unused) |
 | `node --env-file=.env.local tools/qa-personas.mjs --create` | Free + unlimited test accounts |
 | `node tools/seed-storage.mjs` | Put placeholder files in the private bucket |
 | `node tools/apply-migration.mjs <file.sql>` | Apply a migration directly over Postgres |
@@ -98,7 +107,7 @@ problems and the app keeps only the read client.
 | `SUPABASE_DB_PASSWORD` | Only for `tools/apply-migration.mjs` |
 | `KILN_ADMIN_TOKEN` | Guards `/api/admin/grant` |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Offered when a form fails to send |
-| `NEXT_PUBLIC_MEDIA_BASE` | `/preview` locally; the R2 public URL in production |
+| `NEXT_PUBLIC_MEDIA_BASE` | `https://kiln-media.pages.dev`. Use `/preview` to serve the local folder instead |
 | `R2_*` | Upload script only. The app never talks to R2, it only builds URLs |
 
 Without the Supabase keys the site still renders: the catalogue is public, and
@@ -130,7 +139,8 @@ Measured on the built site, not assumed:
 
 ```
 / at 1600      15 cards · 15 videos, all with an empty src · 0 video requests
-               15 posters · 312 KB total page · 0 external requests
+               15 posters, all from kiln-media.pages.dev · 267 KB total page
+               0 requests to the local /preview folder — genuinely on the CDN
 hover one card exactly 1 video request, that card's clip, then it plays
 / at 375       0 <video> elements rendered at all · 0 video requests
 /item/[slug]   hero clip autoplays · 4 real thumbnails · 413 KB
