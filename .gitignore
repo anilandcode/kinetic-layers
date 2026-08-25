@@ -43,3 +43,12 @@ supabase/.temp/
 
 # Generated preview media — rebuild with tools/make-dummy-media.mjs
 public/preview/
+
+# `vercel link` appends a blanket `.env*` here, which also swallows
+# .env.example — the one file that tells a new clone which variables exist.
+# Ignore the real ones by name and keep the example visible.
+.env*
+!.env.example
+
+# Vercel project link (contains project and org ids, not secrets, but local).
+.vercel
