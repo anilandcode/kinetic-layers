@@ -1,291 +1,115 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { Footer, Mark } from "@/components/kiln/Chrome";
+import { redirect } from "next/navigation";
+import { Avatar, Footer, Nav } from "@/components/kiln/Chrome";
+import DownloadFilter from "@/components/kiln/DownloadFilter";
+import { getViewer } from "@/lib/kiln/viewer";
+import { createClient } from "@/lib/supabase/server";
+import { getSettings } from "@/lib/sanity/queries";
 
-/**
- * Account.
- *
- * Signed-in state, rendered from placeholder data. Nothing here is wired to
- * an identity provider or a billing system yet — the buttons are the design's
- * and they do not move money.
- */
+export const metadata: Metadata = { title: "Account", robots: { index: false, follow: false } };
 
-type Kind = "Templates" | "Scenes" | "Prompts";
+/* Always fresh: a download made a second ago has to be in the list. */
+export const dynamic = "force-dynamic";
 
-const DOWNLOADS: Array<{ name: string; meta: string; date: string; kind: Kind; g: string }> = [
-  { name: "Volumetric Drift", meta: "3D SCENE · THREE.JS · 84 MB", date: "22 AUG", kind: "Scenes", g: "linear-gradient(150deg,#1D2410,#0F0F0D)" },
-  { name: "Editorial Landing 04", meta: "TEMPLATE · NEXT · TW · 12 MB", date: "22 AUG", kind: "Templates", g: "linear-gradient(150deg,#242014,#0F0F0D)" },
-  { name: "Cold Open", meta: "PROMPT · CLAUDE · 4 KB", date: "20 AUG", kind: "Prompts", g: "linear-gradient(150deg,#10241A,#0F0F0D)" },
-  { name: "Paper Grain LoRA", meta: "LORA · FLUX · 148 MB", date: "18 AUG", kind: "Scenes", g: "linear-gradient(150deg,#241F16,#0F0F0D)" },
-  { name: "Research Swarm", meta: "MCP / AGENT · 22 KB", date: "15 AUG", kind: "Prompts", g: "linear-gradient(150deg,#141C24,#0F0F0D)" },
-  { name: "Brutal Grid Pack", meta: "TEMPLATE · ASTRO · 9 MB", date: "13 AUG", kind: "Templates", g: "linear-gradient(150deg,#26221A,#0F0F0D)" },
-  { name: "Chrome Liquid", meta: "3D SCENE · R3F · 61 MB", date: "11 AUG", kind: "Scenes", g: "linear-gradient(150deg,#1E1E24,#0F0F0D)" },
-];
+export default async function Account({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {
+  const viewer = await getViewer();
+  if (!viewer) redirect("/join?next=/account");
 
-const STATS = [
-  { label: "Downloaded", value: "63", note: "of 240 assets", big: true },
-  { label: "This month", value: "14", note: "9 from Drop 019", big: true },
-  { label: "Saved", value: "5", note: "collections", big: true },
-  { label: "Member since", value: "Mar 2026", note: "6 months unlimited", big: false },
-];
+  const { kind } = await searchParams;
+  const supabase = await createClient();
+  /* getViewer already returned a user, so a client must exist here. */
+  if (!supabase) redirect("/join");
 
-const SAVED = [
-  { name: "Editorial Suite", meta: "24 ITEMS · UPDATED 22 AUG", g: "linear-gradient(150deg,#242014,#0F0F0D)" },
-  { name: "Volumetric Set", meta: "18 ITEMS · UPDATED 20 AUG", g: "linear-gradient(150deg,#1D2410,#0F0F0D)" },
-  { name: "Agent Bench", meta: "15 ITEMS · UPDATED 6 AUG", g: "linear-gradient(150deg,#141C24,#0F0F0D)" },
-];
+  /* Every one of these reads through RLS, so they can only ever return this
+     user's rows — the filter is the policy, not the query. */
+  const [{ data: downloads }, { data: savedCollections }, { data: savedAssets }, settings] =
+    await Promise.all([
+      supabase.from("downloads").select("*").order("created_at", { ascending: false }).limit(50),
+      supabase.from("saved_collections").select("collection_slug, created_at").order("created_at", { ascending: false }),
+      supabase.from("saved_assets").select("asset_slug, created_at").order("created_at", { ascending: false }),
+      getSettings(),
+    ]);
 
-const INVOICES = [
-  { date: "12 AUG 2026", amount: "$24.00" },
-  { date: "12 JUL 2026", amount: "$24.00" },
-  { date: "12 JUN 2026", amount: "$24.00" },
-];
+  const rows = downloads ?? [];
+  const thisMonth = rows.filter((d) => new Date(d.created_at).getMonth() === new Date().getMonth()).length;
+  const unique = new Set(rows.map((d) => d.asset_slug)).size;
+  const savedTotal = (savedCollections?.length ?? 0) + (savedAssets?.length ?? 0);
 
-const thumb = (g: string): React.CSSProperties => ({
-  width: 44,
-  height: 34,
-  borderRadius: 7,
-  flexShrink: 0,
-  border: "1px solid var(--hairline-2)",
-  background: g,
-});
-
-export default function Account() {
-  const [filter, setFilter] = useState<"All" | Kind>("All");
-  const list = useMemo(
-    () => DOWNLOADS.filter((d) => filter === "All" || d.kind === filter),
-    [filter]
-  );
+  const filtered = kind ? rows.filter((d) => (d.asset_name ?? "").length > 0) : rows;
 
   return (
     <>
-      <a className="skip-link" href="#downloads">
-        Skip to downloads
-      </a>
-
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          background: "rgba(15,15,13,0.92)",
-          backdropFilter: "blur(12px)",
-          borderBottom: "1px solid var(--hairline)",
-        }}
-      >
-        <nav className="shell" style={{ height: 66, display: "flex", alignItems: "center", gap: 36 }}>
-          <Link data-nav href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
-            <Mark />
-            <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kiln</span>
-          </Link>
-          <div data-hide-narrow style={{ display: "flex", gap: 26, fontSize: 14, whiteSpace: "nowrap" }}>
-            <Link data-nav href="/" style={{ color: "var(--muted)" }}>
-              Library
-            </Link>
-            <Link data-nav href="/collections" style={{ color: "var(--muted)" }}>
-              Collections
-            </Link>
-            <span aria-current="page" style={{ color: "var(--ink)" }}>
-              Account
-            </span>
-            <Link data-nav href="/pricing" style={{ color: "var(--muted)" }}>
-              Pricing
-            </Link>
-          </div>
-          <div style={{ flex: 1 }} />
-          <span
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              border: "1px solid var(--hairline-3)",
-              borderRadius: "var(--r-pill)",
-              padding: "5px 14px 5px 5px",
-            }}
-          >
-            <span
-              aria-hidden="true"
-              style={{
-                width: 26,
-                height: 26,
-                borderRadius: "var(--r-pill)",
-                /* Solid, not a gradient: the initial has to clear contrast against the
-                   darkest part of the fill, and the system bans gradient surfaces anyway. */
-                background: "var(--sage)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 11,
-                color: "var(--sage-deep)",
-                fontWeight: 500,
-              }}
-            >
-              A
-            </span>
-            <span style={{ fontSize: 13, color: "var(--ink-3)" }}>alex@studio.co</span>
-          </span>
-        </nav>
-      </header>
+      <a className="skip-link" href="#downloads">Skip to downloads</a>
+      <Nav viewer={viewer} />
 
       <main>
         <section className="shell" style={{ paddingBlock: "64px 34px" }}>
           <div data-hero style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
-              Unlimited · renews 12 Sep 2026
+              {viewer.unlimited
+                ? `Unlimited${viewer.periodEnd ? ` · renews ${new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : ""}`
+                : "Free plan"}
             </span>
-            <h1
-              style={{
-                fontSize: "clamp(30px, 3.8vw, 46px)",
-                lineHeight: 1.08,
-                fontWeight: 500,
-                letterSpacing: "-0.035em",
-              }}
-            >
-              Everything you&rsquo;ve pulled out of the kiln.
+            <h1 style={{ fontSize: "clamp(30px, 3.8vw, 46px)", lineHeight: 1.08, fontWeight: 500, letterSpacing: "-0.035em" }}>
+              {rows.length === 0
+                ? "Nothing out of the kiln yet."
+                : "Everything you’ve pulled out of the kiln."}
             </h1>
           </div>
         </section>
 
         <section
           className="shell"
-          style={{
-            paddingBottom: 20,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
-            gap: 20,
-          }}
+          style={{ paddingBottom: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 20 }}
         >
-          {STATS.map((s) => (
-            <div
-              data-reveal
-              key={s.label}
-              style={{
-                borderRadius: "var(--r-card)",
-                border: "1px solid var(--hairline)",
-                background: "#121210",
-                padding: 22,
-                display: "flex",
-                flexDirection: "column",
-                gap: 9,
-              }}
-            >
-              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}>
-                {s.label}
-              </span>
-              <span style={{ fontWeight: 500, letterSpacing: "-0.03em", fontSize: s.big ? 34 : 26 }}>
-                {s.value}
-              </span>
-              <span style={{ fontSize: 13, color: "var(--muted)" }}>{s.note}</span>
-            </div>
-          ))}
+          <Stat label="Downloaded" value={String(unique)} note={`of ${settings.totalAssets} assets`} big />
+          <Stat label="This month" value={String(thisMonth)} note={thisMonth === 1 ? "1 file" : `${thisMonth} files`} big />
+          <Stat label="Saved" value={String(savedTotal)} note="assets and collections" big />
+          <Stat label="Plan" value={viewer.unlimited ? "Unlimited" : "Free"} note={viewer.unlimited ? "full vault" : "12 rotating assets"} />
         </section>
 
         <div
           className="shell"
-          style={{
-            paddingBlock: 20,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(min(420px,100%),1fr))",
-            gap: 24,
-            alignItems: "start",
-          }}
+          style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(420px,100%),1fr))", gap: 24, alignItems: "start" }}
         >
           {/* --- Downloads --- */}
-          <section
-            data-reveal
-            id="downloads"
-            style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", overflow: "hidden" }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: "18px 22px",
-                background: "#121210",
-                borderBottom: "1px solid #1A1917",
-                flexWrap: "wrap",
-              }}
-            >
+          <section data-reveal id="downloads" style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 22px", background: "var(--surface-2)", borderBottom: "1px solid #1A1917", flexWrap: "wrap" }}>
               <h2 style={{ fontSize: 17, fontWeight: 500 }}>Downloads</h2>
               <div style={{ flex: 1 }} />
-              <div role="group" aria-label="Filter downloads" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {(["All", "Templates", "Scenes", "Prompts"] as const).map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    className="pill pill--muted"
-                    aria-pressed={filter === f}
-                    onClick={() => setFilter(f)}
-                  >
-                    {f}
-                  </button>
-                ))}
+              <DownloadFilter active={kind ?? "All"} />
+            </div>
+
+            {filtered.length === 0 ? (
+              <div style={{ padding: "40px 22px", display: "flex", flexDirection: "column", gap: 14, alignItems: "flex-start" }}>
+                <p style={{ fontSize: 15, color: "var(--muted)" }}>
+                  Nothing downloaded yet. The twelve free assets are a good place to start.
+                </p>
+                <Link data-nav href="/?free=1" className="btn btn--ghost">Browse the free twelve</Link>
               </div>
-            </div>
-
-            <ul>
-              {list.map((d) => (
-                <li
-                  key={d.name}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 16,
-                    padding: "14px 22px",
-                    borderBottom: "1px solid #171614",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <span aria-hidden="true" style={thumb(d.g)} />
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: 1 }}>
-                    <span
-                      style={{
-                        fontSize: 15,
-                        color: "var(--ink)",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {d.name}
-                    </span>
+            ) : (
+              <ul>
+                {filtered.map((d) => (
+                  <li key={d.id} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 22px", borderBottom: "1px solid #171614", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: 1 }}>
+                      <Link data-nav href={`/item/${d.asset_slug}`} style={{ fontSize: 15, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {d.asset_name ?? d.asset_slug}
+                      </Link>
+                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
+                        {d.file_name}{d.bytes ? ` · ${(d.bytes / 1_048_576).toFixed(1)} MB` : ""}
+                      </span>
+                    </div>
                     <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
-                      {d.meta}
+                      {new Date(d.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase()}
                     </span>
-                  </div>
-                  <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
-                    {d.date}
-                  </span>
-                  <button
-                    type="button"
-                    className="btn btn--ghost"
-                    style={{ fontSize: 13, padding: "7px 15px", color: "var(--ink-3)" }}
-                  >
-                    Download again
-                  </button>
-                </li>
-              ))}
-            </ul>
-
-            <div style={{ padding: "16px 22px", display: "flex", justifyContent: "center" }}>
-              <button
-                type="button"
-                className="mono"
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "0.12em",
-                  color: "var(--faint)",
-                  background: "transparent",
-                  border: 0,
-                  cursor: "pointer",
-                }}
-              >
-                Load older
-              </button>
-            </div>
+                    <Link data-nav href={`/item/${d.asset_slug}`} className="btn btn--ghost" style={{ fontSize: 13, padding: "7px 15px", color: "var(--ink-3)" }}>
+                      Download again
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           {/* --- Rail --- */}
@@ -295,165 +119,102 @@ export default function Account() {
               style={{
                 borderRadius: "var(--r-card)",
                 border: "1px solid var(--sage-line-2)",
-                background:
-                  "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),var(--surface)",
+                background: "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),var(--surface)",
                 padding: 26,
                 display: "flex",
                 flexDirection: "column",
                 gap: 14,
               }}
             >
-              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>
-                Subscription
-              </span>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 9 }}>
-                <span style={{ fontSize: 34, fontWeight: 500, letterSpacing: "-0.03em" }}>Unlimited</span>
-                <span style={{ fontSize: 15, color: "var(--muted)" }}>$24/mo</span>
+              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>Subscription</span>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 9, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 34, fontWeight: 500, letterSpacing: "-0.03em" }}>
+                  {viewer.unlimited ? "Unlimited" : "Free"}
+                </span>
+                <span style={{ fontSize: 15, color: "var(--muted)" }}>
+                  {viewer.unlimited ? `$${settings.monthlyPrice}/mo` : "$0"}
+                </span>
               </div>
               <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
-                Renews 12 Sep 2026 on Visa ···· 4417. Switch to annual and the next twelve months cost
-                $240.
+                {viewer.unlimited
+                  ? `Renews ${viewer.periodEnd ? new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "automatically"}. Cancel any time and keep every file you downloaded.`
+                  : `Twelve rotating assets, refreshed monthly. Unlimited opens all ${settings.totalAssets} and every source file.`}
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
-                <button type="button" className="btn btn--primary" style={{ fontSize: 13, padding: "11px 20px" }}>
-                  Switch to annual
-                </button>
-                <button
-                  type="button"
-                  className="btn btn--ghost"
-                  style={{ fontSize: 13, padding: "11px 20px", color: "var(--ink-3)" }}
-                >
-                  Manage billing
-                </button>
+                {!viewer.unlimited && (
+                  <Link data-nav href="/pricing" className="btn btn--primary" style={{ fontSize: 13, padding: "11px 20px" }}>
+                    Get unlimited
+                  </Link>
+                )}
+                <form action="/auth/signout" method="post">
+                  <button type="submit" className="btn btn--ghost" style={{ fontSize: 13, padding: "11px 20px", color: "var(--ink-3)" }}>
+                    Sign out
+                  </button>
+                </form>
               </div>
             </section>
 
-            <section
-              data-reveal
-              style={{
-                borderRadius: "var(--r-card)",
-                border: "1px solid var(--hairline)",
-                background: "#121210",
-                padding: 24,
-                display: "flex",
-                flexDirection: "column",
-                gap: 16,
-              }}
-            >
-              <h2 style={{ fontSize: 16, fontWeight: 500 }}>Saved collections</h2>
-              {SAVED.map((s) => (
-                <div key={s.name} style={{ display: "flex", alignItems: "center", gap: 13 }}>
-                  <span aria-hidden="true" style={thumb(s.g)} />
-                  <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
-                    <span style={{ fontSize: 14, color: "var(--ink)" }}>{s.name}</span>
-                    <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
-                      {s.meta}
-                    </span>
-                  </div>
-                  <Link data-nav href="/collections" style={{ fontSize: 13, color: "var(--muted)" }}>
-                    Open
-                  </Link>
-                </div>
-              ))}
+            <section data-reveal style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 500 }}>Saved</h2>
+              {savedTotal === 0 ? (
+                <p style={{ fontSize: 14, color: "var(--muted)" }}>
+                  Nothing saved. The bookmark on an item page keeps it here.
+                </p>
+              ) : (
+                <>
+                  {(savedCollections ?? []).map((s) => (
+                    <div key={s.collection_slug} style={{ display: "flex", alignItems: "center", gap: 13 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
+                        <span style={{ fontSize: 14, color: "var(--ink)" }}>{s.collection_slug}</span>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>Collection</span>
+                      </div>
+                      <Link data-nav href={`/collections/${s.collection_slug}`} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link>
+                    </div>
+                  ))}
+                  {(savedAssets ?? []).map((s) => (
+                    <div key={s.asset_slug} style={{ display: "flex", alignItems: "center", gap: 13 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
+                        <span style={{ fontSize: 14, color: "var(--ink)" }}>{s.asset_slug}</span>
+                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>Asset</span>
+                      </div>
+                      <Link data-nav href={`/item/${s.asset_slug}`} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link>
+                    </div>
+                  ))}
+                </>
+              )}
             </section>
 
-            <section
-              data-reveal
-              style={{
-                borderRadius: "var(--r-card)",
-                border: "1px solid var(--hairline)",
-                background: "#121210",
-                padding: 24,
-                display: "flex",
-                flexDirection: "column",
-                gap: 14,
-              }}
-            >
+            <section data-reveal style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
               <h2 style={{ fontSize: 16, fontWeight: 500 }}>Invoices</h2>
-              {INVOICES.map((i) => (
-                <div
-                  key={i.date}
-                  className="mono"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 14,
-                    fontSize: 11,
-                    letterSpacing: "0.08em",
-                    color: "var(--muted)",
-                  }}
-                >
-                  <span>{i.date}</span>
-                  <span style={{ color: "var(--ink-3)" }}>{i.amount}</span>
-                  <button
-                    type="button"
-                    style={{
-                      color: "var(--faint)",
-                      background: "transparent",
-                      border: 0,
-                      cursor: "pointer",
-                      font: "inherit",
-                    }}
-                  >
-                    PDF
-                  </button>
-                </div>
-              ))}
+              {/* Honest: there is no billing yet, so there is nothing to list. */}
+              <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
+                No invoices. Checkout is not connected yet — when it is, receipts appear here
+                automatically.
+              </p>
+            </section>
+
+            <section data-reveal style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", padding: 24, display: "flex", alignItems: "center", gap: 13 }}>
+              <Avatar email={viewer.email} size={40} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+                <span style={{ fontSize: 14, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis" }}>{viewer.email}</span>
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>Signed in</span>
+              </div>
             </section>
           </div>
         </div>
-
-        <section data-reveal className="shell" style={{ paddingBlock: "44px 80px" }}>
-          <div
-            style={{
-              borderRadius: "var(--r-card)",
-              border: "1px solid var(--hairline-3)",
-              background: "linear-gradient(200deg,#1B1B18,#111110 60%)",
-              padding: 30,
-              display: "flex",
-              alignItems: "center",
-              gap: 30,
-              flexWrap: "wrap",
-            }}
-          >
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1, minWidth: 280 }}>
-              <span style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em" }}>
-                Drop 020 lands Thursday.
-              </span>
-              <span style={{ fontSize: 15, color: "var(--muted)" }}>
-                Grain &amp; film — nine assets, three of them free.
-              </span>
-            </div>
-            <label className="visually-hidden" htmlFor="notify-email">
-              Email address
-            </label>
-            <input
-              id="notify-email"
-              type="email"
-              placeholder="you@email.com"
-              style={{
-                border: "1px solid var(--line)",
-                borderRadius: "var(--r-pill)",
-                padding: "14px 20px",
-                fontSize: 15,
-                minWidth: 240,
-                background: "transparent",
-                color: "var(--ink)",
-              }}
-            />
-            <button
-              type="button"
-              className="btn"
-              style={{ borderColor: "#35332B", color: "var(--ink)", padding: "14px 26px", fontSize: 15 }}
-            >
-              Notify me
-            </button>
-          </div>
-        </section>
       </main>
 
       <Footer />
     </>
+  );
+}
+
+function Stat({ label, value, note, big }: { label: string; value: string; note: string; big?: boolean }) {
+  return (
+    <div data-reveal style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", padding: 22, display: "flex", flexDirection: "column", gap: 9 }}>
+      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}>{label}</span>
+      <span style={{ fontWeight: 500, letterSpacing: "-0.03em", fontSize: big ? 34 : 26 }}>{value}</span>
+      <span style={{ fontSize: 13, color: "var(--muted)" }}>{note}</span>
+    </div>
   );
 }

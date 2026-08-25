@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import HomeView from "@/components/kiln/HomeView";
 
-/* The same library, in the storefront treatment. Same grid, same type, warm
+/* The same library in the storefront treatment: same grid, same type, warm
    neutrals, forest green doing the work sage does on dark. */
-export const metadata: Metadata = {
-  title: "Library — light",
-};
+export const metadata: Metadata = { title: "Library — light" };
 
-export default function HomeLight() {
-  return <HomeView light />;
+export default function HomeLight({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  return <HomeView light searchParams={searchParams} />;
 }

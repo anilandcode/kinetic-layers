@@ -1,15 +1,17 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { ASSETS } from "@/lib/kiln/data";
+import SearchTrigger from "./SearchTrigger";
+import NavLinks, { ModeToggle } from "./NavLinks";
+import type { Viewer } from "@/lib/kiln/types";
 
 /* ============================================================
-   Nav, search and footer — shared by every page.
+   Nav and footer — shared by every page.
+
+   Server components, so the signed-in state is correct on first paint
+   rather than flickering in after hydration. Only the search palette
+   and the active-link highlight run on the client.
    ============================================================ */
 
-const NAV = [
+export const NAV = [
   { href: "/", label: "Library" },
   { href: "/collections", label: "Collections" },
   { href: "/account", label: "Account" },
@@ -32,284 +34,109 @@ export function Mark() {
   );
 }
 
-export function Nav({ light = false }: { light?: boolean }) {
-  const pathname = usePathname();
-  const [searchOpen, setSearchOpen] = useState(false);
-
-  useEffect(() => {
-    const onKey = (evt: KeyboardEvent) => {
-      if ((evt.metaKey || evt.ctrlKey) && evt.key.toLowerCase() === "k") {
-        evt.preventDefault();
-        setSearchOpen(true);
-      }
-      if (evt.key === "Escape") setSearchOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, []);
-
-  const ink = "var(--ink)";
-  const muted = "var(--muted)";
-
+export function Nav({ light = false, viewer = null }: { light?: boolean; viewer?: Viewer | null }) {
   return (
-    <>
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          background: light ? "rgba(246,244,238,0.92)" : "rgba(15,15,13,0.92)",
-          backdropFilter: "blur(12px)",
-          borderBottom: `1px solid ${"var(--hairline)"}`,
-        }}
+    <header
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 20,
+        background: light ? "rgba(246,244,238,0.92)" : "rgba(15,15,13,0.92)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid var(--hairline)",
+      }}
+    >
+      <nav
+        className="shell site-nav"
+        style={{ height: 66, display: "flex", alignItems: "center", gap: 36 }}
+        aria-label="Primary"
       >
-        <nav
-          className="shell site-nav"
-          style={{ height: 66, display: "flex", alignItems: "center", gap: 36 }}
-          aria-label="Primary"
-        >
+        <Link data-nav href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
+          <Mark />
+          <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kiln</span>
+        </Link>
+
+        <NavLinks />
+
+        <div style={{ flex: 1 }} />
+
+        <SearchTrigger />
+        <ModeToggle light={light} />
+
+        {viewer ? (
           <Link
             data-nav
-            href="/"
-            style={{ display: "flex", alignItems: "center", gap: 9, color: ink }}
-          >
-            <Mark />
-            <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kiln</span>
-          </Link>
-
-          <div
-            data-hide-narrow
-            style={{ display: "flex", gap: 26, fontSize: 14, whiteSpace: "nowrap", flexShrink: 0 }}
-          >
-            {NAV.map((item) => {
-              const active = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  data-nav
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  style={{ color: active ? ink : muted }}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-
-          <div style={{ flex: 1 }} />
-
-          <button
-            data-hide-narrow
-            type="button"
-            onClick={() => setSearchOpen(true)}
-            aria-label="Search the vault"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 20,
-              flex: "0 1 250px",
-              minWidth: 190,
-              border: `1px solid ${"var(--hairline-3)"}`,
-              borderRadius: "var(--r-pill)",
-              padding: "8px 12px",
-              background: "transparent",
-              cursor: "pointer",
-              overflow: "hidden",
-              transition: "filter var(--t-fast) var(--ease)",
-            }}
-          >
-            <span style={{ fontSize: 13, color: "var(--faint)" }}>
-              Search the vault
-            </span>
-            <span
-              className="mono"
-              style={{
-                fontSize: 10,
-                color: "var(--faint)",
-                border: `1px solid ${"var(--hairline-3)"}`,
-                borderRadius: "var(--r-pill)",
-                padding: "3px 8px",
-                flexShrink: 0,
-              }}
-            >
-              ⌘K
-            </span>
-          </button>
-
-          <Link
-            data-nav
+            href="/account"
             data-hide-small
-            href={light ? "/" : "/light"}
-            aria-label={light ? "Switch to dark" : "Switch to light"}
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 4,
-              border: `1px solid ${"var(--hairline-3)"}`,
+              gap: 10,
+              border: "1px solid var(--hairline-3)",
               borderRadius: "var(--r-pill)",
-              padding: 4,
+              padding: "5px 14px 5px 5px",
               flexShrink: 0,
+              color: "var(--ink-3)",
             }}
           >
-            <ModeDot on={!light} glyph="☾" />
-            <ModeDot on={light} glyph="☀" />
+            <Avatar email={viewer.email} />
+            <span style={{ fontSize: 13 }}>{viewer.email ?? "Account"}</span>
           </Link>
-
+        ) : (
           <Link
             data-nav
             data-hide-small
             href="/join"
-            style={{ fontSize: 14, color: muted, whiteSpace: "nowrap", flexShrink: 0 }}
+            style={{ fontSize: 14, color: "var(--muted)", whiteSpace: "nowrap", flexShrink: 0 }}
           >
             Sign in
           </Link>
+        )}
 
+        {!viewer?.unlimited && (
           <Link
             data-nav
-            href="/pricing"
+            href={viewer ? "/pricing" : "/join?next=/pricing"}
             className="btn btn--primary"
-            style={{
-              fontSize: 13,
-              padding: "10px 18px",
-              ...(light
-                ? { background: "var(--forest)", borderColor: "var(--forest)", color: "var(--cream)" }
-                : null),
-            }}
+            style={{ fontSize: 13, padding: "10px 18px" }}
           >
             Get unlimited
           </Link>
-        </nav>
-      </header>
-
-      {searchOpen && <SearchModal onClose={() => setSearchOpen(false)} />}
-    </>
+        )}
+      </nav>
+    </header>
   );
 }
 
-function ModeDot({ on, glyph }: { on: boolean; glyph: string }) {
+export function Avatar({ email, size = 26 }: { email: string | null; size?: number }) {
+  const initial = (email ?? "?").trim().charAt(0).toUpperCase() || "?";
   return (
     <span
       aria-hidden="true"
       style={{
-        width: 28,
-        height: 28,
+        width: size,
+        height: size,
         borderRadius: "var(--r-pill)",
+        /* Solid, not a gradient: the initial has to clear contrast against the
+           darkest part of the fill, and the system bans gradient surfaces. */
+        background: "var(--sage)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: 13,
-        background: on
-          ? "linear-gradient(140deg,rgba(185,206,149,0.30),rgba(185,206,149,0.10))"
-          : "transparent",
-        border: `1px solid ${on ? "rgba(185,206,149,0.42)" : "transparent"}`,
-        color: on ? "var(--sage-ink)" : "var(--faint)",
+        fontSize: Math.round(size * 0.42),
+        color: "var(--sage-deep)",
+        fontWeight: 500,
+        flexShrink: 0,
       }}
     >
-      {glyph}
+      {initial}
     </span>
-  );
-}
-
-function SearchModal({ onClose }: { onClose: () => void }) {
-  const hits = ASSETS.slice(0, 5);
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Search the vault"
-      onClick={onClose}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 40,
-        background: "rgba(8,8,7,0.8)",
-        backdropFilter: "blur(6px)",
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "center",
-        paddingTop: "14vh",
-      }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "min(620px,90vw)",
-          background: "var(--surface)",
-          border: "1px solid var(--line)",
-          borderRadius: 24,
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            padding: "20px 22px",
-            borderBottom: "1px solid var(--hairline-3)",
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <span aria-hidden="true" style={{ color: "var(--sage)", fontSize: 16 }}>
-            ⌕
-          </span>
-          <input
-            autoFocus
-            placeholder="Search prompts, templates, scenes…"
-            aria-label="Search query"
-            style={{
-              flex: 1,
-              background: "transparent",
-              border: 0,
-              outline: "none",
-              fontSize: 16,
-              color: "var(--ink)",
-            }}
-          />
-        </div>
-        <ul style={{ padding: 12, display: "flex", flexDirection: "column", gap: 2 }}>
-          {hits.map((h) => (
-            <li key={h.slug}>
-              <Link
-                data-nav
-                href={`/item/${h.slug}`}
-                style={{
-                  padding: "13px 14px",
-                  borderRadius: "var(--r-pill)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  color: "var(--ink-3)",
-                }}
-              >
-                <span style={{ fontSize: 14 }}>{h.name}</span>
-                <span className="mono" style={{ fontSize: 10, color: "var(--faint)" }}>
-                  {h.type}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div
-          className="mono"
-          style={{
-            padding: "14px 22px",
-            borderTop: "1px solid var(--hairline-3)",
-            fontSize: 10,
-            color: "var(--faint)",
-          }}
-        >
-          Esc to close
-        </div>
-      </div>
-    </div>
   );
 }
 
 export function Footer({ light = false }: { light?: boolean }) {
   return (
-    <footer style={{ borderTop: `1px solid ${"var(--hairline)"}` }}>
+    <footer style={{ borderTop: "1px solid var(--hairline)" }}>
       <div
         className="shell mono"
         style={{

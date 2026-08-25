@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Asset } from "@/lib/kiln/data";
+import type { Asset } from "@/lib/kiln/types";
 
 /**
  * The atom of the whole product.

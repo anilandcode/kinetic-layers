@@ -8,13 +8,19 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "readout": "node tools/readout.mjs"
+    "readout": "node tools/readout.mjs",
+    "studio": "sanity dev",
+    "studio:deploy": "sanity deploy",
+    "seed": "node tools/seed-sanity.mjs /tmp/kiln-seed.ndjson && sanity dataset import /tmp/kiln-seed.ndjson production --replace"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@sanity/image-url": "^2.1.1",
+    "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.47.10",
     "gsap": "^3.15.0",
     "next": "^15.1.6",
+    "next-sanity": "^11.6.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -22,6 +28,10 @@
     "@types/node": "^22.10.7",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
-    "typescript": "^5.7.3"
+    "pg": "^8.23.0",
+    "typescript": "^5.7.3",
+    "sanity": "^4.22.1",
+    "@sanity/vision": "^4.22.1",
+    "styled-components": "^6.5.3"
   }
 }

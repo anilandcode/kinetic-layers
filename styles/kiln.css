@@ -75,6 +75,7 @@
   --r-xl:     22px;
 
   /* --- Grid ------------------------------------------------- */
+  /* Kept for the archived Direction Kit stylesheets, which still centre. */
   --page-max: 1360px;
   --gutter:   40px;
 
@@ -86,9 +87,9 @@
   --ease:   cubic-bezier(0.22, 0.8, 0.2, 1);
 }
 
-@media (max-width: 720px) {
-  :root { --gutter: 20px; }
-}
+@media (max-width: 720px)  { :root { --gutter: 20px; } }
+@media (min-width: 1600px) { :root { --gutter: 56px; } }
+@media (min-width: 2000px) { :root { --gutter: 72px; } }
 
 /* ============================================================
    Base
@@ -125,9 +126,12 @@ a:hover { color: var(--sage-bright); }
    Layout primitives
    ============================================================ */
 
+/* Full-bleed. The design capped this at 1360px, which left wide displays
+   half empty; the cap is gone and only the gutter holds content off the
+   bezel. Per-element max-widths on prose stay exactly as the design set
+   them — those are line-length measures, not the container. */
 .shell {
   width: 100%;
-  max-width: var(--page-max);
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -324,6 +328,9 @@ a:hover { color: var(--sage-bright); }
    both sit right. CSS columns, so the ragged heights come free.
    ============================================================ */
 
+/* With no container cap, a fixed three columns would stretch each card to
+   an absurd width on a large display. The count grows with the viewport
+   instead, so card size stays roughly constant. */
 .kiln-masonry {
   columns: 3;
   column-gap: 26px;
@@ -334,11 +341,13 @@ a:hover { color: var(--sage-bright); }
 }
 @media (max-width: 1080px) { .kiln-masonry { columns: 2; } }
 @media (max-width: 720px)  { .kiln-masonry { columns: 1; } }
+@media (min-width: 1600px) { .kiln-masonry { columns: 4; } }
+@media (min-width: 2100px) { .kiln-masonry { columns: 5; } }
 
 /* Even grid, used where the design calls for equal cards. */
 .kiln-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 22px;
 }
 

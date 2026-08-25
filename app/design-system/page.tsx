@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AssetCard from "@/components/kiln/AssetCard";
-import { ASSETS } from "@/lib/kiln/data";
+import { getAssets } from "@/lib/sanity/queries";
 
 /**
  * The design system, as a live page.
@@ -73,7 +73,8 @@ function SectionHead({ n, children }: { n: string; children: React.ReactNode }) 
   );
 }
 
-export default function DesignSystem() {
+export default async function DesignSystem() {
+  const assets = (await getAssets()).slice(0, 3);
   return (
     <main>
       <section className="shell" style={{ paddingBlock: "88px 40px", display: "flex", flexDirection: "column", gap: 26 }}>
@@ -300,7 +301,7 @@ export default function DesignSystem() {
             Asset card — the atom of the whole product
           </span>
           <div className="kiln-grid">
-            {ASSETS.slice(0, 3).map((a) => (
+            {assets.map((a) => (
               <AssetCard key={a.slug} asset={a} height={170} />
             ))}
           </div>
