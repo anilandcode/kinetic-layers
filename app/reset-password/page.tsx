@@ -15,6 +15,7 @@ export default async function ResetPassword() {
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <a className="skip-link" href="#reset">Skip to the form</a>
       <header style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div className="shell" style={{ height: 66, display: "flex", alignItems: "center", gap: 20 }}>
           <Link data-nav href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
@@ -24,7 +25,7 @@ export default async function ResetPassword() {
         </div>
       </header>
 
-      <main style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "70px var(--gutter)" }}>
+      <main id="reset" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "70px var(--gutter)" }}>
         <div style={{ width: "100%", maxWidth: 420, display: "flex", flexDirection: "column", gap: 18 }}>
           <h1 style={{ fontSize: 38, lineHeight: 1.12, fontWeight: 500, letterSpacing: "-0.03em", textWrap: "pretty" }}>
             Set a new password.

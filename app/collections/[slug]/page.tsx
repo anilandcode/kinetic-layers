@@ -19,7 +19,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const c = await getCollection(slug);
-  return c ? { title: c.name, description: c.blurb } : { title: "Not found" };
+  if (!c) return { title: "Not found" };
+  return {
+    title: c.name,
+    description: c.blurb,
+    alternates: { canonical: `/collections/${slug}` },
+    openGraph: { type: "website", title: c.name, description: c.blurb, url: `/collections/${slug}` },
+  };
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {

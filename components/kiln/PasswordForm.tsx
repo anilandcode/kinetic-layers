@@ -18,6 +18,8 @@ export default function PasswordForm() {
         minLength={8}
         autoComplete="new-password"
         placeholder="••••••••••"
+        aria-invalid={state.error ? true : undefined}
+        aria-describedby={state.error ? "password-message" : undefined}
         style={{
           border: "1px solid var(--hairline-3)",
           borderRadius: "var(--r-pill)",
@@ -29,7 +31,7 @@ export default function PasswordForm() {
       />
       <Submit />
       {state.error && (
-        <p role="alert" style={{ fontSize: 13, color: "var(--danger)" }}>{state.error}</p>
+        <p id="password-message" role="alert" style={{ fontSize: 13, color: "var(--danger)" }}>{state.error}</p>
       )}
     </form>
   );

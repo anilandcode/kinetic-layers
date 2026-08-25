@@ -111,6 +111,7 @@ const OPEN = [
 function Head({ n, children }: { n: string; children: React.ReactNode }) {
   return (
     <div className={styles.sectionHead}>
+      <a className="skip-link" href="#plan">Skip to the plan</a>
       <span className={styles.num}>{n}</span>
       <h2>{children}</h2>
     </div>
@@ -133,7 +134,7 @@ export default function Plan() {
           </p>
         </header>
 
-        <section className={styles.section}>
+        <section id="plan" className={styles.section}>
           <Head n="01">Positioning</Head>
           <p className={styles.pull}>
             Your words:{" "}

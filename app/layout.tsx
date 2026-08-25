@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Sora, Source_Serif_4, Geist_Mono } from "next/font/google";
 import KilnMotion from "@/components/kiln/KilnMotion";
 import Analytics from "@/components/kiln/Analytics";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kiln/site";
 import "./globals.css";
 
 /**
@@ -31,12 +32,27 @@ const mono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  /* Without this, every relative image and canonical in the tree resolves
+     against nothing and Next warns on each build. */
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Kiln — a library worth stealing from",
-    template: "%s — Kiln",
+    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    template: `%s — ${SITE_NAME}`,
   },
-  description:
-    "Prompts, templates, scenes and workflows built in one studio and shipped weekly. Every item comes with the output, the source, and one site already running on it.",
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {

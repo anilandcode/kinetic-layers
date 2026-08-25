@@ -4,6 +4,7 @@ import { getDrops } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kiln/viewer";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/changelog" },
   title: "Changelog",
   description: "Every drop, newest first.",
 };

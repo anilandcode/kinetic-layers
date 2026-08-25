@@ -4,6 +4,7 @@ import { Footer, Nav } from "@/components/kiln/Chrome";
 import { getViewer } from "@/lib/kiln/viewer";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/license" },
   title: "License",
   description: "What you may do with a Kiln asset.",
 };

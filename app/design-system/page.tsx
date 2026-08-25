@@ -65,6 +65,7 @@ function SectionHead({ n, children }: { n: string; children: React.ReactNode }) 
         paddingBottom: 14,
       }}
     >
+      <a className="skip-link" href="#tokens">Skip to the tokens</a>
       <span className="mono" style={{ fontSize: 12, color: "var(--sage)" }}>
         {n}
       </span>
@@ -76,7 +77,7 @@ function SectionHead({ n, children }: { n: string; children: React.ReactNode }) 
 export default async function DesignSystem() {
   const assets = (await getAssets()).slice(0, 3);
   return (
-    <main>
+    <main id="tokens">
       <section className="shell" style={{ paddingBlock: "88px 40px", display: "flex", flexDirection: "column", gap: 26 }}>
         <p className="mono" style={{ fontSize: 12, letterSpacing: "0.18em", color: "var(--sage)" }}>
           Design system v1 — dual mode

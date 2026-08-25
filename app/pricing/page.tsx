@@ -7,6 +7,7 @@ import { getViewer } from "@/lib/kiln/viewer";
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
   return {
+    alternates: { canonical: "/pricing" },
     title: "Pricing",
     description: `${s.freeThisMonth} free forever. The rest for $${s.monthlyPrice} a month.`,
   };

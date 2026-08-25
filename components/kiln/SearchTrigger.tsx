@@ -14,6 +14,8 @@ import { track } from "@/lib/track";
  */
 export default function SearchTrigger() {
   const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement | null>(null);
+  const wasOpen = useRef(false);
 
   useEffect(() => {
     const onKey = (evt: KeyboardEvent) => {
@@ -27,6 +29,21 @@ export default function SearchTrigger() {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
+  /**
+   * Return focus to the trigger when the dialog closes.
+   *
+   * This belongs here, not in the dialog. Inside Palette the obvious approach —
+   * capture document.activeElement on mount — records the wrong element: the
+   * input's autoFocus has already fired by the time the effect runs, so it
+   * "restores" focus to a field that is being unmounted, and the browser drops
+   * it on <body>. The trigger is the thing that opened it, so the trigger is
+   * what knows where to put focus back.
+   */
+  useEffect(() => {
+    if (wasOpen.current && !open) trigger.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
+
   return (
     <>
       {/* Narrow screens used to lose search entirely — data-hide-narrow removed
@@ -34,6 +51,7 @@ export default function SearchTrigger() {
           still the desktop affordance; below the breakpoint it collapses to an
           icon button rather than disappearing. */}
       <button
+        ref={trigger}
         data-search-compact
         type="button"
         onClick={() => setOpen(true)}
@@ -79,6 +97,53 @@ function Palette({ onClose }: { onClose: () => void }) {
   const [hits, setHits] = useState<Asset[]>([]);
   const [state, setState] = useState<"idle" | "loading" | "done">("idle");
   const abort = useRef<AbortController | null>(null);
+  const panel = useRef<HTMLDivElement | null>(null);
+
+  /**
+   * Focus trap and restore.
+   *
+   * The dialog already declared role="dialog" and aria-modal="true", which
+   * promise that focus is confined and that what is behind is inert. Neither
+   * was true: Tab walked straight out into the page behind the overlay, and
+   * closing dropped focus onto <body>, so a keyboard user landed at the top of
+   * the document with no idea where they were. An aria-modal that does not
+   * trap is worse than no attribute — it tells assistive tech a lie.
+   */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      const root = panel.current;
+      if (!root) return;
+      /* getClientRects, not offsetParent. The dialog is position:fixed, and
+         offsetParent is null for descendants of a fixed ancestor — using it
+         here would quietly filter out every candidate and leave the trap
+         doing nothing at all while appearing to work. */
+      const focusable = [
+        ...root.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+        ),
+      ].filter((el) => el.getClientRects().length > 0);
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      /* Wrap in both directions, and catch the case where focus has somehow
+         escaped the panel entirely — pull it back rather than letting Tab
+         continue into the page. */
+      if (e.shiftKey && (active === first || !root.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !root.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     if (!q.trim()) {
@@ -126,6 +191,7 @@ function Palette({ onClose }: { onClose: () => void }) {
       }}
     >
       <div
+        ref={panel}
         onClick={(e) => e.stopPropagation()}
         style={{
           width: "min(620px,90vw)",
@@ -158,6 +224,18 @@ function Palette({ onClose }: { onClose: () => void }) {
         </div>
 
         <div style={{ padding: 12, minHeight: 80 }}>
+          {/* Announced, not merely displayed. The result count changing was
+              previously silent — a screen-reader user typed into a box and got
+              no feedback that anything had happened at all. */}
+          <p role="status" aria-live="polite" className="visually-hidden">
+            {state === "loading"
+              ? "Searching"
+              : state === "done"
+                ? hits.length === 0
+                  ? `No results for ${q}`
+                  : `${hits.length} result${hits.length === 1 ? "" : "s"} for ${q}`
+                : ""}
+          </p>
           {state === "idle" && (
             <p style={{ padding: "13px 14px", fontSize: 14, color: "var(--faint)" }}>
               Type to search the whole vault.

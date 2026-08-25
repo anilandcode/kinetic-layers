@@ -128,6 +128,11 @@ export default function JoinForm({
         <input
           id="join-email"
           name="email"
+          /* An error was announced but floated free of the input. aria-invalid
+             marks WHICH field is wrong; aria-describedby is what lets a screen
+             reader read the reason while focus is still on the field. */
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "join-message" : undefined}
           type="email"
           required
           autoComplete="email"
@@ -140,6 +145,8 @@ export default function JoinForm({
             <label className="visually-hidden" htmlFor="join-password">Password</label>
             <input
               id="join-password"
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? "join-message" : undefined}
               name="password"
               type="password"
               required
@@ -155,7 +162,7 @@ export default function JoinForm({
       </form>
 
       {error && (
-        <p role="alert" style={{ fontSize: 13, lineHeight: 1.6, color: "var(--danger)", border: "1px solid var(--danger)", borderRadius: "var(--r-card)", padding: "12px 16px" }}>
+        <p id="join-message" role="alert" style={{ fontSize: 13, lineHeight: 1.6, color: "var(--danger)", border: "1px solid var(--danger)", borderRadius: "var(--r-card)", padding: "12px 16px" }}>
           {error}
         </p>
       )}

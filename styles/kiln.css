@@ -623,3 +623,28 @@ select.pill option {
 @media (prefers-reduced-motion: reduce) {
   [data-card-copy] { transition: opacity var(--t-fast) linear; transform: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Loading skeletons — components/kiln/Skeleton.tsx
+--------------------------------------------------------------------------- */
+.kiln-skel {
+  background: linear-gradient(
+    90deg,
+    var(--surface) 0%,
+    var(--surface-2) 40%,
+    var(--surface) 80%
+  );
+  background-size: 300% 100%;
+  animation: kiln-skel-sweep 1.4s var(--ease) infinite;
+}
+
+@keyframes kiln-skel-sweep {
+  from { background-position: 120% 0; }
+  to   { background-position: -40% 0; }
+}
+
+/* A sweeping gradient is exactly the kind of ambient motion reduced-motion
+   asks to be spared. The shape still reads as a placeholder without it. */
+@media (prefers-reduced-motion: reduce) {
+  .kiln-skel { animation: none; background: var(--surface-2); }
+}

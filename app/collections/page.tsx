@@ -8,6 +8,7 @@ import type { Shelf } from "@/lib/kiln/types";
 import PreviewMedia from "@/components/kiln/PreviewMedia";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/collections" },
   title: "Collections",
   description: "A collection is one brief solved end to end — the prompts, the template, the scene and the source files that shipped with it.",
 };

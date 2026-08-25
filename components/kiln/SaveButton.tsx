@@ -72,15 +72,22 @@ export default function SaveButton({
   }
 
   return (
-    <button
-      type="button"
-      className={className}
-      onClick={toggle}
-      aria-pressed={saved}
-      style={style}
-      title={failed ? "That did not save. Try again." : undefined}
-    >
-      {failed ? "Try again" : saved ? on : off}
-    </button>
+    <>
+      <button
+        type="button"
+        className={className}
+        onClick={toggle}
+        aria-pressed={saved}
+        style={style}
+      >
+        {failed ? "Try again" : saved ? on : off}
+      </button>
+      {/* The outcome used to live only in a `title`, which is hover-only and
+          therefore invisible to keyboards and touch alike. aria-pressed states
+          the toggle, but not that a save failed or landed. */}
+      <span role="status" aria-live="polite" className="visually-hidden">
+        {failed ? "Could not save. Try again." : saved ? "Saved" : ""}
+      </span>
+    </>
   );
 }

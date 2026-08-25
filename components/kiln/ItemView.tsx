@@ -126,8 +126,148 @@ export default function ItemView({
             alignItems: "start",
           }}
         >
-          {/* --- Gallery --- */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
+          {/* --- Buy rail --- */}
+          <div style={{ order: 2, position: "sticky", top: 96, display: "flex", flexDirection: "column", gap: 20 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 11, flexWrap: "wrap" }}>
+                <h1 style={{ fontSize: 38, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.1 }}>{asset.name}</h1>
+                <span className={asset.free ? "chip chip--sage" : "chip"} style={{ padding: "5px 13px" }}>
+                  {asset.free ? "Free" : "Unlimited"}
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {[asset.type, asset.stack, asset.shelf, asset.mood].map((t) => (
+                  <span className="chip" key={t}>
+                    {t.toLowerCase()}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div
+              style={{
+                borderRadius: "var(--r-card)",
+                border: "1px solid var(--sage-line-2)",
+                background: "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),var(--surface)",
+                padding: 24,
+                display: "flex",
+                flexDirection: "column",
+                gap: 13,
+              }}
+            >
+              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>
+                {gate === "open" ? "Yours to download" : asset.free ? "Free with an account" : "Included with unlimited"}
+              </span>
+              <span style={{ fontSize: 15, lineHeight: 1.6, color: "var(--ink-2)" }}>
+                {gate === "open"
+                  ? "Every file, including the source. Yours to keep even if you cancel."
+                  : gate === "needs-account"
+                    ? "This one is free — it just needs an account so your downloads have somewhere to live."
+                    : `Download every source file. $${monthlyPrice} a month for the whole vault.`}
+              </span>
+
+              {gate === "open" ? (
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  /* Wrapped, so the click event is not passed as a file name. */
+                  onClick={() => download()}
+                  disabled={busy !== false}
+                  style={{ fontSize: 15, padding: "15px 22px" }}
+                >
+                  {busy === true ? "Preparing…" : "Download"}
+                </button>
+              ) : (
+                <Link
+                  data-nav
+                  data-track="unlock_click"
+                  data-track-detail={`${gate}:${asset.slug}`}
+                  href={unlockHref}
+                  className="btn btn--primary"
+                  style={{ fontSize: 15, padding: "15px 22px" }}
+                >
+                  {unlockLabel}
+                </Link>
+              )}
+
+              {viewer ? (
+                <SaveButton
+                  kind="asset"
+                  slug={asset.slug}
+                  saved={initiallySaved}
+                  signedIn={Boolean(viewer)}
+                />
+              ) : (
+                <Link data-nav href={`/join?next=/item/${asset.slug}`} className="btn btn--quiet">
+                  Save for later
+                </Link>
+              )}
+
+              {notice && (
+                <span
+                  role={notice.kind === "error" ? "alert" : "status"}
+                  className="mono"
+                  style={{ fontSize: 10, letterSpacing: "0.1em", textAlign: "center", color: notice.kind === "error" ? "var(--danger)" : "var(--sage)" }}
+                >
+                  {notice.text}
+                </span>
+              )}
+              {!notice && (
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)", textAlign: "center" }}>
+                  Cancel anytime · keep your downloads
+                </span>
+              )}
+            </div>
+
+            {asset.specs?.length ? (
+              <dl style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", overflow: "hidden" }}>
+                {asset.specs.map((s) => (
+                  <div
+                    key={s.k}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 16,
+                      padding: "14px 20px",
+                      borderBottom: "1px solid #1A1917",
+                    }}
+                  >
+                    <dt className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--faint)" }}>
+                      {s.k}
+                    </dt>
+                    <dd style={{ fontSize: 14, color: "var(--ink-3)", textAlign: "right" }}>{s.v}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+
+            <div
+              style={{
+                borderRadius: "var(--r-card)",
+                border: "1px solid var(--hairline)",
+                background: "var(--surface-2)",
+                padding: 22,
+                display: "flex",
+                flexDirection: "column",
+                gap: 11,
+              }}
+            >
+              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}>
+                License
+              </span>
+              <span style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
+                Use it in unlimited personal and client projects. Don&rsquo;t resell the file or
+                republish it to another marketplace.
+              </span>
+            </div>
+          </div>
+          {/* --- Gallery ---
+              order:1 keeps it on the left visually while the buy rail, which
+              carries the h1, comes first in the DOM. Reading order and visual
+              order disagreeing is exactly what `order` is for; before this the
+              page's first heading was "What this is", not the asset's name. */}
+          <div style={{ order: 1, display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
             <div data-hero style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <PreviewMedia
                 key={current.label}
@@ -285,142 +425,6 @@ export default function ItemView({
             ) : null}
           </div>
 
-          {/* --- Buy rail --- */}
-          <div style={{ position: "sticky", top: 96, display: "flex", flexDirection: "column", gap: 20 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 11, flexWrap: "wrap" }}>
-                <h1 style={{ fontSize: 38, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.1 }}>{asset.name}</h1>
-                <span className={asset.free ? "chip chip--sage" : "chip"} style={{ padding: "5px 13px" }}>
-                  {asset.free ? "Free" : "Unlimited"}
-                </span>
-              </div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {[asset.type, asset.stack, asset.shelf, asset.mood].map((t) => (
-                  <span className="chip" key={t}>
-                    {t.toLowerCase()}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div
-              style={{
-                borderRadius: "var(--r-card)",
-                border: "1px solid var(--sage-line-2)",
-                background: "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),var(--surface)",
-                padding: 24,
-                display: "flex",
-                flexDirection: "column",
-                gap: 13,
-              }}
-            >
-              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>
-                {gate === "open" ? "Yours to download" : asset.free ? "Free with an account" : "Included with unlimited"}
-              </span>
-              <span style={{ fontSize: 15, lineHeight: 1.6, color: "var(--ink-2)" }}>
-                {gate === "open"
-                  ? "Every file, including the source. Yours to keep even if you cancel."
-                  : gate === "needs-account"
-                    ? "This one is free — it just needs an account so your downloads have somewhere to live."
-                    : `Download every source file. $${monthlyPrice} a month for the whole vault.`}
-              </span>
-
-              {gate === "open" ? (
-                <button
-                  type="button"
-                  className="btn btn--primary"
-                  /* Wrapped, so the click event is not passed as a file name. */
-                  onClick={() => download()}
-                  disabled={busy !== false}
-                  style={{ fontSize: 15, padding: "15px 22px" }}
-                >
-                  {busy === true ? "Preparing…" : "Download"}
-                </button>
-              ) : (
-                <Link
-                  data-nav
-                  data-track="unlock_click"
-                  data-track-detail={`${gate}:${asset.slug}`}
-                  href={unlockHref}
-                  className="btn btn--primary"
-                  style={{ fontSize: 15, padding: "15px 22px" }}
-                >
-                  {unlockLabel}
-                </Link>
-              )}
-
-              {viewer ? (
-                <SaveButton
-                  kind="asset"
-                  slug={asset.slug}
-                  saved={initiallySaved}
-                  signedIn={Boolean(viewer)}
-                />
-              ) : (
-                <Link data-nav href={`/join?next=/item/${asset.slug}`} className="btn btn--quiet">
-                  Save for later
-                </Link>
-              )}
-
-              {notice && (
-                <span
-                  role={notice.kind === "error" ? "alert" : "status"}
-                  className="mono"
-                  style={{ fontSize: 10, letterSpacing: "0.1em", textAlign: "center", color: notice.kind === "error" ? "var(--danger)" : "var(--sage)" }}
-                >
-                  {notice.text}
-                </span>
-              )}
-              {!notice && (
-                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)", textAlign: "center" }}>
-                  Cancel anytime · keep your downloads
-                </span>
-              )}
-            </div>
-
-            {asset.specs?.length ? (
-              <dl style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", overflow: "hidden" }}>
-                {asset.specs.map((s) => (
-                  <div
-                    key={s.k}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 16,
-                      padding: "14px 20px",
-                      borderBottom: "1px solid #1A1917",
-                    }}
-                  >
-                    <dt className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--faint)" }}>
-                      {s.k}
-                    </dt>
-                    <dd style={{ fontSize: 14, color: "var(--ink-3)", textAlign: "right" }}>{s.v}</dd>
-                  </div>
-                ))}
-              </dl>
-            ) : null}
-
-            <div
-              style={{
-                borderRadius: "var(--r-card)",
-                border: "1px solid var(--hairline)",
-                background: "var(--surface-2)",
-                padding: 22,
-                display: "flex",
-                flexDirection: "column",
-                gap: 11,
-              }}
-            >
-              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}>
-                License
-              </span>
-              <span style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
-                Use it in unlimited personal and client projects. Don&rsquo;t resell the file or
-                republish it to another marketplace.
-              </span>
-            </div>
-          </div>
         </div>
 
         {related.length > 0 && (

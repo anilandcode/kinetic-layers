@@ -291,9 +291,9 @@ function Promo({ kind, signedIn }: { kind: Promo; signedIn: boolean }) {
         >
           ✦
         </span>
-        <h3 style={{ fontSize: 27, fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.2, margin: "30px 0 12px" }}>
+        <h2 style={{ fontSize: 27, fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.2, margin: "30px 0 12px" }}>
           Go full vault.
-        </h3>
+        </h2>
         <p style={{ fontSize: 16, lineHeight: 1.6, color: "var(--muted)" }}>
           Every prompt, template and scene — plus the source files and all future drops.
         </p>
@@ -316,9 +316,9 @@ function Promo({ kind, signedIn }: { kind: Promo; signedIn: boolean }) {
         <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
           Hire the studio
         </span>
-        <h3 style={{ fontSize: 25, fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.24, textWrap: "pretty" }}>
+        <h2 style={{ fontSize: 25, fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.24, textWrap: "pretty" }}>
           Want something built only for you?
-        </h3>
+        </h2>
         <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)" }}>
           Commissioned work never enters the vault.
         </p>
@@ -357,14 +357,16 @@ function NewsPromo() {
 
   return (
     <form className="kiln-promo kiln-promo--news" onSubmit={subscribe}>
-      <h3 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.015em", lineHeight: 1.3 }}>
+      <h2 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.015em", lineHeight: 1.3 }}>
         Fresh drops, every Thursday.
-      </h3>
+      </h2>
       <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)", marginBottom: 8 }}>
         New assets and what they were built for, once a week.
       </p>
+      {/* Swapping the form for a paragraph is invisible to a screen reader
+          unless the paragraph announces itself — success was silent. */}
       {state === "sent" ? (
-        <p style={{ fontSize: 15, color: "var(--sage-ink)" }}>
+        <p role="status" aria-live="polite" style={{ fontSize: 15, color: "var(--sage-ink)" }}>
           You&rsquo;re on the list. First Thursday coming.
         </p>
       ) : (
@@ -376,6 +378,8 @@ function NewsPromo() {
             id="news-email"
             type="email"
             required
+            aria-invalid={state === "error" ? true : undefined}
+            aria-describedby={state === "error" ? "news-message" : undefined}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@email.com"
@@ -399,7 +403,7 @@ function NewsPromo() {
             {state === "sending" ? "Sending…" : "Subscribe"}
           </button>
           {state === "error" && (
-            <span role="alert" style={{ fontSize: 13, color: "var(--danger)" }}>
+            <span id="news-message" role="alert" style={{ fontSize: 13, color: "var(--danger)" }}>
               That did not go through. Try again.
             </span>
           )}

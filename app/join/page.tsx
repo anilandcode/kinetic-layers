@@ -38,6 +38,7 @@ export default async function Join({
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <a className="skip-link" href="#join">Skip to the form</a>
       <header style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div className="shell" style={{ height: 66, display: "flex", alignItems: "center", gap: 20 }}>
           <Link data-nav href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
@@ -50,7 +51,7 @@ export default async function Join({
         </div>
       </header>
 
-      <main style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(440px,100%),1fr))", minHeight: 0 }}>
+      <main id="join" style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(440px,100%),1fr))", minHeight: 0 }}>
         <section style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "70px var(--gutter)" }}>
           <JoinForm next={next} initialError={error} initialMode={mode === "signin" ? "signin" : "signup"} />
         </section>

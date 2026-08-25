@@ -4,8 +4,9 @@ import { Footer, Nav } from "@/components/kiln/Chrome";
 export default function NotFound() {
   return (
     <>
+      <a className="skip-link" href="#gone">Skip to the message</a>
       <Nav />
-      <main className="shell" style={{ paddingBlock: "120px 80px", display: "flex", flexDirection: "column", gap: 20, alignItems: "flex-start" }}>
+      <main id="gone" className="shell" style={{ paddingBlock: "120px 80px", display: "flex", flexDirection: "column", gap: 20, alignItems: "flex-start" }}>
         <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
           404
         </span>

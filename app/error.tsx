@@ -8,7 +8,8 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   }, [error]);
 
   return (
-    <main className="shell" style={{ paddingBlock: "120px 80px", display: "flex", flexDirection: "column", gap: 20, alignItems: "flex-start" }}>
+    <main id="failed" className="shell" style={{ paddingBlock: "120px 80px", display: "flex", flexDirection: "column", gap: 20, alignItems: "flex-start" }}>
+      <a className="skip-link" href="#failed">Skip to the message</a>
       <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
         Something broke
       </span>
