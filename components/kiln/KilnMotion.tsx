@@ -118,6 +118,13 @@ export default function KilnMotion() {
         return;
       }
       const target = evt.target as HTMLElement | null;
+
+      /* A control nested inside a link owns its own click. Cards wrap
+         everything in an <a>, and the copy-prompt button lives on top of the
+         preview — without this the capture below eats the click and navigates
+         to the very page that button exists to save you from opening. */
+      if (target?.closest("button, input, select, textarea, [role='button']")) return;
+
       const link = target?.closest<HTMLAnchorElement>("a[data-nav]");
       const href = link?.getAttribute("href");
       if (!link || !href || href.startsWith("#") || href.startsWith("http")) return;

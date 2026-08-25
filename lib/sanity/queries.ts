@@ -12,12 +12,21 @@ import type { Asset, Collection, Drop, Settings } from "@/lib/kiln/types";
  * happens, not by hoping a component forgets to render them.
  */
 
+/**
+ * Card projection.
+ *
+ * `promptLength` is the length ONLY, so a card knows whether it has a prompt
+ * to offer without the text itself ever leaving Sanity — length() evaluates
+ * server-side and what ships is a number. (Comments live out here because GROQ
+ * has no block-comment syntax; one inside the template is a parse error.)
+ */
 const ASSET_CARD = groq`{
   "slug": slug.current,
   name, type, stack, shelf, mood, free, tagline,
   "h": coalesce(previewHeight, 220),
   "g": coalesce(gradient, "linear-gradient(155deg,#1D2410,#0F0F0D 65%)"),
-  poster, clip, aspect
+  poster, clip, aspect,
+  "promptLength": length(coalesce(promptBody, ""))
 }`;
 
 const ASSET_FULL = groq`{

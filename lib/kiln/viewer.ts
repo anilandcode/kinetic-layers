@@ -40,25 +40,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   };
 });
 
-/**
- * The gate, in one place.
- *
- * Free assets need an account — the free tier is a reason to sign up, not a
- * reason to skip signing up. Everything else needs an active unlimited
- * entitlement. Both the item page and the download route ask this, so the UI
- * can never disagree with what the server will actually allow.
- */
-export function canDownload(viewer: Viewer | null, asset: Pick<Asset, "free">): boolean {
-  if (!viewer) return false;
-  return asset.free ? true : viewer.unlimited;
-}
-
-/** Why the gate is closed, for the copy on the item page. */
-export function gateReason(
-  viewer: Viewer | null,
-  asset: Pick<Asset, "free">
-): "open" | "needs-account" | "needs-unlimited" {
-  if (canDownload(viewer, asset)) return "open";
-  if (!viewer) return "needs-account";
-  return "needs-unlimited";
-}
+/* The rule itself is pure and lives in ./gate so client components can share
+   it. Re-exported here because every existing caller imports it from viewer,
+   and one import path is easier to keep honest than two. */
+export { canDownload, gateReason } from "./gate";

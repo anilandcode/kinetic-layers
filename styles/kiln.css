@@ -524,3 +524,102 @@ body:has(> .kiln-light) { background: #F6F4EE; color-scheme: light; }
 @media (prefers-reduced-motion: reduce) {
   .kiln-media__video { transition: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Filter chips: disabled, and the sort select
+--------------------------------------------------------------------------- */
+
+/* A chip with nothing behind it stays visible — so the shape of the taxonomy
+   is still legible — but stops inviting a click that would empty the grid. */
+.pill:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: none;
+}
+.pill:disabled:hover { filter: none; }
+.pill:disabled:active { transform: none; }
+
+/* The select borrows the pill's shape so the control row reads as one set.
+   appearance:none removes the platform chrome; the caret is drawn back in. */
+select.pill {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 13px top 55%, right 9px top 55%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+}
+select.pill option {
+  /* Options render in the platform's own list, which does not inherit the
+     page's dark surface on every OS — set both so the text is never
+     dark-on-dark. */
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* Search collapses rather than vanishing below the nav breakpoint. */
+@media (max-width: 1180px) {
+  [data-search-compact] {
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    width: 38px;
+    height: 38px;
+    justify-content: center !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+  [data-search-compact] > span { display: none; }
+  [data-search-compact]::before {
+    content: "";
+    width: 15px;
+    height: 15px;
+    border: 1.5px solid var(--muted);
+    border-radius: 50%;
+    box-shadow: 7px 7px 0 -6px var(--muted);
+    transform: translate(-2px, -2px) rotate(-45deg);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Copy-prompt on a card — components/kiln/CardCopy.tsx
+
+   Sits over the preview, revealed on hover or when focused. Focus matters as
+   much as hover: this is a real control, and a keyboard user tabbing to it
+   must be able to see where they are.
+--------------------------------------------------------------------------- */
+[data-card-copy] {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(232, 240, 216, 0.2);
+  background: rgba(11, 11, 10, 0.62);
+  backdrop-filter: blur(8px);
+  color: var(--sage-ink);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+}
+
+[data-card]:hover [data-card-copy],
+[data-card]:focus-within [data-card-copy],
+[data-card-copy]:focus-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Coarse pointers have no hover, so the button would never appear. Show it
+   outright there rather than hiding a feature behind a gesture phones lack. */
+@media (hover: none) {
+  [data-card-copy] { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-card-copy] { transition: opacity var(--t-fast) linear; transform: none; }
+}

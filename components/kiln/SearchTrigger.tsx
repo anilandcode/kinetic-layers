@@ -29,8 +29,12 @@ export default function SearchTrigger() {
 
   return (
     <>
+      {/* Narrow screens used to lose search entirely — data-hide-narrow removed
+          the only trigger and left ⌘K, which no phone has. The full field is
+          still the desktop affordance; below the breakpoint it collapses to an
+          icon button rather than disappearing. */}
       <button
-        data-hide-narrow
+        data-search-compact
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Search the vault"

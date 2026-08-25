@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Asset } from "@/lib/kiln/types";
 import PreviewMedia from "./PreviewMedia";
+import CardCopy from "./CardCopy";
 
 /**
  * The atom of the whole product.
@@ -14,10 +15,14 @@ import PreviewMedia from "./PreviewMedia";
 export default function AssetCard({
   asset,
   height,
+  canCopy = false,
 }: {
   asset: Asset;
   /** Overrides the ragged masonry height — used by the even grids. */
   height?: number;
+  /** Whether this viewer may already read the prompt. Decided by the caller
+      with the shared gate in lib/kiln/gate.ts, never guessed at here. */
+  canCopy?: boolean;
 }) {
   const h = height ?? asset.h;
 
@@ -35,8 +40,10 @@ export default function AssetCard({
           borderRadius: "var(--r-inner)",
           overflow: "hidden",
           background: asset.g,
+          position: "relative",
         }}
       >
+        {canCopy && asset.promptLength ? <CardCopy slug={asset.slug} name={asset.name} /> : null}
         <div data-preview-inner style={{ width: "100%", height: "100%" }}>
           <PreviewMedia
             gradient={asset.g}

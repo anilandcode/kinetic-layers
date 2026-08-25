@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import AssetCard from "./AssetCard";
-import { MOODS, SHELVES, type Asset, type Mood, type Shelf } from "@/lib/kiln/types";
+import { MOODS, SHELVES, type Asset, type Mood, type Shelf, type Viewer } from "@/lib/kiln/types";
+import { SORTS, SORT_LABEL, type Facets, type Sort } from "@/lib/kiln/facets";
+import { canDownload } from "@/lib/kiln/gate";
 
 /**
  * The library: a sticky filter bar over a masonry.
@@ -23,14 +25,19 @@ const PROMO_AT: Record<number, Promo> = { 4: "upgrade", 9: "hire", 14: "news" };
 export default function Library({
   assets,
   total,
+  facets,
+  sort,
   light = false,
-  signedIn = false,
+  viewer = null,
 }: {
   assets: Asset[];
   total: number;
+  facets: Facets;
+  sort: Sort;
   light?: boolean;
-  signedIn?: boolean;
+  viewer?: Viewer | null;
 }) {
+  const signedIn = Boolean(viewer);
   const router = useRouter();
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
@@ -87,17 +94,26 @@ export default function Library({
           style={{ paddingBlock: 14, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}
         >
           <div role="group" aria-label="Shelf" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {SHELVES.map((s) => (
-              <button
-                key={s}
-                type="button"
-                className="pill"
-                aria-pressed={shelf === s}
-                onClick={() => setParam("shelf", s === "All" ? null : s)}
-              >
-                {s}
-              </button>
-            ))}
+            {SHELVES.map((s) => {
+              /* The count answers "what would I get if I picked this", so it is
+                 measured with the other filters on but this one off. A chip
+                 with nothing behind it is disabled rather than left to
+                 promise an empty grid. */
+              const n = facets.shelf[s] ?? 0;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  className="pill"
+                  aria-pressed={shelf === s}
+                  disabled={n === 0 && shelf !== s}
+                  onClick={() => setParam("shelf", s === "All" ? null : s)}
+                >
+                  {s}
+                  <Count n={n} />
+                </button>
+              );
+            })}
           </div>
 
           <span
@@ -106,17 +122,22 @@ export default function Library({
           />
 
           <div role="group" aria-label="Mood" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {MOODS.map((m) => (
-              <button
-                key={m}
-                type="button"
-                className="pill pill--muted"
-                aria-pressed={mood === m}
-                onClick={() => setParam("mood", mood === m ? null : m)}
-              >
-                {m}
-              </button>
-            ))}
+            {MOODS.map((m) => {
+              const n = facets.mood[m] ?? 0;
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  className="pill pill--muted"
+                  aria-pressed={mood === m}
+                  disabled={n === 0 && mood !== m}
+                  onClick={() => setParam("mood", mood === m ? null : m)}
+                >
+                  {m}
+                  <Count n={n} />
+                </button>
+              );
+            })}
           </div>
 
           <div style={{ flex: 1 }} />
@@ -125,16 +146,36 @@ export default function Library({
             type="button"
             className="pill"
             aria-pressed={freeOnly}
+            disabled={facets.free === 0 && !freeOnly}
             onClick={() => setParam("free", freeOnly ? null : "1")}
           >
             Free only
+            <Count n={facets.free} />
           </button>
+
+          {/* Sort. URL-driven like the filters, so an ordering is shareable
+              and survives the back button. */}
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
+            <span className="visually-hidden">Sort the library</span>
+            <select
+              className="pill pill--muted"
+              value={sort}
+              onChange={(e) => setParam("sort", e.target.value === "newest" ? null : e.target.value)}
+              style={{ cursor: "pointer", paddingRight: 26 }}
+            >
+              {SORTS.map((s) => (
+                <option key={s} value={s}>
+                  {SORT_LABEL[s]}
+                </option>
+              ))}
+            </select>
+          </label>
           <span
             className="mono"
             aria-live="polite"
             style={{ fontSize: 10, color: "var(--faint)", opacity: pending ? 0.5 : 1 }}
           >
-            {assets.length} of {total}
+            {facets.matching} of {total}
           </span>
         </div>
       </div>
@@ -154,7 +195,7 @@ export default function Library({
             {stream.map((entry, i) =>
               entry.kind === "asset" ? (
                 <div data-reveal key={entry.asset.slug}>
-                  <AssetCard asset={entry.asset} />
+                  <AssetCard asset={entry.asset} canCopy={canDownload(viewer, entry.asset)} />
                 </div>
               ) : (
                 <div data-reveal key={`${entry.kind}-${i}`}>
@@ -308,5 +349,16 @@ function NewsPromo() {
         unsubscribe from any of them.
       </span>
     </form>
+  );
+}
+
+/** The number on a chip. Muted, and hidden from assistive tech because the
+    pill's own pressed state and label already carry the meaning — a screen
+    reader hearing "Motion 6 pressed" gains nothing from the 6. */
+function Count({ n }: { n: number }) {
+  return (
+    <span aria-hidden="true" className="mono" style={{ marginLeft: 6, fontSize: 9, opacity: 0.55 }}>
+      {n}
+    </span>
   );
 }

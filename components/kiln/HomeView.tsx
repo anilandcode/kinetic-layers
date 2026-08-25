@@ -4,6 +4,7 @@ import { Footer, Nav } from "@/components/kiln/Chrome";
 import Library from "@/components/kiln/Library";
 import { getAssets, getDrops, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kiln/viewer";
+import { applyFilters, asSort, countFacets, sortAssets } from "@/lib/kiln/facets";
 import { Spell } from "@/lib/kiln/words";
 import type { Drop, Mood, Shelf } from "@/lib/kiln/types";
 
@@ -15,7 +16,7 @@ import type { Drop, Mood, Shelf } from "@/lib/kiln/types";
  * correctly on first paint and works without JavaScript.
  */
 
-type Search = { shelf?: string; mood?: string; free?: string };
+type Search = { shelf?: string; mood?: string; free?: string; sort?: string };
 
 export default async function HomeView({
   light = false,
@@ -32,13 +33,16 @@ export default async function HomeView({
     getViewer(),
   ]);
 
-  const shelf = params.shelf as Shelf | undefined;
-  const mood = params.mood as Mood | undefined;
-  const freeOnly = params.free === "1";
+  const filters = {
+    shelf: params.shelf as Shelf | undefined,
+    mood: params.mood as Mood | undefined,
+    freeOnly: params.free === "1",
+  };
+  const sort = asSort(params.sort);
 
-  const assets = all.filter(
-    (a) => (!shelf || a.shelf === shelf) && (!mood || a.mood === mood) && (!freeOnly || a.free)
-  );
+  /* Counted before the sort, since order does not change what matches. */
+  const facets = countFacets(all, filters);
+  const assets = sortAssets(applyFilters(all, filters), sort);
 
   return (
     <div className={light ? "kiln-light" : undefined}>
@@ -125,7 +129,14 @@ export default async function HomeView({
         {/* ============ Library ============ */}
         <div id="library">
           <Suspense fallback={<div className="shell" style={{ paddingBlock: 80 }} />}>
-            <Library assets={assets} total={all.length} light={light} signedIn={Boolean(viewer)} />
+            <Library
+              assets={assets}
+              total={all.length}
+              facets={facets}
+              sort={sort}
+              light={light}
+              viewer={viewer}
+            />
           </Suspense>
         </div>
 
