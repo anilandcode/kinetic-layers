@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Avatar, Footer, Nav } from "@/components/kiln/Chrome";
 import DownloadFilter from "@/components/kiln/DownloadFilter";
 import DownloadAgain from "@/components/kiln/DownloadAgain";
+import ApiKeys from "@/components/kiln/ApiKeys";
 import { getViewer } from "@/lib/kiln/viewer";
 import { createClient } from "@/lib/supabase/server";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
@@ -24,11 +25,16 @@ export default async function Account({ searchParams }: { searchParams: Promise<
 
   /* Every one of these reads through RLS, so they can only ever return this
      user's rows — the filter is the policy, not the query. */
-  const [{ data: downloads }, { data: savedCollections }, { data: savedAssets }, settings, catalogue] =
+  const [{ data: downloads }, { data: savedCollections }, { data: savedAssets }, { data: apiKeys }, settings, catalogue] =
     await Promise.all([
       supabase.from("downloads").select("*").order("created_at", { ascending: false }).limit(50),
       supabase.from("saved_collections").select("collection_slug, created_at").order("created_at", { ascending: false }),
       supabase.from("saved_assets").select("asset_slug, created_at").order("created_at", { ascending: false }),
+      supabase
+        .from("api_keys")
+        .select("id, name, prefix, created_at, last_used")
+        .is("revoked_at", null)
+        .order("created_at", { ascending: false }),
       getSettings(),
       getAssets(),
     ]);
@@ -128,6 +134,8 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               </ul>
             )}
           </section>
+
+          <ApiKeys initial={apiKeys ?? []} />
 
           {/* --- Rail --- */}
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>

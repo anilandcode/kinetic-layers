@@ -70,6 +70,21 @@ export type Database = {
         Update: Record<string, never>;
         Relationships: [];
       };
+      api_keys: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          key_hash: string;
+          prefix: string;
+          created_at: Timestamp;
+          last_used: Timestamp | null;
+          revoked_at: Timestamp | null;
+        };
+        Insert: { user_id: string; name?: string; key_hash: string; prefix: string };
+        Update: { revoked_at?: Timestamp | null; last_used?: Timestamp | null; name?: string };
+        Relationships: [];
+      };
       saved_assets: {
         Row: { user_id: string; asset_slug: string; created_at: Timestamp };
         Insert: { user_id: string; asset_slug: string };

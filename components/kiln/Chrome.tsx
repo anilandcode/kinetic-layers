@@ -166,8 +166,20 @@ export function Footer({ light = false }: { light?: boolean }) {
         {/* These were three bare <span>s styled to read as links. Text that
             looks clickable and is not is worse than no link at all. */}
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+          <Link data-nav href="/docs" style={{ color: "inherit" }}>
+            Docs
+          </Link>
+          <Link data-nav href="/mcp" style={{ color: "inherit" }}>
+            MCP
+          </Link>
           <Link data-nav href="/license" style={{ color: "inherit" }}>
             License
+          </Link>
+          <Link data-nav href="/privacy" style={{ color: "inherit" }}>
+            Privacy
+          </Link>
+          <Link data-nav href="/terms" style={{ color: "inherit" }}>
+            Terms
           </Link>
           <Link data-nav href="/changelog" style={{ color: "inherit" }}>
             Changelog
