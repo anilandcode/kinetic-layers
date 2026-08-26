@@ -11,10 +11,18 @@ import type { Viewer } from "@/lib/kiln/types";
    and the active-link highlight run on the client.
    ============================================================ */
 
+/**
+ * Primary navigation.
+ *
+ * Account is deliberately NOT here. It was, and it was wrong twice over: for a
+ * signed-out visitor it is a link to a redirect to the sign-in page, and for a
+ * signed-in one it duplicates the avatar sitting a few pixels to its right.
+ * Nav is for places anyone might want to go; your own account is reached from
+ * the thing showing your own name.
+ */
 export const NAV = [
   { href: "/", label: "Library" },
   { href: "/collections", label: "Collections" },
-  { href: "/account", label: "Account" },
   { href: "/pricing", label: "Pricing" },
 ];
 
@@ -162,6 +170,13 @@ export function Footer({ light = false }: { light?: boolean }) {
               {item.label}
             </Link>
           ))}
+          {/* Account belongs here rather than in the primary nav, but it does
+              have to be somewhere: the avatar that normally reaches it is
+              hidden below 620px, and without this a signed-in visitor on a
+              phone would have no route to their own downloads. */}
+          <Link data-nav href="/account" style={{ color: "inherit" }}>
+            Account
+          </Link>
         </nav>
         {/* These were three bare <span>s styled to read as links. Text that
             looks clickable and is not is worse than no link at all. */}

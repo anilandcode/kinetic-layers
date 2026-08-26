@@ -34,7 +34,7 @@ export default async function Docs() {
           lead="Every asset ships with the output, the source, and the prompt that made it. The prompt is the part worth learning to edit."
         />
 
-        <section id="anatomy" className="shell" style={{ paddingBlock: "24px 10px", maxWidth: 760 }}>
+        <section id="anatomy" className="shell prose" style={{ paddingBlock: "24px 10px" }}>
           <h2 style={{ fontSize: 25, fontWeight: 500, letterSpacing: "-0.02em", marginBottom: 10 }}>
             The anatomy of an asset
           </h2>
@@ -55,7 +55,7 @@ export default async function Docs() {
           </dl>
         </section>
 
-        <section className="shell" style={{ paddingBlock: "26px 10px", maxWidth: 760 }}>
+        <section className="shell prose" style={{ paddingBlock: "26px 10px" }}>
           <h2 style={{ fontSize: 25, fontWeight: 500, letterSpacing: "-0.02em", marginBottom: 10 }}>
             Editing a prompt without breaking it
           </h2>
@@ -75,7 +75,7 @@ export default async function Docs() {
           </p>
         </section>
 
-        <section className="shell" style={{ paddingBlock: "26px 10px", maxWidth: 760 }}>
+        <section className="shell prose" style={{ paddingBlock: "26px 10px" }}>
           <h2 style={{ fontSize: 25, fontWeight: 500, letterSpacing: "-0.02em", marginBottom: 10 }}>
             From your editor
           </h2>
@@ -92,7 +92,7 @@ claude mcp add --transport http kiln https://your-kiln/api/mcp \\
   --header "Authorization: Bearer kiln_your_key"`}</Code>
         </section>
 
-        <section className="shell" style={{ paddingBlock: "26px 90px", maxWidth: 760 }}>
+        <section className="shell prose" style={{ paddingBlock: "26px 90px" }}>
           <h2 style={{ fontSize: 25, fontWeight: 500, letterSpacing: "-0.02em", marginBottom: 10 }}>
             What you may do with the result
           </h2>

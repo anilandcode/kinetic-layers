@@ -18,7 +18,7 @@ export function ProseHero({
 }) {
   return (
     <section className="shell" style={{ paddingBlock: "64px 30px" }}>
-      <div data-hero style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 660 }}>
+      <div className="prose" data-hero style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
           {eyebrow}
         </span>
@@ -36,9 +36,9 @@ export function DraftNote({ contact }: { contact: string }) {
   return (
     <section className="shell" style={{ paddingBottom: 8 }}>
       <p
+        className="prose"
         role="note"
         style={{
-          maxWidth: 660,
           fontSize: 14,
           lineHeight: 1.65,
           color: "var(--muted)",
@@ -64,7 +64,7 @@ export function DraftNote({ contact }: { contact: string }) {
 export function Terms({ id, items }: { id: string; items: Array<{ h: string; p: ReactNode }> }) {
   return (
     <section id={id} className="shell" style={{ paddingBlock: "34px 90px" }}>
-      <dl style={{ display: "flex", flexDirection: "column", gap: 0, margin: 0, maxWidth: 680 }}>
+      <dl className="prose" style={{ display: "flex", flexDirection: "column", gap: 0, margin: 0 }}>
         {items.map((t) => (
           <div key={t.h} data-reveal style={{ padding: "24px 0", borderTop: "1px solid var(--hairline)" }}>
             <dt style={{ fontSize: 19, fontWeight: 500, letterSpacing: "-0.015em", color: "var(--ink)", marginBottom: 8 }}>
@@ -81,7 +81,7 @@ export function Terms({ id, items }: { id: string; items: Array<{ h: string; p: 
 export function Code({ children }: { children: string }) {
   return (
     <pre
-      className="mono"
+      className="mono prose--wide"
       style={{
         margin: "14px 0 0",
         padding: "16px 18px",

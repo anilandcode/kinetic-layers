@@ -648,3 +648,29 @@ select.pill option {
 @media (prefers-reduced-motion: reduce) {
   .kiln-skel { animation: none; background: var(--surface-2); }
 }
+
+/* ---------------------------------------------------------------------------
+   Reading pages — docs, licence, privacy, terms, changelog.
+
+   The library is full-bleed on purpose: a grid of previews wants every pixel.
+   Prose does not. Removing the container cap left these pages hugging the left
+   edge of a wide monitor with two thirds of the screen empty beside them, which
+   is a worse read than the cap ever was.
+
+   So the shell stays full-bleed and the reading column centres inside it. The
+   measure is set here once rather than by a maxWidth on each page, which is how
+   four pages ended up with three different widths.
+--------------------------------------------------------------------------- */
+.prose {
+  width: 100%;
+  max-width: 68ch;
+  margin-inline: auto;
+}
+
+/* Wider than the text, so a code block or a definition row can breathe without
+   dragging the prose measure out with it. */
+.prose--wide {
+  width: 100%;
+  max-width: 82ch;
+  margin-inline: auto;
+}

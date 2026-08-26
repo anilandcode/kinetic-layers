@@ -27,7 +27,7 @@ export default async function Changelog() {
 
       <main>
         <section className="shell" style={{ paddingBlock: "64px 34px" }}>
-          <div data-hero style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 640 }}>
+          <div className="prose" data-hero style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
               Changelog
             </span>
@@ -41,7 +41,7 @@ export default async function Changelog() {
           </div>
         </section>
 
-        <section id="log" className="shell" style={{ paddingBottom: 90 }}>
+        <section id="log" className="shell prose" style={{ paddingBottom: 90 }}>
           {drops.length === 0 ? (
             <p style={{ color: "var(--muted)", fontSize: 16, paddingBlock: 40 }}>
               No drops published yet.

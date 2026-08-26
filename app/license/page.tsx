@@ -61,7 +61,7 @@ export default async function License() {
 
       <main>
         <section className="shell" style={{ paddingBlock: "64px 30px" }}>
-          <div data-hero style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 640 }}>
+          <div className="prose" data-hero style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
               License
             </span>
@@ -76,11 +76,10 @@ export default async function License() {
 
         {/* Said plainly and on the page, not buried in a code comment: this
             text has not been through legal review. */}
-        <section className="shell" style={{ paddingBottom: 8 }}>
+        <section className="shell prose" style={{ paddingBottom: 8 }}>
           <p
             role="note"
             style={{
-              maxWidth: 640,
               fontSize: 14,
               lineHeight: 1.65,
               color: "var(--muted)",
@@ -102,8 +101,8 @@ export default async function License() {
           </p>
         </section>
 
-        <section id="terms" className="shell" style={{ paddingBlock: "34px 90px" }}>
-          <dl style={{ display: "flex", flexDirection: "column", gap: 0, margin: 0, maxWidth: 680 }}>
+        <section id="terms" className="shell prose" style={{ paddingBlock: "34px 90px" }}>
+          <dl style={{ display: "flex", flexDirection: "column", gap: 0, margin: 0 }}>
             {TERMS.map((t) => (
               <div
                 key={t.h}
@@ -118,7 +117,7 @@ export default async function License() {
             ))}
           </dl>
 
-          <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--muted)", maxWidth: 640, paddingTop: 30 }}>
+          <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--muted)", paddingTop: 30 }}>
             Not sure whether something is allowed? Ask rather than guess —{" "}
             <a href={`mailto:${contact}`} style={{ color: "var(--sage)" }}>
               {contact}

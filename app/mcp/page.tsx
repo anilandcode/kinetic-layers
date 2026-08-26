@@ -46,7 +46,7 @@ export default async function Mcp() {
           lead="Browsing a gallery to copy a string into another window is the long way round. Connect Kiln over MCP and your agent can search the catalogue and pull a prompt straight into what it is building."
         />
 
-        <section id="connect" className="shell" style={{ paddingBlock: "24px 20px", maxWidth: 760 }}>
+        <section id="connect" className="shell prose" style={{ paddingBlock: "24px 20px" }}>
           <h2 style={{ fontSize: 24, fontWeight: 500, letterSpacing: "-0.02em", marginBottom: 8 }}>
             1. Get a key
           </h2>
@@ -93,7 +93,7 @@ export default async function Mcp() {
           </p>
         </section>
 
-        <section className="shell" style={{ paddingBlock: "30px 20px", maxWidth: 760 }}>
+        <section className="shell prose" style={{ paddingBlock: "30px 20px" }}>
           <h2 style={{ fontSize: 24, fontWeight: 500, letterSpacing: "-0.02em", marginBottom: 6 }}>
             The tools
           </h2>
@@ -109,7 +109,7 @@ export default async function Mcp() {
           </dl>
         </section>
 
-        <section className="shell" style={{ paddingBlock: "20px 90px", maxWidth: 760 }}>
+        <section className="shell prose" style={{ paddingBlock: "20px 90px" }}>
           <h2 style={{ fontSize: 24, fontWeight: 500, letterSpacing: "-0.02em", marginBottom: 8 }}>
             What it will refuse
           </h2>
