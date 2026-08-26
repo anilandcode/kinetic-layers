@@ -12,11 +12,15 @@ import { track } from "@/lib/track";
  *
  * It only renders when the gate is already open for this viewer. That is a
  * convenience, not a security decision: /api/prompt re-checks entitlement with
- * the same canDownload before returning a single character, so hiding or
+ * the same canReadPrompt before returning a single character, so hiding or
  * showing this button changes nothing about what a determined visitor can get.
+ *
+ * This is one of four doors to a prompt, and it spends from the same daily
+ * budget as the other three. A card that quietly worked after the item page
+ * had started refusing would be a per-route allowance pretending to be one.
  */
 export default function CardCopy({ slug, name }: { slug: string; name: string }) {
-  const [state, setState] = useState<"idle" | "working" | "done" | "failed">("idle");
+  const [state, setState] = useState<"idle" | "working" | "done" | "failed" | "spent">("idle");
 
   async function copy(evt: React.MouseEvent) {
     /* The card is a Link wrapping everything. Without both of these, copying
@@ -33,6 +37,13 @@ export default function CardCopy({ slug, name }: { slug: string; name: string })
         body: JSON.stringify({ slug }),
       });
       const json = await res.json();
+      if (res.status === 429) {
+        /* Out of allowance, not broken. Held rather than reset on a timer —
+           the next one will not work either, and a button that flips back to
+           "Copy prompt" invites a second pointless click. */
+        setState("spent");
+        return;
+      }
       if (!res.ok || !json.prompt) {
         setState("failed");
         return;
@@ -54,6 +65,7 @@ export default function CardCopy({ slug, name }: { slug: string; name: string })
     working: "Copying…",
     done: "Copied",
     failed: "Open the item page",
+    spent: "Daily limit reached",
   }[state];
 
   return (
@@ -61,7 +73,7 @@ export default function CardCopy({ slug, name }: { slug: string; name: string })
       type="button"
       data-card-copy
       onClick={copy}
-      disabled={state === "working"}
+      disabled={state === "working" || state === "spent"}
       /* The card's own aria-label names the asset; this needs to say which
          asset it copies, or a screen-reader user hears fifteen identical
          "Copy prompt" buttons. */

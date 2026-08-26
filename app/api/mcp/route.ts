@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { canDownload } from "@/lib/kiln/viewer";
+import { canReadPrompt } from "@/lib/kiln/gate";
 import { keyFromRequest, viewerFromApiKey } from "@/lib/kiln/apikey";
+import { checkQuota, quotaRefusal, recordUse, subjectFor, type Subject } from "@/lib/kiln/quota";
+import { describeReset } from "@/lib/kiln/limits";
 import { getAsset, getAssets, getPromptBody, searchAssets } from "@/lib/sanity/queries";
 import { SITE_URL } from "@/lib/kiln/site";
 import type { Viewer } from "@/lib/kiln/types";
@@ -60,7 +62,7 @@ const TOOLS = [
   {
     name: "get_prompt",
     description:
-      "Read the full prompt text for one asset. Requires a Kiln API key; paid assets additionally require an active unlimited subscription. Free assets need only an account.",
+      "Read the full prompt text for one asset. Free assets are readable without a key at a low daily rate; a Kiln API key raises the allowance, and paid assets require a key on an active unlimited subscription. Every read counts against the same daily budget as the website.",
     inputSchema: {
       type: "object",
       properties: { slug: { type: "string", description: "The asset slug from search_assets." } },
@@ -74,7 +76,12 @@ const TOOLS = [
   },
 ] as const;
 
-async function runTool(name: string, args: Record<string, unknown>, viewer: Viewer | null) {
+async function runTool(
+  name: string,
+  args: Record<string, unknown>,
+  viewer: Viewer | null,
+  subject: Subject
+) {
   if (name === "list_categories") {
     const assets = await getAssets();
     const tally: Record<string, number> = {};
@@ -116,8 +123,11 @@ async function runTool(name: string, args: Record<string, unknown>, viewer: View
     const asset = await getAsset(slug);
     if (!asset) return { error: `No asset with slug "${slug}".` };
 
-    /* The same question the website asks. Not a copy of the rule — the rule. */
-    if (!canDownload(viewer, asset)) {
+    /* canReadPrompt, the same predicate the website asks — not a copy of the
+       rule, the rule. An unkeyed agent is treated exactly like an anonymous
+       browser: a free asset's prompt, once a day. Using canDownload here would
+       have made this the one door with its own policy. */
+    if (!canReadPrompt(viewer, asset)) {
       return {
         error: viewer
           ? `"${asset.name}" is included with unlimited. Your key is on the free plan. ${SITE_URL}/pricing`
@@ -125,9 +135,25 @@ async function runTool(name: string, args: Record<string, unknown>, viewer: View
       };
     }
 
+    /* The same meter the website uses, against the same subject. Without this
+       an API key could read the whole catalogue in a loop while the browser
+       paths were carefully rationed — a quota with a back door is decoration. */
+    const quota = await checkQuota(subject, "prompt");
+    if (!quota.allowed) {
+      const { body: refusal } = quotaRefusal("prompt", quota);
+      return {
+        error: `${refusal.message} Resets in ${describeReset(quota.resetsAt)}. ${SITE_URL}/pricing`,
+      };
+    }
+
     const prompt = await getPromptBody(slug);
     if (!prompt) return { error: `"${asset.name}" has no prompt attached — it ships as files.` };
-    return { text: `${asset.name}\n${"—".repeat(asset.name.length)}\n\n${prompt}` };
+
+    await recordUse(subject, "prompt", slug);
+    const left = Math.max(0, quota.remaining - 1);
+    return {
+      text: `${asset.name}\n${"—".repeat(asset.name.length)}\n\n${prompt}\n\n---\n${left} of ${quota.limit} prompt reads left today.`,
+    };
   }
 
   return { error: `Unknown tool: ${name}` };
@@ -155,7 +181,7 @@ export async function POST(request: Request) {
       capabilities: { tools: { listChanged: false } },
       serverInfo: { name: "kiln", version: "1.0.0" },
       instructions:
-        "Kiln is a library of prompts, templates, scenes and agent workflows. Use search_assets to find something, then get_prompt with its slug to read the prompt in full. Reading a prompt needs an API key from the Kiln account page; paid assets need an unlimited subscription.",
+        "Kiln is a library of prompts, templates, scenes and agent workflows. Use search_assets to find something, then get_prompt with its slug to read the prompt in full. Prompt reads are rate limited per day and share one budget with the website; an API key from the Kiln account page raises the allowance, and paid assets need a key on an unlimited subscription.",
     });
   }
 
@@ -170,9 +196,12 @@ export async function POST(request: Request) {
     /* Resolved per request. There is no session to cache and a key can be
        revoked between calls, so it is checked every time. */
     const viewer = await viewerFromApiKey(keyFromRequest(request));
+    /* An unkeyed agent is metered like an anonymous browser: same subject
+       derivation, same allowance, one shared budget. */
+    const subject = await subjectFor(viewer, request);
 
     try {
-      const out = await runTool(name, args, viewer);
+      const out = await runTool(name, args, viewer, subject);
       return out.error ? toolError(id, out.error) : text(id, out.text!);
     } catch (err) {
       console.error("mcp tool failed:", name, err);

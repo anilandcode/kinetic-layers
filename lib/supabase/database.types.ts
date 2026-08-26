@@ -85,6 +85,24 @@ export type Database = {
         Update: { revoked_at?: Timestamp | null; last_used?: Timestamp | null; name?: string };
         Relationships: [];
       };
+      usage: {
+        Row: {
+          id: number;
+          subject: string;
+          user_id: string | null;
+          kind: "prompt" | "download";
+          asset_slug: string;
+          created_at: Timestamp;
+        };
+        Insert: {
+          subject: string;
+          user_id?: string | null;
+          kind: "prompt" | "download";
+          asset_slug: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
       saved_assets: {
         Row: { user_id: string; asset_slug: string; created_at: Timestamp };
         Insert: { user_id: string; asset_slug: string };

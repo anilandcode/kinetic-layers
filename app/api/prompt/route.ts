@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getViewer, canDownload } from "@/lib/kiln/viewer";
+import { getViewer } from "@/lib/kiln/viewer";
+import { canReadPrompt } from "@/lib/kiln/gate";
+import { checkQuota, quotaRefusal, recordUse, subjectFor } from "@/lib/kiln/quota";
 import { getAsset, getPromptBody } from "@/lib/sanity/queries";
 
 /**
@@ -35,7 +37,9 @@ export async function POST(request: NextRequest) {
 
   const viewer = await getViewer();
 
-  if (!canDownload(viewer, asset)) {
+  /* canReadPrompt, not canDownload: an anonymous visitor may read a free
+     asset's prompt but still may not take its files. */
+  if (!canReadPrompt(viewer, asset)) {
     return NextResponse.json(
       {
         ok: false,
@@ -46,6 +50,19 @@ export async function POST(request: NextRequest) {
       },
       { status: viewer ? 403 : 401 }
     );
+  }
+
+  /* Entitled, but possibly not right now. The order matters: a paid asset must
+     refuse a free account with 403 whatever their remaining allowance is, so
+     eligibility is settled before frequency. */
+  const subject = await subjectFor(viewer, request);
+  const quota = await checkQuota(subject, "prompt");
+  if (!quota.allowed) {
+    const { body: refusal, retryAfter } = quotaRefusal("prompt", quota);
+    return NextResponse.json(refusal, {
+      status: 429,
+      headers: retryAfter ? { "Retry-After": String(retryAfter) } : undefined,
+    });
   }
 
   /* Only fetched after the check passes. getPromptBody is the one query that
@@ -60,5 +77,16 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  return NextResponse.json({ ok: true, prompt });
+  /* Recorded only once the text is definitely going out, so a missing prompt
+     or a failed fetch never costs someone a unit. */
+  await recordUse(subject, "prompt", slug);
+
+  return NextResponse.json({
+    ok: true,
+    prompt,
+    /* The client shows what is left; it is already spending the unit, so it
+       may as well be told rather than made to guess. */
+    remaining: Math.max(0, quota.remaining - 1),
+    limit: quota.limit,
+  });
 }

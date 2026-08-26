@@ -8,6 +8,7 @@ import ApiKeys from "@/components/kiln/ApiKeys";
 import { getViewer } from "@/lib/kiln/viewer";
 import { createClient } from "@/lib/supabase/server";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
+import { LIMITS, WINDOW_MS, tierOf } from "@/lib/kiln/limits";
 
 export const metadata: Metadata = { title: "Account", robots: { index: false, follow: false } };
 
@@ -25,7 +26,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
 
   /* Every one of these reads through RLS, so they can only ever return this
      user's rows — the filter is the policy, not the query. */
-  const [{ data: downloads }, { data: savedCollections }, { data: savedAssets }, { data: apiKeys }, settings, catalogue] =
+  const [{ data: downloads }, { data: savedCollections }, { data: savedAssets }, { data: apiKeys }, { data: recentUsage }, settings, catalogue] =
     await Promise.all([
       supabase.from("downloads").select("*").order("created_at", { ascending: false }).limit(50),
       supabase.from("saved_collections").select("collection_slug, created_at").order("created_at", { ascending: false }),
@@ -35,6 +36,12 @@ export default async function Account({ searchParams }: { searchParams: Promise<
         .select("id, name, prefix, created_at, last_used")
         .is("revoked_at", null)
         .order("created_at", { ascending: false }),
+      /* Reads through RLS, which restricts usage rows to their owner — the
+         same policy the meter itself relies on. */
+      supabase
+        .from("usage")
+        .select("kind")
+        .gte("created_at", new Date(Date.now() - WINDOW_MS).toISOString()),
       getSettings(),
       getAssets(),
     ]);
@@ -48,6 +55,12 @@ export default async function Account({ searchParams }: { searchParams: Promise<
      resolves it at render rather than denormalising a column, which also means
      rows written before today filter correctly instead of only new ones. */
   const typeOf = new Map(catalogue.map((a) => [a.slug, a.type]));
+
+  /* Today's meter, against this viewer's own tier. Rolling 24 hours, so this
+     is "in the last day" rather than "since midnight". */
+  const allowance = LIMITS[tierOf(viewer)];
+  const usedPrompts = (recentUsage ?? []).filter((u) => u.kind === "prompt").length;
+  const usedDownloads = (recentUsage ?? []).filter((u) => u.kind === "download").length;
 
   /* The chips used to be a hardcoded "Templates / Scenes / Prompts", which
      matched none of the eight types the catalogue actually uses. Deriving them
@@ -85,6 +98,14 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           <Stat label="This month" value={String(thisMonth)} note={thisMonth === 1 ? "1 file" : `${thisMonth} files`} big />
           <Stat label="Saved" value={String(savedTotal)} note="assets and collections" big />
           <Stat label="Plan" value={viewer.unlimited ? "Unlimited" : "Free"} note={viewer.unlimited ? "full vault" : `${settings.freeThisMonth} free assets`} />
+          {/* Rolling 24 hours, not since midnight — the meter is a moving
+              window, so a tile that reset at a fixed hour would disagree with
+              the thing actually refusing requests. */}
+          <Stat
+            label="Today"
+            value={`${usedPrompts}/${allowance.prompt}`}
+            note={`prompts · ${usedDownloads}/${allowance.download} downloads`}
+          />
         </section>
 
         <div

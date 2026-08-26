@@ -3,12 +3,16 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { Settings, Viewer } from "@/lib/kiln/types";
+import { LIMITS, describeAllowance } from "@/lib/kiln/limits";
 
 /* These read the live counts rather than repeating them. A hardcoded "All 240
    assets" beside a price pulled from settings is a promise that silently stops
    being true the moment the catalogue differs — which it did. */
 const freeFeatures = (s: Settings) => [
   `${s.freeThisMonth} assets, free to any account`,
+  /* From LIMITS, not typed out here. The number promised and the number
+     enforced are the same variable, so they cannot drift. */
+  `Fair use: ${describeAllowance("free")}`,
   "Full output files, partial source",
   "Personal projects only",
   "No card required",
@@ -16,6 +20,7 @@ const freeFeatures = (s: Settings) => [
 
 const paidFeatures = (s: Settings) => [
   `All ${s.totalAssets} assets across the shelves`,
+  `Fair use: ${describeAllowance("unlimited")}`,
   "Every source file: prompts, scenes, weights, configs",
   "New assets every Thursday",
   `All ${s.collectionCount} collections`,
@@ -25,6 +30,16 @@ const paidFeatures = (s: Settings) => [
 
 const rows = (s: Settings) => [
   { label: "Assets available", free: String(s.freeThisMonth), paid: String(s.totalAssets) },
+  {
+    label: "Prompt reads a day",
+    free: String(LIMITS.free.prompt),
+    paid: String(LIMITS.unlimited.prompt),
+  },
+  {
+    label: "Downloads a day",
+    free: String(LIMITS.free.download),
+    paid: String(LIMITS.unlimited.download),
+  },
   { label: "New drops every Thursday", free: "—", paid: "Included" },
   { label: "Source files & prompt text", free: "Partial", paid: "Everything" },
   { label: "Commercial use in client work", free: "—", paid: "Unlimited" },

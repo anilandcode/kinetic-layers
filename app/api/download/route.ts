@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { admin } from "@/lib/supabase/admin";
 import { getViewer, canDownload } from "@/lib/kiln/viewer";
+import { checkQuota, quotaRefusal, recordUse, subjectFor } from "@/lib/kiln/quota";
 import { getAsset, getAssetFiles } from "@/lib/sanity/queries";
 
 /**
@@ -50,6 +51,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  /* Entitlement is settled; this only decides how often. Anonymous never
+     reaches here — canDownload has already refused them — so the zero
+     allowance in LIMITS is a belt to that braces. */
+  const subject = await subjectFor(viewer, request);
+  const quota = await checkQuota(subject, "download");
+  if (!quota.allowed) {
+    const { body: refusal, retryAfter } = quotaRefusal("download", quota);
+    return NextResponse.json(refusal, {
+      status: 429,
+      headers: retryAfter ? { "Retry-After": String(retryAfter) } : undefined,
+    });
+  }
+
   const files = await getAssetFiles(slug);
   const wanted = typeof body.file === "string" ? body.file : "";
   const file = wanted ? files.find((f) => f.name === wanted) : files[0];
@@ -84,5 +98,18 @@ export async function POST(request: NextRequest) {
     bytes: file.bytes ?? null,
   });
 
-  return NextResponse.json({ ok: true, url: data.signedUrl, name: file.name, expiresIn: SIGNED_URL_TTL });
+  /* Two tables on purpose: `downloads` is the receipt a user reads on their
+     account page, `usage` is the meter. Deriving one from the other would tie
+     a history feature to a rate limit, and the meter also has to hold rows
+     with no user at all. */
+  await recordUse(subject, "download", slug);
+
+  return NextResponse.json({
+    ok: true,
+    url: data.signedUrl,
+    name: file.name,
+    expiresIn: SIGNED_URL_TTL,
+    remaining: Math.max(0, quota.remaining - 1),
+    limit: quota.limit,
+  });
 }

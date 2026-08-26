@@ -4,6 +4,7 @@ import { Footer, Nav } from "@/components/kiln/Chrome";
 import { Code, ProseHero } from "@/components/kiln/Prose";
 import { getViewer } from "@/lib/kiln/viewer";
 import { getSettings } from "@/lib/sanity/queries";
+import { LIMITS, describeAllowance } from "@/lib/kiln/limits";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/docs" },
@@ -90,6 +91,30 @@ export default async function Docs() {
           <Code>{`# in Claude Code
 claude mcp add --transport http kiln https://your-kiln/api/mcp \\
   --header "Authorization: Bearer kiln_your_key"`}</Code>
+        </section>
+
+        <section className="shell prose" style={{ paddingBlock: "26px 10px" }}>
+          <h2 style={{ fontSize: 25, fontWeight: 500, letterSpacing: "-0.02em", marginBottom: 10 }}>
+            Daily limits
+          </h2>
+          <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--muted)" }}>
+            Reading a prompt and downloading a file each count against a daily
+            allowance: {describeAllowance("free")} on a free account,{" "}
+            {describeAllowance("unlimited")} on unlimited. Without an account you
+            can read {LIMITS.anon.prompt} free prompt a day and download nothing.
+          </p>
+          <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--muted)", marginTop: 16 }}>
+            The window rolls: an allowance frees up twenty-four hours after it
+            was spent, not at midnight. Browsing costs nothing — the item page
+            only spends a read when you press <em>Reveal the prompt</em>. The
+            same budget covers the website, the copy button on a library card
+            and the MCP endpoint, so an agent and a browser draw on one pot.
+          </p>
+          <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--muted)", marginTop: 16 }}>
+            These are here to stop a script taking the catalogue in an
+            afternoon, not to ration real use. If you are hitting them doing
+            ordinary work, that is a bug in the number — say so.
+          </p>
         </section>
 
         <section className="shell prose" style={{ paddingBlock: "26px 90px" }}>

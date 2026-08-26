@@ -19,12 +19,39 @@ export function canDownload(viewer: Viewer | null, asset: Pick<Asset, "free">): 
   return asset.free ? true : viewer.unlimited;
 }
 
+/**
+ * Reading a prompt is a looser rule than taking a file.
+ *
+ * A stranger may read a free asset's prompt — enough to see the prompts are
+ * real, which is the free tier's whole job — while files still require an
+ * account. The two shared `canDownload` until anonymous gained a prompt
+ * allowance, and could not keep sharing it: they are different resources with
+ * different costs, so they get different predicates rather than one with a flag.
+ *
+ * Eligibility only. How OFTEN is lib/kiln/quota.ts, and both are re-asked
+ * server-side before anything is released.
+ */
+export function canReadPrompt(viewer: Viewer | null, asset: Pick<Asset, "free">): boolean {
+  if (!viewer) return asset.free;
+  return asset.free ? true : viewer.unlimited;
+}
+
 /** Why the gate is closed, for the copy on the item page. */
 export function gateReason(
   viewer: Viewer | null,
   asset: Pick<Asset, "free">
 ): "open" | "needs-account" | "needs-unlimited" {
   if (canDownload(viewer, asset)) return "open";
+  if (!viewer) return "needs-account";
+  return "needs-unlimited";
+}
+
+/** The same question for prompts, which an anonymous visitor can now pass. */
+export function promptGateReason(
+  viewer: Viewer | null,
+  asset: Pick<Asset, "free">
+): "open" | "needs-account" | "needs-unlimited" {
+  if (canReadPrompt(viewer, asset)) return "open";
   if (!viewer) return "needs-account";
   return "needs-unlimited";
 }

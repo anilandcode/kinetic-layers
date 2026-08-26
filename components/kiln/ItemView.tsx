@@ -475,34 +475,48 @@ function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unl
   const [full, setFull] = useState<string | null>(null);
   const [failed, setFailed] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [left, setLeft] = useState<{ remaining: number; limit: number } | null>(null);
 
   useEffect(() => {
-    if (gate !== "open") {
-      /* Recorded where the visitor actually meets the paywall, which is the
-         number worth watching during validation. */
-      track("gate_hit", `${gate}:${asset.slug}`);
-      return;
-    }
-    let live = true;
-    (async () => {
-      try {
-        const res = await fetch("/api/prompt", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ slug: asset.slug }),
-        });
-        const json = await res.json();
-        if (!live) return;
-        if (res.ok) setFull(json.prompt);
-        else setFailed(json.message ?? "Could not load the prompt.");
-      } catch {
-        if (live) setFailed("Network trouble loading the prompt.");
-      }
-    })();
-    return () => {
-      live = false;
-    };
+    /* Recorded where the visitor actually meets the paywall, which is the
+       number worth watching during validation. */
+    if (gate !== "open") track("gate_hit", `${gate}:${asset.slug}`);
   }, [gate, asset.slug]);
+
+  /**
+   * Fetched on click, not on mount.
+   *
+   * This used to load the moment the page opened, which was the right call
+   * when reads were free and the wrong one the instant they were metered:
+   * browsing the library would have quietly spent someone's daily allowance.
+   * Now the unit is spent when they ask for it, which is also the only version
+   * that can be explained honestly on the button.
+   */
+  async function reveal() {
+    if (full || loading) return;
+    setLoading(true);
+    setFailed(null);
+    try {
+      const res = await fetch("/api/prompt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: asset.slug }),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        setFull(json.prompt);
+        if (typeof json.remaining === "number") setLeft({ remaining: json.remaining, limit: json.limit });
+        track("download", `prompt:${asset.slug}`);
+      } else {
+        setFailed(json.message ?? "Could not load the prompt.");
+      }
+    } catch {
+      setFailed("Network trouble loading the prompt.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function copy() {
     if (!full) return;
@@ -535,14 +549,21 @@ function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unl
           The prompt
         </span>
         {gate === "open" && full && (
-          <button
-            type="button"
-            onClick={copy}
-            className="btn btn--ghost"
-            style={{ padding: "6px 12px", fontSize: 12 }}
-          >
-            {copied ? "Copied" : "Copy"}
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {left && (
+              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
+                {left.remaining} OF {left.limit} LEFT TODAY
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={copy}
+              className="btn btn--ghost"
+              style={{ padding: "6px 12px", fontSize: 12 }}
+            >
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
         )}
       </div>
 
@@ -580,10 +601,35 @@ function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unl
           lines.map((l, i) => <span key={i}>{l}</span>)
         )}
 
-        {gate === "open" && !full && !failed && (
-          <span style={{ color: "var(--faint)" }}>Loading the rest…</span>
+        {/* Entitled but not yet revealed: the blur is gone (they may have it)
+            but the text has not been spent yet. */}
+        {gate === "open" && !full && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 16,
+              marginTop: 8,
+              paddingTop: 14,
+              borderTop: "1px solid var(--line)",
+              flexWrap: "wrap",
+            }}
+          >
+            <span style={{ color: "var(--faint)", fontSize: 10, letterSpacing: "0.1em" }}>
+              {failed ?? `${hidden.toLocaleString()} characters hidden`}
+            </span>
+            <button
+              type="button"
+              onClick={reveal}
+              disabled={loading}
+              className="btn btn--primary"
+              style={{ padding: "8px 14px", fontSize: 13 }}
+            >
+              {loading ? "Opening…" : "Reveal the prompt"}
+            </button>
+          </div>
         )}
-        {gate === "open" && failed && <span style={{ color: "var(--faint)" }}>{failed}</span>}
 
         {gate !== "open" && hidden > 0 && (
           <>
@@ -618,7 +664,9 @@ function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unl
 
       <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
         {gate === "open"
-          ? `${(full ?? "").length.toLocaleString()} characters, yours to edit. It also ships in the download.`
+          ? full
+            ? `${full.length.toLocaleString()} characters, yours to edit. It also ships in the download.`
+            : "Opening it counts against your daily allowance. Browsing does not."
           : "Two real lines, then the rest. The count is exact — there is something behind it."}
       </p>
     </section>
