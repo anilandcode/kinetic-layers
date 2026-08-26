@@ -27,6 +27,7 @@ export default function ItemView({
   gate,
   saved: initiallySaved,
   monthlyPrice,
+  chrome = true,
 }: {
   asset: Asset;
   related: Asset[];
@@ -36,6 +37,15 @@ export default function ItemView({
   gate: Gate;
   saved: boolean;
   monthlyPrice: number;
+  /**
+   * False inside the modal.
+   *
+   * The detail and the page chrome live in one component rather than two,
+   * because splitting three hundred lines of layout to gain a second entry
+   * point is a lot of risk for no behaviour. The modal wants the asset, not a
+   * second Nav and Footer inside a dialog.
+   */
+  chrome?: boolean;
 }) {
   const [shot, setShot] = useState(0);
   /* `true` means the main button; a string means that named file's row. */
@@ -94,12 +104,15 @@ export default function ItemView({
 
   return (
     <>
-      <a className="skip-link" href="#shot">
-        Skip to the preview
-      </a>
-      <Nav viewer={viewer} />
+      {chrome && (
+        <a className="skip-link" href="#shot">
+          Skip to the preview
+        </a>
+      )}
+      {chrome && <Nav viewer={viewer} />}
 
       <main>
+        {chrome && (
         <nav
           className="shell mono"
           aria-label="Breadcrumb"
@@ -109,12 +122,22 @@ export default function ItemView({
             Library
           </Link>
           <span aria-hidden="true">/</span>
-          <Link data-nav href={`/?shelf=${asset.shelf}`} style={{ color: "var(--faint)" }}>
-            {asset.shelf}
-          </Link>
-          <span aria-hidden="true">/</span>
+          {/* Was /?shelf= — the library stopped reading that param when the
+              bar collapsed to one row, which would have made this a link that
+              silently showed everything. Category is what the bar filters by
+              now; assets without one lose the segment rather than get a link
+              to nothing. */}
+          {asset.category && (
+            <>
+              <Link data-nav href={`/?category=${encodeURIComponent(asset.category)}`} style={{ color: "var(--faint)" }}>
+                {asset.category}
+              </Link>
+              <span aria-hidden="true">/</span>
+            </>
+          )}
           <span style={{ color: "var(--muted)" }}>{asset.name}</span>
         </nav>
+        )}
 
         <div
           className="shell"
@@ -282,7 +305,10 @@ export default function ItemView({
                 play="auto"
                 priority
                 style={{
-                  height: 520,
+                  /* Shorter in the dialog. At 520 the prompt landed ~690px
+                     down, so the one control the popup exists for was below
+                     the fold and needed a scroll to reach. */
+                  height: chrome ? 520 : 300,
                   borderRadius: "var(--r-card)",
                 }}
               >
@@ -341,6 +367,14 @@ export default function ItemView({
               )}
             </div>
 
+            {/* In the modal the prompt comes first: the reason someone opened
+                a popup is to read and copy it, and burying that under a spec
+                table means scrolling a dialog to reach the point of it. On the
+                full page the original order stands. */}
+            {!chrome && asset.promptLength ? (
+              <PromptGate asset={asset} gate={gate} unlockHref={unlockHref} />
+            ) : null}
+
             <section data-reveal style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 22 }}>
               <h2 style={{ fontSize: 26, fontWeight: 500, letterSpacing: "-0.02em" }}>What this is</h2>
               <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)", maxWidth: 640 }}>
@@ -348,8 +382,7 @@ export default function ItemView({
               </p>
             </section>
 
-            {/* --- The gate --- */}
-            {asset.promptLength ? (
+            {chrome && asset.promptLength ? (
               <PromptGate asset={asset} gate={gate} unlockHref={unlockHref} />
             ) : null}
 
@@ -427,7 +460,7 @@ export default function ItemView({
 
         </div>
 
-        {related.length > 0 && (
+        {chrome && related.length > 0 && (
           <section data-reveal className="shell" style={{ paddingBlock: "64px 90px" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", paddingBottom: 20, gap: 20 }}>
               <h2 style={{ fontSize: 26, fontWeight: 500, letterSpacing: "-0.02em" }}>
@@ -450,7 +483,7 @@ export default function ItemView({
         )}
       </main>
 
-      <Footer />
+      {chrome && <Footer />}
     </>
   );
 }

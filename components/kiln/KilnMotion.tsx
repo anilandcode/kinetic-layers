@@ -89,6 +89,11 @@ export default function KilnMotion() {
       if (link.target && link.target !== "_self") return;
       if (link.hasAttribute("download")) return;
 
+      /* A card opens a modal over the page it is already on. Fading the whole
+         page to black for 320ms first would announce a navigation that is not
+         happening — the dialog is its own transition. Let Link handle it. */
+      if (link.hasAttribute("data-card")) return;
+
       /* preventDefault alone was not enough. This listener sits on the
          document, so in the bubble phase Next's own Link handler has already
          run and navigated — then the veil finishes and pushes the same route a

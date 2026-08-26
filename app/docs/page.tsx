@@ -132,10 +132,10 @@ claude mcp add --transport http kiln https://your-kiln/api/mcp \\
           </p>
           <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--muted)", marginTop: 16 }}>
             {settings.freeThisMonth > 0
-              ? `${settings.freeThisMonth} assets are free to any account, which is the cheapest way to find out whether the rest are worth it.`
+              ? `${settings.freeThisMonth} assets are free to any account, which is the cheapest way to find out whether the rest are worth it — each card says which.`
               : "Free assets appear here as they are published."}{" "}
-            <Link data-nav href="/?free=1" style={{ color: "var(--sage)" }}>
-              Browse those
+            <Link data-nav href="/" style={{ color: "var(--sage)" }}>
+              Browse the library
             </Link>
             .
           </p>

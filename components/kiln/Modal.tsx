@@ -1,0 +1,142 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+
+/**
+ * The dialog an intercepted route renders into.
+ *
+ * Closing is a route change, not local state: the modal exists because the URL
+ * says so, so `router.back()` is what dismisses it. That keeps the back button,
+ * a shared link and a refresh all behaving the way a visitor expects — a
+ * refresh lands on the real page rather than an empty overlay.
+ *
+ * The focus handling is the same shape SearchTrigger uses. It is repeated here
+ * rather than shared because the two differ in the one place that matters:
+ * SearchTrigger restores focus from the trigger it owns, and this has no
+ * trigger to own — the card that opened it belongs to a route that may already
+ * have been replaced.
+ */
+export default function Modal({
+  children,
+  label,
+}: {
+  children: React.ReactNode;
+  label: string;
+}) {
+  const router = useRouter();
+  const panel = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const close = () => router.back();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        /* Stop it here, or the palette's own document-level Escape handler
+           closes that too and one keypress dismisses two things. */
+        e.stopPropagation();
+        close();
+        return;
+      }
+      if (e.key !== "Tab") return;
+
+      const root = panel.current;
+      if (!root) return;
+      /* getClientRects, not offsetParent: the overlay is position:fixed, and
+         offsetParent is null for descendants of a fixed ancestor. */
+      const focusable = [
+        ...root.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+        ),
+      ].filter((el) => el.getClientRects().length > 0);
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey && (active === first || !root.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !root.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    /* Capture, so Escape reaches this before the palette's bubble-phase
+       listener on document. */
+    document.addEventListener("keydown", onKey, { capture: true });
+
+    /* The page behind must not scroll under the dialog. */
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    /* Focus moves into the panel so a keyboard user is not left behind on the
+       card they clicked, which is now under an overlay. */
+    panel.current?.focus();
+
+    return () => {
+      document.removeEventListener("keydown", onKey, { capture: true });
+      document.body.style.overflow = previous;
+    };
+  }, [router]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={label}
+      onClick={() => router.back()}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 60,
+        background: "rgba(8,8,7,0.78)",
+        backdropFilter: "blur(8px)",
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        padding: "5vh 16px",
+        overflowY: "auto",
+        overscrollBehavior: "contain",
+      }}
+    >
+      <div
+        ref={panel}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "min(1100px, 100%)",
+          background: "var(--void)",
+          border: "1px solid var(--line)",
+          borderRadius: "var(--r-card)",
+          position: "relative",
+          outline: "none",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label="Close"
+          className="btn btn--ghost"
+          style={{
+            position: "absolute",
+            top: 14,
+            right: 14,
+            zIndex: 2,
+            width: 38,
+            height: 38,
+            padding: 0,
+            borderRadius: "var(--r-pill)",
+            fontSize: 16,
+            lineHeight: 1,
+          }}
+        >
+          ×
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+}

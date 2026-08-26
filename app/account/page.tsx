@@ -128,11 +128,9 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                     ? `The ${settings.freeThisMonth} free assets are a good place to start.`
                     : "Free assets appear here as they are published."}
                 </p>
-                {settings.freeThisMonth > 0 && (
-                  <Link data-nav href="/?free=1" className="btn btn--ghost">
-                    Browse the free {settings.freeThisMonth}
-                  </Link>
-                )}
+                <Link data-nav href="/" className="btn btn--ghost">
+                  Browse the library
+                </Link>
               </div>
             ) : (
               <ul>

@@ -6,7 +6,7 @@ import { getAssets, getDrops, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kiln/viewer";
 import { applyFilters, asSort, countFacets, sortAssets } from "@/lib/kiln/facets";
 import { Spell } from "@/lib/kiln/words";
-import type { Category, Drop, Mood, Shelf, Theme } from "@/lib/kiln/types";
+import type { Category, Drop, Theme } from "@/lib/kiln/types";
 
 /**
  * The library page, in either treatment.
@@ -16,7 +16,7 @@ import type { Category, Drop, Mood, Shelf, Theme } from "@/lib/kiln/types";
  * correctly on first paint and works without JavaScript.
  */
 
-type Search = { shelf?: string; mood?: string; category?: string; theme?: string; free?: string; sort?: string };
+type Search = { category?: string; theme?: string; sort?: string };
 
 export default async function HomeView({
   light = false,
@@ -34,11 +34,8 @@ export default async function HomeView({
   ]);
 
   const filters = {
-    shelf: params.shelf as Shelf | undefined,
-    mood: params.mood as Mood | undefined,
     category: params.category as Category | undefined,
     theme: params.theme as Theme | undefined,
-    freeOnly: params.free === "1",
   };
   const sort = asSort(params.sort);
 
@@ -220,6 +217,13 @@ function DropsSection({ drops }: { drops: Drop[] }) {
 
         <ul
           style={{
+            /* The reset in kiln.css keys on ul[class], and this list has none,
+               so the UA default padding-inline-start: 40px survived — showing
+               as a strip of the --hairline background down the left inside the
+               rounded border. */
+            padding: 0,
+            margin: 0,
+            listStyle: "none",
             display: "flex",
             flexDirection: "column",
             gap: 1,

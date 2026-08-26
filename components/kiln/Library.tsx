@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import AssetCard from "./AssetCard";
-import { MOODS, SHELVES, type Asset, type Mood, type Shelf, type Viewer } from "@/lib/kiln/types";
+import { type Asset, type Viewer } from "@/lib/kiln/types";
 import { SORTS, SORT_LABEL, type Facets, type Sort } from "@/lib/kiln/facets";
 import { canDownload } from "@/lib/kiln/gate";
 
@@ -42,11 +42,8 @@ export default function Library({
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
 
-  const shelf = (params.get("shelf") ?? "All") as "All" | Shelf;
-  const mood = params.get("mood") as Mood | null;
   const category = params.get("category");
   const theme = params.get("theme");
-  const freeOnly = params.get("free") === "1";
 
   /* Drawn from what the catalogue actually holds, in a stable order, so no
      chip is ever offered for a category nothing has been filed under. */
@@ -150,69 +147,19 @@ export default function Library({
           </div>
         )}
 
+        {/* Sort and the count. Shelf and Mood used to live here too — four
+            taxonomies over two rows, in which "Editorial" was both a category
+            and a mood, telling a visitor two different things under one word.
+            Category answers what someone came for; theme answers how it looks.
+            Shelf and mood remain as data (getRelated falls back to shelf, and
+            /collections filters by it) but are no longer ways to slice the
+            library. */}
         <div
           className="shell"
           style={{ paddingBlock: 14, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}
         >
-          <div role="group" aria-label="Shelf" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {SHELVES.map((s) => {
-              /* The count answers "what would I get if I picked this", so it is
-                 measured with the other filters on but this one off. A chip
-                 with nothing behind it is disabled rather than left to
-                 promise an empty grid. */
-              const n = facets.shelf[s] ?? 0;
-              return (
-                <button
-                  key={s}
-                  type="button"
-                  className="pill"
-                  aria-pressed={shelf === s}
-                  disabled={n === 0 && shelf !== s}
-                  onClick={() => setParam("shelf", s === "All" ? null : s)}
-                >
-                  {s}
-                  <Count n={n} />
-                </button>
-              );
-            })}
-          </div>
-
-          <span
-            aria-hidden="true"
-            style={{ width: 1, height: 22, background: "var(--hairline-3)", margin: "0 6px" }}
-          />
-
-          <div role="group" aria-label="Mood" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {MOODS.map((m) => {
-              const n = facets.mood[m] ?? 0;
-              return (
-                <button
-                  key={m}
-                  type="button"
-                  className="pill pill--muted"
-                  aria-pressed={mood === m}
-                  disabled={n === 0 && mood !== m}
-                  onClick={() => setParam("mood", mood === m ? null : m)}
-                >
-                  {m}
-                  <Count n={n} />
-                </button>
-              );
-            })}
-          </div>
-
           <div style={{ flex: 1 }} />
 
-          <button
-            type="button"
-            className="pill"
-            aria-pressed={freeOnly}
-            disabled={facets.free === 0 && !freeOnly}
-            onClick={() => setParam("free", freeOnly ? null : "1")}
-          >
-            Free only
-            <Count n={facets.free} />
-          </button>
 
           {/* Sort. URL-driven like the filters, so an ordering is shareable
               and survives the back button. */}

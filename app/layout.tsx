@@ -59,7 +59,15 @@ export const viewport: Viewport = {
   themeColor: "#0F0F0D",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+  modal,
+}: {
+  children: React.ReactNode;
+  /* Filled by app/@modal — an intercepted item renders here over the page
+     behind it, and app/@modal/default.tsx renders null everywhere else. */
+  modal: React.ReactNode;
+}) {
   return (
     <html lang="en" className={`no-js ${sora.variable} ${serif.variable} ${mono.variable}`}>
       <body>
@@ -73,6 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <KilnMotion />
         <Analytics />
         {children}
+        {modal}
       </body>
     </html>
   );

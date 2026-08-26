@@ -55,25 +55,33 @@ export default async function Collections({
 
         <CollectionFilter active={(shelf as Shelf) ?? "All"} shown={list.length} total={all.length} />
 
-        <section
-          id="sets"
-          className="shell"
-          style={{
-            paddingBlock: "36px 90px",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill,minmax(min(400px,100%),1fr))",
-            gap: 26,
-          }}
-        >
+        {/* The same masonry the library uses. This was a bespoke inline grid
+            with its own column width and its own card proportions, which is why
+            the page read as a different site — the cards are the same object in
+            the same system and should be built on the same bones. */}
+        <section id="sets" className="shell" style={{ paddingBlock: "36px 90px" }}>
+          <div className="kiln-masonry">
           {list.map((c) => (
-            <Link data-nav data-card data-reveal key={c.slug} href={`/collections/${c.slug}`} className="kiln-card" aria-label={`${c.name} — ${c.items} items`}>
-              <div style={{ height: c.h, borderRadius: "var(--r-inner)", overflow: "hidden" }}>
+            <div key={c.slug} style={{ breakInside: "avoid", marginBottom: 26 }}>
+            <Link data-nav data-card data-reveal href={`/collections/${c.slug}`} className="kiln-card" aria-label={`${c.name} — ${c.items} items`}>
+              {/* background and position: relative match AssetCard — the
+                  gradient paints under a poster that has not loaded, and the
+                  wrapper is the positioning context an overlay needs. */}
+              <div
+                style={{
+                  height: c.h,
+                  borderRadius: "var(--r-inner)",
+                  overflow: "hidden",
+                  background: c.g,
+                  position: "relative",
+                }}
+              >
                 <div data-preview-inner style={{ width: "100%", height: "100%" }}>
                   <PreviewMedia gradient={c.g} poster={c.poster} clip={c.clip} alt="" style={{ width: "100%", height: "100%" }} />
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "16px 4px 0" }}>
-                <span style={{ fontSize: 19, fontWeight: 500, letterSpacing: "-0.015em", color: "var(--ink)" }}>{c.name}</span>
+                <span style={{ fontSize: 17, fontWeight: 500, letterSpacing: "-0.01em", color: "var(--ink)" }}>{c.name}</span>
                 <span className={c.free > 0 ? "chip chip--sage" : "chip"} style={{ padding: "5px 13px" }}>
                   {c.free > 0 ? `${c.free} free` : "Unlimited"}
                 </span>
@@ -87,9 +95,10 @@ export default async function Collections({
                 ))}
               </div>
             </Link>
+            </div>
           ))}
 
-          <div data-reveal className="kiln-promo kiln-promo--hire" style={{ minHeight: 280 }}>
+          <div data-reveal className="kiln-promo kiln-promo--hire" style={{ breakInside: "avoid", marginBottom: 26, minHeight: 280 }}>
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
               Hire the studio
             </span>
@@ -102,6 +111,7 @@ export default async function Collections({
             <Link data-nav href={viewer ? "/account" : "/join"} style={{ fontSize: 16, color: "var(--sage-ink)", marginTop: 4 }}>
               Start a project →
             </Link>
+          </div>
           </div>
         </section>
 

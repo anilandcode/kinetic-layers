@@ -1,4 +1,4 @@
-import type { Asset, Category, Mood, Shelf, Theme } from "./types";
+import type { Asset, Category, Theme } from "./types";
 
 /**
  * Faceted counts for the library filters.
@@ -14,25 +14,21 @@ import type { Asset, Category, Mood, Shelf, Theme } from "./types";
  * they do that we did not.
  */
 
-export type Filters = { shelf?: Shelf; mood?: Mood; category?: Category; theme?: Theme; freeOnly?: boolean };
+/* Shelf, mood and free-only were filters until the bar collapsed to one row.
+   They stay on Asset as data — getRelated falls back to shelf — but nothing
+   slices the library by them any more. */
+export type Filters = { category?: Category; theme?: Theme };
 
 const matches = (a: Asset, f: Filters) =>
-  (!f.shelf || a.shelf === f.shelf) &&
-  (!f.mood || a.mood === f.mood) &&
-  (!f.category || a.category === f.category) &&
-  (!f.theme || a.theme === f.theme) &&
-  (!f.freeOnly || a.free);
+  (!f.category || a.category === f.category) && (!f.theme || a.theme === f.theme);
 
 export function applyFilters(all: Asset[], f: Filters): Asset[] {
   return all.filter((a) => matches(a, f));
 }
 
 export type Facets = {
-  shelf: Record<string, number>;
-  mood: Record<string, number>;
   category: Record<string, number>;
   theme: Record<string, number>;
-  free: number;
   /** Total with every current filter applied — what the grid actually shows. */
   matching: number;
 };
@@ -40,11 +36,8 @@ export type Facets = {
 export function countFacets(all: Asset[], f: Filters): Facets {
   /* For each dimension, drop that dimension's own selection before counting,
      so a chip's number answers "what would I get if I picked this instead". */
-  const forShelf = all.filter((a) => matches(a, { ...f, shelf: undefined }));
-  const forMood = all.filter((a) => matches(a, { ...f, mood: undefined }));
   const forCategory = all.filter((a) => matches(a, { ...f, category: undefined }));
   const forTheme = all.filter((a) => matches(a, { ...f, theme: undefined }));
-  const forFree = all.filter((a) => matches(a, { ...f, freeOnly: false }));
 
   const tally = (rows: Asset[], key: (a: Asset) => string) =>
     rows.reduce<Record<string, number>>((m, a) => {
@@ -54,25 +47,21 @@ export function countFacets(all: Asset[], f: Filters): Facets {
     }, {});
 
   return {
-    shelf: { All: forShelf.length, ...tally(forShelf, (a) => a.shelf) },
-    mood: tally(forMood, (a) => a.mood),
     /* Only values that actually occur are tallied, so the chip list is drawn
        from the catalogue rather than from an aspirational enum — the same
        reason DownloadFilter derives its options. */
     category: tally(forCategory.filter((a) => a.category), (a) => a.category!),
     theme: tally(forTheme.filter((a) => a.theme), (a) => a.theme!),
-    free: forFree.filter((a) => a.free).length,
     matching: applyFilters(all, f).length,
   };
 }
 
-export const SORTS = ["newest", "name", "free"] as const;
+export const SORTS = ["newest", "name"] as const;
 export type Sort = (typeof SORTS)[number];
 
 export const SORT_LABEL: Record<Sort, string> = {
   newest: "Newest",
   name: "A–Z",
-  free: "Free first",
 };
 
 /**
@@ -83,7 +72,6 @@ export function sortAssets(assets: Asset[], sort: Sort): Asset[] {
   if (sort === "newest") return assets;
   const out = [...assets];
   if (sort === "name") out.sort((a, b) => a.name.localeCompare(b.name));
-  if (sort === "free") out.sort((a, b) => Number(b.free) - Number(a.free));
   return out;
 }
 
