@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
  * The Kiln motion layer.
@@ -14,71 +13,27 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  * they were doing scale and opacity on hover, which CSS does natively for a
  * fraction of the weight.
  *
- * Four behaviours, all skipped entirely under reduced motion:
- *   [data-hero] > *   staggered rise on load
- *   [data-reveal]     rise as it scrolls into view
+ * Two behaviours now, both skipped under reduced motion:
  *   [data-morph]      sticky bar compacts past 220px
  *   a[data-nav]       veil covers the page before navigating
+ *
+ * The entrance animations used to live here, driven by GSAP against a CSS
+ * starting state of opacity 0. That made content visibility depend on this
+ * component finishing its work, and when it did not — for whatever reason —
+ * the affected elements were hidden permanently. On /join that was the entire
+ * sign-in form.
+ *
+ * They are plain CSS keyframes now (see `kiln-rise` in styles/kiln.css). A CSS
+ * animation with `both` holds its from-state before it runs and its to-state
+ * after, so the content arrives with or without JavaScript, and there is no
+ * inline-style tug of war with a running animation. The cost is the
+ * scroll-triggered stagger, which was a flourish; the gain is that a form can
+ * no longer disappear.
  */
-
-const EASE = "power3.out";
 
 export default function KilnMotion() {
   const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    /* Nothing was ever hidden under reduced motion — the CSS starting state
-       is scoped to no-preference — so there is nothing to reveal either. */
-    if (reduced) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-    const ctx = gsap.context(() => {
-      const hero = gsap.utils.toArray<HTMLElement>("[data-hero] > *");
-      if (hero.length) {
-        gsap.fromTo(
-          hero,
-          { y: 24, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.85, ease: EASE, stagger: 0.07, delay: 0.1 }
-        );
-      }
-
-      gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el, i) => {
-        gsap.fromTo(
-          el,
-          { y: 28, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.7,
-            ease: "power2.out",
-            delay: (i % 3) * 0.07,
-            scrollTrigger: { trigger: el, start: "top 92%" },
-          }
-        );
-      });
-    });
-
-    /* The original had a safety net that forced opacity to 1 if an element
-       was still invisible after 900ms. Keep it: a failed ScrollTrigger must
-       never cost the visitor the content. */
-    const net = window.setTimeout(() => {
-      document
-        .querySelectorAll<HTMLElement>("[data-hero] > *, [data-reveal]")
-        .forEach((el) => {
-          if (parseFloat(getComputedStyle(el).opacity) > 0.02) return;
-          el.style.opacity = "1";
-          el.style.transform = "none";
-        });
-    }, 900);
-
-    return () => {
-      window.clearTimeout(net);
-      ctx.revert();
-    };
-  }, [pathname]);
 
   /* --- Sticky bar compaction ------------------------------------------ */
   useEffect(() => {

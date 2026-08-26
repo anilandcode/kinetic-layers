@@ -384,7 +384,7 @@ function NewsPromo() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@email.com"
             style={{
-              border: "1px solid var(--line)",
+              border: "1px solid var(--field-line)",
               borderRadius: "var(--r-pill)",
               padding: "14px 20px",
               fontSize: 15,

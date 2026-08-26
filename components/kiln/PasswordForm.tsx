@@ -21,7 +21,7 @@ export default function PasswordForm() {
         aria-invalid={state.error ? true : undefined}
         aria-describedby={state.error ? "password-message" : undefined}
         style={{
-          border: "1px solid var(--hairline-3)",
+          border: "1px solid var(--field-line)",
           borderRadius: "var(--r-pill)",
           padding: "15px 22px",
           fontSize: 15,

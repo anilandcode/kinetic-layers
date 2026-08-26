@@ -223,8 +223,17 @@ function ProviderButton({ label }: { label: string }) {
   );
 }
 
+/**
+ * The shared text-field style.
+ *
+ * The border was --hairline-3, which measures 1.24:1 against the page. With a
+ * transparent fill behind it, that border is the entire visual evidence a field
+ * exists — and at 1.24:1 there was none: the sign-in form read as an empty gap
+ * between "OR" and the footer links. --field-line clears the 3:1 WCAG asks for
+ * a UI component boundary.
+ */
 const field: React.CSSProperties = {
-  border: "1px solid var(--hairline-3)",
+  border: "1px solid var(--field-line)",
   borderRadius: "var(--r-pill)",
   padding: "15px 22px",
   fontSize: 15,

@@ -27,6 +27,17 @@
   --line:        #2C2A24;
   --line-bright: #3A3830;
 
+  /* Form field boundary.
+     The hairline tokens above are decorative — they separate surfaces, and at
+     1.25:1 on --void that is exactly what they should do. A text input is not
+     decorative: its border IS the control, and with nothing but a transparent
+     fill behind it, that border is the only thing telling you a field is there.
+     At --line the sign-in form looked like an empty gap between "OR" and the
+     footer links. WCAG 1.4.11 asks 3:1 for a UI component boundary; this
+     clears it on --void (3.29:1) and on --surface (3.14:1), which are the two
+     backgrounds fields actually sit on. */
+  --field-line:  #68655B;
+
   --ink:         #F6F4EE;
   --ink-2:       #E4E1D9;
   --ink-3:       #C9C6BE;
@@ -270,14 +281,48 @@ a:hover { color: var(--sage-bright); }
    Motion
    ============================================================ */
 
-/* GSAP sets these inline once it takes over. The starting state is
-   only applied for visitors who accept motion, so nothing can be
-   stranded invisible if the animation never runs. */
+/* Entrance animation, in CSS rather than as a JS-dependent starting state.
+ *
+ * This used to be `[data-hero] > *, [data-reveal] { opacity: 0 }`, with GSAP
+ * expected to animate it back to 1. The comment claimed nothing could be
+ * stranded invisible because the rule was scoped to no-preference — but that
+ * only covers the case where the visitor asked for no motion. It does not
+ * cover the case where the motion layer simply does not finish: a throw, a
+ * chunk that fails, a context reverted at the wrong moment. Any of those left
+ * the element hidden forever, and on /join the thing left hidden was the
+ * sign-in form.
+ *
+ * Content that CSS hides and only JavaScript can restore is a bet that
+ * JavaScript always wins. For a form, that bet is not worth the flourish.
+ *
+ * So the reveal is a CSS animation with `both`: it holds the from-state before
+ * it starts and the to-state after it ends, needs no JavaScript at all, and
+ * finishes visible whatever else goes wrong. GSAP still drives the scroll-
+ * triggered version for [data-reveal]; if it takes over, its inline styles run
+ * the show, and if it never arrives, the animation has already delivered the
+ * content. */
 @media (prefers-reduced-motion: no-preference) {
-  [data-hero] > *,
-  [data-reveal] { opacity: 0; }
+  [data-hero] > * {
+    animation: kiln-rise 0.85s var(--ease) both;
+  }
+  /* Staggered by position, the way the GSAP version was. */
+  [data-hero] > *:nth-child(2) { animation-delay: 0.07s; }
+  [data-hero] > *:nth-child(3) { animation-delay: 0.14s; }
+  [data-hero] > *:nth-child(4) { animation-delay: 0.21s; }
+  [data-hero] > *:nth-child(5) { animation-delay: 0.28s; }
+  [data-hero] > *:nth-child(n+6) { animation-delay: 0.35s; }
+
+  [data-reveal] {
+    animation: kiln-rise 0.7s var(--ease) 0.12s both;
+  }
+
   html.no-js [data-hero] > *,
-  html.no-js [data-reveal] { opacity: 1; }
+  html.no-js [data-reveal] { animation: none; opacity: 1; }
+}
+
+@keyframes kiln-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
 }
 
 [data-preview-inner] {
@@ -398,6 +443,8 @@ a:hover { color: var(--sage-bright); }
   --hairline:    #DCD6C7;
   --hairline-2:  #DAD3C3;
   --hairline-3:  #D3CCBB;
+  /* Same reasoning, inverted: dark enough to clear 3:1 on the ivory ground. */
+  --field-line:  #8C8677;
   --line:        #CBC3B0;
   --line-bright: #C3BAA6;
 
