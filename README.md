@@ -49,6 +49,16 @@ check entitlement per request. Previews are public and belong on Sanity's CDN;
 downloads are not, and live in a private Supabase bucket that only
 `/api/download` can open — after it re-checks the gate.
 
+## MCP
+
+`app/api/mcp/route.ts` speaks MCP over streamable HTTP: `search_assets`,
+`get_prompt`, `list_categories`. Setup is documented at `/mcp`.
+
+It is not a second door. `get_prompt` asks the same `canDownload` the item page
+and `/api/download` ask, so a key on the free plan is refused a paid prompt
+exactly as the website refuses it. Auth is an API key because an agent has no
+cookies; only the SHA-256 hash is stored, and the plaintext is shown once.
+
 ## The gate
 
 One function decides, in `lib/kiln/viewer.ts`, and **both** halves of the gate
@@ -160,39 +170,36 @@ hover one card exactly 1 video request, that card's clip, then it plays
 
 ## Verified
 
-Build clean, 38 routes. Across `/`, `/light`, `/collections`,
-`/collections/[slug]`, `/item/[slug]`, `/account`, `/pricing`, `/plan`,
-`/license`, `/changelog` and `/design-system`, at 375 and 1600: zero contrast
-failures, no horizontal overflow, no image missing an `alt`.
+Build clean, 46 routes. Across `/`, `/docs`, `/mcp`, `/privacy`, `/terms`,
+`/license`, `/changelog`, `/collections`, `/pricing` and `/item/[slug]`, at 375
+and 1600 **on production**: zero contrast failures, no horizontal overflow, no
+image missing an `alt`, exactly one `h1` per page and no heading skipped.
 
-The gate was tested by calling both routes as each persona, and — the part that
-was missed the first time — by checking what comes **back**, not only what is
-refused:
+The gate is tested by calling both routes as each persona, on the website and
+over MCP, and by checking what comes **back** rather than only what is refused:
 
 ```
-                       anonymous   free plan        unlimited
-/api/prompt  free        401         200, 882 ch      200, 882 ch
-/api/prompt  paid        401         403              200, 882 ch
-/api/download free       401         200 signed       200 signed
-/api/download paid       401         403              200 signed
-unknown slug             404         404              404
+                       anonymous   free plan     unlimited
+/api/prompt  free        401         200          200
+/api/prompt  paid        401         403          200
+/api/download free       401         200 signed   200 signed
+/api/download paid       401         403          200 signed
+MCP get_prompt free      refused     903 chars    903 chars
+MCP get_prompt paid      refused     refused      917 chars
 ```
 
-The unlocked prompt was then confirmed to render: 882 characters on screen,
-no blur, copy control present. Asking for each of the six files by name returns
-six different objects rather than `files[0]` six times.
+Revoked and forged API keys are refused. Unknown slugs 404 everywhere.
 
-Account filters were checked per type against the real catalogue —
-`?kind=PROMPT` returns only the prompt downloads, an unknown kind returns
-nothing. RLS: the service key sees every row, a signed-in user sees only their
-own, and a self-upgrade `update` on `entitlements` changes nothing.
+Filter counts are verified against the rows their filter returns — all eleven
+category and theme chips match. "Newest" leads with a different asset than
+"A–Z", so the two orderings genuinely differ. Related assets differ per asset
+and each really is drawn from that asset's own drop.
 
 Media: 15 videos on the home page, all with an empty `src`, zero video requests
-on load, exactly one on hover, 268 KB total, posters served from
-`kiln-media.pages.dev`.
+on load, exactly one on hover, posters from `kiln-media.pages.dev`.
 
-Analytics land: `page_view`, `search`, `gate_hit`, `unlock_click` and
-`download` all reach the `events` table with useful detail.
+The ⌘K palette traps Tab in both directions, restores focus to the trigger on
+close, and announces its result count.
 
 
 ## Archive
