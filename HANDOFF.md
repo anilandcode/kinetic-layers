@@ -78,8 +78,11 @@ Each of these cost real time. They are not hypothetical.
    reported "zero failures" on a form whose field borders were 1.24:1 and
    effectively invisible. `--field-line` exists for that; WCAG wants 3:1.
 3. **`/item/[slug]` is load-bearing externally** — sitemap, MCP tool output, OG
-   image, every `?next=` redirect. The modal is an *intercepting* route
-   (`app/@modal/(.)item/[slug]`) precisely so the real page survives a refresh.
+   image, every `?next=` redirect. The popup is *not* a route: it is client
+   state in `components/kiln/AssetModal.tsx`, because an intercepting route
+   changed the address bar and a popup that changes the URL reads as a new
+   page. `history.pushState(null, "", location.href)` keeps back-to-close
+   without moving the URL. The full page must keep working untouched.
 4. **`KilnMotion` intercepts `a[data-nav]` in the capture phase** and
    `stopPropagation`s. A React `onClick` on a card will never fire. Cards are
    exempted via `data-card`.
@@ -92,6 +95,23 @@ Each of these cost real time. They are not hypothetical.
    callers. A gate that only refuses is half-tested.
 8. **`usage` is a reserved-ish table name** but works fine through PostgREST.
    The Supabase pooler can take ~7s cold; `/account` looks hung and is not.
+9. **A limit read in one statement and written in another is not a limit.**
+   The quota counted, then inserted. Ten concurrent requests on an allowance
+   of one were granted three *in production*. Serverless removes any
+   in-process fix: parallel requests land on different instances. Everything
+   that spends an allowance goes through `consume_quota()`, which does both
+   inside one transaction behind an advisory lock. Do not add a second path.
+10. **A limiter must fail closed.** The old code granted access when the
+   count query errored. "The database is struggling" is exactly when an
+   attacker wants the door open, and inducing errors becomes the bypass.
+11. **Two scripts that agree by counting are not in step.** `seed-sanity.mjs`
+   wrote four shots per asset; `make-dummy-media.mjs` made three. Every asset
+   shipped a 404ing thumbnail. The generator now reads the poster names out of
+   the documents. Any pair of scripts that must agree should share a source,
+   not a number.
+12. **Check images actually decoded, not just that the page rendered.** The
+   broken thumbnail survived several sweeps because nothing was visibly wrong
+   above the fold. `img.complete && img.naturalWidth === 0` is the test.
 
 ## Outstanding — needs the account owner
 
