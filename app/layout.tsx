@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Sora, Source_Serif_4, Geist_Mono } from "next/font/google";
 import KilnMotion from "@/components/kiln/KilnMotion";
 import Analytics from "@/components/kiln/Analytics";
+import AssetModal from "@/components/kiln/AssetModal";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kiln/site";
 import "./globals.css";
 
@@ -61,12 +62,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
-  /* Filled by app/@modal — an intercepted item renders here over the page
-     behind it, and app/@modal/default.tsx renders null everywhere else. */
-  modal: React.ReactNode;
 }) {
   return (
     <html lang="en" className={`no-js ${sora.variable} ${serif.variable} ${mono.variable}`}>
@@ -81,7 +78,9 @@ export default function RootLayout({
         <KilnMotion />
         <Analytics />
         {children}
-        {modal}
+        {/* Opens an asset over whatever page you are on. Not a route: the URL
+            must not change, which an intercepting route could not honour. */}
+        <AssetModal />
       </body>
     </html>
   );

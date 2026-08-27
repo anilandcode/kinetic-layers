@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 
 /**
- * The dialog an intercepted route renders into.
+ * The dialog shell.
  *
- * Closing is a route change, not local state: the modal exists because the URL
- * says so, so `router.back()` is what dismisses it. That keeps the back button,
- * a shared link and a refresh all behaving the way a visitor expects — a
- * refresh lands on the real page rather than an empty overlay.
+ * Closing is a callback rather than `router.back()`. It used to be a route
+ * change, because the dialog was an intercepted route and existed only because
+ * the URL said so — but that meant opening an asset changed the address bar,
+ * which is precisely what made a popup read as a new page. The owner decides
+ * what closing means now; this only draws the layer and manages focus.
  *
  * The focus handling is the same shape SearchTrigger uses. It is repeated here
  * rather than shared because the two differ in the one place that matters:
@@ -20,15 +20,16 @@ import { useRouter } from "next/navigation";
 export default function Modal({
   children,
   label,
+  onClose,
 }: {
   children: React.ReactNode;
   label: string;
+  onClose: () => void;
 }) {
-  const router = useRouter();
   const panel = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const close = () => router.back();
+    const close = onClose;
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -80,14 +81,14 @@ export default function Modal({
       document.removeEventListener("keydown", onKey, { capture: true });
       document.body.style.overflow = previous;
     };
-  }, [router]);
+  }, [onClose]);
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={label}
-      onClick={() => router.back()}
+      onClick={onClose}
       /* Centred, and the backdrop itself does not scroll.
          It used to be top-aligned with `overflowY: auto`, which let the panel
          grow to its content — 1262px inside a 900px viewport — so the whole
@@ -129,7 +130,7 @@ export default function Modal({
       >
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={onClose}
           aria-label="Close"
           className="btn btn--ghost"
           style={{
