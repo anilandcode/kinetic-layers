@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAsset, getAssetSlugs, getRelated, getSettings } from "@/lib/sanity/queries";
 import { getViewer, gateReason } from "@/lib/kiln/viewer";
+import { promptGateReason } from "@/lib/kiln/gate";
 import { createClient } from "@/lib/supabase/server";
 import ItemView from "@/components/kiln/ItemView";
 
@@ -55,6 +56,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       relatedReason={related.reason}
       viewer={viewer}
       gate={gateReason(viewer, asset)}
+        promptGate={promptGateReason(viewer, asset)}
       saved={saved}
       monthlyPrice={settings.monthlyPrice}
     />

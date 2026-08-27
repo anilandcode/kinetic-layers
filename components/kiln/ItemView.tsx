@@ -25,6 +25,7 @@ export default function ItemView({
   relatedReason = "newest",
   viewer,
   gate,
+  promptGate,
   saved: initiallySaved,
   monthlyPrice,
   chrome = true,
@@ -35,6 +36,14 @@ export default function ItemView({
   relatedReason?: "drop" | "shelf" | "newest";
   viewer: Viewer | null;
   gate: Gate;
+  /**
+   * Reading a prompt is a looser rule than taking a file, so the two states
+   * cannot share a prop. An anonymous visitor on a free asset is
+   * needs-account for `gate` and open for `promptGate` — passing one value for
+   * both is what left the anonymous prompt allowance unreachable: the API
+   * granted it and the UI never offered it.
+   */
+  promptGate: Gate;
   saved: boolean;
   monthlyPrice: number;
   /**
@@ -372,7 +381,7 @@ export default function ItemView({
                 table means scrolling a dialog to reach the point of it. On the
                 full page the original order stands. */}
             {!chrome && asset.promptLength ? (
-              <PromptGate asset={asset} gate={gate} unlockHref={unlockHref} />
+              <PromptGate asset={asset} gate={promptGate} unlockHref={unlockHref} downloadable={gate === "open"} />
             ) : null}
 
             <section data-reveal style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 22 }}>
@@ -383,7 +392,7 @@ export default function ItemView({
             </section>
 
             {chrome && asset.promptLength ? (
-              <PromptGate asset={asset} gate={gate} unlockHref={unlockHref} />
+              <PromptGate asset={asset} gate={promptGate} unlockHref={unlockHref} downloadable={gate === "open"} />
             ) : null}
 
             {asset.files?.length ? (
@@ -501,7 +510,18 @@ export default function ItemView({
  * on mount rather than behind another button, because someone entitled to the
  * prompt came here to read it.
  */
-function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unlockHref: string }) {
+function PromptGate({
+  asset,
+  gate,
+  unlockHref,
+  downloadable,
+}: {
+  asset: Asset;
+  gate: Gate;
+  unlockHref: string;
+  /** Whether this viewer can also take the files — anonymous readers cannot. */
+  downloadable: boolean;
+}) {
   const lines = (asset.promptPreview ?? "").split("\n").filter(Boolean);
   const hidden = Math.max(0, (asset.promptLength ?? 0) - (asset.promptPreview?.length ?? 0));
 
@@ -698,7 +718,7 @@ function PromptGate({ asset, gate, unlockHref }: { asset: Asset; gate: Gate; unl
       <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
         {gate === "open"
           ? full
-            ? `${full.length.toLocaleString()} characters, yours to edit. It also ships in the download.`
+            ? `${full.length.toLocaleString()} characters, yours to edit.${downloadable ? " It also ships in the download." : ""}`
             : "Opening it counts against your daily allowance. Browsing does not."
           : "Two real lines, then the rest. The count is exact — there is something behind it."}
       </p>
