@@ -198,7 +198,7 @@ export default function PricingBody({
             margin: "0 auto",
             padding: "26px var(--gutter) 20px",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))",
+            gridTemplateColumns: "repeat(auto-fit,minmax(min(320px,100%),1fr))",
             gap: 24,
             alignItems: "start",
           }}
@@ -366,7 +366,13 @@ export default function PricingBody({
             data-reveal
             style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", overflow: "hidden" }}
           >
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+            {/* Three columns of copy do not fit a phone. The table used to push
+                the page 20px wider than a 375px screen, so the whole document
+                scrolled sideways to read one comparison. Wide content scrolls
+                inside its own box instead — the table keeps a sensible minimum
+                and the page stays put. */}
+            <div style={{ overflowX: "auto", overscrollBehavior: "contain" }}>
+            <table style={{ width: "100%", minWidth: 460, borderCollapse: "collapse", textAlign: "left" }}>
               <caption className="visually-hidden">What each plan includes</caption>
               <thead>
                 <tr className="mono" style={{ background: "#121210", fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}>
@@ -416,6 +422,7 @@ export default function PricingBody({
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </section>
 

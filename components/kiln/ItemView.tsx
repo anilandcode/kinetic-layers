@@ -435,7 +435,7 @@ export default function ItemView({
               <section
                 data-reveal
                 aria-label="Files included"
-                style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 12, paddingTop: 14 }}
+                style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(240px,100%),1fr))", gap: 12, paddingTop: 14 }}
               >
                 {asset.files.map((f) => {
                   /* Each row downloads its own file. These were display-only

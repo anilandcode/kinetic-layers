@@ -197,7 +197,7 @@ function DropsSection({ drops }: { drops: Drop[] }) {
         style={{
           paddingBlock: 72,
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(340px,1fr))",
+          gridTemplateColumns: "repeat(auto-fit,minmax(min(340px,100%),1fr))",
           gap: 64,
           alignItems: "center",
         }}

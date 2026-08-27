@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getViewer } from "@/lib/kiln/viewer";
 import { canReadPrompt } from "@/lib/kiln/gate";
-import { checkQuota, quotaRefusal, recordUse, subjectFor } from "@/lib/kiln/quota";
+import { consumeQuota, quotaRefusal, refund, subjectFor } from "@/lib/kiln/quota";
 import { getAsset, getPromptBody } from "@/lib/sanity/queries";
 
 /**
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
      refuse a free account with 403 whatever their remaining allowance is, so
      eligibility is settled before frequency. */
   const subject = await subjectFor(viewer, request);
-  const quota = await checkQuota(subject, "prompt");
+  const quota = await consumeQuota(subject, "prompt", slug);
   if (!quota.allowed) {
     const { body: refusal, retryAfter } = quotaRefusal("prompt", quota);
     return NextResponse.json(refusal, {
@@ -71,22 +71,20 @@ export async function POST(request: NextRequest) {
   const prompt = await getPromptBody(slug);
 
   if (!prompt) {
+    /* Nothing was delivered, so nothing should have been charged. */
+    await refund(quota.usageId);
     return NextResponse.json(
       { ok: false, message: "This asset has no prompt attached." },
       { status: 409 }
     );
   }
 
-  /* Recorded only once the text is definitely going out, so a missing prompt
-     or a failed fetch never costs someone a unit. */
-  await recordUse(subject, "prompt", slug);
-
   return NextResponse.json({
     ok: true,
     prompt,
     /* The client shows what is left; it is already spending the unit, so it
        may as well be told rather than made to guess. */
-    remaining: Math.max(0, quota.remaining - 1),
+    remaining: quota.remaining,
     limit: quota.limit,
   });
 }

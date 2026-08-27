@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb, visitorHash } from "@/lib/supabase";
+import { throttle } from "@/lib/kiln/quota";
 import {
   clean,
   CONCEPTS,
@@ -47,6 +48,18 @@ export async function POST(request: Request) {
      every input trips it. Answer with a success so it stops retrying. */
   if (clean(get("company_website"), 200) !== "") {
     return json(200, { ok: true, message: "Thanks." });
+  }
+
+  /* --- Frequency cap ------------------------------------------------------
+     The honeypot catches a bot that fills every field. It does nothing about
+     one that posts a valid form ten thousand times, which is the cheaper
+     attack and the one that fills the table. Checked after the honeypot so a
+     trapped bot still gets its 200 and stops. */
+  if (!(await throttle(request, "subscribe", 5, 3600))) {
+    return json(429, {
+      ok: false,
+      message: "That is a lot of requests. Give it an hour and try again.",
+    });
   }
 
   const email = clean(get("email"), 190);

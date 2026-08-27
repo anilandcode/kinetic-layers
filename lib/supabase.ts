@@ -37,7 +37,22 @@ export function getDb(): SupabaseClient {
  * leaves the server, so the hashes cannot be recomputed from outside.
  */
 export async function visitorHash(request: Request): Promise<string> {
-  const forwarded = request.headers.get("x-forwarded-for") ?? "";
+  /**
+   * Prefer headers the platform sets over ones a client can send.
+   *
+   * `x-forwarded-for` is a request header like any other: a client can put
+   * whatever it likes in it. Vercel overwrites it at the edge, so on production
+   * this was already safe — I confirmed a spoofed value is ignored there — but
+   * it is trusted blindly by this function, and locally, or behind any proxy
+   * that appends rather than replaces, rotating the header mints a fresh
+   * identity per request and the anonymous allowance becomes unlimited.
+   *
+   * `x-vercel-forwarded-for` is set by Vercel's edge and is not forwardable,
+   * so it is checked first; `x-real-ip` is the usual equivalent elsewhere.
+   */
+  const trusted =
+    request.headers.get("x-vercel-forwarded-for") ?? request.headers.get("x-real-ip") ?? "";
+  const forwarded = trusted || request.headers.get("x-forwarded-for") || "";
   const ip = forwarded.split(",")[0].trim() || "unknown";
   const salt = process.env.SUPABASE_SECRET_KEY ?? "unsalted";
 

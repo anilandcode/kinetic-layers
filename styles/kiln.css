@@ -721,3 +721,20 @@ select.pill option {
   max-width: 82ch;
   margin-inline: auto;
 }
+
+/* ---------------------------------------------------------------------------
+   Touch targets
+
+   Navigation links measured 14–20px tall, because they were sized by their
+   text alone. WCAG 2.5.8 asks for 24x24 and exempts links sitting inline in a
+   sentence — a row of nav links is not that, it is a set of targets. Giving
+   them a minimum height costs no layout (the rows are taller than this
+   already) and makes them hittable with a thumb.
+--------------------------------------------------------------------------- */
+.site-nav a,
+footer nav a,
+footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}

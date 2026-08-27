@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { canReadPrompt } from "@/lib/kiln/gate";
 import { keyFromRequest, viewerFromApiKey } from "@/lib/kiln/apikey";
-import { checkQuota, quotaRefusal, recordUse, subjectFor, type Subject } from "@/lib/kiln/quota";
+import { consumeQuota, quotaRefusal, refund, subjectFor, type Subject } from "@/lib/kiln/quota";
 import { describeReset } from "@/lib/kiln/limits";
 import { getAsset, getAssets, getPromptBody, searchAssets } from "@/lib/sanity/queries";
 import { SITE_URL } from "@/lib/kiln/site";
@@ -138,7 +138,7 @@ async function runTool(
     /* The same meter the website uses, against the same subject. Without this
        an API key could read the whole catalogue in a loop while the browser
        paths were carefully rationed — a quota with a back door is decoration. */
-    const quota = await checkQuota(subject, "prompt");
+    const quota = await consumeQuota(subject, "prompt", slug);
     if (!quota.allowed) {
       const { body: refusal } = quotaRefusal("prompt", quota);
       return {
@@ -147,10 +147,12 @@ async function runTool(
     }
 
     const prompt = await getPromptBody(slug);
-    if (!prompt) return { error: `"${asset.name}" has no prompt attached — it ships as files.` };
+    if (!prompt) {
+      await refund(quota.usageId);
+      return { error: `"${asset.name}" has no prompt attached — it ships as files.` };
+    }
 
-    await recordUse(subject, "prompt", slug);
-    const left = Math.max(0, quota.remaining - 1);
+    const left = quota.remaining;
     return {
       text: `${asset.name}\n${"—".repeat(asset.name.length)}\n\n${prompt}\n\n---\n${left} of ${quota.limit} prompt reads left today.`,
     };

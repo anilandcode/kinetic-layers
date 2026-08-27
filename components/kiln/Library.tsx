@@ -369,7 +369,9 @@ function NewsPromo() {
     reader hearing "Motion 6 pressed" gains nothing from the 6. */
 function Count({ n }: { n: number }) {
   return (
-    <span aria-hidden="true" className="mono" style={{ marginLeft: 6, fontSize: 9, opacity: 0.55 }}>
+    /* 10px is the floor. At 9 these counts measured as the smallest text on
+       the site and were genuinely hard to read on a phone. */
+    <span aria-hidden="true" className="mono" style={{ marginLeft: 6, fontSize: 10, opacity: 0.6 }}>
       {n}
     </span>
   );

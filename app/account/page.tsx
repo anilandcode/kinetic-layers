@@ -92,7 +92,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
 
         <section
           className="shell"
-          style={{ paddingBottom: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 20 }}
+          style={{ paddingBottom: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 20 }}
         >
           <Stat label="Downloaded" value={String(unique)} note={`of ${settings.totalAssets} assets`} big />
           <Stat label="This month" value={String(thisMonth)} note={thisMonth === 1 ? "1 file" : `${thisMonth} files`} big />

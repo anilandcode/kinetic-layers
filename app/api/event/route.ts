@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb, visitorHash } from "@/lib/supabase";
 import { clean, EVENT_NAMES, oneOf, truthy, VARIANTS } from "@/lib/contracts";
+import { throttle } from "@/lib/kiln/quota";
 
 /**
  * First-party event sink.
@@ -17,6 +18,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const MAX_BODY = 2048;
+
+/* Generous on purpose: a real session fires page views, reveals and copies, and
+   a limit that a curious person can reach is a limit that loses data. This is
+   sized to stop a loop, not to trim traffic. */
+const EVENTS_PER_HOUR = 240;
 
 export async function POST(request: Request) {
   const noContent = new NextResponse(null, {
@@ -42,6 +48,10 @@ export async function POST(request: Request) {
 
   const event = oneOf(payload.event, EVENT_NAMES);
   if (!event) return noContent; // unknown name: drop it quietly
+
+  /* Dropped silently, like every other rejection here. A throttle that
+     announced itself would tell a script exactly what it had hit. */
+  if (!(await throttle(request, "event", EVENTS_PER_HOUR, 3600))) return noContent;
 
   try {
     const { error } = await getDb()

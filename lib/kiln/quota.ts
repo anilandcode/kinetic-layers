@@ -26,6 +26,8 @@ export type QuotaVerdict = {
   remaining: number;
   /** When the oldest use in the window expires. Null when nothing is spent. */
   resetsAt: string | null;
+  /** The row that was written, so it can be refunded if delivery then fails. */
+  usageId: number | null;
 };
 
 /**
@@ -40,57 +42,110 @@ export async function subjectFor(viewer: Viewer | null, request: Request): Promi
   return { key: `anon:${await visitorHash(request)}`, userId: null, tier: "anon" };
 }
 
-export async function checkQuota(subject: Subject, kind: UsageKind): Promise<QuotaVerdict> {
+/**
+ * Spend one unit, atomically.
+ *
+ * This replaces a `checkQuota` that counted and a `recordUse` that inserted.
+ * Those were two statements with a gap, and a burst of concurrent requests all
+ * read the same count and all passed — ten parallel reads against production
+ * were granted three times an allowance of one. The count and the insert now
+ * happen inside one Postgres function behind a per-subject advisory lock, so
+ * concurrency cannot manufacture extra allowance.
+ *
+ * Consumed BEFORE the content is fetched, because the whole point is that a
+ * request cannot get the content without first taking a unit. If the fetch then
+ * fails, `refund` puts it back — a caller that never received anything should
+ * not be charged.
+ */
+export async function consumeQuota(
+  subject: Subject,
+  kind: UsageKind,
+  assetSlug: string
+): Promise<QuotaVerdict> {
   const limit = LIMITS[subject.tier][kind];
-  const since = new Date(Date.now() - WINDOW_MS).toISOString();
 
-  /* A zero allowance needs no query — anonymous downloads never reach the
-     database, and neither does a misconfigured tier. */
+  /* A zero allowance never reaches the database — anonymous downloads, and any
+     misconfigured tier. */
   if (limit <= 0) {
-    return { allowed: false, used: 0, limit, remaining: 0, resetsAt: null };
+    return { allowed: false, used: 0, limit, remaining: 0, resetsAt: null, usageId: null };
   }
 
-  const db = admin();
-  const { data, error } = await db
-    .from("usage")
-    .select("created_at")
-    .eq("subject", subject.key)
-    .eq("kind", kind)
-    .gte("created_at", since)
-    .order("created_at", { ascending: true });
+  const { data, error } = await admin().rpc("consume_quota", {
+    p_subject: subject.key,
+    p_user: subject.userId,
+    p_kind: kind,
+    p_slug: assetSlug,
+    p_limit: limit,
+    p_window_seconds: Math.round(WINDOW_MS / 1000),
+  });
 
-  /* Fail open, and say so in the log. A meter that cannot read its own count
-     should not stand between a paying customer and what they bought; the gate
-     has already decided they are entitled, and this only decides how often. */
+  /* Fail CLOSED. The old code failed open on a read error, reasoning that a
+     broken meter should not stand between a paying customer and what they
+     bought. That reasoning is wrong for a limit whose job is to stop a script:
+     "the database is struggling" is exactly when an attacker wants the door
+     open, and inducing errors would become the bypass. Entitlement is decided
+     elsewhere and is unaffected; this only refuses the extra request. */
   if (error) {
-    console.error("quota read failed, allowing:", error.message);
-    return { allowed: true, used: 0, limit, remaining: limit, resetsAt: null };
+    console.error("quota consume failed, refusing:", error.message);
+    return { allowed: false, used: limit, limit, remaining: 0, resetsAt: null, usageId: null };
   }
 
-  const used = data?.length ?? 0;
-  /* The window frees up one unit at a time, when the OLDEST use inside it
-     ages out — not all at once at some fixed hour. */
-  const oldest = data?.[0]?.created_at ?? null;
-  const resetsAt = oldest ? new Date(new Date(oldest).getTime() + WINDOW_MS).toISOString() : null;
-
+  const row = Array.isArray(data) ? data[0] : data;
+  const used = row?.used ?? limit;
   return {
-    allowed: used < limit,
+    allowed: Boolean(row?.allowed),
     used,
     limit,
     remaining: Math.max(0, limit - used),
-    resetsAt,
+    resetsAt: row?.resets_at ?? null,
+    usageId: row?.usage_id ?? null,
   };
 }
 
-/** Called only after the content has actually been released. */
-export async function recordUse(subject: Subject, kind: UsageKind, assetSlug: string): Promise<void> {
-  const { error } = await admin()
-    .from("usage")
-    .insert({ subject: subject.key, user_id: subject.userId, kind, asset_slug: assetSlug });
+/**
+ * A frequency cap for endpoints that have no account behind them.
+ *
+ * /api/subscribe and /api/event accept writes from anyone. A honeypot and a
+ * body-size cap stop a careless bot, not a determined one, and both insert
+ * rows — so both are a free way to fill a table.
+ *
+ * This is the same Postgres function the allowances use rather than a second
+ * limiter, because that one is already proven atomic under concurrency and a
+ * new one would have to prove it again. Always keyed on the visitor hash and
+ * always written with a null user, so these rows never appear in the usage
+ * tile on /account — that reads through RLS, which shows a user only rows that
+ * are theirs.
+ *
+ * Returns true when the caller may proceed.
+ */
+export async function throttle(
+  request: Request,
+  kind: "subscribe" | "event",
+  limit: number,
+  windowSeconds: number
+): Promise<boolean> {
+  const key = `visitor:${await visitorHash(request)}`;
+  const { data, error } = await admin().rpc("consume_quota", {
+    p_subject: key,
+    p_user: null,
+    p_kind: kind,
+    p_slug: kind,
+    p_limit: limit,
+    p_window_seconds: windowSeconds,
+  });
+  if (error) {
+    console.error("throttle failed, refusing:", error.message);
+    return false;
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  return Boolean(row?.allowed);
+}
 
-  /* Never surfaced to the visitor: they have the content, and refusing to
-     acknowledge that would be worse than undercounting once. */
-  if (error) console.error("usage insert failed:", kind, error.message);
+/** Put a unit back when the caller never received what they paid for. */
+export async function refund(usageId: number | null): Promise<void> {
+  if (usageId == null) return;
+  const { error } = await admin().from("usage").delete().eq("id", usageId);
+  if (error) console.error("quota refund failed:", error.message);
 }
 
 /** The 429 body, shared by every door so clients can handle one shape. */

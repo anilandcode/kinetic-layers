@@ -181,6 +181,25 @@ export type Database = {
     Views: Record<never, never>;
     Functions: {
       has_unlimited: { Args: { uid: string }; Returns: boolean };
+      /* Atomic quota spend. Counts and inserts behind a per-subject advisory
+         lock, so concurrent requests cannot each read the same count and all
+         pass. See supabase/migrations/*_atomic_quota.sql. */
+      consume_quota: {
+        Args: {
+          p_subject: string;
+          p_user: string | null;
+          p_kind: "prompt" | "download" | "subscribe" | "event";
+          p_slug: string;
+          p_limit: number;
+          p_window_seconds: number;
+        };
+        Returns: {
+          allowed: boolean;
+          used: number;
+          resets_at: string | null;
+          usage_id: number | null;
+        }[];
+      };
     };
     Enums: Record<never, never>;
     CompositeTypes: Record<never, never>;

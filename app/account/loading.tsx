@@ -8,7 +8,7 @@ export default function Loading() {
         <Shimmer h={12} w={160} />
         <Shimmer h={40} w="55%" />
       </div>
-      <div aria-hidden="true" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 16 }}>
+      <div aria-hidden="true" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(180px,100%),1fr))", gap: 16 }}>
         {[0, 1, 2, 3].map((i) => (
           <Shimmer key={i} h={110} r={16} />
         ))}
