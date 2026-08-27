@@ -88,6 +88,11 @@ export default function Modal({
       aria-modal="true"
       aria-label={label}
       onClick={() => router.back()}
+      /* Centred, and the backdrop itself does not scroll.
+         It used to be top-aligned with `overflowY: auto`, which let the panel
+         grow to its content — 1262px inside a 900px viewport — so the whole
+         overlay scrolled like a document and read as a page rather than a
+         layer over one. The scroll belongs inside the panel. */
       style={{
         position: "fixed",
         inset: 0,
@@ -95,24 +100,31 @@ export default function Modal({
         background: "rgba(8,8,7,0.78)",
         backdropFilter: "blur(8px)",
         display: "flex",
-        alignItems: "flex-start",
+        alignItems: "center",
         justifyContent: "center",
-        padding: "5vh 16px",
-        overflowY: "auto",
-        overscrollBehavior: "contain",
+        padding: "4vh 16px",
+        overflow: "hidden",
       }}
     >
       <div
         ref={panel}
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
+        /* Bounded, so there is always backdrop above and below and the thing
+           is visibly floating. A short asset still shrinks to its content —
+           maxHeight is a ceiling, not a height. */
         style={{
           width: "min(1100px, 100%)",
+          maxHeight: "92vh",
+          display: "flex",
+          flexDirection: "column",
           background: "var(--void)",
           border: "1px solid var(--line)",
           borderRadius: "var(--r-card)",
           position: "relative",
           outline: "none",
+          overflow: "hidden",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.55)",
         }}
       >
         <button
@@ -135,7 +147,19 @@ export default function Modal({
         >
           ×
         </button>
-        {children}
+        {/* The scroller. The close button sits outside it, absolutely placed
+            against the panel, so it stays pinned while the content moves —
+            a close control that scrolls away is a trap on a long asset. */}
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            overflowY: "auto",
+            overscrollBehavior: "contain",
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
