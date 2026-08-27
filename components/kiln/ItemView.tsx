@@ -19,6 +19,16 @@ import { track } from "@/lib/track";
 
 type Gate = "open" | "needs-account" | "needs-unlimited";
 
+/**
+ * Preview height, per entry point.
+ *
+ * The dialog gets a shorter hero on purpose: at the page's 520 the prompt block
+ * landed roughly 690px down, which put the one control the popup exists for
+ * below the fold and made you scroll a dialog to reach its point.
+ */
+const HERO_H_PAGE = 520;
+const HERO_H_MODAL = 300;
+
 export default function ItemView({
   asset,
   related,
@@ -79,6 +89,27 @@ export default function ItemView({
     ? asset.shots
     : [{ label: "Preview", gradient: asset.g, poster: asset.poster, clip: asset.clip }];
   const current = shots[Math.min(shot, shots.length - 1)];
+
+  /* The two blocks whose order differs between the page and the modal. Defined
+     once here so each has a single call site; the JSX below only decides which
+     comes first. */
+  const promptBlock = asset.promptLength ? (
+    <PromptGate
+      asset={asset}
+      gate={promptGate}
+      unlockHref={unlockHref}
+      downloadable={gate === "open"}
+    />
+  ) : null;
+
+  const whatThisIs = (
+    <section data-reveal style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 22 }}>
+      <h2 style={{ fontSize: 26, fontWeight: 500, letterSpacing: "-0.02em" }}>What this is</h2>
+      <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)", maxWidth: 640 }}>
+        {asset.tagline ?? "Built for a real brief, shipped, then cleaned up and filed."}
+      </p>
+    </section>
+  );
 
   /**
    * `name` picks a single file from the manifest. Omitting it takes the first,
@@ -314,10 +345,7 @@ export default function ItemView({
                 play="auto"
                 priority
                 style={{
-                  /* Shorter in the dialog. At 520 the prompt landed ~690px
-                     down, so the one control the popup exists for was below
-                     the fold and needed a scroll to reach. */
-                  height: chrome ? 520 : 300,
+                  height: chrome ? HERO_H_PAGE : HERO_H_MODAL,
                   borderRadius: "var(--r-card)",
                 }}
               >
@@ -377,23 +405,31 @@ export default function ItemView({
             </div>
 
             {/* In the modal the prompt comes first: the reason someone opened
-                a popup is to read and copy it, and burying that under a spec
+                a popup is to read and copy it, and burying it under a spec
                 table means scrolling a dialog to reach the point of it. On the
-                full page the original order stands. */}
-            {!chrome && asset.promptLength ? (
-              <PromptGate asset={asset} gate={promptGate} unlockHref={unlockHref} downloadable={gate === "open"} />
-            ) : null}
+                full page the original order stands.
 
-            <section data-reveal style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 22 }}>
-              <h2 style={{ fontSize: 26, fontWeight: 500, letterSpacing: "-0.02em" }}>What this is</h2>
-              <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)", maxWidth: 640 }}>
-                {asset.tagline ?? "Built for a real brief, shipped, then cleaned up and filed."}
-              </p>
-            </section>
+                Both orders are composed from ONE element each rather than two
+                conditional call sites. When this was written twice, the two
+                copies had to be kept in step by hand — and a PromptGate that
+                gains a prop on the page and not in the modal fails silently in
+                the surface fewer people look at.
 
-            {chrome && asset.promptLength ? (
-              <PromptGate asset={asset} gate={promptGate} unlockHref={unlockHref} downloadable={gate === "open"} />
-            ) : null}
+                Composition rather than CSS `order`, which is what the columns
+                above use: `order` moves the picture and leaves the reading
+                order alone, and here the reading order genuinely differs. The
+                DOM should say what the eye sees. */}
+            {chrome ? (
+              <>
+                {whatThisIs}
+                {promptBlock}
+              </>
+            ) : (
+              <>
+                {promptBlock}
+                {whatThisIs}
+              </>
+            )}
 
             {asset.files?.length ? (
               <section
