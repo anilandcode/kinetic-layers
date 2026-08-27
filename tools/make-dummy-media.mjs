@@ -86,7 +86,14 @@ async function make(dir, name, slug, seed = 0) {
 
 async function catalogue() {
   if (!PID) throw new Error("NEXT_PUBLIC_SANITY_PROJECT_ID is not set — run with --env-file=.env.local");
-  const q = encodeURIComponent(`*[_type in ["asset","collection"] && defined(slug.current)]{ "slug": slug.current, _type }`);
+  /* Ask for the shot filenames rather than assuming how many there are. The
+     seed script decides that, and it decided four while this made three — so
+     every asset in the catalogue shipped a fourth thumbnail that 404'd and
+     drew a torn-image icon. Reading the real names is what actually keeps the
+     two in step; a matching count is a promise that quietly breaks. */
+  const q = encodeURIComponent(
+    `*[_type in ["asset","collection"] && defined(slug.current)]{ "slug": slug.current, _type, "shots": shots[].poster }`
+  );
   const r = await fetch(`https://${PID}.api.sanity.io/v2024-01-01/data/query/${DS}?query=${q}`);
   if (!r.ok) throw new Error(`Sanity query failed: ${r.status}`);
   return (await r.json()).result ?? [];
@@ -99,16 +106,17 @@ const main = async () => {
   await rm(OUT, { recursive: true, force: true });
   let files = 0;
 
-  for (const { slug, _type } of rows) {
+  for (const { slug, _type, shots } of rows) {
     const dir = _type === "collection" ? path.join(OUT, "collections", slug) : path.join(OUT, slug);
     await mkdir(dir, { recursive: true });
     await make(dir, "card", slug);
     files += 2;
     if (_type === "asset") {
-      /* Three extra shots, so the item page's thumbnail strip has something
-         real to switch between. */
-      for (let i = 1; i <= 3; i++) {
-        await make(dir, `shot-${i}`, slug, i);
+      /* One per shot the document actually declares, named exactly as it names
+         them — "<slug>/shot-2.webp" becomes shot-2 here. */
+      const names = [...new Set((shots ?? []).filter(Boolean).map((p) => path.basename(p, path.extname(p))))];
+      for (const [i, name] of names.entries()) {
+        await make(dir, name, slug, i + 1);
         files += 2;
       }
     }
