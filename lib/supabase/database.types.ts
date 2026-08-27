@@ -26,6 +26,9 @@ export type Database = {
           current_period_end: Timestamp | null;
           source: string;
           updated_at: Timestamp;
+          /* Null for comps and admin grants, which have no Stripe objects. */
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
         };
         Insert: {
           user_id: string;
@@ -34,6 +37,8 @@ export type Database = {
           current_period_end?: Timestamp | null;
           source?: string;
           updated_at?: Timestamp;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
         };
         Update: {
           plan?: "free" | "unlimited";
@@ -41,6 +46,8 @@ export type Database = {
           current_period_end?: Timestamp | null;
           source?: string;
           updated_at?: Timestamp;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
         };
         Relationships: [];
       };

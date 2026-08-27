@@ -71,9 +71,45 @@ const FAQ = [
   },
 ];
 
-export default function PricingBody({ settings, viewer }: { settings: Settings; viewer: Viewer | null }) {
+export default function PricingBody({
+  settings,
+  viewer,
+  checkoutReady,
+}: {
+  settings: Settings;
+  viewer: Viewer | null;
+  /* Whether Stripe has keys. Decided on the server — the client cannot read
+     STRIPE_* and must not be told to try. */
+  checkoutReady: boolean;
+}) {
   const [annual, setAnnual] = useState(false);
   const [open, setOpen] = useState<number>(0);
+  const [busy, setBusy] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  async function startCheckout() {
+    setBusy(true);
+    setCheckoutError(null);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ interval: annual ? "annual" : "monthly" }),
+      });
+      const data = (await res.json()) as { ok?: boolean; url?: string; message?: string };
+
+      if (data.ok && data.url) {
+        /* A full navigation, not the router: Stripe is another origin. */
+        window.location.href = data.url;
+        return;
+      }
+      setCheckoutError(data.message ?? "Could not start checkout.");
+    } catch {
+      setCheckoutError("Could not reach the network. Try again.");
+    }
+    /* Only reached on failure — on success the page is already leaving. */
+    setBusy(false);
+  }
 
   return (
     <>
@@ -272,20 +308,49 @@ export default function PricingBody({ settings, viewer }: { settings: Settings; 
               <Link data-nav href="/account" className="btn btn--primary" style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}>
                 You already have this — open your vault
               </Link>
-            ) : (
+            ) : !viewer ? (
+              /* Sign in first, then come back here rather than to the account
+                 page — the visitor asked for a plan, not for settings. */
               <Link
                 data-nav
-                href={viewer ? "/account" : "/join?next=/pricing"}
+                href="/join?next=/pricing"
                 className="btn btn--primary"
                 style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}
               >
-                {viewer
-                  ? "Checkout is not connected yet"
+                {annual ? "Get a year of unlimited" : "Get unlimited"}
+              </Link>
+            ) : checkoutReady ? (
+              /* A button, not an anchor: KilnMotion intercepts a[data-nav] in
+                 the capture phase and stops propagation, so a link's handler
+                 would never run. */
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={startCheckout}
+                disabled={busy}
+                style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}
+              >
+                {busy
+                  ? "Taking you to checkout…"
                   : annual
                     ? "Get a year of unlimited"
                     : "Get unlimited"}
-              </Link>
+              </button>
+            ) : (
+              <span
+                className="btn btn--primary"
+                aria-disabled="true"
+                style={{ fontSize: 15, padding: "15px 24px", marginTop: 10, opacity: 0.6 }}
+              >
+                Checkout is not connected yet
+              </span>
             )}
+
+            {checkoutError ? (
+              <span role="alert" style={{ fontSize: 13, color: "var(--ink-2)", textAlign: "center" }}>
+                {checkoutError}
+              </span>
+            ) : null}
             <span
               className="mono"
               style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)", textAlign: "center" }}
