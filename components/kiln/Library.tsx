@@ -126,8 +126,12 @@ export default function Library({
             </div>
 
             {themes.length > 1 && (
-              <>
-                <span aria-hidden="true" style={{ width: 1, height: 22, background: "var(--hairline-3)", margin: "0 6px" }} />
+              /* The rule and the theme pills wrap as one unit. As siblings the
+                 rule could be pushed onto a new line on its own, so a narrow
+                 viewport opened a row with a vertical bar hanging off the left
+                 edge introducing nothing. */
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span aria-hidden="true" style={{ width: 1, height: 22, background: "var(--hairline-3)", margin: "0 6px", flexShrink: 0 }} />
                 <div role="group" aria-label="Theme" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {themes.map((t) => (
                     <button
@@ -142,7 +146,7 @@ export default function Library({
                     </button>
                   ))}
                 </div>
-              </>
+              </div>
             )}
           </div>
         )}
@@ -181,7 +185,19 @@ export default function Library({
           <span
             className="mono"
             aria-live="polite"
-            style={{ fontSize: 10, color: "var(--faint)", opacity: pending ? 0.5 : 1 }}
+            /* nowrap: React renders this as three text nodes — "15", " of ",
+               "15" — so the browser is free to break it at either space. When
+               it does, the tail lands on its own line reading "OF 15", which
+               looks like a second stray label rather than half of this one.
+               It does not currently break at any width, which is exactly the
+               kind of thing that stays true until a longer sort label or a
+               four-digit total makes it false. */
+            style={{
+              fontSize: 10,
+              color: "var(--faint)",
+              opacity: pending ? 0.5 : 1,
+              whiteSpace: "nowrap",
+            }}
           >
             {facets.matching} of {total}
           </span>
