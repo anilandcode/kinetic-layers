@@ -1,31 +1,32 @@
 import Link from "next/link";
-import { Suspense } from "react";
 import { Footer, Nav } from "@/components/kiln/Chrome";
-import Library from "@/components/kiln/Library";
+import AssetCard from "@/components/kiln/AssetCard";
 import { getAssets, getDrops, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kiln/viewer";
-import { applyFilters, asSort, countFacets, sortAssets } from "@/lib/kiln/facets";
+import { canDownload } from "@/lib/kiln/gate";
 import { Spell } from "@/lib/kiln/words";
-import type { Category, Drop, Theme } from "@/lib/kiln/types";
+import type { Drop } from "@/lib/kiln/types";
 
 /**
- * The library page, in either treatment.
+ * The landing page, in either treatment.
  *
- * A server component: content comes from Sanity, the viewer from Supabase, and
- * filtering happens here rather than in the browser, so a filtered URL renders
- * correctly on first paint and works without JavaScript.
+ * The filter bar and the full masonry used to live here, which meant a first
+ * visitor met a browse UI before being told what the place was. Both moved to
+ * /library. What stays is the pitch and enough of the goods to prove it — the
+ * newest eight, with a way through to the rest.
  */
 
-type Search = { category?: string; theme?: string; sort?: string };
+/* Enough to fill the masonry and show range, few enough that the page still
+   ends somewhere. */
+const STRIP = 8;
 
 export default async function HomeView({
   light = false,
-  searchParams,
 }: {
   light?: boolean;
-  searchParams?: Promise<Search>;
+  /** Accepted and ignored: /?category=… links predate the move to /library. */
+  searchParams?: Promise<Record<string, string>>;
 }) {
-  const params = (await searchParams) ?? {};
   const [all, drops, settings, viewer] = await Promise.all([
     getAssets(),
     getDrops(),
@@ -33,20 +34,12 @@ export default async function HomeView({
     getViewer(),
   ]);
 
-  const filters = {
-    category: params.category as Category | undefined,
-    theme: params.theme as Theme | undefined,
-  };
-  const sort = asSort(params.sort);
-
-  /* Counted before the sort, since order does not change what matches. */
-  const facets = countFacets(all, filters);
-  const assets = sortAssets(applyFilters(all, filters), sort);
+  const newest = all.slice(0, STRIP);
 
   return (
     <div className={light ? "kiln-light" : undefined}>
-      <a className="skip-link" href="#library">
-        Skip to the library
+      <a className="skip-link" href="#newest">
+        Skip to the assets
       </a>
       <Nav light={light} viewer={viewer} />
 
@@ -90,9 +83,9 @@ export default async function HomeView({
               <Link data-nav href={viewer?.unlimited ? "/account" : "/pricing"} className="btn btn--primary">
                 {viewer?.unlimited ? "Your vault" : `Get unlimited — $${settings.monthlyPrice}/mo`}
               </Link>
-              <a href="#library" className="btn btn--ghost">
+              <Link data-nav href="/library" className="btn btn--ghost">
                 Browse {settings.freeThisMonth} free
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -125,19 +118,25 @@ export default async function HomeView({
           </dl>
         </section>
 
-        {/* ============ Library ============ */}
-        <div id="library">
-          <Suspense fallback={<div className="shell" style={{ paddingBlock: 80 }} />}>
-            <Library
-              assets={assets}
-              total={all.length}
-              facets={facets}
-              sort={sort}
-              light={light}
-              viewer={viewer}
-            />
-          </Suspense>
-        </div>
+        {/* ============ Newest ============ */}
+        <section id="newest" style={{ borderTop: "1px solid var(--hairline)" }}>
+          <div className="shell" style={{ paddingBlock: "40px 0", display: "flex", alignItems: "baseline", gap: 16, flexWrap: "wrap" }}>
+            <h2 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em" }}>Newest in the vault</h2>
+            <div style={{ flex: 1, minWidth: 12 }} />
+            <Link data-nav href="/library" style={{ fontSize: 15, color: "var(--sage-ink)", whiteSpace: "nowrap" }}>
+              Browse the library →
+            </Link>
+          </div>
+          <div className="shell" style={{ paddingBlock: "26px 72px" }}>
+            <div className="kiln-masonry">
+              {newest.map((asset) => (
+                <div data-reveal key={asset.slug}>
+                  <AssetCard asset={asset} canCopy={canDownload(viewer, asset)} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* ============ Thursday drops ============ */}
         <DropsSection drops={drops} />
@@ -165,7 +164,11 @@ export default async function HomeView({
                 textWrap: "pretty",
               }}
             >
-              ${settings.freeThisMonth} are free. The other ${Math.max(0, settings.totalAssets - settings.freeThisMonth)} are $${settings.monthlyPrice} a month.
+              {/* `${'{'}x}` in JSX is a literal $ followed by an expression, not a
+                  template placeholder — so this rendered "$5 are free. The
+                  other $10". Only the price is money. */}
+              {settings.freeThisMonth} are free. The other{" "}
+              {Math.max(0, settings.totalAssets - settings.freeThisMonth)} are ${settings.monthlyPrice} a month.
             </h2>
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", maxWidth: 460 }}>
               One subscription, the whole vault, every source file. Cancel and keep everything you

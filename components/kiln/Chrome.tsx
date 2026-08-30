@@ -21,7 +21,7 @@ import type { Viewer } from "@/lib/kiln/types";
  * the thing showing your own name.
  */
 export const NAV = [
-  { href: "/", label: "Library" },
+  { href: "/library", label: "Library" },
   { href: "/collections", label: "Collections" },
   { href: "/pricing", label: "Pricing" },
 ];

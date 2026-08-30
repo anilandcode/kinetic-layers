@@ -13,7 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [assets, collections] = await Promise.all([getAssetSlugs(), getCollectionSlugs()]);
   const now = new Date();
 
-  const still = ["", "/collections", "/pricing", "/changelog", "/license", "/docs", "/mcp", "/privacy", "/terms"].map((path) => ({
+  const still = ["", "/library", "/collections", "/pricing", "/changelog", "/license", "/docs", "/mcp", "/privacy", "/terms"].map((path) => ({
     url: `${SITE_URL}${path}`,
     lastModified: now,
     changeFrequency: (path === "" ? "daily" : "weekly") as "daily" | "weekly",

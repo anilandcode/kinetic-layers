@@ -14,30 +14,50 @@ import type { Asset, Category, Theme } from "./types";
  * they do that we did not.
  */
 
-/* Shelf, mood and free-only were filters until the bar collapsed to one row.
-   They stay on Asset as data — getRelated falls back to shelf — but nothing
-   slices the library by them any more. */
-export type Filters = { category?: Category; theme?: Theme };
+/* Shelf and mood stay on Asset as data — getRelated falls back to shelf, and
+   /collections filters by it — but nothing slices the library by them. */
+export type Filters = {
+  /** Asset type: the tab row. A free string on Asset, so no enum to widen. */
+  type?: string;
+  category?: Category;
+  theme?: Theme;
+  /** Favourites. Not a field on Asset — see `saved` below. */
+  saved?: boolean;
+};
 
-const matches = (a: Asset, f: Filters) =>
-  (!f.category || a.category === f.category) && (!f.theme || a.theme === f.theme);
+/**
+ * `saved` is the one filter that is not a property of the asset. It lives in
+ * Supabase, per viewer, so it arrives as a set of slugs the page has already
+ * read rather than as something that could be answered from the catalogue.
+ * Passing it in keeps Asset honest: no phantom field that is only ever
+ * populated for one signed-in request.
+ */
+const matches = (a: Asset, f: Filters, saved: ReadonlySet<string>) =>
+  (!f.type || a.type === f.type) &&
+  (!f.category || a.category === f.category) &&
+  (!f.theme || a.theme === f.theme) &&
+  (!f.saved || saved.has(a.slug));
 
-export function applyFilters(all: Asset[], f: Filters): Asset[] {
-  return all.filter((a) => matches(a, f));
+const NONE: ReadonlySet<string> = new Set();
+
+export function applyFilters(all: Asset[], f: Filters, saved: ReadonlySet<string> = NONE): Asset[] {
+  return all.filter((a) => matches(a, f, saved));
 }
 
 export type Facets = {
+  type: Record<string, number>;
   category: Record<string, number>;
   theme: Record<string, number>;
   /** Total with every current filter applied — what the grid actually shows. */
   matching: number;
 };
 
-export function countFacets(all: Asset[], f: Filters): Facets {
+export function countFacets(all: Asset[], f: Filters, saved: ReadonlySet<string> = NONE): Facets {
   /* For each dimension, drop that dimension's own selection before counting,
      so a chip's number answers "what would I get if I picked this instead". */
-  const forCategory = all.filter((a) => matches(a, { ...f, category: undefined }));
-  const forTheme = all.filter((a) => matches(a, { ...f, theme: undefined }));
+  const forType = all.filter((a) => matches(a, { ...f, type: undefined }, saved));
+  const forCategory = all.filter((a) => matches(a, { ...f, category: undefined }, saved));
+  const forTheme = all.filter((a) => matches(a, { ...f, theme: undefined }, saved));
 
   const tally = (rows: Asset[], key: (a: Asset) => string) =>
     rows.reduce<Record<string, number>>((m, a) => {
@@ -50,9 +70,10 @@ export function countFacets(all: Asset[], f: Filters): Facets {
     /* Only values that actually occur are tallied, so the chip list is drawn
        from the catalogue rather than from an aspirational enum — the same
        reason DownloadFilter derives its options. */
+    type: tally(forType.filter((a) => a.type), (a) => a.type),
     category: tally(forCategory.filter((a) => a.category), (a) => a.category!),
     theme: tally(forTheme.filter((a) => a.theme), (a) => a.theme!),
-    matching: applyFilters(all, f).length,
+    matching: applyFilters(all, f, saved).length,
   };
 }
 

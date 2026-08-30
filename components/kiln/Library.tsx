@@ -22,6 +22,9 @@ import { canDownload } from "@/lib/kiln/gate";
 type Promo = "upgrade" | "hire" | "news";
 const PROMO_AT: Record<number, Promo> = { 4: "upgrade", 9: "hire", 14: "news" };
 
+/** Every filter except `sort`. Clear All drops exactly these. */
+const FILTER_KEYS = ["type", "category", "theme", "saved"] as const;
+
 export default function Library({
   assets,
   total,
@@ -42,18 +45,36 @@ export default function Library({
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
 
+  const type = params.get("type");
   const category = params.get("category");
   const theme = params.get("theme");
+  const saved = params.get("saved") === "1";
+  const filtered = FILTER_KEYS.some((k) => params.get(k));
 
   /* Drawn from what the catalogue actually holds, in a stable order, so no
      chip is ever offered for a category nothing has been filed under. */
   const categories = Object.keys(facets.category).sort();
   const themes = Object.keys(facets.theme).sort();
+  /* Types read biggest-first: the tab row is a hierarchy, not an index, and a
+     tab holding one asset should not open the row. */
+  const types = Object.keys(facets.type).sort(
+    (a, b) => (facets.type[b] ?? 0) - (facets.type[a] ?? 0) || a.localeCompare(b)
+  );
 
   function setParam(key: string, value: string | null) {
     const next = new URLSearchParams(params.toString());
     if (value === null) next.delete(key);
     else next.set(key, value);
+    const qs = next.toString();
+    startTransition(() => router.replace(qs ? `?${qs}` : "?", { scroll: false }));
+  }
+
+  /* One replace, not four. Clearing key by key would push four history entries
+     and re-render between each, so back would walk them one at a time. Sort is
+     deliberately kept: an ordering is a preference, not a filter. */
+  function clearAll() {
+    const next = new URLSearchParams(params.toString());
+    FILTER_KEYS.forEach((k) => next.delete(k));
     const qs = next.toString();
     startTransition(() => router.replace(qs ? `?${qs}` : "?", { scroll: false }));
   }
@@ -93,81 +114,36 @@ export default function Library({
           borderBottom: "1px solid var(--hairline)",
         }}
       >
-        {/* "Used for" leads, because it is the question a visitor arrives
-            with — both reference libraries put it first. It only draws when
-            there is more than one answer to choose between. */}
-        {categories.length > 1 && (
+        {/* ---- Row 1: type, as tabs ------------------------------------
+            Type is the coarsest cut — a 3D scene and a prompt are different
+            things, not different flavours of one thing — so it reads as
+            navigation rather than as another chip in the pile. Tabs carry that
+            and pills do not.
+
+            The row scrolls in its own box. Eight types will not fit on a
+            phone, and a wrapping tab row stops looking like tabs at the moment
+            it becomes two lines. */}
+        <div className="shell" style={{ paddingTop: 12, display: "flex", alignItems: "flex-end", gap: 18 }}>
           <div
-            className="shell"
-            style={{ paddingTop: 12, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}
+            role="group"
+            aria-label="Asset type"
+            className="kiln-tabs"
+            style={{ flex: 1, minWidth: 0, display: "flex", gap: 22, overflowX: "auto", overscrollBehavior: "contain" }}
           >
-            <div role="group" aria-label="Used for" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <button
-                type="button"
-                className="pill"
-                aria-pressed={!category}
-                onClick={() => setParam("category", null)}
-              >
-                All uses
-                <Count n={facets.matching} />
-              </button>
-              {categories.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  className="pill"
-                  aria-pressed={category === c}
-                  onClick={() => setParam("category", category === c ? null : c)}
-                >
-                  {c}
-                  <Count n={facets.category[c] ?? 0} />
-                </button>
-              ))}
-            </div>
-
-            {themes.length > 1 && (
-              /* The rule and the theme pills wrap as one unit. As siblings the
-                 rule could be pushed onto a new line on its own, so a narrow
-                 viewport opened a row with a vertical bar hanging off the left
-                 edge introducing nothing. */
-              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                <span aria-hidden="true" style={{ width: 1, height: 22, background: "var(--hairline-3)", margin: "0 6px", flexShrink: 0 }} />
-                <div role="group" aria-label="Theme" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {themes.map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      className="pill pill--muted"
-                      aria-pressed={theme === t}
-                      onClick={() => setParam("theme", theme === t ? null : t)}
-                    >
-                      {t}
-                      <Count n={facets.theme[t] ?? 0} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            <Tab on={!type} onClick={() => setParam("type", null)}>
+              All
+            </Tab>
+            {types.map((t) => (
+              <Tab key={t} on={type === t} onClick={() => setParam("type", type === t ? null : t)}>
+                {titleCase(t)}
+                <Count n={facets.type[t] ?? 0} />
+              </Tab>
+            ))}
           </div>
-        )}
-
-        {/* Sort and the count. Shelf and Mood used to live here too — four
-            taxonomies over two rows, in which "Editorial" was both a category
-            and a mood, telling a visitor two different things under one word.
-            Category answers what someone came for; theme answers how it looks.
-            Shelf and mood remain as data (getRelated falls back to shelf, and
-            /collections filters by it) but are no longer ways to slice the
-            library. */}
-        <div
-          className="shell"
-          style={{ paddingBlock: 14, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}
-        >
-          <div style={{ flex: 1 }} />
-
 
           {/* Sort. URL-driven like the filters, so an ordering is shareable
               and survives the back button. */}
-          <label style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 7, flexShrink: 0, paddingBottom: 8 }}>
             <span className="visually-hidden">Sort the library</span>
             <select
               className="pill pill--muted"
@@ -182,16 +158,107 @@ export default function Library({
               ))}
             </select>
           </label>
+        </div>
+
+        {/* ---- Row 2: tone ---------------------------------------------- */}
+        {/* Favourites and Clear all ride the tone row rather than the industry
+            row below it. They belong with industry conceptually — they act on
+            every filter — but that row fills its width with pills, so the pair
+            wrapped onto a line of their own and sat at the far left of it,
+            reading as an orphaned third filter group. Tone never fills the
+            row, so here they stay put and right-aligned at every width. */}
+        {/* Rendered unconditionally. It was gated on `themes.length > 1`, which
+            on four of the eight type tabs left every asset sharing one tone —
+            and took Favourites and Clear all down with the row, so the controls
+            that undo a filter vanished exactly when a filter was on. */}
+        {(
+          <FilterRow
+            label="Tone"
+            trailing={
+              <>
+                {/* Signed out this is disabled rather than hidden: a control
+                    that vanishes teaches nothing, and the label says what to
+                    do about it. */}
+                <button
+                  type="button"
+                  className="pill pill--muted"
+                  disabled={!signedIn}
+                  aria-pressed={signedIn ? saved : undefined}
+                  title={signedIn ? undefined : "Sign in to save assets"}
+                  aria-label={signedIn ? "Show only favourites" : "Favourites — sign in to save assets"}
+                  onClick={() => setParam("saved", saved ? null : "1")}
+                >
+                  <Glyph name="heart" />
+                  Favourites
+                </button>
+                <button
+                  type="button"
+                  className="pill pill--muted"
+                  disabled={!filtered}
+                  onClick={clearAll}
+                >
+                  Clear all
+                </button>
+              </>
+            }
+          >
+            <div role="group" aria-label="Tone" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {/* One tone is not a choice, so the pills go — but if that tone
+                  is the one currently filtered on, it stays, or the filter has
+                  no control to switch it off. */}
+              {(themes.length > 1 ? themes : themes.filter((t) => t === theme)).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  className="pill pill--muted"
+                  aria-pressed={theme === t}
+                  onClick={() => setParam("theme", theme === t ? null : t)}
+                >
+                  <Glyph name={t === "Light" ? "sun" : "moon"} />
+                  {t}
+                  <Count n={facets.theme[t] ?? 0} />
+                </button>
+              ))}
+            </div>
+          </FilterRow>
+        )}
+
+        {/* ---- Row 3: industry, plus the two controls that act on all of
+            them. Favourites and Clear All sit here rather than in their own
+            row because they are the end of the filter sentence, not a fourth
+            taxonomy. */}
+        {/* Same rule as tone: more than one choice, or a choice already made
+            that must stay removable. */}
+        {(categories.length > 1 || category) && (
+          <FilterRow label="Industry">
+            <div role="group" aria-label="Industry" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  className="pill"
+                  aria-pressed={category === c}
+                  onClick={() => setParam("category", category === c ? null : c)}
+                >
+                  <Glyph name={CATEGORY_GLYPH[c] ?? "dot"} />
+                  {c}
+                  <Count n={facets.category[c] ?? 0} />
+                </button>
+              ))}
+            </div>
+          </FilterRow>
+        )}
+
+        {/* The running total. Its own line under the filters, right-aligned to
+            sit under Clear all. */}
+        <div className="shell" style={{ paddingBottom: 12, display: "flex", justifyContent: "flex-end" }}>
           <span
             className="mono"
             aria-live="polite"
             /* nowrap: React renders this as three text nodes — "15", " of ",
                "15" — so the browser is free to break it at either space. When
                it does, the tail lands on its own line reading "OF 15", which
-               looks like a second stray label rather than half of this one.
-               It does not currently break at any width, which is exactly the
-               kind of thing that stays true until a longer sort label or a
-               four-digit total makes it false. */
+               looks like a second stray label rather than half of this one. */
             style={{
               fontSize: 10,
               color: "var(--faint)",
@@ -208,9 +275,11 @@ export default function Library({
         {assets.length === 0 ? (
           <div style={{ paddingBlock: 60, display: "flex", flexDirection: "column", gap: 16, alignItems: "flex-start" }}>
             <p style={{ color: "var(--muted)", fontSize: 16 }}>
-              Nothing on that shelf in that mood.
+              {saved && signedIn
+                ? "You have not saved anything matching that yet."
+                : "Nothing matches all of those at once."}
             </p>
-            <button type="button" className="btn btn--ghost" onClick={() => startTransition(() => router.replace("?"))}>
+            <button type="button" className="btn btn--ghost" onClick={clearAll}>
               Clear the filters
             </button>
           </div>
@@ -379,6 +448,181 @@ function NewsPromo() {
     </form>
   );
 }
+
+/**
+ * One labelled filter row: "TONE  [pills]        [trailing]".
+ *
+ * The label is a real element rather than a pseudo, so it wraps and lines up
+ * with the pills instead of hanging off the first one.
+ */
+function FilterRow({
+  label,
+  children,
+  trailing,
+}: {
+  label: string;
+  children: React.ReactNode;
+  trailing?: React.ReactNode;
+}) {
+  return (
+    <div
+      className="shell"
+      style={{ paddingTop: 10, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}
+    >
+      <span
+        aria-hidden="true"
+        className="mono"
+        style={{
+          fontSize: 10,
+          letterSpacing: "0.14em",
+          textTransform: "uppercase",
+          color: "var(--faint)",
+          /* Both labels align to the same column, so the pill rows start at one
+             left edge rather than stepping in and out with the word length. */
+          minWidth: 64,
+          flexShrink: 0,
+        }}
+      >
+        {label}
+      </span>
+      {children}
+      {trailing && (
+        <>
+          <div style={{ flex: 1, minWidth: 12 }} />
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>{trailing}</div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/** A type tab. Underlined when active — navigation, not a chip. */
+function Tab({
+  on,
+  onClick,
+  children,
+}: {
+  on: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={on}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        whiteSpace: "nowrap",
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        padding: "6px 0 8px",
+        fontSize: 14,
+        color: on ? "var(--ink)" : "var(--muted)",
+        /* The underline is drawn on the element itself rather than on a
+           pseudo-element, so it inherits the same 2px whether or not the tab
+           is active and the row never shifts by a pixel on selection. */
+        borderBottom: `2px solid ${on ? "var(--ink)" : "transparent"}`,
+        marginBottom: -1,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/**
+ * Category → glyph. Missing entries fall back to a dot rather than to nothing,
+ * so a category added in Sanity gets a placeholder instead of a ragged row.
+ */
+const CATEGORY_GLYPH: Record<string, GlyphName> = {
+  Hero: "spark",
+  "Landing page": "layout",
+  Portfolio: "folder",
+  SaaS: "layers",
+  Agency: "asterisk",
+  Ecommerce: "bag",
+  Dashboard: "chart",
+  Editorial: "text",
+  Background: "image",
+  Texture: "grain",
+  Workflow: "flow",
+};
+
+type GlyphName =
+  | "sun" | "moon" | "heart" | "spark" | "layout" | "folder" | "layers"
+  | "asterisk" | "bag" | "chart" | "text" | "image" | "grain" | "flow" | "dot";
+
+/**
+ * The chip icons. Inline SVG rather than an icon package: fifteen 40-byte
+ * paths do not justify a dependency, and these inherit currentColor so they
+ * follow the pill's pressed and disabled states for free.
+ */
+function Glyph({ name }: { name: GlyphName }) {
+  const d: Record<GlyphName, React.ReactNode> = {
+    sun: <><circle cx="8" cy="8" r="3.2" /><path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1" /></>,
+    moon: <path d="M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1Z" />,
+    heart: <path d="M8 13.5S2.2 10 2.2 6.2A2.9 2.9 0 0 1 8 4.7a2.9 2.9 0 0 1 5.8 1.5C13.8 10 8 13.5 8 13.5Z" />,
+    spark: <path d="M8 1.6 9.6 6 14 7.6 9.6 9.2 8 13.6 6.4 9.2 2 7.6 6.4 6Z" />,
+    layout: <><rect x="2" y="2.6" width="12" height="10.8" rx="1.6" /><path d="M2 6.4h12" /></>,
+    folder: <path d="M2.2 4.6a1 1 0 0 1 1-1h2.9l1.3 1.6h5.4a1 1 0 0 1 1 1v5.8a1 1 0 0 1-1 1H3.2a1 1 0 0 1-1-1Z" />,
+    layers: <><path d="M8 1.9 14.2 5 8 8.1 1.8 5Z" /><path d="m2.6 8 5.4 2.7L13.4 8" /><path d="m2.6 11 5.4 2.7L13.4 11" /></>,
+    asterisk: <path d="M8 2.2v11.6M3 4.9l10 6.2M13 4.9 3 11.1" />,
+    bag: <><path d="M3.2 5.2h9.6l-.8 8.2H4Z" /><path d="M6 5.2V4a2 2 0 0 1 4 0v1.2" /></>,
+    chart: <path d="M2.6 13.4V9m3.6 4.4V5.6M9.8 13.4v-5m3.6 5V3.2" />,
+    text: <path d="M3 3.6h10M3 8h10M3 12.4h6.4" />,
+    image: <><rect x="2" y="3" width="12" height="10" rx="1.6" /><circle cx="5.8" cy="6.5" r="1.1" /><path d="m2.6 11.4 3.3-3 3 2.6 2-1.7 2.5 2.1" /></>,
+    grain: <><circle cx="4.2" cy="4.4" r=".9" /><circle cx="9.1" cy="3.4" r=".9" /><circle cx="12.4" cy="6.6" r=".9" /><circle cx="6.4" cy="8.2" r=".9" /><circle cx="11" cy="11.2" r=".9" /><circle cx="3.6" cy="11.8" r=".9" /></>,
+    flow: <><circle cx="4" cy="4" r="2" /><circle cx="12" cy="12" r="2" /><path d="M4 6.2v3.4a2.4 2.4 0 0 0 2.4 2.4h3.3" /></>,
+    dot: <circle cx="8" cy="8" r="2.6" />,
+  };
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 16 16"
+      width="13"
+      height="13"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ marginRight: 6, flexShrink: 0, opacity: 0.8 }}
+    >
+      {d[name]}
+    </svg>
+  );
+}
+
+/**
+ * "3D SCENE" → "3D Scene". The catalogue stores types shouting, and a plain
+ * title-case turns LORA into "Lora" and MCP into "Mcp" — which is not a
+ * capitalisation choice, it is a misspelling of the thing being sold. Words
+ * that are not words get spelled out rather than cased.
+ */
+const ACRONYM: Record<string, string> = {
+  "3D": "3D",
+  LORA: "LoRA",
+  MCP: "MCP",
+  AI: "AI",
+  SAAS: "SaaS",
+  UI: "UI",
+  UX: "UX",
+  CSS: "CSS",
+};
+
+const titleCase = (s: string) =>
+  s
+    .split(/(\s+|\/)/)
+    .map((w) => {
+      const key = w.trim().toUpperCase();
+      if (ACRONYM[key]) return ACRONYM[key];
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    })
+    .join("");
 
 /** The number on a chip. Muted, and hidden from assistive tech because the
     pill's own pressed state and label already carry the meaning — a screen

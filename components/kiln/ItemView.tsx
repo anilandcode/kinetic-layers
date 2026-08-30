@@ -169,7 +169,7 @@ export default function ItemView({
               to nothing. */}
           {asset.category && (
             <>
-              <Link data-nav href={`/?category=${encodeURIComponent(asset.category)}`} style={{ color: "var(--faint)" }}>
+              <Link data-nav href={`/library?category=${encodeURIComponent(asset.category)}`} style={{ color: "var(--faint)" }}>
                 {asset.category}
               </Link>
               <span aria-hidden="true">/</span>
