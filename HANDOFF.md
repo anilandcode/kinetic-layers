@@ -63,7 +63,7 @@ number and the enforced number cannot drift. Change it there and both move.
 
 Auth (password, magic link, reset, session across refresh), the paywall matrix
 across all four doors, RLS isolation, quotas with 429 + `Retry-After`, MCP with
-API keys, media lazy-loading, SEO/OG/sitemap, 46 routes building clean, contrast
+API keys, media lazy-loading, SEO/OG/sitemap, 47 routes building clean, contrast
 and overflow clean at 375 and 1600.
 
 ## Traps
@@ -112,6 +112,19 @@ Each of these cost real time. They are not hypothetical.
 12. **Check images actually decoded, not just that the page rendered.** The
    broken thumbnail survived several sweeps because nothing was visibly wrong
    above the fold. `img.complete && img.naturalWidth === 0` is the test.
+13. **Never gate a filter row on its own facet if it also carries controls.**
+   The tone row drew only when more than one tone existed. On four of the
+   eight type tabs every asset shares a tone, so the row vanished — and took
+   Favourites and Clear all with it: the controls that undo a filter
+   disappeared exactly when a filter was on. A row must also draw whenever its
+   own filter is set, or an active filter has nothing to switch it off.
+14. **Browsing lives at `/library`, not `/`.** Home is a landing page: hero,
+   stats, the newest eight, drops. `/collections` is a different entity —
+   bundles, filtered by shelf — and deliberately shares no filter vocabulary
+   with the library.
+15. **`${x}` in JSX is a literal dollar sign plus an expression**, not a
+   template placeholder. The closing headline shipped reading "$5 are free.
+   The other $10 are $24 a month."
 
 ## Outstanding — needs the account owner
 
