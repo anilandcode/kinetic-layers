@@ -369,6 +369,7 @@ function Promo({ kind, signedIn }: { kind: Promo; signedIn: boolean }) {
 function NewsPromo() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [message, setMessage] = useState("");
 
   async function subscribe(evt: React.FormEvent) {
     evt.preventDefault();
@@ -383,7 +384,9 @@ function NewsPromo() {
     body.set("consent", "1");
     try {
       const res = await fetch("/api/subscribe", { method: "POST", body, headers: { Accept: "application/json" } });
-      setState(res.ok ? "sent" : "error");
+      const json = await res.json().catch(() => ({}));
+      setMessage(typeof json.message === "string" ? json.message : "");
+      setState(res.ok && json.ok ? "sent" : "error");
     } catch {
       setState("error");
     }
@@ -400,8 +403,13 @@ function NewsPromo() {
       {/* Swapping the form for a paragraph is invisible to a screen reader
           unless the paragraph announces itself — success was silent. */}
       {state === "sent" ? (
+        /* The server decides the wording now: whether an address is on the
+           list depends on double opt-in and on whether a mail provider is
+           configured, and this card cannot know either. It used to hardcode
+           "You're on the list", which was the same false promise the route
+           was making. */
         <p role="status" aria-live="polite" style={{ fontSize: 15, color: "var(--sage-ink)" }}>
-          You&rsquo;re on the list. First Thursday coming.
+          {message || "Check your email to confirm."}
         </p>
       ) : (
         <>
@@ -444,8 +452,8 @@ function NewsPromo() {
         </>
       )}
       <span style={{ fontSize: 12, lineHeight: 1.5, color: "var(--faint)" }}>
-        Subscribing adds you to the Thursday email. One a week, nothing else,
-        unsubscribe from any of them.
+        Subscribing sends one email asking you to confirm. After that: one a
+        week, nothing else, and every one of them can unsubscribe you.
       </span>
     </form>
   );

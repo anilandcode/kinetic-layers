@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb, visitorHash } from "@/lib/supabase";
 import { throttle } from "@/lib/kiln/quota";
+import { EMAIL_READY, confirmationMail, sendMail } from "@/lib/kiln/email";
 import {
   clean,
   CONCEPTS,
@@ -103,16 +104,102 @@ export async function POST(request: Request) {
     });
   }
 
-  /* Only for people who ticked the marketing box, and only when a provider is
-     configured. A failure here is logged and swallowed: the response is
-     already safely stored. */
-  if (row.consent) {
-    await forwardToProvider(email, row).catch((err) =>
-      console.error("provider forward failed:", err)
-    );
+  /* Only for people who ticked the marketing box. The research row above is
+     stored either way; this is the mailing list, which is a different thing
+     with a different lifecycle. */
+  if (!row.consent) {
+    return json(200, { ok: true, message: "Thanks — we have your answers." });
   }
 
-  return json(200, { ok: true, message: "Thanks — you are on the list." });
+  const outcome = await subscribe(email, row.source);
+
+  /* External provider forwarding, if one is configured. Independent of the
+     in-house list and best-effort: a failure is logged, never surfaced. */
+  await forwardToProvider(email, row).catch((err) =>
+    console.error("provider forward failed:", err)
+  );
+
+  return json(outcome.status, outcome.body);
+}
+
+/**
+ * Double opt-in.
+ *
+ * Nobody is on the list until they click. This route used to answer "Thanks —
+ * you are on the list" while EMAIL_PROVIDER was unset and no list existed,
+ * which was a promise the product could not keep; the messages below are
+ * written so that none of them claims more than actually happened.
+ */
+async function subscribe(email: string, source: string) {
+  const db = getDb();
+
+  const { data: existing } = await db
+    .from("subscribers")
+    .select("id, token, confirmed_at, unsubscribed_at")
+    .eq("email", email)
+    .maybeSingle();
+
+  /* Already confirmed and still subscribed: say so rather than sending a
+     second confirmation to someone who is done. */
+  if (existing?.confirmed_at && !existing.unsubscribed_at) {
+    return { status: 200, body: { ok: true, message: "You are already on the list." } };
+  }
+
+  let token = existing?.token as string | undefined;
+
+  if (!existing) {
+    const { data, error } = await db
+      .from("subscribers")
+      .insert({ email, source })
+      .select("token")
+      .single();
+    if (error) {
+      console.error("subscriber insert failed:", error.message);
+      return { status: 500, body: { ok: false, message: "We could not sign you up. Try again in a moment." } };
+    }
+    token = data.token;
+  } else if (existing.unsubscribed_at) {
+    /* Asking again after unsubscribing is allowed — they asked — but it does
+       not silently resurrect them. The row goes back to pending with a fresh
+       token, so the list still only contains people who confirmed. */
+    const { data, error } = await db
+      .from("subscribers")
+      .update({ unsubscribed_at: null, confirmed_at: null, token: crypto.randomUUID(), source })
+      .eq("id", existing.id)
+      .select("token")
+      .single();
+    if (error) {
+      console.error("subscriber resubscribe failed:", error.message);
+      return { status: 500, body: { ok: false, message: "We could not sign you up. Try again in a moment." } };
+    }
+    token = data.token;
+  }
+
+  if (!EMAIL_READY) {
+    /* The address is safely stored and can be confirmed later. Saying "check
+       your email" here would be the exact lie this replaced. */
+    console.error("subscribe: stored but not confirmed — no mail provider configured");
+    return {
+      status: 200,
+      body: {
+        ok: true,
+        message: "We have your address. The weekly email is not running yet — we will confirm before anything is sent.",
+      },
+    };
+  }
+
+  const sent = await sendMail(confirmationMail(email, token!));
+  if (!sent.ok) {
+    return {
+      status: 200,
+      body: {
+        ok: true,
+        message: "We have your address, but the confirmation email did not go out. Try again shortly.",
+      },
+    };
+  }
+
+  return { status: 200, body: { ok: true, message: "Check your email to confirm — one click and you are on." } };
 }
 
 async function forwardToProvider(
