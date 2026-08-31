@@ -17,7 +17,7 @@ export default function NotFound() {
           Slugs change when an asset is retitled. The library is the reliable way back in.
         </p>
         <div style={{ display: "flex", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
-          <Link data-nav href="/" className="btn btn--primary">Browse the library</Link>
+          <Link data-nav href="/library" className="btn btn--primary">Browse the library</Link>
           <Link data-nav href="/collections" className="btn btn--ghost">See the collections</Link>
         </div>
       </main>

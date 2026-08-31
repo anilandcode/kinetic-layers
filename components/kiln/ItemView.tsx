@@ -8,6 +8,7 @@ import type { Asset, Viewer } from "@/lib/kiln/types";
 import PreviewMedia from "./PreviewMedia";
 import SaveButton from "./SaveButton";
 import { track } from "@/lib/track";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
 
 /**
  * Item page.
@@ -74,12 +75,17 @@ export default function ItemView({
   /* An anonymous visitor on a paid asset needs an account *and* a
      subscription. Saying "create a free account" there would be true but
      misleading — it is not what unlocks the file. */
+  /* During early access an account IS the unlock, so a paid asset asks for the
+     same thing a free one does and sends people to the same place. Without
+     this a locked asset would still point at /pricing, where there is nothing
+     to buy. */
   const unlockLabel =
-    gate === "needs-unlimited" || (gate === "needs-account" && !asset.free)
+    !EARLY_ACCESS && (gate === "needs-unlimited" || (gate === "needs-account" && !asset.free))
       ? "Get unlimited"
       : "Create a free account";
-  const unlockHref =
-    gate === "needs-unlimited"
+  const unlockHref = EARLY_ACCESS
+    ? `/join?next=/item/${asset.slug}`
+    : gate === "needs-unlimited"
       ? "/pricing"
       : asset.free
         ? `/join?next=/item/${asset.slug}`
@@ -158,7 +164,7 @@ export default function ItemView({
           aria-label="Breadcrumb"
           style={{ paddingBlock: "26px 0", display: "flex", alignItems: "center", gap: 10, fontSize: 10, color: "var(--faint)" }}
         >
-          <Link data-nav href="/" style={{ color: "var(--faint)" }}>
+          <Link data-nav href="/library" style={{ color: "var(--faint)" }}>
             Library
           </Link>
           <span aria-hidden="true">/</span>
@@ -226,7 +232,9 @@ export default function ItemView({
                   ? "Every file, including the source. Yours to keep even if you cancel."
                   : gate === "needs-account"
                     ? "This one is free — it just needs an account so your downloads have somewhere to live."
-                    : `Download every source file. $${monthlyPrice} a month for the whole vault.`}
+                    : EARLY_ACCESS
+                      ? "Download every source file. Free while Kiln is in early access — it just needs an account."
+                      : `Download every source file. $${monthlyPrice} a month for the whole vault.`}
               </span>
 
               {gate === "open" ? (

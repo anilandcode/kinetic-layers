@@ -2,6 +2,7 @@ import Link from "next/link";
 import SearchTrigger from "./SearchTrigger";
 import NavLinks, { ModeToggle } from "./NavLinks";
 import type { Viewer } from "@/lib/kiln/types";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
 
 /* ============================================================
    Nav and footer — shared by every page.
@@ -23,7 +24,11 @@ import type { Viewer } from "@/lib/kiln/types";
 export const NAV = [
   { href: "/library", label: "Library" },
   { href: "/collections", label: "Collections" },
-  { href: "/pricing", label: "Pricing" },
+  /* Pricing leaves the nav while everything is free. The page stays reachable
+     and still says what it will cost — that is honest, and it sets the anchor
+     before there is anything to buy — but a Pricing tab on a site with no
+     prices sends people to a dead end. */
+  ...(EARLY_ACCESS ? [] : [{ href: "/pricing", label: "Pricing" }]),
 ];
 
 export function Mark() {
@@ -101,14 +106,16 @@ export function Nav({ light = false, viewer = null }: { light?: boolean; viewer?
           </Link>
         )}
 
+        {/* Signed in during early access there is nothing left to get, so the
+            button goes rather than offering an upgrade that already happened. */}
         {!viewer?.unlimited && (
           <Link
             data-nav
-            href={viewer ? "/pricing" : "/join?next=/pricing"}
+            href={EARLY_ACCESS ? "/join" : viewer ? "/pricing" : "/join?next=/pricing"}
             className="btn btn--primary"
             style={{ fontSize: 13, padding: "10px 18px" }}
           >
-            Get unlimited
+            {EARLY_ACCESS ? "Get free access" : "Get unlimited"}
           </Link>
         )}
       </nav>

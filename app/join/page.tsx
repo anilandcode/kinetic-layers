@@ -5,6 +5,7 @@ import { Mark } from "@/components/kiln/Chrome";
 import JoinForm from "@/components/kiln/JoinForm";
 import { getViewer } from "@/lib/kiln/viewer";
 import { getSettings } from "@/lib/sanity/queries";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
 
 export const metadata: Metadata = {
   title: "Join",
@@ -46,8 +47,10 @@ export default async function Join({
             <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kiln</span>
           </Link>
           <div style={{ flex: 1 }} />
-          <Link data-nav href="/pricing" style={{ fontSize: 14, color: "var(--muted)" }}>Pricing</Link>
-          <Link data-nav href="/" style={{ fontSize: 14, color: "var(--muted)" }}>Browse free</Link>
+          {!EARLY_ACCESS && (
+            <Link data-nav href="/pricing" style={{ fontSize: 14, color: "var(--muted)" }}>Pricing</Link>
+          )}
+          <Link data-nav href="/library" style={{ fontSize: 14, color: "var(--muted)" }}>Browse free</Link>
         </div>
       </header>
 
@@ -119,8 +122,12 @@ export default async function Join({
               </ul>
               <div style={{ height: 1, background: "#232219", marginTop: 4 }} />
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 15, color: "var(--muted)" }}>${settings.monthlyPrice} a month, cancel anytime</span>
-                <Link data-nav href="/pricing" style={{ fontSize: 14, color: "var(--sage-ink)" }}>See pricing →</Link>
+                <span style={{ fontSize: 15, color: "var(--muted)" }}>
+                  {EARLY_ACCESS ? "Free while Kiln is in early access" : `$${settings.monthlyPrice} a month, cancel anytime`}
+                </span>
+                <Link data-nav href="/pricing" style={{ fontSize: 14, color: "var(--sage-ink)" }}>
+                  {EARLY_ACCESS ? "What it will cost later →" : "See pricing →"}
+                </Link>
               </div>
             </div>
           </div>

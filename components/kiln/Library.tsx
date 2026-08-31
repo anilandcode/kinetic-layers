@@ -7,6 +7,7 @@ import AssetCard from "./AssetCard";
 import { type Asset, type Viewer } from "@/lib/kiln/types";
 import { SORTS, SORT_LABEL, type Facets, type Sort } from "@/lib/kiln/facets";
 import { canDownload } from "@/lib/kiln/gate";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
 
 /**
  * The library: a sticky filter bar over a masonry.
@@ -324,19 +325,20 @@ function Promo({ kind, signedIn }: { kind: Promo; signedIn: boolean }) {
           ✦
         </span>
         <h2 style={{ fontSize: 27, fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.2, margin: "30px 0 12px" }}>
-          Go full vault.
+          {EARLY_ACCESS ? "It is all free right now." : "Go full vault."}
         </h2>
         <p style={{ fontSize: 16, lineHeight: 1.6, color: "var(--muted)" }}>
           Every prompt, template and scene — plus the source files and all future drops.
+          {EARLY_ACCESS ? " An account is the only thing between you and the lot." : ""}
         </p>
         <div style={{ flex: 1, minHeight: 26 }} />
         <Link
           data-nav
-          href="/pricing"
+          href={EARLY_ACCESS ? "/join" : "/pricing"}
           className="btn btn--primary"
           style={{ alignSelf: "flex-start", fontSize: 15, padding: "14px 32px" }}
         >
-          Upgrade
+          {EARLY_ACCESS ? "Make an account" : "Upgrade"}
         </Link>
       </div>
     );

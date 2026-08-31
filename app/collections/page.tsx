@@ -6,6 +6,7 @@ import { getCollections, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kiln/viewer";
 import type { Shelf } from "@/lib/kiln/types";
 import PreviewMedia from "@/components/kiln/PreviewMedia";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/collections" },
@@ -121,10 +122,14 @@ export default async function Collections({
               Every collection is included in unlimited.
             </h2>
             <div style={{ display: "flex", gap: 12, marginTop: 6, flexWrap: "wrap", justifyContent: "center" }}>
-              <Link data-nav href={viewer?.unlimited ? "/account" : "/pricing"} className="btn btn--primary">
-                {viewer?.unlimited ? "Your vault" : "Get unlimited"}
+              <Link
+                data-nav
+                href={viewer?.unlimited ? "/account" : EARLY_ACCESS ? "/join" : "/pricing"}
+                className="btn btn--primary"
+              >
+                {viewer?.unlimited ? "Your vault" : EARLY_ACCESS ? "Get free access" : "Get unlimited"}
               </Link>
-              <Link data-nav href="/" className="btn btn--ghost">
+              <Link data-nav href="/library" className="btn btn--ghost">
                 Browse everything
               </Link>
             </div>

@@ -9,6 +9,7 @@ import { getViewer } from "@/lib/kiln/viewer";
 import { createClient } from "@/lib/supabase/server";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
 import { LIMITS, WINDOW_MS, tierOf } from "@/lib/kiln/limits";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
 
 export const metadata: Metadata = { title: "Account", robots: { index: false, follow: false } };
 
@@ -128,7 +129,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                     ? `The ${settings.freeThisMonth} free assets are a good place to start.`
                     : "Free assets appear here as they are published."}
                 </p>
-                <Link data-nav href="/" className="btn btn--ghost">
+                <Link data-nav href="/library" className="btn btn--ghost">
                   Browse the library
                 </Link>
               </div>
@@ -173,19 +174,21 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>Subscription</span>
               <div style={{ display: "flex", alignItems: "baseline", gap: 9, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 34, fontWeight: 500, letterSpacing: "-0.03em" }}>
-                  {viewer.unlimited ? "Unlimited" : "Free"}
+                  {EARLY_ACCESS ? "Early access" : viewer.unlimited ? "Unlimited" : "Free"}
                 </span>
                 <span style={{ fontSize: 15, color: "var(--muted)" }}>
-                  {viewer.unlimited ? `$${settings.monthlyPrice}/mo` : "$0"}
+                  {EARLY_ACCESS || !viewer.unlimited ? "$0" : `$${settings.monthlyPrice}/mo`}
                 </span>
               </div>
               <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
-                {viewer.unlimited
-                  ? `Renews ${viewer.periodEnd ? new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "automatically"}. Cancel any time and keep every file you downloaded.`
-                  : `${settings.freeThisMonth} free assets. Unlimited opens all ${settings.totalAssets} and every source file.`}
+                {EARLY_ACCESS
+                  ? `All ${settings.totalAssets} assets and every source file, free while Kiln is in early access. Nothing to cancel, and anything you download stays yours.`
+                  : viewer.unlimited
+                    ? `Renews ${viewer.periodEnd ? new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "automatically"}. Cancel any time and keep every file you downloaded.`
+                    : `${settings.freeThisMonth} free assets. Unlimited opens all ${settings.totalAssets} and every source file.`}
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
-                {!viewer.unlimited && (
+                {!EARLY_ACCESS && !viewer.unlimited && (
                   <Link data-nav href="/pricing" className="btn btn--primary" style={{ fontSize: 13, padding: "11px 20px" }}>
                     Get unlimited
                   </Link>

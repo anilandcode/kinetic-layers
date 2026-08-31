@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getSettings } from "@/lib/sanity/queries";
 import { SITE_NAME } from "@/lib/kiln/site";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
 
 export const alt = "Kiln — a library worth stealing from";
 export const size = { width: 1200, height: 630 };
@@ -52,7 +53,7 @@ export default async function Image() {
         <div style={{ display: "flex", gap: 34, fontSize: 22, color: "#89857B", letterSpacing: 3 }}>
           <div>{`${settings.totalAssets} ASSETS`}</div>
           <div>{`${settings.collectionCount} COLLECTIONS`}</div>
-          <div>{`$${settings.monthlyPrice}/MONTH`}</div>
+          <div>{EARLY_ACCESS ? "FREE — EARLY ACCESS" : `$${settings.monthlyPrice}/MONTH`}</div>
         </div>
       </div>
     ),

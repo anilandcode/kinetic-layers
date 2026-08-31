@@ -6,6 +6,7 @@ import { getViewer } from "@/lib/kiln/viewer";
 import { canDownload } from "@/lib/kiln/gate";
 import { Spell } from "@/lib/kiln/words";
 import type { Drop } from "@/lib/kiln/types";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
 
 /**
  * The landing page, in either treatment.
@@ -80,8 +81,16 @@ export default async function HomeView({
             </p>
 
             <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginTop: 6 }}>
-              <Link data-nav href={viewer?.unlimited ? "/account" : "/pricing"} className="btn btn--primary">
-                {viewer?.unlimited ? "Your vault" : `Get unlimited — $${settings.monthlyPrice}/mo`}
+              <Link
+                data-nav
+                href={viewer?.unlimited ? "/account" : EARLY_ACCESS ? "/join" : "/pricing"}
+                className="btn btn--primary"
+              >
+                {viewer?.unlimited
+                  ? "Your vault"
+                  : EARLY_ACCESS
+                    ? "Get free access"
+                    : `Get unlimited — $${settings.monthlyPrice}/mo`}
               </Link>
               <Link data-nav href="/library" className="btn btn--ghost">
                 Browse {settings.freeThisMonth} free
@@ -167,19 +176,31 @@ export default async function HomeView({
               {/* `${'{'}x}` in JSX is a literal $ followed by an expression, not a
                   template placeholder — so this rendered "$5 are free. The
                   other $10". Only the price is money. */}
-              {settings.freeThisMonth} are free. The other{" "}
-              {Math.max(0, settings.totalAssets - settings.freeThisMonth)} are ${settings.monthlyPrice} a month.
+              {EARLY_ACCESS
+                ? "All of it is free right now."
+                : `${settings.freeThisMonth} are free. The other ${Math.max(0, settings.totalAssets - settings.freeThisMonth)} are $${settings.monthlyPrice} a month.`}
             </h2>
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", maxWidth: 460 }}>
-              One subscription, the whole vault, every source file. Cancel and keep everything you
-              downloaded.
+              {EARLY_ACCESS
+                ? "The whole vault and every source file, free while Kiln is in early access. Make an account and take what you need."
+                : "One subscription, the whole vault, every source file. Cancel and keep everything you downloaded."}
             </p>
             <div style={{ display: "flex", gap: 12, marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
-              <Link data-nav href={viewer ? "/pricing" : "/join"} className="btn btn--primary">
-                {viewer?.unlimited ? "Manage your plan" : "Get unlimited"}
+              <Link
+                data-nav
+                href={EARLY_ACCESS ? (viewer ? "/library" : "/join") : viewer ? "/pricing" : "/join"}
+                className="btn btn--primary"
+              >
+                {EARLY_ACCESS
+                  ? viewer
+                    ? "Browse the library"
+                    : "Get free access"
+                  : viewer?.unlimited
+                    ? "Manage your plan"
+                    : "Get unlimited"}
               </Link>
               <Link data-nav href="/pricing" className="btn btn--ghost">
-                See pricing
+                {EARLY_ACCESS ? "What it will cost later" : "See pricing"}
               </Link>
             </div>
           </div>

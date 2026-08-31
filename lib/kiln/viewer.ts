@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { EARLY_ACCESS } from "./access";
 import type { Asset, Viewer } from "./types";
 
 /**
@@ -26,10 +27,15 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const active =
+  const entitled =
     ent?.plan === "unlimited" &&
     ent.status === "active" &&
     (!ent.current_period_end || new Date(ent.current_period_end) > new Date());
+
+  /* While early access is on, an account IS the entitlement. This is the only
+     place `unlimited` is decided, so the gate, the quota tier and every price
+     string downstream follow from it without a second rule to keep in step. */
+  const active = EARLY_ACCESS || entitled;
 
   return {
     id: user.id,

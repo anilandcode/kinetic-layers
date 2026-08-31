@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Settings, Viewer } from "@/lib/kiln/types";
 import { LIMITS, describeAllowance } from "@/lib/kiln/limits";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
 
 /* These read the live counts rather than repeating them. A hardcoded "All 240
    assets" beside a price pulled from settings is a promise that silently stops
@@ -129,7 +130,7 @@ export default function PricingBody({
             style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}
           >
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
-              One studio, one price
+              {EARLY_ACCESS ? "Not charging yet" : "One studio, one price"}
             </span>
             <h1
               style={{
@@ -141,12 +142,14 @@ export default function PricingBody({
                 textWrap: "pretty",
               }}
             >
-              {settings.freeThisMonth} free forever. The other{" "}
-              {Math.max(0, settings.totalAssets - settings.freeThisMonth)} for the price of one stock scene.
+              {EARLY_ACCESS
+                ? "Everything is free right now."
+                : `${settings.freeThisMonth} free forever. The other ${Math.max(0, settings.totalAssets - settings.freeThisMonth)} for the price of one stock scene.`}
             </h1>
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", maxWidth: 500 }}>
-              Cancel any time and keep every file you already downloaded. No seats, no credits, no
-              per-asset fees.
+              {EARLY_ACCESS
+                ? `Kiln is new, so all ${settings.totalAssets} assets and every source file are free while it is in early access — an account is the only requirement. This page is what it will cost when that ends, published early so it is never a surprise. Anything you download stays yours.`
+                : "Cancel any time and keep every file you already downloaded. No seats, no credits, no per-asset fees."}
             </p>
 
             <div
@@ -240,7 +243,7 @@ export default function PricingBody({
               ))}
             </ul>
             <div style={{ flex: 1 }} />
-            <Link data-nav href="/" className="btn btn--ghost" style={{ marginTop: 8 }}>
+            <Link data-nav href="/library" className="btn btn--ghost" style={{ marginTop: 8 }}>
               Browse the free {settings.freeThisMonth}
             </Link>
           </div>
@@ -304,7 +307,20 @@ export default function PricingBody({
               ))}
             </ul>
 
-            {viewer?.unlimited ? (
+            {/* Nothing is for sale during early access, so the primary action
+                is the one that actually works: make an account and take it.
+                Leaving a live "Get unlimited" here would start a checkout that
+                answers 503. */}
+            {EARLY_ACCESS ? (
+              <Link
+                data-nav
+                href={viewer ? "/library" : "/join"}
+                className="btn btn--primary"
+                style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}
+              >
+                {viewer ? "You already have all of it — open the library" : "Get it free while it lasts"}
+              </Link>
+            ) : viewer?.unlimited ? (
               <Link data-nav href="/account" className="btn btn--primary" style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}>
                 You already have this — open your vault
               </Link>
