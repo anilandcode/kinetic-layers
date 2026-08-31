@@ -125,27 +125,50 @@ Each of these cost real time. They are not hypothetical.
 15. **`${x}` in JSX is a literal dollar sign plus an expression**, not a
    template placeholder. The closing headline shipped reading "$5 are free.
    The other $10 are $24 a month."
+16. **A success message must describe what happened, not what was intended.**
+   /api/subscribe answered "Thanks — you are on the list" while no provider
+   was configured and no list existed — a silent no-op wearing a success
+   message. Every path in lib/kiln/email.ts now either sends or says plainly
+   that it did not, and the library's card renders the server's wording
+   instead of hardcoding its own.
+17. **Check the legal pages against the code, not against the plan.**
+   /privacy promised "Every one of those emails can unsubscribe you" for weeks
+   before an unsubscribe existed. A page describing intent is a claim you have
+   already made to every visitor who read it.
+18. **Entitlement has exactly one decision point.** `getViewer` is the only
+   place `unlimited` is set, which is why going free was one flag and not a
+   rewrite across sixteen files. Keep it that way: a second rule that also
+   grants access is a second rule to forget when the paywall comes back.
 
 ## Outstanding — needs the account owner
 
-1. **Email confirmation is ON** and Supabase's built-in SMTP is rate-limited to
-   ~2–3/hour. Signup returns "check your email" and often nothing arrives.
-   Dashboard → Authentication → Sign In / Providers → Email → turn off *Confirm
-   email* for now, and add real SMTP (Resend) before launch — it also fixes
-   password reset and magic links.
-2. **Google / GitHub OAuth** — buttons exist and say plainly they are
-   unconfigured. Callback
-   `https://ubftlspopkfwwazwsinv.supabase.co/auth/v1/callback`.
-3. **Checkout** — deliberately absent. `/api/admin/grant` is the seam Stripe's
-   webhook replaces. Entitlement, the gate and the plan states are all real.
-4. **`/license`, `/privacy`, `/terms` are drafts I wrote.** They describe what
-   the code actually does and each says on the page that no lawyer has seen it.
-   Replace before taking money.
+Kiln is **free while `NEXT_PUBLIC_EARLY_ACCESS=1`** (set in Vercel production).
+An account is the entitlement; Stripe and `entitlements` are untouched, so
+turning the flag off restores the paywall exactly as it was.
+
+1. **Resend.** Nothing emails until `RESEND_API_KEY` and `EMAIL_FROM` exist.
+   Create the account, verify a sending domain, then:
+   - Add both to Vercel. The newsletter starts working the moment they land —
+     until then /api/subscribe stores the address and says so plainly.
+   - Supabase → Project Settings → Authentication → SMTP → point at Resend.
+     That fixes signup, password reset and magic links together.
+2. **Email confirmation is still ON** and Supabase's built-in SMTP allows ~2–3
+   an hour, so signup often fails silently. Until SMTP is configured: Supabase
+   → Authentication → Providers → Email → turn **Confirm email** off.
+3. **Google / GitHub OAuth** — buttons exist and say they are unconfigured.
+   Callback `https://ubftlspopkfwwazwsinv.supabase.co/auth/v1/callback`.
+4. **`SANITY_WRITE_TOKEN`** — needed by `tools/import-asset.mjs`. Create at
+   sanity.io/manage → API → Tokens, with Editor permission. See
+   `docs/adding-an-asset.md`.
 5. **The catalogue is 15 invented assets.** Files in Storage are text
-   placeholders that say so. Every seam is real — dropping in genuine content
-   needs no code change.
-6. `sudo chown -R 501:20 ~/.npm` — the npm cache is ~7.8GB and `npm cache clean`
-   fails without it.
+   placeholders that say so. `tools/import-asset.mjs` replaces one end to end;
+   no code change is needed for real content.
+6. **The legal pages are still drafts.** They now describe what the code
+   actually does — free access, real unsubscribe, the usage meter — and each
+   says on the page that no lawyer has read it. Get them reviewed before
+   charging.
+7. `sudo chown -R 501:20 ~/.npm` — the npm cache is ~7.8GB and `npm cache
+   clean` fails without it.
 
 ## Commands
 
