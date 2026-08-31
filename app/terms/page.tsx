@@ -31,23 +31,27 @@ export default async function TermsPage() {
     },
     {
       h: "Your account",
-      p: "One person per account. Keep your password and your API keys to yourself — a key acts with your plan's permissions, so sharing one is sharing your subscription. You can revoke a key at any time from the account page.",
+      p: "One person per account. Keep your password and your API keys to yourself — a key acts with your account's permissions, so sharing one is sharing your access. You can revoke a key at any time from the account page.",
+    },
+    {
+      h: "It is free right now",
+      p: "Kiln is in early access. An account opens the whole catalogue and every source file at no cost, and there is no checkout to go through. This is not a promotion with a countdown — it is simply where the product is.",
+    },
+    {
+      h: "It will not be free forever",
+      p: "At some point access becomes paid. We will say so by email to account holders before it happens, never retroactively, and the pricing page already states what it is expected to cost so it is not a surprise. Anything you downloaded before that stays yours under the licence it came with.",
     },
     {
       h: "What we owe you",
-      p: "A working site and the assets your plan covers. We aim to ship new work weekly and to fix anything broken in what is already there. We do not promise uninterrupted availability, and we will say so plainly when something is down rather than quietly.",
+      p: "A working site and the assets your account covers. We aim to ship new work weekly and to fix anything broken in what is already there. We do not promise uninterrupted availability, and we will say so plainly when something is down rather than quietly.",
     },
     {
-      h: "Cancelling",
-      p: "Cancel whenever. Access to new drops stops at the end of the period you have paid for. Everything you downloaded stays yours under the licence it came with — cancelling does not reach backwards.",
-    },
-    {
-      h: "Refunds",
-      p: "If an asset does not do what its page says it does, tell us and we will refund that period. Requests are read by a person, not a form.",
+      h: "Daily allowances",
+      p: "Reading prompts and downloading files are capped per day. The cap is set well above what a person doing real work reaches, and exists only to stop an automated loop draining the catalogue. Hitting it tells you when it resets.",
     },
     {
       h: "Fair use of the service",
-      p: "Do not scrape the catalogue wholesale, resell access, or share credentials to avoid paying for seats. Automated use through the documented MCP endpoint with your own key is expected and fine.",
+      p: "Do not scrape the catalogue wholesale, redistribute the assets, or share credentials to hand your access to others. Automated use through the documented MCP endpoint with your own key is expected and fine.",
     },
     {
       h: "Ending an account",
@@ -55,7 +59,7 @@ export default async function TermsPage() {
     },
     {
       h: "Changes",
-      p: `These terms may change as the service does. Material changes will be announced by email to account holders before they take effect. Questions: ${contact}.`,
+      p: `These terms may change as the service does. Material changes — including the end of free access — will be announced by email to account holders before they take effect. Questions: ${contact}.`,
     },
   ];
 
@@ -67,7 +71,7 @@ export default async function TermsPage() {
         <ProseHero
           eyebrow="Terms"
           title="Short, and meant to be read."
-          lead="The agreement for using the service. Assets have their own licence."
+          lead="The agreement for using the service, while it is free and after. Assets have their own licence."
         />
         <DraftNote contact={contact} />
         <Terms id="terms-list" items={items} />

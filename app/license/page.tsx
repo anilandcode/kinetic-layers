@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Footer, Nav } from "@/components/kiln/Chrome";
 import { getViewer } from "@/lib/kiln/viewer";
 
@@ -25,8 +24,8 @@ const TERMS: Array<{ h: string; p: string }> = [
     p: "A non-exclusive, worldwide, perpetual licence to use the asset and its source files in your own work — personal or commercial, for yourself or for clients, on any number of projects.",
   },
   {
-    h: "It survives cancelling",
-    p: "Anything you downloaded while subscribed stays licensed to you after the subscription ends. Cancelling stops new downloads and new drops; it does not reach back into work you have already shipped.",
+    h: "It is permanent, and it does not depend on your account",
+    p: "The licence attaches when you download, and it does not expire. Kiln is free during early access; when it becomes paid, and if you later stop paying or close your account, everything you already downloaded stays licensed to you on these terms. Losing access stops new downloads and new drops. It never reaches back into work you have already shipped.",
   },
   {
     h: "You may modify it freely",
@@ -122,11 +121,8 @@ export default async function License() {
             <a href={`mailto:${contact}`} style={{ color: "var(--sage)" }}>
               {contact}
             </a>
-            . See also{" "}
-            <Link data-nav href="/pricing" style={{ color: "var(--sage)" }}>
-              what each plan includes
-            </Link>
-            .
+            . The licence is the same for every asset and does not depend on
+            what you paid — which, during early access, is nothing.
           </p>
         </section>
       </main>
