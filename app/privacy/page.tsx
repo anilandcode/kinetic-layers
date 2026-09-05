@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CONTACT_EMAIL } from "@/lib/kiln/site";
 import { Footer, Nav } from "@/components/kiln/Chrome";
 import { DraftNote, ProseHero, Terms } from "@/components/kiln/Prose";
 import { getViewer } from "@/lib/kiln/viewer";
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
  */
 export default async function Privacy() {
   const viewer = await getViewer();
-  const contact = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@example.com";
+  const contact = CONTACT_EMAIL;
 
   const items = [
     {

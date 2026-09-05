@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CONTACT_EMAIL } from "@/lib/kiln/site";
 import SearchTrigger from "./SearchTrigger";
 import NavLinks, { ModeToggle } from "./NavLinks";
 import type { Viewer } from "@/lib/kiln/types";
@@ -207,7 +208,7 @@ export function Footer({ light = false }: { light?: boolean }) {
             Changelog
           </Link>
           <a
-            href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@example.com"}`}
+            href={`mailto:${CONTACT_EMAIL}`}
             style={{ color: "inherit" }}
           >
             Contact

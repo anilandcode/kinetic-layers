@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CONTACT_EMAIL } from "@/lib/kiln/site";
 import Link from "next/link";
 import { Footer, Nav } from "@/components/kiln/Chrome";
 import { DraftNote, ProseHero, Terms } from "@/components/kiln/Prose";
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 /** Terms of use. What the licence page covers for assets, this covers for the service. */
 export default async function TermsPage() {
   const viewer = await getViewer();
-  const contact = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@example.com";
+  const contact = CONTACT_EMAIL;
 
   const items = [
     {

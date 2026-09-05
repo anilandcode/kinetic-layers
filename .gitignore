@@ -52,3 +52,6 @@ public/preview/
 
 # Vercel project link (contains project and org ids, not secrets, but local).
 .vercel
+.dev.vars
+.open-next/
+.wrangler/

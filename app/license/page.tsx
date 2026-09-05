@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CONTACT_EMAIL } from "@/lib/kiln/site";
 import { Footer, Nav } from "@/components/kiln/Chrome";
 import { getViewer } from "@/lib/kiln/viewer";
 
@@ -51,7 +52,7 @@ const TERMS: Array<{ h: string; p: string }> = [
 
 export default async function License() {
   const viewer = await getViewer();
-  const contact = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@example.com";
+  const contact = CONTACT_EMAIL;
 
   return (
     <>

@@ -2,15 +2,21 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { AUTH_UNAVAILABLE } from "@/lib/supabase/config";
+import { CONTACT_EMAIL, SITE_URL } from "@/lib/kiln/site";
 
 /**
  * Auth as server actions.
  *
  * The form posts, the server sets the cookie, the page re-renders. No token
  * ever touches client JavaScript, and every action works with scripting off.
+ *
+ * Every link mailed from here is built from SITE_URL, never from the request.
+ * This used to read `x-forwarded-host`, which the client controls: anyone who
+ * could set that header could make a genuine Supabase password-reset email
+ * arrive pointing at a domain they owned, with only Supabase's redirect
+ * allowlist standing in the way. A constant cannot be steered.
  */
 
 export type AuthState = { error?: string; notice?: string };
@@ -20,12 +26,8 @@ const safeNext = (v: FormDataEntryValue | null) => {
   return s.startsWith("/") && !s.startsWith("//") ? s : "/account";
 };
 
-async function origin() {
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  const proto = h.get("x-forwarded-proto") ?? "http";
-  return `${proto}://${host}`;
-}
+/** Absolute URL for a path the auth emails link back to. */
+const authUrl = (path: string) => `${SITE_URL}${path}`;
 
 export async function signIn(_: AuthState, formData: FormData): Promise<AuthState> {
   const email = String(formData.get("email") ?? "").trim();
@@ -58,7 +60,7 @@ export async function signUp(_: AuthState, formData: FormData): Promise<AuthStat
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${await origin()}/auth/confirm?next=${encodeURIComponent(next)}` },
+    options: { emailRedirectTo: authUrl(`/auth/confirm?next=${encodeURIComponent(next)}`) },
   });
   if (error) return { error: error.message };
 
@@ -69,7 +71,16 @@ export async function signUp(_: AuthState, formData: FormData): Promise<AuthStat
     revalidatePath("/", "layout");
     redirect(next);
   }
-  return { notice: `Check ${email} for a confirmation link. It expires in an hour.` };
+
+  /* Supabase sends this one, not us, so there is no send result to check here.
+     That makes the wording matter: tell people where else to look and how to
+     get unstuck, rather than leaving them staring at an inbox. A stalled
+     signup with no way forward is how you lose someone permanently. */
+  return {
+    notice:
+      `Check ${email} for a confirmation link — it expires in an hour. ` +
+      `If it has not arrived in a few minutes, look in spam, then try again or write to ${CONTACT_EMAIL}.`,
+  };
 }
 
 export async function signInWithMagicLink(_: AuthState, formData: FormData): Promise<AuthState> {
@@ -81,7 +92,7 @@ export async function signInWithMagicLink(_: AuthState, formData: FormData): Pro
   if (!supabase) return { error: AUTH_UNAVAILABLE };
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: `${await origin()}/auth/callback?next=${encodeURIComponent(next)}` },
+    options: { emailRedirectTo: authUrl(`/auth/callback?next=${encodeURIComponent(next)}`) },
   });
   if (error) return { error: error.message };
   return { notice: `Link sent to ${email}. It signs you in once, then expires.` };
@@ -94,7 +105,7 @@ export async function requestPasswordReset(_: AuthState, formData: FormData): Pr
   const supabase = await createClient();
   if (!supabase) return { error: AUTH_UNAVAILABLE };
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${await origin()}/auth/confirm?type=recovery&next=/reset-password`,
+    redirectTo: authUrl("/auth/confirm?type=recovery&next=/reset-password"),
   });
   if (error) return { error: error.message };
   return { notice: `If ${email} has an account, a reset link is on its way.` };
@@ -125,7 +136,7 @@ export async function signInWithProvider(formData: FormData) {
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: `${await origin()}/auth/callback?next=${encodeURIComponent(next)}` },
+    options: { redirectTo: authUrl(`/auth/callback?next=${encodeURIComponent(next)}`) },
   });
 
   /* Until the OAuth app exists in Supabase, this errors rather than
