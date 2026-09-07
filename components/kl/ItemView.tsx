@@ -1,0 +1,256 @@
+import Link from "next/link";
+import Header from "./Header";
+import Shell from "./Shell";
+import Footer from "./Footer";
+import GlassButton from "./GlassButton";
+import { mediaUrl } from "@/lib/kiln/media";
+import { EARLY_ACCESS } from "@/lib/kiln/access";
+import type { Asset, Viewer } from "@/lib/kiln/types";
+
+/**
+ * An asset, in the Kinetic Layers treatment.
+ *
+ * Built to the design's overlay exactly, as asked. That is narrower than the
+ * page it replaces: the gated prompt reader, the save button, the multi-shot
+ * switcher and the per-file download list are all gone.
+ *
+ * The prompt reader is the one worth naming. It was one of four doors sharing
+ * a single prompt budget — the item page, CardCopy on a library card,
+ * /api/download and the MCP get_prompt tool. The Kinetic Layers card carries
+ * no CardCopy either, so on these screens the only remaining ways to read a
+ * prompt are the API and MCP. getPromptBody now has no UI caller, which is the
+ * condition HANDOFF.md trap 7 describes: a gate that only ever refuses is half
+ * tested. Restoring it means putting CardCopy back on AssetCard, or a prompt
+ * panel back here.
+ *
+ * components/kiln/ItemView.tsx is left in place and still holds all of that,
+ * so none of it has to be rewritten to come back.
+ */
+
+const GROUNDS = ["--t1", "--t2", "--t3", "--t4", "--t5", "--t6"] as const;
+
+/* What lands in the download. Three fixed layers, the same on every asset —
+   the design's copy, and true of every item in the library. */
+const STACK = [
+  {
+    tag: "01",
+    name: "The output",
+    meta: "PNG · MP4 · FRAME",
+    copy: "What you saw in the preview, at full resolution, exactly as it shipped.",
+  },
+  {
+    tag: "02",
+    name: "The source",
+    meta: "PROJECT FILES",
+    copy: "The scene, repo, prompt chain or weights that produced it — editable, documented, no stripped layers.",
+  },
+  {
+    tag: "03",
+    name: "The receipt",
+    meta: "WHERE IT SHIPPED",
+    copy: "A link to the live page it was built for, the brief behind it, and the license covering your use.",
+  },
+];
+
+export default function ItemView({
+  asset,
+  related,
+  relatedReason = "newest",
+  viewer,
+  locked,
+  monthlyPrice,
+  total,
+  index = 0,
+}: {
+  asset: Asset;
+  related: Asset[];
+  relatedReason?: "drop" | "shelf" | "newest";
+  viewer: Viewer | null;
+  /** Whether the files are behind the paywall for this viewer. */
+  locked: boolean;
+  monthlyPrice: number;
+  /** Catalogue size, for the footer. */
+  total: number;
+  index?: number;
+}) {
+  const ground = GROUNDS[index % GROUNDS.length];
+  const poster = asset.poster ? mediaUrl(asset.poster) : null;
+
+  /* Facts come from the asset's own specs first, then the fields every item
+     has — deduped by key, because specs already carry TYPE, SHELF and STACK
+     for most assets and listing them twice reads like a rendering fault.
+     Authored specs win: they say "84 MB total" where the field says nothing. */
+  const facts = (() => {
+    const seen = new Map<string, string>();
+    for (const s of asset.specs ?? []) seen.set(s.k.toUpperCase(), s.v);
+    const fallbacks: Array<[string, string | undefined]> = [
+      ["TYPE", asset.type],
+      ["STACK", asset.stack],
+      ["SHELF", asset.shelf],
+      ["MOOD", asset.mood],
+      ["BUILT FOR", asset.category],
+    ];
+    for (const [k, v] of fallbacks) if (v && !seen.has(k)) seen.set(k, v);
+    return [...seen].map(([k, v]) => ({ k, v }));
+  })();
+
+  const relatedHeading =
+    relatedReason === "drop"
+      ? "FROM THE SAME DROP"
+      : relatedReason === "shelf"
+        ? "FROM THE SAME SHELF"
+        : "NEWEST IN THE LIBRARY";
+
+  const cta = locked
+    ? { label: `Go Premium — $${monthlyPrice}/mo`, href: "/pricing" }
+    : viewer
+      ? { label: "Download the files", href: `/api/download?slug=${asset.slug}` }
+      : { label: "Create a free account", href: `/join?next=/item/${asset.slug}` };
+
+  const ctaNote = locked
+    ? "Every source file, plus every drop that follows."
+    : viewer
+      ? "Output, source and the receipt, in one archive."
+      : EARLY_ACCESS
+        ? "Free while the library is in early access — it just needs an account."
+        : "An account is the only thing between you and the source files.";
+
+  return (
+    <Shell>
+      <Header />
+
+      <main data-view className="kl-pad" style={{ paddingTop: 28, paddingBottom: 40 }}>
+        <div className="kl-crumbs">
+          <span>{asset.shelf.toUpperCase()}</span>
+          <span>/</span>
+          <span style={{ color: "var(--ink)" }}>{asset.name.toUpperCase()}</span>
+          <span className="kl-spacer" />
+          <Link href="/library" className="kl-close">
+            CLOSE ✕
+          </Link>
+        </div>
+
+        <div className="kl-item" data-item-split>
+          {/* ---------- Left: the goods ---------- */}
+          <div className="kl-item-main">
+            <div style={{ position: "relative" }}>
+              <div className="kl-item-lamp" data-lamp="18" aria-hidden="true" />
+              <div className="kl-item-preview-frame" data-tilt="4">
+                <div
+                  className="kl-preview"
+                  data-preview
+                  style={{
+                    height: asset.h ? `${Math.max(asset.h, 300)}px` : "420px",
+                    background: `var(${ground})`,
+                  }}
+                >
+                  {poster ? <img src={poster} alt="" decoding="async" /> : null}
+                  <div className="kl-preview-pattern" aria-hidden="true" />
+                </div>
+                <div className="kl-item-preview-foot">
+                  <span>PREVIEW</span>
+                  <span className="kl-spacer" />
+                  <span>{asset.type.toUpperCase()}</span>
+                  <span>{asset.stack}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="kl-item-copy">
+              {/* data-mask rebuilds this into per-word spans, so plain text only. */}
+              <h1 className="kl-item-title" data-mask>
+                {asset.name}
+              </h1>
+              {asset.tagline ? (
+                <p className="kl-pull" data-pull style={{ fontSize: 23, maxWidth: 560, margin: 0 }}>
+                  {asset.tagline}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="kl-item-download">
+              <span className="kl-kicker">WHAT&rsquo;S IN THE DOWNLOAD</span>
+              <div className="kl-deck kl-deck--item" data-layer-deck>
+                {STACK.map((s, i) => (
+                  <div
+                    key={s.tag}
+                    className="kl-layer"
+                    data-layer={STACK.length - 1 - i}
+                    style={{
+                      position: "absolute",
+                      left: i * 22,
+                      right: i * 22 + 34,
+                      top: 40 + i * 118,
+                      zIndex: 10 - i,
+                      boxShadow: `0 ${26 - i * 4}px ${60 - i * 8}px -34px rgba(0,0,0,0.4)`,
+                    }}
+                  >
+                    <div className="kl-layer-head">
+                      <span className="kl-kicker">{s.tag}</span>
+                      <span className="kl-layer-name">{s.name}</span>
+                      <span className="kl-spacer" />
+                      <span className="kl-layer-meta">{s.meta}</span>
+                    </div>
+                    <p>{s.copy}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ---------- Right: the ask ---------- */}
+          <aside className="kl-item-side" data-item-sticky>
+            <div className="kl-item-card">
+              <div className="kl-item-badges">
+                <span className={`kl-badge${locked ? " kl-badge--premium" : ""}`}>
+                  {locked ? "PREMIUM" : asset.free ? "FREE" : "INCLUDED"}
+                </span>
+                <span className="kl-badge">SHIPPED</span>
+              </div>
+
+              <GlassButton href={cta.href} premium={locked} pull={5}>
+                {cta.label}
+              </GlassButton>
+
+              <span className="kl-item-note">{ctaNote}</span>
+
+              <div className="kl-hairline" />
+
+              {facts.map((f) => (
+                <div key={f.k} className="kl-fact">
+                  <span className="kl-fact-k">{f.k}</span>
+                  <span className="kl-fact-v">{f.v}</span>
+                </div>
+              ))}
+            </div>
+
+            {related.length ? (
+              <div className="kl-item-card">
+                <span className="kl-item-related-head">{relatedHeading}</span>
+                {related.slice(0, 3).map((r, i) => {
+                  const thumb = r.poster ? mediaUrl(r.poster) : null;
+                  return (
+                    <Link key={r.slug} href={`/item/${r.slug}`} className="kl-related">
+                      <span
+                        className="kl-related-thumb"
+                        style={{ background: `var(${GROUNDS[(index + i + 1) % GROUNDS.length]})` }}
+                      >
+                        {thumb ? <img src={thumb} alt="" decoding="async" /> : null}
+                      </span>
+                      <span className="kl-related-meta">
+                        <span className="kl-related-name">{r.name}</span>
+                        <span className="kl-related-type">{r.type}</span>
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : null}
+          </aside>
+        </div>
+      </main>
+
+      <Footer total={total} />
+    </Shell>
+  );
+}

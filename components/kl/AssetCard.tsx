@@ -37,7 +37,13 @@ export default function AssetCard({
         <span className="kl-glow-bloom" data-glow-bloom aria-hidden="true" />
         <span className="kl-glow-rim" data-glow-rim aria-hidden="true" />
 
-        <Link href={`/item/${asset.slug}`} className="kl-card kl-card-link" data-card>
+        {/* No data-card here on purpose. AssetModal delegates off
+            `a[data-card]` and renders the old ItemView, which would open a
+            dark modal over a light page. These cards navigate to the restyled
+            /item/[slug] instead; the old cards on /light and /collections keep
+            their modal. Bringing the overlay back means teaching AssetModal to
+            render this treatment, not re-adding the attribute. */}
+        <Link href={`/item/${asset.slug}`} className="kl-card kl-card-link">
           <div
             className="kl-preview"
             data-preview

@@ -1612,3 +1612,210 @@
 [data-kl] .kl-footer-links a:hover {
   color: var(--amber);
 }
+
+/* ---------- Item ------------------------------------------------------------ */
+
+[data-kl] .kl-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+[data-kl] .kl-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 7px 13px;
+  color: var(--muted);
+}
+[data-kl] .kl-close:hover {
+  border-color: var(--amber-line);
+  color: var(--amber);
+}
+
+[data-kl] .kl-item {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 28px;
+  margin-top: 24px;
+  align-items: start;
+}
+[data-kl] .kl-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+[data-kl] .kl-item-lamp {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: -70px;
+  width: 820px;
+  height: 300px;
+  margin-left: -410px;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(232, 133, 58, 0.44), rgba(0, 0, 0, 0) 72%);
+  filter: blur(30px);
+}
+[data-kl] .kl-item-preview-frame {
+  position: relative;
+  z-index: 1;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--card);
+  box-shadow: var(--lift);
+}
+[data-kl] .kl-item-preview-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--line2);
+  flex-wrap: wrap;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+[data-kl] .kl-item-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+[data-kl] .kl-item-title {
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  margin: 0;
+  color: var(--ink);
+}
+
+[data-kl] .kl-item-download {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+/* Three layers rather than four, so the deck is shorter than the one on the
+   process screen. */
+[data-kl] .kl-deck--item {
+  height: 430px;
+  margin-top: 0;
+}
+
+[data-kl] .kl-item-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 104px;
+  min-width: 0;
+}
+[data-kl] .kl-item-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--shadow);
+}
+[data-kl] .kl-item-badges {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+[data-kl] .kl-badge--premium {
+  background: var(--amber-bg);
+  border-color: var(--amber-line);
+  color: var(--amber);
+}
+[data-kl] .kl-item-note {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+[data-kl] .kl-hairline {
+  height: 1px;
+  background: var(--line2);
+}
+[data-kl] .kl-fact {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+[data-kl] .kl-fact-k {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+[data-kl] .kl-fact-v {
+  font-size: 13.5px;
+  text-align: right;
+  color: var(--ink);
+}
+
+[data-kl] .kl-item-related-head {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+[data-kl] .kl-related {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  color: inherit;
+}
+[data-kl] .kl-related-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--line2);
+}
+[data-kl] .kl-related-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+[data-kl] .kl-related-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+[data-kl] .kl-related-name {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+[data-kl] .kl-related-type {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
