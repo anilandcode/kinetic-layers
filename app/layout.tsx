@@ -99,7 +99,14 @@ export default function RootLayout({
             only apply when the motion layer can actually clear them. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: "document.documentElement.classList.remove('no-js')",
+            __html:
+              "document.documentElement.classList.remove('no-js');" +
+              /* Kinetic Layers is light by default. Applied before paint so a
+                 visitor who chose dark never sees the light ground flash
+                 first. Wrapped because storage throws outright in some
+                 privacy modes, and a theme is not worth a blank page. */
+              "try{var t=localStorage.getItem('kl-theme');" +
+              "if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}",
           }}
         />
         <KilnMotion />

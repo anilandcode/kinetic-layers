@@ -1,0 +1,850 @@
+/* ============================================================
+   Kinetic Layers — components.
+
+   The prototype styles inline. These are the same values as classes,
+   because a 1,000-line file of style="" is not something anyone can
+   maintain, and the design brief asks for the visual output to match,
+   not the prototype's internal structure.
+
+   Everything here lives under [data-kl] so it cannot reach the routes
+   still on the old palette. See styles/kl-tokens.css.
+   ============================================================ */
+
+/* ---------- Layout ---------------------------------------------------- */
+
+[data-kl] .kl-shell {
+  overflow-x: clip;
+  color: var(--ink);
+}
+
+[data-kl] .kl-pad {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+/* The scroll hairline. Fixed above everything, but never in the way. */
+[data-kl] .kl-progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 60;
+  pointer-events: none;
+}
+[data-kl] .kl-progress {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(232, 133, 58, 0.2), #E8853A);
+  /* No transform here: the motion layer sets scaleX, and a CSS default of 0
+     would leave the bar invisible if that layer never ran. */
+}
+
+/* ---------- Header ---------------------------------------------------- */
+
+[data-kl] .kl-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 14px 0;
+}
+
+[data-kl] .kl-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--ghost);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 9px 10px 9px 18px;
+  box-shadow: 0 8px 26px -18px rgba(20, 22, 26, 0.24);
+}
+
+[data-kl] .kl-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+[data-kl] .kl-nav {
+  display: flex;
+  gap: 22px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* The underline is a child span the motion layer wipes in. Relative so it
+   can anchor; the ink itself is absolutely placed. */
+[data-kl] .kl-nav-link {
+  position: relative;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--muted);
+}
+[data-kl] .kl-nav-link[aria-current="page"] {
+  color: var(--ink);
+}
+[data-kl] .kl-nav-ink {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+[data-kl] .kl-nav-link[aria-current="page"] .kl-nav-ink {
+  transform: scaleX(1);
+}
+
+[data-kl] .kl-search-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex: 0 1 210px;
+  min-width: 160px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 8px 8px 8px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  background: none;
+  font: inherit;
+}
+[data-kl] .kl-search-trigger span:first-child {
+  font-size: 13px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-kl] .kl-kbd {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--line3);
+  border-radius: 99px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+/* ---------- Theme toggle ----------------------------------------------- */
+
+[data-kl] .kl-theme {
+  position: relative;
+  width: 56px;
+  height: 30px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--inset);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+[data-kl] .kl-theme-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 99px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-kl] .kl-theme[aria-pressed="true"] .kl-theme-knob {
+  transform: translateX(26px);
+}
+[data-kl] .kl-theme-icons {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 3px;
+}
+
+/* ---------- Glass buttons ----------------------------------------------
+   Primary buttons are translucent with an inset highlight, never solid
+   amber. The Premium variant is the one lit button on the page. */
+
+[data-kl] .kl-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 99px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font: inherit;
+  padding: 15px 28px;
+  border: 1px solid var(--glass-line);
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 18px 40px -26px rgba(20, 22, 26, 0.6);
+}
+[data-kl] .kl-btn .kl-btn-label {
+  position: relative;
+  font-size: 15px;
+  color: var(--glass-fg);
+}
+
+[data-kl] .kl-btn--premium {
+  border-color: var(--amber-line);
+  background: linear-gradient(140deg, rgba(232, 133, 58, 0.46), rgba(232, 133, 58, 0.16));
+  box-shadow:
+    0 24px 54px -24px rgba(232, 133, 58, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+[data-kl] .kl-btn--premium .kl-btn-label {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Compact, for the header. */
+[data-kl] .kl-btn--sm {
+  padding: 11px 20px;
+}
+[data-kl] .kl-btn--sm .kl-btn-label {
+  font-size: 13.5px;
+}
+[data-kl] .kl-btn--sm.kl-btn--premium {
+  box-shadow:
+    0 16px 34px -20px rgba(232, 133, 58, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Large, for the hero. */
+[data-kl] .kl-btn--lg {
+  padding: 16px 30px;
+}
+
+/* Both painted by the motion layer at pointer position; inert without it. */
+[data-kl] .kl-btn-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+[data-kl] .kl-btn-shine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 36%;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.34),
+    rgba(255, 255, 255, 0)
+  );
+  transform: skewX(-18deg);
+}
+[data-kl] .kl-btn--premium .kl-btn-shine {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+/* A quiet button: the ghost. */
+[data-kl] .kl-btn--ghost {
+  background: var(--card);
+  border: 1px solid var(--ghost-line);
+  backdrop-filter: none;
+  box-shadow: none;
+  padding: 12px 22px;
+}
+[data-kl] .kl-btn--ghost .kl-btn-label {
+  color: var(--ink);
+  font-size: 14.5px;
+}
+
+/* ---------- Hero -------------------------------------------------------- */
+
+[data-kl] .kl-hero-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Graph paper, masked to a soft oval so it never reaches the edges. */
+[data-kl] .kl-grid-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(var(--pat), 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--pat), 0.05) 1px, transparent 1px);
+  background-size: 76px 76px, 76px 76px;
+  mask-image: radial-gradient(70% 62% at 50% 34%, #000, transparent 78%);
+  -webkit-mask-image: radial-gradient(70% 62% at 50% 34%, #000, transparent 78%);
+}
+
+[data-kl] .kl-rings {
+  position: absolute;
+  left: 50%;
+  top: 90px;
+  width: 1120px;
+  height: 1120px;
+  margin-left: -560px;
+  pointer-events: none;
+  opacity: 0.55;
+}
+[data-kl] .kl-rings span {
+  position: absolute;
+  border-radius: 99px;
+}
+[data-kl] .kl-rings span:nth-child(1) { inset: 24%; border: 1px solid rgba(var(--pat), 0.07); }
+[data-kl] .kl-rings span:nth-child(2) { inset: 12%; border: 1px solid rgba(var(--pat), 0.055); }
+[data-kl] .kl-rings span:nth-child(3) { inset: 0;   border: 1px solid rgba(var(--pat), 0.04); }
+
+[data-kl] .kl-hero {
+  position: relative;
+  padding-top: 96px;
+  padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+[data-kl] .kl-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 99px;
+  padding: 6px 14px 6px 8px;
+  box-shadow: var(--shadow);
+}
+[data-kl] .kl-drop-tag {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  background: var(--amber-bg);
+  color: var(--amber);
+  border-radius: 99px;
+  padding: 4px 8px;
+}
+[data-kl] .kl-eyebrow-text {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+[data-kl] .kl-h1 {
+  font-size: 82px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  margin: 34px 0 0;
+  max-width: 960px;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+/* One Cormorant line per screen — the design is strict about this. */
+[data-kl] .kl-pull {
+  font-family: var(--kl-serif, ui-serif, Georgia, serif);
+  font-style: italic;
+  font-size: 27px;
+  line-height: 1.4;
+  color: var(--body);
+  max-width: 620px;
+  margin: 24px 0 0;
+}
+
+[data-kl] .kl-cta-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 34px;
+}
+
+/* ---------- Filter rail -------------------------------------------------- */
+
+[data-kl] .kl-rail {
+  position: sticky;
+  top: 86px;
+  z-index: 20;
+  background: var(--veil);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-top: 24px;
+  padding: 13px 0;
+}
+[data-kl] .kl-rail-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+[data-kl] .kl-pill {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+[data-kl] .kl-pill:hover {
+  border-color: rgba(232, 133, 58, 0.55);
+  color: var(--ink);
+}
+[data-kl] .kl-pill:active {
+  transform: translateY(1px);
+}
+[data-kl] .kl-pill[aria-pressed="true"],
+[data-kl] .kl-pill[aria-current="true"] {
+  background: var(--amber-bg);
+  border-color: var(--amber-line);
+  color: var(--amber);
+}
+
+[data-kl] .kl-count {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+[data-kl] .kl-spacer {
+  flex: 1;
+}
+[data-kl] .kl-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+  margin: 0 5px;
+}
+
+/* ---------- Grid --------------------------------------------------------- */
+
+[data-kl] .kl-masonry {
+  columns: 3;
+  column-gap: 20px;
+}
+[data-kl] .kl-grid-item {
+  break-inside: avoid;
+  margin-bottom: 20px;
+}
+
+/* ---------- Empty state --------------------------------------------------- */
+
+[data-kl] .kl-empty {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--card);
+  padding: 74px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+[data-kl] .kl-empty h2 {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--ink);
+}
+[data-kl] .kl-empty p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 360px;
+  margin: 0;
+}
+
+/* ---------- Screen-reader only -------------------------------------------- */
+
+[data-kl] .kl-vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Card glow ----------------------------------------------------
+   Two layers behind every card: an outer bloom and a conic rim. Both are
+   painted and spun by the motion layer and sit at opacity 0 otherwise, so a
+   card without JS is simply a card. */
+
+[data-kl] .kl-glow {
+  position: relative;
+}
+[data-kl] .kl-glow-bloom {
+  position: absolute;
+  inset: -20px;
+  border-radius: 34px;
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(20px);
+  background: radial-gradient(
+    60% 60% at 50% 50%,
+    rgba(232, 133, 58, 0.5),
+    rgba(232, 133, 58, 0.14) 52%,
+    rgba(232, 133, 58, 0) 78%
+  );
+}
+/* The rim is a 1.5px ring: a conic fill masked to its own padding box. */
+[data-kl] .kl-glow-rim {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 19.5px;
+  opacity: 0;
+  pointer-events: none;
+  padding: 1.5px;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 236, 214, 0.95) 18%,
+    rgba(232, 133, 58, 0.85) 34%,
+    rgba(255, 255, 255, 0.06) 52%,
+    rgba(255, 214, 160, 0.75) 74%,
+    rgba(255, 255, 255, 0.05)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* ---------- Asset card ---------------------------------------------------- */
+
+[data-kl] .kl-card {
+  position: relative;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 10px;
+  box-shadow: var(--shadow);
+}
+[data-kl] .kl-card-link {
+  display: block;
+  color: inherit;
+}
+[data-kl] .kl-preview {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--t1);
+}
+[data-kl] .kl-preview img,
+[data-kl] .kl-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+[data-kl] .kl-preview-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(var(--pat), 0.08) 1px, transparent 1.4px);
+  background-size: 16px 16px;
+}
+
+[data-kl] .kl-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 4px 0;
+}
+[data-kl] .kl-card-name {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+[data-kl] .kl-tags {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 10px 4px 2px;
+}
+[data-kl] .kl-tag {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 6px 11px;
+}
+
+[data-kl] .kl-badge {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  border-radius: 99px;
+  padding: 5px 10px;
+  flex-shrink: 0;
+  background: var(--moss-bg);
+  border: 1px solid var(--moss-line);
+  color: var(--moss);
+}
+
+/* The premium chip is the auto-animated button: aura, veil, timed sweep. */
+[data-kl] .kl-chip-premium {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 99px;
+  padding: 5px 12px;
+  flex-shrink: 0;
+  border: 1px solid var(--amber-line);
+  background: linear-gradient(140deg, rgba(232, 133, 58, 0.44), rgba(232, 133, 58, 0.14));
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 10px 22px -14px rgba(232, 133, 58, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+[data-kl] .kl-chip-premium .kl-btn-label {
+  position: relative;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  color: var(--ink);
+}
+[data-kl] .kl-btn-aura {
+  position: absolute;
+  inset: -60%;
+  pointer-events: none;
+  opacity: 0.8;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0) 0deg,
+    rgba(255, 236, 214, 0.6) 46deg,
+    rgba(232, 133, 58, 0.55) 96deg,
+    rgba(255, 255, 255, 0) 160deg,
+    rgba(255, 214, 160, 0.5) 250deg,
+    rgba(255, 255, 255, 0) 330deg
+  );
+  filter: blur(6px);
+}
+[data-kl] .kl-btn-veil {
+  position: absolute;
+  inset: 1px;
+  border-radius: 99px;
+  pointer-events: none;
+  background: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.32),
+    rgba(255, 255, 255, 0.04) 52%,
+    rgba(255, 255, 255, 0.2)
+  );
+}
+
+/* ---------- Promo cards in the grid --------------------------------------- */
+
+[data-kl] .kl-promo {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+}
+[data-kl] .kl-promo--upgrade {
+  border-color: var(--amber-line);
+  min-height: 360px;
+}
+[data-kl] .kl-promo--hire {
+  min-height: 300px;
+  justify-content: center;
+  gap: 13px;
+}
+[data-kl] .kl-promo--news {
+  min-height: 330px;
+  justify-content: center;
+  gap: 11px;
+}
+[data-kl] .kl-promo h3 {
+  font-weight: 600;
+  letter-spacing: -0.032em;
+  line-height: 1.16;
+  margin: 0;
+  color: var(--ink);
+}
+[data-kl] .kl-promo--upgrade h3 {
+  font-size: 25px;
+  margin: 26px 0 12px;
+}
+[data-kl] .kl-promo--hire h3 {
+  font-size: 22px;
+  letter-spacing: -0.026em;
+  line-height: 1.22;
+  text-wrap: pretty;
+}
+[data-kl] .kl-promo--news h3 {
+  font-size: 21px;
+  letter-spacing: -0.024em;
+  line-height: 1.26;
+}
+[data-kl] .kl-promo p {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0;
+}
+[data-kl] .kl-promo-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: inherit;
+}
+[data-kl] .kl-promo-grow {
+  flex: 1;
+  min-height: 24px;
+}
+[data-kl] .kl-promo-eyebrow {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+/* Backdrops drift on scroll; harmless if the parallax never binds. */
+[data-kl] .kl-promo-dots {
+  position: absolute;
+  inset: -20% -10%;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(var(--pat), 0.07) 1px, transparent 1.4px);
+  background-size: 18px 18px;
+}
+[data-kl] .kl-promo-hatch {
+  position: absolute;
+  inset: -20% -10%;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    48deg,
+    rgba(var(--pat), 0.06) 0 1px,
+    transparent 1px 9px
+  );
+}
+[data-kl] .kl-promo-graph {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(var(--pat), 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--pat), 0.05) 1px, transparent 1px);
+  background-size: 34px 34px, 34px 34px;
+}
+
+/* ---------- The dot-field CTA --------------------------------------------- */
+
+[data-kl] .kl-dotfield {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--card);
+  padding: 88px 32px 96px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  cursor: crosshair;
+}
+[data-kl] .kl-dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+[data-kl] .kl-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--dot);
+  opacity: 0.35;
+}
+[data-kl] .kl-lamp {
+  position: absolute;
+  left: 50%;
+  bottom: -200px;
+  width: 820px;
+  height: 420px;
+  margin-left: -410px;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(232, 133, 58, 0.45), rgba(0, 0, 0, 0) 74%);
+  filter: blur(26px);
+}
+[data-kl] .kl-cta-body {
+  position: relative;
+  pointer-events: none;
+}
+[data-kl] .kl-cta-h2 {
+  font-size: 46px;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  margin: 0 auto 16px;
+  max-width: 580px;
+  text-wrap: balance;
+  color: var(--ink);
+}
+[data-kl] .kl-cta-body p {
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0 auto 32px;
+  max-width: 440px;
+}
+[data-kl] .kl-cta-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  pointer-events: auto;
+}
