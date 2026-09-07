@@ -68,7 +68,7 @@ This repo has a graphify knowledge graph at `graphify-out/` (gitignored — rebu
 - Before answering architecture or codebase questions, read `graphify-out/GRAPH_REPORT.md` for god nodes and community structure.
 - For cross-module "how does X relate to Y" questions, prefer `graphify query "..."`, `graphify path "A" "B"` or `graphify explain "X"` over grep — these traverse the graph's edges instead of scanning files.
 - After changing code, run `graphify update .` to refresh it. AST only, no LLM, no API cost.
-- The graph records the commit it was built from. Compare it against `git rev-parse HEAD` before trusting it.
+- The graph records the commit it was built from. Compare it against `git rev-parse HEAD` before trusting it — but note the stamp only advances when the rebuild actually changes topology, so a stamp behind HEAD after a docs-only or comment-only commit is expected, not stale.
 - Communities are named after their hub file (e.g. `community=mcp/route.ts`), so a query result tells you which cluster a symbol belongs to without a second lookup.
 - Built AST-only, no LLM, so edges are what the parser can prove. A semantic pass (`GEMINI_API_KEY` plus `graphify extract .`) would add inferred edges at the cost of an LLM run over the corpus.
 - Requires the SQL extra: `uv tool install "graphifyy[sql]" --force`. Without it the ten Supabase migrations parse to nothing and the graph silently loses the schema, RLS policies and `consume_quota`.
