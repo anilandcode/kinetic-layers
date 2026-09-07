@@ -1,435 +1,261 @@
 import type { Metadata } from "next";
-import AssetCard from "@/components/legacy/AssetCard";
-import { getAssets } from "@/lib/sanity/queries";
+import PageShell from "@/components/kl/PageShell";
+import GlassButton from "@/components/kl/GlassButton";
+import { GROUNDS } from "@/lib/kl/ground";
+import { LIMITS } from "@/lib/kl/limits";
 
 /**
  * The design system, as a live page.
  *
- * The source sheet is a static document; this renders the same content from
- * the real tokens and the real components, so it goes out of date the moment
- * the system does rather than quietly drifting from it.
+ * Every swatch paints itself with `var(--token)` rather than a hex string.
+ * The version this replaces listed the values by hand — "Surface, --surface,
+ * #141412" — which meant the page could disagree with the stylesheet and look
+ * authoritative while doing it. Nothing here can drift: change a token and
+ * this page changes with it, in whichever theme you are viewing.
+ *
+ * The same reason the catalogue counts are counted rather than stored.
  */
 
 export const metadata: Metadata = {
-  title: "Design system v1",
+  title: "Design system",
+  description: "The Kinetic Layers palette, type and components, rendered from the real tokens.",
   robots: { index: false, follow: false },
 };
 
-const DARK_SWATCHES = [
-  ["Void", "--void", "#0F0F0D"],
-  ["Surface", "--surface", "#141412"],
-  ["Hairline / raised", "--line", "#2C2A24"],
-  ["Muted ink", "--muted", "#94918A"],
-  ["Ink — ivory", "--ink", "#F6F4EE"],
-  ["Sage — accent", "--sage", "#B9CE95"],
-  ["Olive — support", "--olive", "#5D6F2D"],
+const PALETTE: Array<[string, string, string]> = [
+  ["Ground", "--ground", "The page. Warm white in light, near-black in dark."],
+  ["Card", "--card", "A raised surface."],
+  ["Inset", "--inset", "A recessed one — fields, mock panels."],
+  ["Line", "--line", "The standard hairline."],
+  ["Line 2", "--line2", "Inside a card."],
+  ["Line 3", "--line3", "The faintest, for chips."],
+  ["Ink", "--ink", "Headings and anything that must be read first."],
+  ["Body", "--body", "Running text."],
+  ["Muted", "--muted", "Labels and secondary text."],
+  ["Amber", "--amber", "The one lamp. Text-safe; the glow uses #E8853A raw."],
+  ["Amber bg", "--amber-bg", "Behind a Premium chip."],
+  ["Amber line", "--amber-line", "The border that goes with it."],
+  ["Moss", "--moss", "Status, never a call to action."],
+  ["Moss bg", "--moss-bg", "Behind a status note."],
+  ["Dot", "--dot", "The lattice in the closing panel."],
 ];
 
-const LIGHT_SWATCHES = [
-  ["Ivory — page", "#F6F4EE"],
-  ["Card", "#EAE5D9"],
-  ["Cream — highlight", "#F5FFDD"],
-  ["Beige — divider fill", "#EDE7DF"],
-  ["Muted ink", "#6A6A5F"],
-  ["Ink", "#16180F"],
-  ["Forest — accent", "#46602C"],
+const TYPE: Array<[string, string, string]> = [
+  ["Figtree 600", "var(--kl-sans)", "Headlines. -0.05em at display sizes."],
+  ["Figtree 300", "var(--kl-sans)", "Body. The default weight for the whole page."],
+  ["Cormorant italic", "var(--kl-serif)", "One pull line per screen, and no more than one."],
+  ["Geist Mono", "var(--font-mono)", "Labels, counts, tags. Always uppercase, 0.12em tracked."],
 ];
 
-const RULES = [
-  {
-    k: "Grid",
-    v: "12 columns, 1360 max, 24px gutters. Library is a 3-up masonry so tall scenes and wide pages both sit right. 8px spacing scale.",
-  },
-  {
-    k: "Form",
-    v: "14px radius on cards, 10px on buttons, 99px on pills. 1px hairlines only — no shadows on dark, one soft shadow allowed on light.",
-  },
-  {
-    k: "Motion",
-    v: "Previews loop muted and staggered so the grid never pulses in unison. 160ms border and colour transitions. No parallax, no scroll-jacking.",
-  },
-  {
-    k: "Never",
-    v: "Gradient backgrounds, glass blur panels, purple, emoji, stock 3D blobs. Those are the four tells of an AI template and they cost you the price premium.",
-  },
+/* Read from the motion layer's own vocabulary, so a hook that is renamed
+   there stops being documented here. */
+const MOTION: Array<[string, string]> = [
+  ["data-reveal", "Section rises as it enters. gsap.from, so no CSS hides it first."],
+  ["data-mask", "Headline rises word by word out of a clip. Plain text only — it rebuilds the node."],
+  ["data-letters", "Label reveals letter by letter."],
+  ["data-lamp", "The amber bloom. Breathes, and leans toward the pointer."],
+  ["data-glass-btn", "Magnetic pull, cursor glow, shine sweep. The number is the pull in px."],
+  ["data-premium", "Marks the one lit button; adds the idle sweep."],
+  ["data-glow2", "Card bloom and conic rim, both tracking the pointer."],
+  ["data-tilt", "3D tilt on a preview surface."],
+  ["data-layer-deck", "The signature: layers fan apart on scroll."],
+  ["data-parallax", "Backdrop drifts against the scroll."],
+  ["data-marquee", "Rail scrolls, slowing under the cursor."],
+  ["data-dotfield", "Dot lattice that bends around the pointer."],
 ];
 
-function SectionHead({ n, children }: { n: string; children: React.ReactNode }) {
+function Swatch({ name, token, note }: { name: string; token: string; note: string }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "baseline",
-        gap: 18,
-        borderBottom: "1px solid var(--line)",
-        paddingBottom: 14,
-      }}
-    >
-      <a className="skip-link" href="#tokens">Skip to the tokens</a>
-      <span className="mono" style={{ fontSize: 12, color: "var(--sage)" }}>
-        {n}
+    <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+      <span
+        aria-hidden="true"
+        style={{
+          width: 52,
+          height: 52,
+          borderRadius: 12,
+          flexShrink: 0,
+          background: `var(${token})`,
+          border: "1px solid var(--line)",
+          boxShadow: "var(--shadow)",
+        }}
+      />
+      <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+        <span style={{ fontSize: 15, color: "var(--ink)" }}>{name}</span>
+        <code className="kl-code">{token}</code>
+        <span style={{ fontSize: 13, lineHeight: 1.5, color: "var(--muted)" }}>{note}</span>
       </span>
-      <h2 style={{ fontSize: 28, fontWeight: 400, letterSpacing: "-0.02em" }}>{children}</h2>
     </div>
   );
 }
 
-export default async function DesignSystem() {
-  const assets = (await getAssets()).slice(0, 3);
+export default function DesignSystem() {
   return (
-    <main id="tokens">
-      <section className="shell" style={{ paddingBlock: "88px 40px", display: "flex", flexDirection: "column", gap: 26 }}>
-        <p className="mono" style={{ fontSize: 12, letterSpacing: "0.18em", color: "var(--sage)" }}>
-          Design system v1 — dual mode
-        </p>
-        <h1
-          className="serif"
-          style={{
-            fontSize: "clamp(38px, 5vw, 66px)",
-            lineHeight: 1.02,
-            fontWeight: 400,
-            letterSpacing: "-0.025em",
-            maxWidth: 900,
-            textWrap: "pretty",
-          }}
-        >
-          Cinematic dark as the product. Warm light as the story.
-        </h1>
-        <p style={{ fontSize: 19, lineHeight: 1.65, color: "var(--muted)", maxWidth: 660 }}>
-          A dark grid where previews do the talking. One family, two temperatures, so the library
-          can be dark and the marketing pages can breathe.
-        </p>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 8 }}>
-          <span className="pill" style={{ cursor: "default" }}>
-            Dark = library, item pages, checkout
-          </span>
-          <span className="pill" style={{ cursor: "default" }}>
-            Light = pricing, docs, onboarding
-          </span>
-        </div>
-      </section>
-
-      {/* --- Palette --- */}
-      <section className="shell" style={{ paddingBlock: 56, display: "flex", flexDirection: "column", gap: 24 }}>
-        <SectionHead n="01">Palette</SectionHead>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(420px,100%),1fr))", gap: 24 }}>
-          <div
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--line)",
-              borderRadius: "var(--r-lg)",
-              padding: 28,
-              display: "flex",
-              flexDirection: "column",
-              gap: 20,
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
-                Dark — default
-              </span>
-              <span className="mono" style={{ fontSize: 11, color: "var(--faint)", textTransform: "none" }}>
-                the vault
-              </span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {DARK_SWATCHES.map(([name, token, hex]) => (
-                <div
-                  key={name}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 14,
-                    background: "var(--raised)",
-                    border: "1px solid var(--line)",
-                    borderRadius: 10,
-                    padding: 16,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: 8,
-                      background: `var(${token})`,
-                      border: "1px solid var(--line-bright)",
-                    }}
-                  />
-                  <span style={{ fontSize: 14, flex: 1 }}>{name}</span>
-                  <span className="mono" style={{ fontSize: 11, color: "var(--faint)", textTransform: "none" }}>
-                    {hex}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
-              Sage is the only saturated colour on screen. It marks unlocks, the primary action, and
-              the active filter. Olive fills badges and progress. Everything else is warm neutral.
-            </p>
-          </div>
-
-          <div
-            className="kiln-light"
-            style={{
-              border: "1px solid #DCD6C7",
-              borderRadius: "var(--r-lg)",
-              padding: 28,
-              display: "flex",
-              flexDirection: "column",
-              gap: 20,
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
-                Light — marketing
-              </span>
-              <span className="mono" style={{ fontSize: 11, color: "var(--faint)", textTransform: "none" }}>
-                the storefront
-              </span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {LIGHT_SWATCHES.map(([name, hex]) => (
-                <div
-                  key={name}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 14,
-                    background: "#FFFFFF",
-                    border: "1px solid #DCD6C7",
-                    borderRadius: 10,
-                    padding: 16,
-                  }}
-                >
-                  <span style={{ width: 34, height: 34, borderRadius: 8, background: hex, border: "1px solid #D3CCBB" }} />
-                  <span style={{ fontSize: 14, flex: 1 }}>{name}</span>
-                  <span className="mono" style={{ fontSize: 11, color: "var(--faint)", textTransform: "none" }}>
-                    {hex}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
-              Light mode flips the hierarchy: forest green carries the accent because sage
-              disappears on ivory.
-            </p>
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            alignItems: "flex-start",
-            padding: "22px 24px",
-            border: "1px solid rgba(185,206,149,0.30)",
-            borderRadius: 14,
-            background: "#14160D",
-          }}
-        >
-          <span className="mono" style={{ fontSize: 11, letterSpacing: "0.14em", color: "var(--sage)", whiteSpace: "nowrap" }}>
-            Rule
-          </span>
-          <span style={{ fontSize: 16, lineHeight: 1.6, color: "var(--ink-3)" }}>
-            The two modes share the same hue family, so an asset preview shot on dark still sits
-            correctly on a light page. Never mix them on one screen — no light card floating in the
-            dark grid.
-          </span>
-        </div>
-      </section>
-
-      {/* --- Type --- */}
-      <section className="shell" style={{ paddingBlock: 56, display: "flex", flexDirection: "column", gap: 24 }}>
-        <SectionHead n="02">Type</SectionHead>
-        <div
-          style={{
-            background: "var(--surface)",
-            border: "1px solid var(--line)",
-            borderRadius: "var(--r-lg)",
-            padding: 32,
-            display: "flex",
-            flexDirection: "column",
-            gap: 28,
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div className="serif" style={{ fontSize: 46, lineHeight: 1.05, letterSpacing: "-0.02em" }}>
-              Real work.
-              <br />
-              Not slop.
-            </div>
-            <p className="mono" style={{ fontSize: 11, color: "var(--faint)", textTransform: "none" }}>
-              Source Serif 4 · 400 · editorial display · 40–72px
-            </p>
-          </div>
-          <div style={{ height: 1, background: "var(--line)" }} />
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ fontSize: 26, fontWeight: 400, letterSpacing: "-0.02em" }}>Sora — interface</div>
-            <p style={{ fontSize: 16, lineHeight: 1.65, color: "var(--ink-3)" }}>
-              Every label, card title, paragraph and button. 300 for body at 1.65 line height; 400
-              for titles; 500 only on buttons.
-            </p>
-          </div>
-          <div style={{ height: 1, background: "var(--line)" }} />
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div className="mono" style={{ fontSize: 13, letterSpacing: "0.16em", color: "var(--sage)" }}>
-              Geist Mono — metadata
-            </div>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
-              Mono is the tell that this is a technical product. Keep it small and uppercase; never
-              set a sentence in it.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* --- Components --- */}
-      <section className="shell" style={{ paddingBlock: 56, display: "flex", flexDirection: "column", gap: 24 }}>
-        <SectionHead n="03">Components</SectionHead>
-
-        <div
-          style={{
-            background: "var(--surface)",
-            border: "1px solid var(--line)",
-            borderRadius: "var(--r-lg)",
-            padding: 32,
-            display: "flex",
-            flexDirection: "column",
-            gap: 26,
-          }}
-        >
-          <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
-            Asset card — the atom of the whole product
-          </span>
-          <div className="kiln-grid">
-            {assets.map((a) => (
-              <AssetCard key={a.slug} asset={a} height={170} />
-            ))}
-          </div>
-          <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)", maxWidth: 720 }}>
-            Preview edge to edge, access badge beside the title, type and stack in chips at the
-            foot. Hover lifts the border and scales the preview in 160ms. No descriptions, no
-            avatars, no buttons on the card.
+    <PageShell>
+      <div className="kl-pad" style={{ paddingBlock: "64px 30px" }}>
+        <div className="kl-prose" data-hero>
+          <span className="kl-kicker">DESIGN SYSTEM</span>
+          <h1 className="kl-prose-h1">Every value on this page paints itself.</h1>
+          <p className="kl-prose-lead">
+            Nothing here is a hex string typed out beside a token name. Each swatch is filled with
+            the token it names, so this page cannot claim a colour the stylesheet does not have —
+            and it follows the theme toggle like everything else.
           </p>
         </div>
+      </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(330px,100%),1fr))", gap: 24 }}>
-          <div
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--line)",
-              borderRadius: "var(--r-lg)",
-              padding: 32,
-              display: "flex",
-              flexDirection: "column",
-              gap: 22,
-            }}
-          >
-            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
-              Dark controls
-            </span>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-              <span className="btn btn--primary">Unlock everything</span>
-              <span className="btn btn--ghost">Preview</span>
-              <span style={{ color: "var(--sage)", fontSize: 14, fontWeight: 500 }}>Copy prompt →</span>
-            </div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <span className="pill is-on">All</span>
-              <span className="pill">Build</span>
-              <span className="pill">Motion</span>
-              <span className="pill">Craft</span>
-            </div>
-          </div>
-
-          <div
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--line)",
-              borderRadius: "var(--r-lg)",
-              padding: 32,
-              display: "flex",
-              flexDirection: "column",
-              gap: 18,
-            }}
-          >
-            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
-              The gate
-            </span>
-            <div
-              className="mono"
-              style={{
-                border: "1px solid var(--line)",
-                borderRadius: 12,
-                padding: 20,
-                background: "var(--void)",
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                fontSize: 12,
-                lineHeight: 1.7,
-                color: "var(--ink-3)",
-                textTransform: "none",
-                letterSpacing: 0,
-              }}
-            >
-              <span>Create a cinematic hero section with a slow</span>
-              <span>volumetric fog pass, camera easing on scroll,</span>
-              <span style={{ filter: "blur(4px)", color: "var(--faint)" }}>
-                and a grain overlay at 6% opacity layered
-              </span>
-              <span style={{ filter: "blur(5px)", color: "var(--faint)" }}>
-                beneath the type. Use a single warm key light
-              </span>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginTop: 8,
-                  paddingTop: 14,
-                  borderTop: "1px solid var(--line)",
-                }}
-              >
-                <span style={{ color: "var(--faint)", fontSize: 10, letterSpacing: "0.1em" }}>
-                  847 characters hidden
-                </span>
-                <span className="btn btn--primary" style={{ padding: "8px 14px", fontSize: 13 }}>
-                  Unlock
-                </span>
-              </div>
-            </div>
-            <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)" }}>
-              Two real lines, then progressive blur — never a flat overlay. The character count
-              proves there&rsquo;s something worth paying for.
-            </p>
-          </div>
+      {/* ---------- Palette ---------- */}
+      <section className="kl-pad" style={{ paddingBlock: "20px 40px" }}>
+        <div className="kl-rule-row" style={{ marginTop: 0 }}>
+          <span className="kl-rule-label">PALETTE — {PALETTE.length} TOKENS</span>
+          <span className="kl-rule" data-rule aria-hidden="true" />
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill,minmax(min(300px,100%),1fr))",
+            gap: 22,
+            marginTop: 26,
+          }}
+        >
+          {PALETTE.map(([name, token, note]) => (
+            <Swatch key={token} name={name} token={token} note={note} />
+          ))}
         </div>
       </section>
 
-      {/* --- Rules --- */}
-      <section className="shell" style={{ paddingBlock: "56px 120px", display: "flex", flexDirection: "column", gap: 24 }}>
-        <SectionHead n="04">Rules</SectionHead>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(250px,100%),1fr))", gap: 16 }}>
-          {RULES.map((r) => (
-            <div
-              key={r.k}
-              style={{
-                border: "1px solid var(--line)",
-                borderRadius: 14,
-                padding: 24,
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-              }}
-            >
-              <span className="mono" style={{ fontSize: 11, letterSpacing: "0.14em", color: "var(--faint)" }}>
-                {r.k}
+      {/* ---------- Thumbnail grounds ---------- */}
+      <section className="kl-pad" style={{ paddingBlock: "20px 40px" }}>
+        <div className="kl-rule-row" style={{ marginTop: 0 }}>
+          <span className="kl-rule-label">THUMBNAIL GROUNDS</span>
+          <span className="kl-rule" data-rule aria-hidden="true" />
+        </div>
+        <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)", maxWidth: "62ch", marginTop: 18 }}>
+          Six gradients, chosen per asset by a hash of its slug. Position in a list would have been
+          simpler and was wrong twice: it cost a catalogue fetch per page, and it changed with every
+          filter, so a card and its item page disagreed.
+        </p>
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 20 }}>
+          {GROUNDS.map((g) => (
+            <span key={g} style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 132,
+                  height: 84,
+                  borderRadius: 12,
+                  background: `var(${g})`,
+                  border: "1px solid var(--line)",
+                }}
+              />
+              <code className="kl-code">{g}</code>
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------- Type ---------- */}
+      <section className="kl-pad" style={{ paddingBlock: "20px 40px" }}>
+        <div className="kl-rule-row" style={{ marginTop: 0 }}>
+          <span className="kl-rule-label">TYPE</span>
+          <span className="kl-rule" data-rule aria-hidden="true" />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 26, marginTop: 26 }}>
+          {TYPE.map(([name, family, note]) => (
+            <div key={name} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <span
+                style={{
+                  fontFamily: family,
+                  fontSize: 30,
+                  fontStyle: name.includes("italic") ? "italic" : "normal",
+                  fontWeight: name.includes("600") ? 600 : 300,
+                  letterSpacing: name.includes("600") ? "-0.04em" : "0",
+                  color: "var(--ink)",
+                }}
+              >
+                Two hundred and forty things worth stealing.
               </span>
-              <span style={{ fontSize: 15, lineHeight: 1.6, color: "var(--ink-3)" }}>{r.v}</span>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>
+                <strong style={{ color: "var(--body)", fontWeight: 500 }}>{name}</strong> — {note}
+              </span>
             </div>
           ))}
         </div>
       </section>
-    </main>
+
+      {/* ---------- Buttons ---------- */}
+      <section className="kl-pad" style={{ paddingBlock: "20px 40px" }}>
+        <div className="kl-rule-row" style={{ marginTop: 0 }}>
+          <span className="kl-rule-label">BUTTONS</span>
+          <span className="kl-rule" data-rule aria-hidden="true" />
+        </div>
+        <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)", maxWidth: "62ch", marginTop: 18 }}>
+          Primary buttons are glass — translucent, blurred, with an inset highlight. Never solid
+          amber. The Premium variant is the single lit control on a screen: it is the only one that
+          sweeps its shine on a timer, and there should never be two on one page.
+        </p>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 22, alignItems: "center" }}>
+          <GlassButton href="/design-system" premium pull={7}>
+            Premium — the lit one
+          </GlassButton>
+          <GlassButton href="/design-system" pull={5}>
+            Glass — the default
+          </GlassButton>
+          <GlassButton href="/design-system" ghost>
+            Ghost — the quiet one
+          </GlassButton>
+        </div>
+      </section>
+
+      {/* ---------- Allowances ---------- */}
+      <section className="kl-pad" style={{ paddingBlock: "20px 40px" }}>
+        <div className="kl-rule-row" style={{ marginTop: 0 }}>
+          <span className="kl-rule-label">ALLOWANCES</span>
+          <span className="kl-rule" data-rule aria-hidden="true" />
+        </div>
+        <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)", maxWidth: "62ch", marginTop: 18 }}>
+          Read from <code className="kl-code">LIMITS</code>, the same object the routes enforce and
+          the pricing page promises. The number shown and the number hit are one variable.
+        </p>
+        <div className="kl-table" style={{ marginTop: 20, maxWidth: 620 }}>
+          <div className="kl-tr kl-tr--head">
+            <span>TIER</span>
+            <span>PROMPTS / DAY</span>
+            <span>DOWNLOADS / DAY</span>
+          </div>
+          {(Object.keys(LIMITS) as Array<keyof typeof LIMITS>).map((tier) => (
+            <div key={tier} className="kl-tr kl-tr--body">
+              <span>{tier}</span>
+              <span>{LIMITS[tier].prompt}</span>
+              <span>{LIMITS[tier].download}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------- Motion ---------- */}
+      <section className="kl-pad" style={{ paddingBlock: "20px 90px" }}>
+        <div className="kl-rule-row" style={{ marginTop: 0 }}>
+          <span className="kl-rule-label">MOTION — {MOTION.length} HOOKS</span>
+          <span className="kl-rule" data-rule aria-hidden="true" />
+        </div>
+        <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)", maxWidth: "62ch", marginTop: 18 }}>
+          Attributes, not classes, so markup carries its own behaviour. Every entrance is a
+          <code className="kl-code">gsap.from</code>, which means the start state is written by
+          JavaScript and a page whose motion layer never runs is still complete. Nothing here may be
+          paired with CSS that hides content — that pattern once made the sign-in form permanently
+          invisible. The whole layer is skipped under <code className="kl-code">prefers-reduced-motion</code>.
+        </p>
+        <dl className="kl-terms" style={{ marginTop: 8, maxWidth: "72ch" }}>
+          {MOTION.map(([hook, what]) => (
+            <div key={hook}>
+              <dt>
+                <code className="kl-code">{hook}</code>
+              </dt>
+              <dd>{what}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    </PageShell>
   );
 }

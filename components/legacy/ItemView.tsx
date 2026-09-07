@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Footer, Nav } from "./Chrome";
 import AssetCard from "./AssetCard";
 import type { Asset, Viewer } from "@/lib/kl/types";
 import PreviewMedia from "./PreviewMedia";
@@ -64,6 +63,11 @@ export default function ItemView({
    * because splitting three hundred lines of layout to gain a second entry
    * point is a lot of risk for no behaviour. The modal wants the asset, not a
    * second Nav and Footer inside a dialog.
+   *
+   * The Nav and Footer are gone now — every page renders the Kinetic
+   * Layers header, and this component is only ever reached through
+   * AssetModal, which passes false. The prop stays because it still
+   * decides the preview height and whether the related grid renders.
    */
   chrome?: boolean;
 }) {
@@ -155,7 +159,6 @@ export default function ItemView({
           Skip to the preview
         </a>
       )}
-      {chrome && <Nav viewer={viewer} />}
 
       <main>
         {chrome && (
@@ -535,8 +538,6 @@ export default function ItemView({
           </section>
         )}
       </main>
-
-      {chrome && <Footer />}
     </>
   );
 }
