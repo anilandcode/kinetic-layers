@@ -1214,3 +1214,260 @@
     flex: 0 0 12px;
   }
 }
+
+/* ---------- Pricing -------------------------------------------------------- */
+
+[data-kl] .kl-h1--pricing {
+  font-size: 46px;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  margin: 0;
+  max-width: 660px;
+}
+
+[data-kl] .kl-plan {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+[data-kl] .kl-plan--featured {
+  border-color: var(--amber-line);
+}
+/* The lamp behind the featured plan. Breathes and leans with the pointer;
+   just a soft glow if the motion layer never runs. */
+[data-kl] .kl-plan-lamp {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: -130px;
+  width: 520px;
+  height: 270px;
+  margin-left: -260px;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(232, 133, 58, 0.42), rgba(0, 0, 0, 0) 72%);
+  filter: blur(26px);
+}
+[data-kl] .kl-plan-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+[data-kl] .kl-plan-name {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+[data-kl] .kl-plan-flag {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-line);
+  color: var(--amber);
+  border-radius: 99px;
+  padding: 4px 9px;
+}
+[data-kl] .kl-plan-blurb {
+  position: relative;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 9px 0 0;
+}
+[data-kl] .kl-plan-price {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin: 22px 0 20px;
+  flex-wrap: wrap;
+}
+[data-kl] .kl-plan-amount {
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  color: var(--ink);
+}
+[data-kl] .kl-plan-unit {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+/* The list price while early access is on: shown, struck, not charged. */
+[data-kl] .kl-plan-was {
+  font-size: 18px;
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+[data-kl] .kl-plan-features {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-top: 22px;
+  border-top: 1px solid var(--line2);
+  padding-top: 20px;
+}
+[data-kl] .kl-feature {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+[data-kl] .kl-feature::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(232, 133, 58, 0.85);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+[data-kl] .kl-feature span {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--body);
+}
+
+/* The shelves table */
+[data-kl] .kl-table {
+  margin-top: 22px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+[data-kl] .kl-table-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line2);
+  flex-wrap: wrap;
+}
+[data-kl] .kl-table-title {
+  font-size: 16px;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+[data-kl] .kl-table-meta {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+[data-kl] .kl-tr {
+  display: flex;
+  gap: 12px;
+  padding: 13px 22px;
+  border-bottom: 1px solid var(--line2);
+}
+[data-kl] .kl-tr:last-child {
+  border-bottom: 0;
+}
+[data-kl] .kl-tr--head {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+[data-kl] .kl-tr > span:nth-child(1) { flex: 1.6; }
+[data-kl] .kl-tr > span:nth-child(2) { flex: 1; }
+[data-kl] .kl-tr > span:nth-child(3) { flex: 1; }
+[data-kl] .kl-tr > span:nth-child(4) { flex: 1.4; }
+[data-kl] .kl-tr > span:nth-child(5) { flex: 1; text-align: right; }
+[data-kl] .kl-tr--body > span:nth-child(1) {
+  font-size: 14px;
+  color: var(--ink);
+}
+[data-kl] .kl-tr--body > span:nth-child(n + 2) {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+[data-kl] .kl-tr--body > span:nth-child(5) {
+  color: var(--ink);
+}
+
+/* FAQ. A <details>, so it opens with no JavaScript at all. */
+[data-kl] .kl-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+[data-kl] .kl-faq details {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  cursor: pointer;
+}
+[data-kl] .kl-faq details[open] {
+  border-color: var(--amber-line);
+}
+[data-kl] .kl-faq summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  list-style: none;
+  font-size: 15.5px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+[data-kl] .kl-faq summary::-webkit-details-marker {
+  display: none;
+}
+[data-kl] .kl-faq summary span {
+  flex: 1;
+}
+[data-kl] .kl-faq-icon {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 17px;
+  color: var(--amber);
+  flex: 0 0 auto !important;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-kl] .kl-faq details[open] .kl-faq-icon {
+  transform: rotate(45deg);
+}
+[data-kl] .kl-faq p {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 13px 0 0;
+  max-width: 560px;
+}
+
+/* A note that has to be read, not decorated around. */
+[data-kl] .kl-notice {
+  margin-top: 22px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid var(--moss-line);
+  background: var(--moss-bg);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+[data-kl] .kl-notice p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--body);
+}
+[data-kl] .kl-notice strong {
+  color: var(--moss);
+  font-weight: 500;
+}
