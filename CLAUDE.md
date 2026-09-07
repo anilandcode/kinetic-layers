@@ -60,3 +60,13 @@ When spawning subagents (Agent/Task tool), the routing block is automatically in
 | `ctx stats` | Call the `ctx_stats` MCP tool and display the full output verbatim |
 | `ctx doctor` | Call the `ctx_doctor` MCP tool, run the returned shell command, display as checklist |
 | `ctx upgrade` | Call the `ctx_upgrade` MCP tool, run the returned shell command, display as checklist |
+
+## graphify
+
+This repo has a graphify knowledge graph at `graphify-out/` (gitignored — rebuild it, do not look for it in git).
+
+- Before answering architecture or codebase questions, read `graphify-out/GRAPH_REPORT.md` for god nodes and community structure.
+- For cross-module "how does X relate to Y" questions, prefer `graphify query "..."`, `graphify path "A" "B"` or `graphify explain "X"` over grep — these traverse the graph's edges instead of scanning files.
+- After changing code, run `graphify update .` to refresh it. AST only, no LLM, no API cost.
+- The graph records the commit it was built from. Compare it against `git rev-parse HEAD` before trusting it.
+- Communities are numbered rather than named because the graph was built without a semantic pass. Setting `GEMINI_API_KEY` and running `graphify extract .` would name them, at the cost of an LLM run.

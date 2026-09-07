@@ -55,3 +55,8 @@ public/preview/
 .dev.vars
 .open-next/
 .wrangler/
+
+# graphify knowledge graph. Regenerable from source in seconds with
+# `graphify update .` (AST only, no API cost), so it is not worth the ~2 MB
+# of churn on every commit.
+graphify-out/
