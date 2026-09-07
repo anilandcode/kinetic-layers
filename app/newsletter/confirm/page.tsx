@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import NoticePage from "@/components/legacy/NoticePage";
+import NoticePage from "@/components/kl/NoticePage";
 import { confirmByToken } from "@/lib/kl/newsletter";
 
 /* Nothing here should be indexed or cached: it is a one-time action addressed

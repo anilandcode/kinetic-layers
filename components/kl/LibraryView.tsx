@@ -257,7 +257,7 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
         />
       </main>
 
-      <Footer total={all.length} />
+      <Footer />
     </Shell>
   );
 }

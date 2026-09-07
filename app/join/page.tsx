@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Shell from "@/components/kl/Shell";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Mark } from "@/components/legacy/Chrome";
@@ -38,7 +39,8 @@ export default async function Join({
   const settings = await getSettings();
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <Shell>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <a className="skip-link" href="#join">Skip to the form</a>
       <header style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div className="shell" style={{ height: 66, display: "flex", alignItems: "center", gap: 20 }}>
@@ -133,6 +135,7 @@ export default async function Join({
           </div>
         </section>
       </main>
-    </div>
+      </div>
+    </Shell>
   );
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL } from "@/lib/kl/site";
-import { Footer, Nav } from "@/components/legacy/Chrome";
-import { DraftNote, ProseHero, Terms } from "@/components/legacy/Prose";
+import PageShell from "@/components/kl/PageShell";
+import { DraftNote, ProseHero, Terms } from "@/components/kl/Prose";
 import { getViewer } from "@/lib/kl/viewer";
 
 export const metadata: Metadata = {
@@ -63,10 +63,7 @@ export default async function Privacy() {
   ];
 
   return (
-    <>
-      <a className="skip-link" href="#privacy">Skip to the detail</a>
-      <Nav viewer={viewer} />
-      <main>
+    <PageShell>
         <ProseHero
           eyebrow="Privacy"
           title="We keep what runs the site, and nothing else."
@@ -74,8 +71,6 @@ export default async function Privacy() {
         />
         <DraftNote contact={contact} />
         <Terms id="privacy" items={items} />
-      </main>
-      <Footer />
-    </>
+      </PageShell>
   );
 }

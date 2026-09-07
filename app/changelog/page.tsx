@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Footer, Nav } from "@/components/legacy/Chrome";
+import PageShell from "@/components/kl/PageShell";
 import { getDrops } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
 
@@ -21,11 +21,7 @@ export default async function Changelog() {
   const [drops, viewer] = await Promise.all([getDrops(), getViewer()]);
 
   return (
-    <>
-      <a className="skip-link" href="#log">Skip to the log</a>
-      <Nav viewer={viewer} />
-
-      <main>
+    <PageShell>
         <section className="shell" style={{ paddingBlock: "64px 34px" }}>
           <div className="prose" data-hero style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
@@ -90,9 +86,6 @@ export default async function Changelog() {
             </ol>
           )}
         </section>
-      </main>
-
-      <Footer />
-    </>
+      </PageShell>
   );
 }

@@ -239,7 +239,7 @@ export default async function ProcessView() {
         />
       </main>
 
-      <Footer total={all.length} />
+      <Footer />
     </Shell>
   );
 }

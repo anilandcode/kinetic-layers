@@ -123,7 +123,7 @@ export default async function HomeView() {
         />
       </main>
 
-      <Footer total={all.length} />
+      <Footer />
     </Shell>
   );
 }

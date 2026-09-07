@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Footer, Nav } from "@/components/legacy/Chrome";
+import PageShell from "@/components/kl/PageShell";
 import CollectionFilter from "@/components/legacy/CollectionFilter";
 import { getCollections, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
@@ -24,13 +24,7 @@ export default async function Collections({
   const list = shelf ? all.filter((c) => c.shelf === (shelf as Shelf)) : all;
 
   return (
-    <>
-      <a className="skip-link" href="#sets">
-        Skip to the collections
-      </a>
-      <Nav viewer={viewer} />
-
-      <main>
+    <PageShell>
         <section className="shell" style={{ paddingBlock: "80px 44px" }}>
           <div data-hero style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: 660 }}>
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
@@ -135,9 +129,6 @@ export default async function Collections({
             </div>
           </div>
         </section>
-      </main>
-
-      <Footer />
-    </>
+      </PageShell>
   );
 }

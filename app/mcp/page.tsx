@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Footer, Nav } from "@/components/legacy/Chrome";
-import { Code, ProseHero } from "@/components/legacy/Prose";
+import PageShell from "@/components/kl/PageShell";
+import { Code, ProseHero } from "@/components/kl/Prose";
 import { getViewer } from "@/lib/kl/viewer";
 import { SITE_URL } from "@/lib/kl/site";
 
@@ -35,11 +35,7 @@ export default async function Mcp() {
   ];
 
   return (
-    <>
-      <a className="skip-link" href="#connect">Skip to the setup</a>
-      <Nav viewer={viewer} />
-
-      <main>
+    <PageShell>
         <ProseHero
           eyebrow="MCP"
           title="Use the vault from inside your agent."
@@ -124,9 +120,6 @@ export default async function Mcp() {
             than as a separate service.
           </p>
         </section>
-      </main>
-
-      <Footer />
-    </>
+      </PageShell>
   );
 }

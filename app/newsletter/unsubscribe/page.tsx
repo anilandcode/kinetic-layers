@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import NoticePage from "@/components/legacy/NoticePage";
+import NoticePage from "@/components/kl/NoticePage";
 import { unsubscribeByToken } from "@/lib/kl/newsletter";
 
 export const metadata: Metadata = { title: "Unsubscribed", robots: { index: false } };

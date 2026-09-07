@@ -1,13 +1,20 @@
 import Link from "next/link";
 import { CONTACT_EMAIL } from "@/lib/kl/site";
+import { getSettings } from "@/lib/sanity/queries";
 
 /**
  * The rule-and-links footer.
  *
- * The prototype hardcodes "240 assets filed"; the count is passed in and comes
- * from Sanity, like every other figure on these screens.
+ * Fetches its own count rather than taking one as a prop. Every page would
+ * otherwise have to load the catalogue just to print a number in the footer,
+ * and the written pages have no other reason to. The screens that already call
+ * getSettings pay nothing extra — the query is deduped within a request.
+ *
+ * The prototype hardcodes "240 assets filed"; this counts.
  */
-export default function Footer({ total }: { total: number }) {
+export default async function Footer() {
+  const settings = await getSettings();
+
   return (
     <div className="kl-pad" style={{ paddingTop: 72, paddingBottom: 44 }}>
       <div className="kl-footer">
@@ -26,7 +33,9 @@ export default function Footer({ total }: { total: number }) {
             </svg>
             <span>KINETICLAYERS.COM — ONE STUDIO, SINCE 2026</span>
           </div>
-          <span className="kl-footer-count">{total} assets filed. More this Thursday.</span>
+          <span className="kl-footer-count">
+            {settings.totalAssets} assets filed. More this Thursday.
+          </span>
         </div>
 
         <nav className="kl-footer-links" aria-label="Footer">

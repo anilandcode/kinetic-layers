@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL } from "@/lib/kl/site";
-import { Footer, Nav } from "@/components/legacy/Chrome";
+import PageShell from "@/components/kl/PageShell";
 import { getViewer } from "@/lib/kl/viewer";
 
 export const metadata: Metadata = {
@@ -55,11 +55,7 @@ export default async function License() {
   const contact = CONTACT_EMAIL;
 
   return (
-    <>
-      <a className="skip-link" href="#terms">Skip to the terms</a>
-      <Nav viewer={viewer} />
-
-      <main>
+    <PageShell>
         <section className="shell" style={{ paddingBlock: "64px 30px" }}>
           <div className="prose" data-hero style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
@@ -126,9 +122,6 @@ export default async function License() {
             what you paid — which, during early access, is nothing.
           </p>
         </section>
-      </main>
-
-      <Footer />
-    </>
+      </PageShell>
   );
 }

@@ -58,7 +58,6 @@ export default function ItemView({
   viewer,
   locked,
   monthlyPrice,
-  total,
 }: {
   asset: Asset;
   related: Asset[];
@@ -67,8 +66,6 @@ export default function ItemView({
   /** Whether the files are behind the paywall for this viewer. */
   locked: boolean;
   monthlyPrice: number;
-  /** Catalogue size, for the footer. */
-  total: number;
 }) {
   const ground = groundFor(asset.slug);
   const poster = asset.poster ? mediaUrl(asset.poster) : null;
@@ -247,7 +244,7 @@ export default function ItemView({
         </div>
       </main>
 
-      <Footer total={total} />
+      <Footer />
     </Shell>
   );
 }

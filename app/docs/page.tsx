@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Footer, Nav } from "@/components/legacy/Chrome";
-import { Code, ProseHero } from "@/components/legacy/Prose";
+import PageShell from "@/components/kl/PageShell";
+import { Code, ProseHero } from "@/components/kl/Prose";
 import { getViewer } from "@/lib/kl/viewer";
 import { getSettings } from "@/lib/sanity/queries";
 import { LIMITS, describeAllowance } from "@/lib/kl/limits";
@@ -24,11 +24,7 @@ export default async function Docs() {
   const [viewer, settings] = await Promise.all([getViewer(), getSettings()]);
 
   return (
-    <>
-      <a className="skip-link" href="#anatomy">Skip to the guide</a>
-      <Nav viewer={viewer} />
-
-      <main>
+    <PageShell>
         <ProseHero
           eyebrow="Docs"
           title="What is in an asset, and how to get a second result out of it."
@@ -140,9 +136,6 @@ claude mcp add --transport http kiln https://your-kiln/api/mcp \\
             .
           </p>
         </section>
-      </main>
-
-      <Footer />
-    </>
+      </PageShell>
   );
 }

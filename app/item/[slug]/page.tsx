@@ -48,7 +48,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       viewer={viewer}
       locked={locked}
       monthlyPrice={settings.monthlyPrice}
-      total={settings.totalAssets}
     />
   );
 }

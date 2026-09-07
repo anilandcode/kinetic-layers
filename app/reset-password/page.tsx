@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Shell from "@/components/kl/Shell";
 import { redirect } from "next/navigation";
 import { Mark } from "@/components/legacy/Chrome";
 import { getViewer } from "@/lib/kl/viewer";
@@ -14,7 +15,8 @@ export default async function ResetPassword() {
   if (!viewer) redirect("/join?error=" + encodeURIComponent("That reset link has expired. Ask for another."));
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <Shell>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <a className="skip-link" href="#reset">Skip to the form</a>
       <header style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div className="shell" style={{ height: 66, display: "flex", alignItems: "center", gap: 20 }}>
@@ -36,6 +38,7 @@ export default async function ResetPassword() {
           <PasswordForm />
         </div>
       </main>
-    </div>
+      </div>
+    </Shell>
   );
 }

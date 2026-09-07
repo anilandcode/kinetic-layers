@@ -291,7 +291,7 @@ export default async function PricingView() {
         />
       </main>
 
-      <Footer total={all.length} />
+      <Footer />
     </Shell>
   );
 }

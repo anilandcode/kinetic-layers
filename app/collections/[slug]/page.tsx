@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Footer, Nav } from "@/components/legacy/Chrome";
+import PageShell from "@/components/kl/PageShell";
 import AssetCard from "@/components/legacy/AssetCard";
 import { getCollection, getCollectionSlugs } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
@@ -47,11 +47,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   }
 
   return (
-    <>
-      <a className="skip-link" href="#items">Skip to the assets</a>
-      <Nav viewer={viewer} />
-
-      <main>
+    <PageShell>
         <nav className="shell mono" aria-label="Breadcrumb" style={{ paddingBlock: "26px 0", display: "flex", gap: 10, fontSize: 10, color: "var(--faint)" }}>
           <Link data-nav href="/collections" style={{ color: "var(--faint)" }}>Collections</Link>
           <span aria-hidden="true">/</span>
@@ -102,9 +98,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             </div>
           )}
         </section>
-      </main>
-
-      <Footer />
-    </>
+      </PageShell>
   );
 }

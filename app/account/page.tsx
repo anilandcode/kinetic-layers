@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Avatar, Footer, Nav } from "@/components/legacy/Chrome";
+import { Avatar } from "@/components/legacy/Chrome";
+import PageShell from "@/components/kl/PageShell";
 import DownloadFilter from "@/components/legacy/DownloadFilter";
 import DownloadAgain from "@/components/legacy/DownloadAgain";
 import ApiKeys from "@/components/legacy/ApiKeys";
@@ -71,11 +72,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
   const filtered = kind ? rows.filter((d) => typeOf.get(d.asset_slug) === kind) : rows;
 
   return (
-    <>
-      <a className="skip-link" href="#downloads">Skip to downloads</a>
-      <Nav viewer={viewer} />
-
-      <main>
+    <PageShell>
         <section className="shell" style={{ paddingBlock: "64px 34px" }}>
           <div data-hero style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
@@ -249,10 +246,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             </section>
           </div>
         </div>
-      </main>
-
-      <Footer />
-    </>
+      </PageShell>
   );
 }
 

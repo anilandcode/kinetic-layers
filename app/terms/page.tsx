@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL } from "@/lib/kl/site";
 import Link from "next/link";
-import { Footer, Nav } from "@/components/legacy/Chrome";
-import { DraftNote, ProseHero, Terms } from "@/components/legacy/Prose";
+import PageShell from "@/components/kl/PageShell";
+import { DraftNote, ProseHero, Terms } from "@/components/kl/Prose";
 import { getViewer } from "@/lib/kl/viewer";
 
 export const metadata: Metadata = {
@@ -65,10 +65,7 @@ export default async function TermsPage() {
   ];
 
   return (
-    <>
-      <a className="skip-link" href="#terms-list">Skip to the terms</a>
-      <Nav viewer={viewer} />
-      <main>
+    <PageShell>
         <ProseHero
           eyebrow="Terms"
           title="Short, and meant to be read."
@@ -76,8 +73,6 @@ export default async function TermsPage() {
         />
         <DraftNote contact={contact} />
         <Terms id="terms-list" items={items} />
-      </main>
-      <Footer />
-    </>
+      </PageShell>
   );
 }
