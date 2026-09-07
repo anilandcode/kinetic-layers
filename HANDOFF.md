@@ -1,7 +1,46 @@
 # Kiln — handoff
 
-State as of commit `406e3fc`. Read this before changing anything; it records the
-decisions and the traps, not the code.
+State as of commit `79a2a60` on branch `fix/signup-and-email`. Read this before
+changing anything; it records the decisions and the traps, not the code.
+
+## Where the last session left off — 2026-09-07
+
+**Branding.** The product is now **Kinetic Layers**, at **kineticlayers.com**.
+The code still says Kiln everywhere (~288 mentions, 76 files, three directory
+moves). That rename is a deliberate separate job — do not start it in the middle
+of something else, and leave the two SQL migration filenames alone.
+
+**Hosting.** Staying on **Vercel** for now. DNS at Cloudflare, unproxied (grey
+cloud) — the certificate will not issue behind the orange cloud. Move to
+Cloudflare Workers ($5/mo, already proven on the `cloudflare-workers` branch) at
+the first payment taken, because Vercel Hobby forbids commercial use. Media stays
+on **Cloudflare Pages**: the pipeline pre-bakes every derivative, so there is no
+transformation CDN in the path and Cloudinary would bill credits for a capability
+that was designed out. R2 later, when the library outgrows deploy-the-whole-folder.
+
+**Done on this branch.** Auth email links no longer derive their origin from the
+`x-forwarded-host` request header — a real vulnerability, since a genuine
+Supabase password-reset mail could be pointed at an attacker's domain. All four
+call sites now build from `SITE_URL` in `lib/kiln/site.ts`. Verified: production
+build passes, canonical / og:url / og:image / sitemap all read
+`https://kineticlayers.com`, and a forged `X-Forwarded-Host: evil.example`
+changes nothing.
+
+**Blocked on the account owner.** Signup is still broken for most visitors and
+no code change fixes it. Supabase is on its built-in SMTP, roughly 2-3 mails an
+hour, so people get "check your email" and no email. Needs, in order: a Resend
+account with kineticlayers.com verified by DNS (DNS-only records); Supabase
+custom SMTP pointed at Resend; `https://kineticlayers.com/**` allowlisted under
+Supabase → Authentication → URL Configuration; then `RESEND_API_KEY`,
+`EMAIL_FROM` and `NEXT_PUBLIC_SITE_URL` set in Vercel. Stopgap if Resend stalls:
+turning off "Confirm email" makes signup work immediately, but leaves password
+reset broken.
+
+**Still untested end to end**, once the above lands: real signup on a preview
+deploy, password reset opening `/reset-password` signed in, and
+`POST /api/subscribe` sending rather than falsely succeeding.
+
+**Tooling.** The repo now carries a graphify code graph — see `CLAUDE.md`.
 
 ## What it is
 
