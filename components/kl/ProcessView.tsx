@@ -1,5 +1,6 @@
 import Header from "./Header";
 import Shell from "./Shell";
+import Footer from "./Footer";
 import DotFieldCta from "./DotFieldCta";
 import { getDrops, getSettings, getAssets } from "@/lib/sanity/queries";
 import { EARLY_ACCESS } from "@/lib/kiln/access";
@@ -237,6 +238,8 @@ export default async function ProcessView() {
           primaryLabel={EARLY_ACCESS ? "See what's included" : "Go Premium"}
         />
       </main>
+
+      <Footer total={all.length} />
     </Shell>
   );
 }

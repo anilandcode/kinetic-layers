@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Header from "./Header";
 import Shell from "./Shell";
+import Footer from "./Footer";
 import GlassButton from "./GlassButton";
 import AssetCard from "./AssetCard";
 import DotFieldCta from "./DotFieldCta";
@@ -121,6 +122,8 @@ export default async function HomeView() {
           primaryLabel={EARLY_ACCESS ? "See what's included" : "Go Premium"}
         />
       </main>
+
+      <Footer total={all.length} />
     </Shell>
   );
 }

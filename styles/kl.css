@@ -1471,3 +1471,144 @@
   color: var(--moss);
   font-weight: 500;
 }
+
+/* ---------- Search palette -------------------------------------------------- */
+
+[data-kl] .kl-palette-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--veil);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 13vh 20px 20px;
+}
+[data-kl] .kl-palette {
+  width: min(620px, 90vw);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.5);
+  max-height: 74vh;
+  display: flex;
+  flex-direction: column;
+}
+[data-kl] .kl-palette-head {
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--line2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+/* The prototype drew a label here. A search box you cannot type into is
+   worse than no search box, so this is a real input. */
+[data-kl] .kl-palette-input {
+  flex: 1;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  outline: none;
+  min-width: 0;
+}
+[data-kl] .kl-palette-input::placeholder {
+  color: var(--muted);
+}
+[data-kl] .kl-palette-hits {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+[data-kl] .kl-hit {
+  padding: 13px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--body);
+  text-align: left;
+  width: 100%;
+}
+[data-kl] .kl-hit--active {
+  background: var(--amber-bg);
+  color: var(--ink);
+}
+[data-kl] .kl-hit-type {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+[data-kl] .kl-palette-empty {
+  padding: 22px 14px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+[data-kl] .kl-palette-foot {
+  padding: 14px 22px;
+  border-top: 1px solid var(--line2);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+/* ---------- Footer ---------------------------------------------------------- */
+
+[data-kl] .kl-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+  padding-top: 26px;
+}
+[data-kl] .kl-footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+[data-kl] .kl-footer-mark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+[data-kl] .kl-footer-count {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+[data-kl] .kl-footer-links {
+  display: flex;
+  gap: 26px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+}
+[data-kl] .kl-footer-links a {
+  color: var(--muted);
+}
+[data-kl] .kl-footer-links a:hover {
+  color: var(--amber);
+}

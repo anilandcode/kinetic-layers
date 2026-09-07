@@ -1,5 +1,6 @@
 import Header from "./Header";
 import Shell from "./Shell";
+import Footer from "./Footer";
 import GlassButton from "./GlassButton";
 import DotFieldCta from "./DotFieldCta";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
@@ -289,6 +290,8 @@ export default async function PricingView() {
           primaryLabel={viewer ? "Open the library" : "Create a free account"}
         />
       </main>
+
+      <Footer total={all.length} />
     </Shell>
   );
 }

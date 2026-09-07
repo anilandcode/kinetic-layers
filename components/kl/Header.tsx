@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import SearchPalette from "./SearchPalette";
 import GlassButton from "./GlassButton";
 import ThemeToggle from "./ThemeToggle";
 
@@ -22,8 +24,25 @@ const NAV = [
   { href: "/pricing", label: "Pricing" },
 ];
 
-export default function Header({ onSearch }: { onSearch?: () => void }) {
+export default function Header() {
   const pathname = usePathname();
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  /* ⌘K opens it, Escape closes it. Bound once on the document rather than on
+     the trigger, because the shortcut has to work wherever focus happens to
+     be — including inside the palette itself. */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      } else if (e.key === "Escape") {
+        setSearchOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <header className="kl-header">
@@ -66,7 +85,7 @@ export default function Header({ onSearch }: { onSearch?: () => void }) {
 
           <div className="kl-spacer" />
 
-          <button type="button" className="kl-search-trigger" data-hide-narrow onClick={onSearch}>
+          <button type="button" className="kl-search-trigger" data-hide-narrow onClick={() => setSearchOpen(true)}>
             <span>Search the library</span>
             <span className="kl-kbd" aria-hidden="true">
               ⌘K
@@ -80,6 +99,7 @@ export default function Header({ onSearch }: { onSearch?: () => void }) {
           </GlassButton>
         </div>
       </div>
+      <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }
