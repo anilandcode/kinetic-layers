@@ -17,11 +17,25 @@
   color: var(--ink);
 }
 
+/* The prototype capped this at 1240, which left ~340px of dead margin each
+   side of a 1920 screen. 1600 gives the grid room without letting any line of
+   text grow: every prose block carries its own max-width (--kl-pull 620,
+   .kl-lede 500, .kl-faq p 560), so the measure is unchanged by this. */
 [data-kl] .kl-pad {
-  max-width: 1240px;
+  max-width: 1600px;
   margin: 0 auto;
   padding-left: 32px;
   padding-right: 32px;
+}
+
+/* Blocks that are read rather than scanned stay at the old width, centred.
+   Three pricing cards or three proof cards stretched across 1600px read as a
+   layout accident rather than a choice. */
+[data-kl] .kl-3col,
+[data-kl] .kl-split {
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* The scroll hairline. Fixed above everything, but never in the way. */
@@ -460,6 +474,14 @@
 [data-kl] .kl-masonry {
   columns: 3;
   column-gap: 20px;
+}
+/* A fourth column once there is room for it. Below this the cards would be
+   narrower than the previews they hold, which is worse than empty margin.
+   kl-tokens.css drops to 2 at 1080 and 1 at 720. */
+@media (min-width: 1500px) {
+  [data-kl] .kl-masonry {
+    columns: 4;
+  }
 }
 [data-kl] .kl-grid-item {
   break-inside: avoid;
