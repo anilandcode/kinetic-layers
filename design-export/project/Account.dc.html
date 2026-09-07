@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#0F0F0D; }
+  a { color:#94918A; text-decoration:none; }
+  a:hover { color:#E8F0D8; }
+  ::selection { background:#B9CE95; color:#12130A; }
+  @media (max-width:1180px) { [data-hide-narrow] { display:none !important; } }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@11.11.17/dist/motion.js"></script>
+<script src="./site-motion.js"></script>
+</helmet>
+
+<div style="background:#0F0F0D; color:#F6F4EE; font-family:Sora,sans-serif; font-weight:300; min-height:100vh;">
+
+  <div style="position:sticky; top:0; z-index:20; background:rgba(15,15,13,0.92); backdrop-filter:blur(12px); border-bottom:1px solid #1F1E19;">
+    <div style="max-width:1360px; margin:0 auto; padding:0 40px; height:66px; display:flex; align-items:center; gap:36px;">
+      <a data-nav href="./Homepage.dc.html" style="display:flex; align-items:center; gap:9px; color:#F6F4EE;">
+        <span style="width:16px; height:16px; border-radius:5px; background:linear-gradient(140deg,rgba(185,206,149,0.9),rgba(120,150,95,0.55)); border:1px solid rgba(185,206,149,0.5);"></span>
+        <span style="font-size:16px; font-weight:500; letter-spacing:-0.01em;">Kiln</span>
+      </a>
+      <div style="display:flex; gap:26px; font-size:14px; white-space:nowrap; flex-shrink:0;">
+        <a data-nav href="./Homepage.dc.html">Library</a>
+        <a data-nav href="./Collections.dc.html">Collections</a>
+        <span style="color:#F6F4EE;">Account</span>
+        <a data-nav href="./Pricing.dc.html">Pricing</a>
+      </div>
+      <div style="flex:1;"></div>
+      <span style="display:flex; align-items:center; gap:10px; border:1px solid #26251F; border-radius:99px; padding:5px 14px 5px 5px;">
+        <span style="width:26px; height:26px; border-radius:99px; background:linear-gradient(140deg,rgba(185,206,149,0.85),rgba(110,140,85,0.5)); display:flex; align-items:center; justify-content:center; font-size:11px; color:#14180C; font-weight:500;">A</span>
+        <span style="font-size:13px; color:#C9C6BE;">alex@studio.co</span>
+      </span>
+    </div>
+  </div>
+
+  <div style="max-width:1360px; margin:0 auto; padding:64px 40px 34px;">
+    <div data-hero style="display:flex; flex-direction:column; gap:14px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#B9CE95;">Unlimited · renews 12 Sep 2026</span>
+      <h1 style="font-size:46px; line-height:1.08; font-weight:500; letter-spacing:-0.035em; margin:0;">Everything you've pulled out of the kiln.</h1>
+    </div>
+  </div>
+
+  <div style="max-width:1360px; margin:0 auto; padding:0 40px 20px; display:grid; grid-template-columns:repeat(4,1fr); gap:20px;">
+    <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+      <div data-reveal style="border-radius:13px; border:1px solid #1F1E19; background:#121210; padding:22px; display:flex; flex-direction:column; gap:9px;">
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#6E6B64;">{{ s.label }}</span>
+        <span style="{{ s.valueStyle }}">{{ s.value }}</span>
+        <span style="font-size:13px; color:#94918A;">{{ s.note }}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="max-width:1360px; margin:0 auto; padding:20px 40px; display:grid; grid-template-columns:1.55fr 1fr; gap:24px; align-items:start;">
+
+    <div data-reveal style="border-radius:13px; border:1px solid #1F1E19; overflow:hidden;">
+      <div style="display:flex; align-items:center; gap:12px; padding:18px 22px; background:#121210; border-bottom:1px solid #1A1917;">
+        <span style="font-size:17px; font-weight:500;">Downloads</span>
+        <div style="flex:1;"></div>
+        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="3">
+          <span onClick="{{ f.pick }}" style="{{ f.style }}" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">{{ f.label }}</span>
+        </sc-for>
+      </div>
+      <sc-for list="{{ downloads }}" as="d" hint-placeholder-count="7">
+        <div style="display:flex; align-items:center; gap:16px; padding:14px 22px; border-bottom:1px solid #171614;">
+          <span style="{{ d.thumbStyle }}"></span>
+          <div style="display:flex; flex-direction:column; gap:4px; min-width:0; flex:1;">
+            <span style="font-size:15px; color:#F6F4EE; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ d.name }}</span>
+            <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#6E6B64;">{{ d.meta }}</span>
+          </div>
+          <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#6E6B64; white-space:nowrap;">{{ d.date }}</span>
+          <span style="font-size:13px; color:#C9C6BE; border:1px solid #2C2A24; border-radius:99px; padding:7px 15px; cursor:pointer; white-space:nowrap; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">Download again</span>
+        </div>
+      </sc-for>
+      <div style="padding:16px 22px; display:flex; justify-content:center;">
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#6E6B64; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">LOAD OLDER</span>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:24px;">
+      <div data-reveal style="border-radius:13px; border:1px solid rgba(185,206,149,0.30); background:radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),#141412; padding:26px; display:flex; flex-direction:column; gap:14px;">
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#B9CE95;">SUBSCRIPTION</span>
+        <div style="display:flex; align-items:baseline; gap:9px;">
+          <span style="font-size:34px; font-weight:500; letter-spacing:-0.03em;">Unlimited</span>
+          <span style="font-size:15px; color:#94918A;">$24/mo</span>
+        </div>
+        <p style="font-size:14px; line-height:1.6; color:#94918A; margin:0;">Renews 12 Sep 2026 on Visa ···· 4417. Switch to annual and the next twelve months cost $240.</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
+          <span style="background:linear-gradient(135deg,rgba(185,206,149,0.28),rgba(185,206,149,0.10)); border:1px solid rgba(185,206,149,0.42); color:#E8F0D8; font-size:13px; font-weight:500; border-radius:99px; padding:11px 20px; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">Switch to annual</span>
+          <span style="border:1px solid #2C2A24; color:#C9C6BE; font-size:13px; border-radius:99px; padding:11px 20px; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">Manage billing</span>
+        </div>
+      </div>
+
+      <div data-reveal style="border-radius:13px; border:1px solid #1F1E19; background:#121210; padding:24px; display:flex; flex-direction:column; gap:16px;">
+        <span style="font-size:16px; font-weight:500;">Saved collections</span>
+        <sc-for list="{{ saved }}" as="s" hint-placeholder-count="3">
+          <div style="display:flex; align-items:center; gap:13px;">
+            <span style="{{ s.thumbStyle }}"></span>
+            <div style="display:flex; flex-direction:column; gap:3px; flex:1;">
+              <span style="font-size:14px; color:#F6F4EE;">{{ s.name }}</span>
+              <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#6E6B64;">{{ s.meta }}</span>
+            </div>
+            <span style="font-size:13px; color:#94918A; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">Open</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div data-reveal style="border-radius:13px; border:1px solid #1F1E19; background:#121210; padding:24px; display:flex; flex-direction:column; gap:14px;">
+        <span style="font-size:16px; font-weight:500;">Invoices</span>
+        <sc-for list="{{ invoices }}" as="i" hint-placeholder-count="3">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.08em; color:#94918A;">
+            <span>{{ i.date }}</span>
+            <span style="color:#C9C6BE;">{{ i.amount }}</span>
+            <span style="color:#6E6B64; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">PDF</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div data-reveal style="max-width:1360px; margin:0 auto; padding:44px 40px 80px;">
+    <div style="border-radius:13px; border:1px solid #26251F; background:linear-gradient(200deg,#1B1B18,#111110 60%); padding:30px; display:flex; align-items:center; gap:30px; flex-wrap:wrap;">
+      <div style="display:flex; flex-direction:column; gap:8px; flex:1; min-width:280px;">
+        <span style="font-size:22px; font-weight:500; letter-spacing:-0.02em;">Drop 020 lands Thursday.</span>
+        <span style="font-size:15px; color:#94918A;">Grain &amp; film — nine assets, three of them free.</span>
+      </div>
+      <span style="border:1px solid #2C2A24; border-radius:99px; padding:14px 20px; font-size:15px; color:#6E6B64; min-width:240px;">you@email.com</span>
+      <span style="border:1px solid #35332B; border-radius:99px; padding:14px 26px; font-size:15px; color:#F6F4EE; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">Notify me</span>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid #1F1E19;">
+    <div style="max-width:1360px; margin:0 auto; padding:40px; display:flex; align-items:center; justify-content:space-between; font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.1em; color:#6E6B64;">
+      <span>KILN — ONE STUDIO, SINCE 2026</span>
+      <div style="display:flex; gap:24px;"><span>LICENSE</span><span>CHANGELOG</span><span>CONTACT</span></div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const DL = [
+  { name:"Volumetric Drift", meta:"3D SCENE · THREE.JS · 84 MB", date:"22 AUG", kind:"Scenes", g:"linear-gradient(150deg,#1D2410,#0F0F0D)" },
+  { name:"Editorial Landing 04", meta:"TEMPLATE · NEXT · TW · 12 MB", date:"22 AUG", kind:"Templates", g:"linear-gradient(150deg,#242014,#0F0F0D)" },
+  { name:"Cold Open", meta:"PROMPT · CLAUDE · 4 KB", date:"20 AUG", kind:"Prompts", g:"linear-gradient(150deg,#10241A,#0F0F0D)" },
+  { name:"Paper Grain LoRA", meta:"LORA · FLUX · 148 MB", date:"18 AUG", kind:"Scenes", g:"linear-gradient(150deg,#241F16,#0F0F0D)" },
+  { name:"Research Swarm", meta:"MCP / AGENT · 22 KB", date:"15 AUG", kind:"Prompts", g:"linear-gradient(150deg,#141C24,#0F0F0D)" },
+  { name:"Brutal Grid Pack", meta:"TEMPLATE · ASTRO · 9 MB", date:"13 AUG", kind:"Templates", g:"linear-gradient(150deg,#26221A,#0F0F0D)" },
+  { name:"Chrome Liquid", meta:"3D SCENE · R3F · 61 MB", date:"11 AUG", kind:"Scenes", g:"linear-gradient(150deg,#1E1E24,#0F0F0D)" }
+];
+
+class Component extends DCLogic {
+  state = { filter:"All" };
+  componentDidMount() { if (window.KilnMotion) window.KilnMotion.init(); }
+
+  pill(active) {
+    const base = "font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; border-radius:99px; padding:7px 13px; cursor:pointer; white-space:nowrap; transition:all 160ms;";
+    return active
+      ? base + "background:linear-gradient(135deg,rgba(185,206,149,0.28),rgba(185,206,149,0.10)); border:1px solid rgba(185,206,149,0.45); color:#E8F0D8;"
+      : base + "border:1px solid #26251F; color:#94918A;";
+  }
+
+  renderVals() {
+    const { filter } = this.state;
+    const list = DL.filter(d => filter === "All" || d.kind === filter);
+    const thumb = g => "width:44px; height:34px; border-radius:7px; flex-shrink:0; border:1px solid #23221C; background:" + g + ";";
+
+    return {
+      stats: [
+        { label:"DOWNLOADED", value:"63", note:"of 240 assets", big:true },
+        { label:"THIS MONTH", value:"14", note:"9 from Drop 019", big:true },
+        { label:"SAVED", value:"5", note:"collections", big:true },
+        { label:"MEMBER SINCE", value:"Mar 2026", note:"6 months unlimited", big:false }
+      ].map(s => ({
+        label: s.label, value: s.value, note: s.note,
+        valueStyle: "font-weight:500; letter-spacing:-0.03em; font-size:" + (s.big ? "34px" : "26px") + ";"
+      })),
+      filters: ["All","Templates","Scenes","Prompts"].map(f => ({
+        label: f.toUpperCase(), style: this.pill(filter === f), pick: () => this.setState({ filter: f })
+      })),
+      downloads: list.map(d => ({ name: d.name, meta: d.meta, date: d.date, thumbStyle: thumb(d.g) })),
+      saved: [
+        { name:"Editorial Suite", meta:"24 ITEMS · UPDATED 22 AUG", thumbStyle: thumb("linear-gradient(150deg,#242014,#0F0F0D)") },
+        { name:"Volumetric Set", meta:"18 ITEMS · UPDATED 20 AUG", thumbStyle: thumb("linear-gradient(150deg,#1D2410,#0F0F0D)") },
+        { name:"Agent Bench", meta:"15 ITEMS · UPDATED 6 AUG", thumbStyle: thumb("linear-gradient(150deg,#141C24,#0F0F0D)") }
+      ],
+      invoices: [
+        { date:"12 AUG 2026", amount:"$24.00" },
+        { date:"12 JUL 2026", amount:"$24.00" },
+        { date:"12 JUN 2026", amount:"$24.00" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

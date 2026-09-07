@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#F7F6F3; }
+  a { color:#14161A; text-decoration:none; }
+  a:hover { color:#C96A22; }
+  ::selection { background:rgba(232,133,58,0.24); color:#14161A; }
+  @media (max-width:1080px) {
+    [data-cols-3] { grid-template-columns:1fr !important; }
+    [data-bento] { grid-template-columns:1fr !important; }
+    [data-bento] > * { grid-column:auto !important; }
+    [data-h1] { font-size:52px !important; }
+    [data-split] { grid-template-columns:1fr !important; }
+  }
+  @media (max-width:720px) {
+    [data-h1] { font-size:38px !important; }
+    [data-pad] { padding-left:20px !important; padding-right:20px !important; }
+    [data-hide-narrow] { display:none !important; }
+  }
+  @media (max-width:560px) {
+    [data-console-split] { grid-template-columns:1fr !important; }
+    [data-console-stats] { grid-template-columns:1fr !important; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="./kl-motion.js"></script>
+</helmet>
+
+<div style="background:#F7F6F3; color:#14161A; font-family:Geist,'Helvetica Neue',sans-serif; font-weight:300; min-height:100vh; overflow-x:hidden;">
+
+  <div style="position:sticky; top:0; z-index:40; padding:14px 0; background:linear-gradient(180deg,rgba(247,246,243,0.94),rgba(247,246,243,0));">
+    <div data-pad style="max-width:1180px; margin:0 auto; padding:0 32px;">
+      <div style="display:flex; align-items:center; gap:28px; background:rgba(255,255,255,0.86); backdrop-filter:blur(14px); border:1px solid #E7E4DD; border-radius:99px; padding:9px 10px 9px 18px; box-shadow:0 8px 26px -18px rgba(20,22,26,0.22);">
+        <div style="display:flex; align-items:center; gap:9px; flex-shrink:0;">
+          <span style="position:relative; width:18px; height:18px; flex-shrink:0;">
+            <span style="position:absolute; left:0; top:4px; width:13px; height:13px; border-radius:4px; background:#14161A;"></span>
+            <span style="position:absolute; left:5px; top:0; width:13px; height:13px; border-radius:4px; background:rgba(232,133,58,0.85); mix-blend-mode:multiply;"></span>
+          </span>
+          <span style="font-size:15.5px; font-weight:500; letter-spacing:-0.02em;">Kinetic Layers</span>
+        </div>
+        <div data-hide-narrow style="display:flex; gap:22px; font-size:14px; color:#6E7178;">
+          <span style="color:#14161A;">Platform</span>
+          <span>Docs</span>
+          <span>Pricing</span>
+          <span>Changelog</span>
+        </div>
+        <div style="flex:1;"></div>
+        <span data-hide-narrow style="font-size:14px; color:#6E7178; flex-shrink:0;">Sign in</span>
+        <span style="background:#17181C; color:#FBFAF8; font-size:13.5px; font-weight:400; border-radius:99px; padding:10px 18px; cursor:pointer; flex-shrink:0; transition:filter 180ms, transform 160ms;" style-hover="filter:brightness(1.35)" style-active="transform:translateY(1px)">Get started</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:relative; overflow:hidden;">
+
+    <div style="position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(20,22,26,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(20,22,26,0.035) 1px,transparent 1px); background-size:76px 76px,76px 76px; mask-image:radial-gradient(72% 58% at 50% 34%,#000,transparent 78%); -webkit-mask-image:radial-gradient(72% 58% at 50% 34%,#000,transparent 78%);"></div>
+    <div style="position:absolute; left:50%; top:120px; width:1100px; height:1100px; margin-left:-550px; pointer-events:none; opacity:0.5;">
+      <span style="position:absolute; inset:22%; border:1px solid rgba(20,22,26,0.05); border-radius:99px;"></span>
+      <span style="position:absolute; inset:11%; border:1px solid rgba(20,22,26,0.04); border-radius:99px;"></span>
+      <span style="position:absolute; inset:0; border:1px solid rgba(20,22,26,0.03); border-radius:99px;"></span>
+    </div>
+
+    <div data-pad style="position:relative; max-width:1180px; margin:0 auto; padding:74px 32px 0; display:flex; flex-direction:column; align-items:center; text-align:center;">
+      <div style="display:inline-flex; align-items:center; gap:9px; border:1px solid #E7E4DD; background:#FFFFFF; border-radius:99px; padding:6px 14px 6px 8px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+        <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.1em; background:rgba(232,133,58,0.14); color:#B65C1B; border-radius:99px; padding:4px 8px;">NEW</span>
+        <span style="font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:#6E7178;">Layered deploys, now in every region</span>
+      </div>
+
+      <h1 data-mask data-h1 style="font-size:78px; line-height:1.02; font-weight:300; letter-spacing:-0.045em; margin:30px 0 0; max-width:900px; text-wrap:balance;">One platform from idea to production.</h1>
+
+      <p data-rise style="font-size:18.5px; line-height:1.65; color:#6E7178; max-width:520px; margin:24px 0 0;">A full-stack TypeScript platform with auth, database and monitoring already wired together. Push once and the whole stack moves.</p>
+
+      <div data-rise style="display:flex; gap:11px; justify-content:center; flex-wrap:wrap; margin-top:32px;">
+        <span data-lift="4" style="position:relative; overflow:hidden; background:#17181C; color:#FBFAF8; font-size:15px; border-radius:99px; padding:15px 28px; cursor:pointer; box-shadow:0 1px 2px rgba(20,22,26,0.04); transition:filter 180ms;" style-hover="filter:brightness(1.35)" style-active="transform:translateY(1px)">Start building free</span>
+        <span data-lift="4" style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; color:#14161A; font-size:15px; border-radius:99px; padding:14px 26px; cursor:pointer; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+          <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+          <span style="position:relative;">Read the docs</span>
+        </span>
+      </div>
+
+      <div data-rise style="display:flex; gap:26px; flex-wrap:wrap; justify-content:center; margin-top:26px; font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.14em; color:#9A9AA0;">
+        <span>NO CARD REQUIRED</span><span>DEPLOY IN 90 SECONDS</span><span>SOC 2 TYPE II</span>
+      </div>
+
+      <div style="position:relative; width:100%; max-width:940px; margin-top:96px;">
+        <div data-glow-arc="22" style="position:absolute; z-index:0; left:50%; top:-90px; width:1320px; height:420px; margin-left:-660px; pointer-events:none; background:radial-gradient(closest-side,rgba(232,133,58,0.5),rgba(232,133,58,0.15) 46%,rgba(247,246,243,0) 74%); filter:blur(34px);"></div>
+        <div data-glow-arc="14" style="position:absolute; z-index:0; left:50%; top:-40px; width:820px; height:240px; margin-left:-410px; pointer-events:none; background:radial-gradient(closest-side,rgba(255,201,120,0.62),rgba(247,246,243,0) 70%); filter:blur(20px);"></div>
+
+        <div style="position:relative; z-index:1; text-align:left; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:20px 20px 0 0; border-bottom:none; box-shadow:0 -1px 0 rgba(255,255,255,0.9), 0 30px 70px -44px rgba(20,22,26,0.28); overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:10px; padding:13px 16px; border-bottom:1px solid #EFEDE7;">
+            <span style="width:9px; height:9px; border-radius:99px; background:#E4E1DA;"></span>
+            <span style="width:9px; height:9px; border-radius:99px; background:#E4E1DA;"></span>
+            <span style="width:9px; height:9px; border-radius:99px; background:#E4E1DA;"></span>
+            <span style="flex:1;"></span>
+            <span style="font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#9A9AA0; text-align:center;">kineticlayers.com/console</span>
+            <span style="flex:1;"></span>
+          </div>
+          <div data-console-split style="display:grid; grid-template-columns:200px 1fr; min-height:280px;">
+            <div style="border-right:1px solid #EFEDE7; padding:16px 14px; display:flex; flex-direction:column; gap:7px; background:#FCFBF9;">
+              <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.14em; color:#9A9AA0; padding:0 8px 4px;">PROJECT</span>
+              <span style="font-size:13px; background:rgba(232,133,58,0.10); border:1px solid rgba(232,133,58,0.22); border-radius:8px; padding:7px 9px;">Overview</span>
+              <span style="font-size:13px; color:#6E7178; padding:7px 9px;">Authentication</span>
+              <span style="font-size:13px; color:#6E7178; padding:7px 9px;">Database</span>
+              <span style="font-size:13px; color:#6E7178; padding:7px 9px;">Monitoring</span>
+              <span style="font-size:13px; color:#6E7178; padding:7px 9px;">Deploys</span>
+              <span style="flex:1; min-height:18px;"></span>
+              <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#9A9AA0; border-top:1px solid #EFEDE7; padding:12px 8px 0;">REGION · IAD1</span>
+            </div>
+            <div style="padding:20px 22px; display:flex; flex-direction:column; gap:16px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:14px;">
+                <span style="font-size:16px; letter-spacing:-0.01em;">production</span>
+                <span style="display:inline-flex; align-items:center; gap:7px; font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; border:1px solid #E7E4DD; border-radius:99px; padding:5px 10px; color:#6E7178;">
+                  <span style="width:5px; height:5px; border-radius:99px; background:#7BA05B;"></span>HEALTHY
+                </span>
+              </div>
+              <div data-console-stats style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+                <div style="border:1px solid #EFEDE7; border-radius:12px; padding:12px 13px; display:flex; flex-direction:column; gap:6px;">
+                  <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#9A9AA0;">P95 LATENCY</span>
+                  <span style="font-size:22px; font-weight:300; letter-spacing:-0.03em;"><span data-count="42" data-count-suffix="ms">42ms</span></span>
+                </div>
+                <div style="border:1px solid #EFEDE7; border-radius:12px; padding:12px 13px; display:flex; flex-direction:column; gap:6px;">
+                  <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#9A9AA0;">REQUESTS / MIN</span>
+                  <span style="font-size:22px; font-weight:300; letter-spacing:-0.03em;"><span data-count="18400">18400</span></span>
+                </div>
+                <div style="border:1px solid #EFEDE7; border-radius:12px; padding:12px 13px; display:flex; flex-direction:column; gap:6px;">
+                  <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#9A9AA0;">ERROR RATE</span>
+                  <span style="font-size:22px; font-weight:300; letter-spacing:-0.03em; color:#B65C1B;"><span data-count="0.04" data-count-suffix="%">0.04%</span></span>
+                </div>
+              </div>
+              <div style="display:flex; align-items:flex-end; gap:5px; height:96px; border:1px solid #EFEDE7; border-radius:12px; padding:14px; box-sizing:border-box;">
+                <sc-for list="{{ bars }}" as="b" hint-placeholder-count="26">
+                  <span style="{{ b.style }}"></span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1180px; margin:0 auto; padding:0 32px;">
+    <div data-cols-3 style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:-1px;">
+
+      <div data-lift="7" data-reveal style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; padding:22px; display:flex; flex-direction:column; gap:16px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+        <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+        <div style="position:relative; border:1px solid #EFEDE7; border-radius:12px; background:#FCFBF9; padding:15px; display:flex; flex-direction:column; gap:9px;">
+          <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#9A9AA0;">SESSION</span>
+          <span style="height:30px; border:1px solid #E7E4DD; border-radius:8px; background:#FFFFFF; display:flex; align-items:center; padding:0 10px; font-size:12px; color:#9A9AA0;">you@company.com</span>
+          <span style="height:30px; border-radius:8px; background:#17181C; display:flex; align-items:center; justify-content:center; font-size:12px; color:#FBFAF8;">Continue</span>
+          <div style="display:flex; gap:6px;">
+            <span style="flex:1; text-align:center; font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:0.1em; border:1px solid #E7E4DD; border-radius:99px; padding:5px 0; color:#6E7178;">OAUTH</span>
+            <span style="flex:1; text-align:center; font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:0.1em; border:1px solid #E7E4DD; border-radius:99px; padding:5px 0; color:#6E7178;">PASSKEY</span>
+            <span style="flex:1; text-align:center; font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:0.1em; border:1px solid rgba(232,133,58,0.28); background:rgba(232,133,58,0.10); border-radius:99px; padding:5px 0; color:#B65C1B;">SAML</span>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <h3 style="font-size:19px; font-weight:400; letter-spacing:-0.02em; margin:0 0 8px;">Authentication</h3>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0;">Sessions, org roles and SSO out of the box. Users land in your database, not a vendor's.</p>
+        </div>
+      </div>
+
+      <div data-lift="7" data-reveal style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; padding:22px; display:flex; flex-direction:column; gap:16px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+        <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+        <div style="position:relative; border:1px solid #EFEDE7; border-radius:12px; background:#FCFBF9; padding:15px; display:flex; flex-direction:column; gap:0;">
+          <div style="display:flex; gap:10px; font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#9A9AA0; padding-bottom:9px; border-bottom:1px solid #EFEDE7;">
+            <span style="flex:1.2;">ID</span><span style="flex:2;">EMAIL</span><span style="flex:1;">PLAN</span>
+          </div>
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="4">
+            <div style="display:flex; gap:10px; font-family:'Geist Mono',monospace; font-size:10.5px; color:#6E7178; padding:9px 0; border-bottom:1px solid #F4F2ED;">
+              <span style="flex:1.2;">{{ r.id }}</span><span style="flex:2; overflow:hidden; text-overflow:ellipsis;">{{ r.email }}</span><span style="flex:1; color:#B65C1B;">{{ r.plan }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="position:relative;">
+          <h3 style="font-size:19px; font-weight:400; letter-spacing:-0.02em; margin:0 0 8px;">Database</h3>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0;">Managed Postgres with typed queries generated from your schema. Branch it like code.</p>
+        </div>
+      </div>
+
+      <div data-lift="7" data-reveal style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; padding:22px; display:flex; flex-direction:column; gap:16px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+        <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+        <div style="position:relative; border:1px solid #EFEDE7; border-radius:12px; background:#FCFBF9; padding:15px; display:flex; flex-direction:column; gap:11px;">
+          <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#9A9AA0;">TRACE · /api/checkout</span>
+          <sc-for list="{{ spans }}" as="s" hint-placeholder-count="4">
+            <div style="display:flex; align-items:center; gap:9px;">
+              <span style="font-family:'Geist Mono',monospace; font-size:9.5px; color:#9A9AA0; width:52px; flex-shrink:0;">{{ s.label }}</span>
+              <span style="flex:1; height:7px; border-radius:99px; background:#F1EFEA; overflow:hidden;">
+                <span style="{{ s.barStyle }}"></span>
+              </span>
+              <span style="font-family:'Geist Mono',monospace; font-size:9.5px; color:#6E7178; width:34px; text-align:right; flex-shrink:0;">{{ s.ms }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="position:relative;">
+          <h3 style="font-size:19px; font-weight:400; letter-spacing:-0.02em; margin:0 0 8px;">Monitoring</h3>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0;">Traces, logs and errors on the same timeline, wired the moment you deploy.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1180px; margin:0 auto; padding:64px 32px 0;">
+    <div style="display:flex; align-items:center; gap:20px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#9A9AA0; flex-shrink:0;">RUNS ON WHAT YOU ALREADY USE</span>
+      <span data-rule style="flex:1; height:1px; background:#E7E4DD;"></span>
+    </div>
+    <div style="overflow:hidden; margin-top:22px; mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);">
+      <div data-marquee style="display:flex; gap:52px; width:max-content; align-items:center;">
+        <sc-for list="{{ logos }}" as="l" hint-placeholder-count="16">
+          <span style="font-family:'Geist Mono',monospace; font-size:13px; letter-spacing:0.1em; color:#A8A6A0; white-space:nowrap;">{{ l.name }}</span>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1180px; margin:0 auto; padding:92px 32px 0;">
+    <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#B65C1B;">THE STACK, IN LAYERS</span>
+      <h2 data-reveal style="font-size:42px; font-weight:300; letter-spacing:-0.035em; line-height:1.1; margin:0; max-width:640px; text-wrap:balance;">Everything you need for a production app.</h2>
+      <p data-reveal style="font-size:16.5px; line-height:1.65; color:#6E7178; max-width:520px; margin:0;">Four layers, one deploy. Each one is replaceable, none of them need glue code.</p>
+    </div>
+
+    <div data-layer-deck style="position:relative; height:580px; margin-top:40px;">
+      <sc-for list="{{ layers }}" as="ly" hint-placeholder-count="4">
+        <div data-layer="{{ ly.depth }}" style="{{ ly.style }}">
+          <div style="display:flex; align-items:baseline; gap:14px;">
+            <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#B65C1B;">{{ ly.tag }}</span>
+            <span style="font-size:20px; font-weight:400; letter-spacing:-0.02em;">{{ ly.name }}</span>
+            <span style="flex:1;"></span>
+            <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#9A9AA0;">{{ ly.meta }}</span>
+          </div>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:10px 0 0; max-width:520px;">{{ ly.copy }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1180px; margin:0 auto; padding:20px 32px 0;">
+    <div data-bento style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
+      <div data-lift="6" data-reveal style="position:relative; overflow:hidden; grid-column:span 2; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; padding:26px; box-shadow:0 1px 2px rgba(20,22,26,0.04); min-height:230px; display:flex; flex-direction:column;">
+        <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+        <div data-parallax="26" style="position:absolute; inset:-20% -10%; pointer-events:none; background-image:repeating-linear-gradient(52deg,rgba(20,22,26,0.035) 0 1px,transparent 1px 9px);"></div>
+        <div style="position:relative; display:flex; flex-direction:column; height:100%;">
+          <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#9A9AA0;">PREVIEW ENVIRONMENTS</span>
+          <div style="flex:1; min-height:26px;"></div>
+          <h3 style="font-size:24px; font-weight:400; letter-spacing:-0.025em; margin:0 0 10px; max-width:420px;">Every branch gets a full stack, database included</h3>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0; max-width:440px;">Preview URLs come with an isolated Postgres branch seeded from production, torn down when the PR merges.</p>
+        </div>
+      </div>
+
+      <div data-lift="6" data-reveal style="position:relative; overflow:hidden; background:#17181C; color:#FBFAF8; border-radius:18px; padding:26px; min-height:230px; display:flex; flex-direction:column; justify-content:space-between;">
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:rgba(251,250,248,0.55);">SHIPPED THIS WEEK</span>
+        <div>
+          <span style="font-size:58px; font-weight:300; letter-spacing:-0.05em; line-height:0.95;"><span data-count="1240">1240</span></span>
+          <p style="font-size:14.5px; line-height:1.6; color:rgba(251,250,248,0.66); margin:12px 0 0;">deploys from teams under twenty people.</p>
+        </div>
+      </div>
+
+      <div data-lift="6" data-reveal style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; padding:26px; box-shadow:0 1px 2px rgba(20,22,26,0.04); min-height:210px; display:flex; flex-direction:column; justify-content:space-between;">
+        <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+        <span style="position:relative; font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#9A9AA0;">TYPED END TO END</span>
+        <div style="position:relative;">
+          <h3 style="font-size:20px; font-weight:400; letter-spacing:-0.02em; margin:0 0 9px;">One schema, no drift</h3>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0;">Types flow from the database to the client. Break a column and the build tells you where.</p>
+        </div>
+      </div>
+
+      <div data-lift="6" data-reveal style="position:relative; overflow:hidden; grid-column:span 2; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; padding:26px; box-shadow:0 1px 2px rgba(20,22,26,0.04); min-height:210px; display:flex; flex-direction:column; justify-content:space-between;">
+        <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+        <div data-parallax="20" style="position:absolute; right:-6%; top:-30%; width:420px; height:420px; pointer-events:none; background:radial-gradient(closest-side,rgba(232,133,58,0.16),rgba(255,255,255,0) 72%);"></div>
+        <span style="position:relative; font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#9A9AA0;">ROLLBACKS</span>
+        <div style="position:relative;">
+          <h3 style="font-size:20px; font-weight:400; letter-spacing:-0.02em; margin:0 0 9px; max-width:420px;">Undo a release without undoing your data</h3>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0; max-width:460px;">Code and migrations version together, so rolling back a deploy rolls back exactly as far as it should.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1180px; margin:0 auto; padding:96px 32px 0;">
+    <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#B65C1B;">PRICING</span>
+      <h2 data-reveal style="font-size:42px; font-weight:300; letter-spacing:-0.035em; line-height:1.1; margin:0;">Try before you commit.</h2>
+      <p data-reveal style="font-size:16.5px; line-height:1.65; color:#6E7178; max-width:480px; margin:0;">Free while you build. Usage-based once you have traffic, with the cap you set.</p>
+    </div>
+
+    <div data-cols-3 style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:44px; align-items:start;">
+      <sc-for list="{{ plans }}" as="p" hint-placeholder-count="3">
+        <div data-lift="6" style="{{ p.cardStyle }}">
+          <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+          <div style="position:relative; display:flex; align-items:center; gap:10px;">
+            <span style="font-size:17px; font-weight:400; letter-spacing:-0.015em;">{{ p.name }}</span>
+            <sc-if value="{{ p.featured }}" hint-placeholder-val="{{ false }}">
+              <span style="font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:0.12em; background:rgba(232,133,58,0.16); border:1px solid rgba(232,133,58,0.3); color:#B65C1B; border-radius:99px; padding:4px 9px;">MOST PICKED</span>
+            </sc-if>
+          </div>
+          <p style="position:relative; font-size:14px; line-height:1.55; color:#6E7178; margin:9px 0 0;">{{ p.blurb }}</p>
+          <div style="position:relative; display:flex; align-items:baseline; gap:7px; margin:22px 0 20px;">
+            <span style="font-size:40px; font-weight:300; letter-spacing:-0.045em;">{{ p.price }}</span>
+            <span style="font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#9A9AA0;">{{ p.unit }}</span>
+          </div>
+          <span style="{{ p.ctaStyle }}">{{ p.cta }}</span>
+          <div style="position:relative; display:flex; flex-direction:column; gap:11px; margin-top:22px; border-top:1px solid #EFEDE7; padding-top:20px;">
+            <sc-for list="{{ p.features }}" as="f" hint-placeholder-count="5">
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="width:5px; height:5px; border-radius:99px; background:rgba(232,133,58,0.8); margin-top:7px; flex-shrink:0;"></span>
+                <span style="font-size:14px; line-height:1.5; color:#4A4D53;">{{ f.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div data-reveal style="margin-top:22px; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; overflow:hidden; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 22px; border-bottom:1px solid #EFEDE7;">
+        <span style="font-size:16px; letter-spacing:-0.015em;">Cloud environment pricing</span>
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#9A9AA0;">PER HOUR · USD</span>
+      </div>
+      <div style="display:flex; gap:12px; padding:13px 22px; border-bottom:1px solid #EFEDE7; font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#9A9AA0;">
+        <span style="flex:1.4;">SIZE</span><span style="flex:1;">VCPU</span><span style="flex:1;">MEMORY</span><span style="flex:1;">STORAGE</span><span style="flex:1; text-align:right;">RATE</span>
+      </div>
+      <sc-for list="{{ tiers }}" as="t" hint-placeholder-count="5">
+        <div style="{{ t.rowStyle }}">
+          <span style="flex:1.4; font-size:14px;">{{ t.size }}</span>
+          <span style="flex:1; font-family:'Geist Mono',monospace; font-size:12.5px; color:#6E7178;">{{ t.cpu }}</span>
+          <span style="flex:1; font-family:'Geist Mono',monospace; font-size:12.5px; color:#6E7178;">{{ t.mem }}</span>
+          <span style="flex:1; font-family:'Geist Mono',monospace; font-size:12.5px; color:#6E7178;">{{ t.disk }}</span>
+          <span style="flex:1; font-family:'Geist Mono',monospace; font-size:12.5px; text-align:right;">{{ t.rate }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1180px; margin:0 auto; padding:96px 32px 0;">
+    <div data-split style="display:grid; grid-template-columns:0.8fr 1.2fr; gap:56px; align-items:start;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#B65C1B;">FAQ</span>
+        <h2 style="font-size:36px; font-weight:300; letter-spacing:-0.035em; line-height:1.12; margin:0; text-wrap:pretty;">Frequently asked questions.</h2>
+        <p style="font-size:15.5px; line-height:1.65; color:#6E7178; margin:0; max-width:320px;">Still stuck? The docs go deeper, and support answers in a few hours.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="5">
+          <div onClick="{{ q.toggle }}" style="{{ q.style }}">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <span style="flex:1; font-size:15.5px; line-height:1.45; color:#14161A;">{{ q.q }}</span>
+              <span style="{{ q.iconStyle }}">+</span>
+            </div>
+            <sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:14.5px; line-height:1.65; color:#6E7178; margin:13px 0 0; max-width:560px;">{{ q.a }}</p>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1180px; margin:0 auto; padding:96px 32px 0;">
+    <div data-reveal style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:24px; padding:64px 32px 74px; text-align:center; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+      <div style="position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(20,22,26,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(20,22,26,0.03) 1px,transparent 1px); background-size:58px 58px,58px 58px; mask-image:radial-gradient(70% 90% at 50% 100%,#000,transparent 72%); -webkit-mask-image:radial-gradient(70% 90% at 50% 100%,#000,transparent 72%);"></div>
+      <div data-glow-arc="16" style="position:absolute; left:50%; bottom:-190px; width:760px; height:400px; margin-left:-380px; pointer-events:none; background:radial-gradient(closest-side,rgba(232,133,58,0.5),rgba(255,255,255,0) 74%); filter:blur(22px);"></div>
+      <div style="position:relative;">
+        <h2 style="font-size:44px; font-weight:300; letter-spacing:-0.04em; line-height:1.08; margin:0 auto 16px; max-width:560px; text-wrap:balance;">Ready to start building?</h2>
+        <p style="font-size:16.5px; line-height:1.65; color:#6E7178; margin:0 auto 30px; max-width:440px;">Create a project, push a branch, watch the whole stack come up. No card until you need scale.</p>
+        <div style="display:flex; gap:11px; justify-content:center; flex-wrap:wrap;">
+          <span style="background:#17181C; color:#FBFAF8; font-size:15px; border-radius:99px; padding:15px 30px; cursor:pointer; transition:filter 180ms, transform 160ms;" style-hover="filter:brightness(1.35)" style-active="transform:translateY(1px)">Start building free</span>
+          <span style="background:rgba(255,255,255,0.8); border:1px solid #E7E4DD; backdrop-filter:blur(8px); color:#14161A; font-size:15px; border-radius:99px; padding:14px 28px; cursor:pointer; transition:filter 180ms, transform 160ms;" style-hover="filter:brightness(0.98)" style-active="transform:translateY(1px)">Talk to us</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1180px; margin:0 auto; padding:52px 32px 44px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; border-top:1px solid #E7E4DD; padding-top:26px; font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#9A9AA0;">
+      <span>KINETICLAYERS.COM</span>
+      <div style="display:flex; gap:24px; flex-wrap:wrap;">
+        <span>DOCS</span><span>STATUS</span><span>CHANGELOG</span><span>SECURITY</span><span>CONTACT</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;motionEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;featuredPlan&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Free&quot;,&quot;Pay as you go&quot;,&quot;Enterprise&quot;],&quot;default&quot;:&quot;Pay as you go&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pricing&quot;},&quot;tableRows&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:3,&quot;max&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pricing&quot;}}">
+const LOGOS = ["TYPESCRIPT","POSTGRES","NEXT.JS","BUN","PRISMA","DOCKER","REDIS","OPENTELEMETRY"];
+
+const LAYERS = [
+  { tag:"L4", name:"Edge", meta:"32 REGIONS", copy:"Routing, caching and auth checks at the nearest edge, so a session never round-trips to origin." },
+  { tag:"L3", name:"Runtime", meta:"TYPESCRIPT", copy:"Your app and background jobs on the same runtime, scaled by request volume rather than instances." },
+  { tag:"L2", name:"Data", meta:"POSTGRES 16", copy:"Managed Postgres with branching, point-in-time restore and typed access generated from the schema." },
+  { tag:"L1", name:"Infrastructure", meta:"SOC 2 TYPE II", copy:"Networking, secrets and certificates handled. You describe the app; the layer below stays out of the way." }
+];
+
+const PLANS = [
+  { name:"Free", blurb:"For development environments and side projects.", price:"$0", unit:"/ MONTH", cta:"Get started",
+    features:["512 MB Postgres branch","100k requests a month","2 preview environments","Community support"] },
+  { name:"Pay as you go", blurb:"For production apps with real, uneven traffic.", price:"$29", unit:"/ MONTH + USAGE", cta:"Get started", featured:true,
+    features:["8 GB Postgres, autoscaled","Unlimited preview environments","Traces and logs kept 30 days","Spend cap you set","Email support in a few hours"] },
+  { name:"Enterprise", blurb:"For teams with compliance and residency needs.", price:"Custom", unit:"ANNUAL", cta:"Talk to us",
+    features:["Dedicated clusters and regions","SAML, SCIM and audit logs","99.99% uptime SLA","Named engineer on call"] }
+];
+
+const TIERS = [
+  { size:"Nano", cpu:"0.25", mem:"512 MB", disk:"10 GB", rate:"$0.012" },
+  { size:"Small", cpu:"1", mem:"2 GB", disk:"40 GB", rate:"$0.048" },
+  { size:"Standard", cpu:"2", mem:"8 GB", disk:"120 GB", rate:"$0.140" },
+  { size:"Large", cpu:"4", mem:"16 GB", disk:"320 GB", rate:"$0.310" },
+  { size:"Scale", cpu:"8", mem:"32 GB", disk:"640 GB", rate:"$0.680" }
+];
+
+const FAQS = [
+  { q:"Do I have to move my whole stack over?", a:"No. Most teams start with one service and a preview database, keep the rest where it is, and point traffic over a route at a time." },
+  { q:"What happens to my data if I leave?", a:"Postgres is standard Postgres. You can take a dump or replicate out at any point, and your migrations come with you." },
+  { q:"How does usage billing actually work?", a:"You pay for compute hours and storage at the rates in the table above. Set a monthly cap and the platform throttles rather than surprising you." },
+  { q:"Is there a cold start?", a:"Edge routes stay warm. Runtime instances resume in roughly 40ms, which is why the console shows p95 latency instead of averages." },
+  { q:"Can I run this in my own cloud?", a:"On Enterprise, yes — dedicated clusters in your account and region, managed by the same control plane." }
+];
+
+const BARS = [38,52,44,61,49,73,58,66,80,71,64,88,76,69,92,81,74,86,79,95,84,77,90,83,72,68];
+
+class Component extends DCLogic {
+  state = { openFaq: 0 };
+
+  componentDidMount() {
+    if ((this.props.motionEnabled ?? true) && window.KLMotion) window.KLMotion.init();
+  }
+
+  renderVals() {
+    const featured = this.props.featuredPlan ?? "Pay as you go";
+    const dense = this.props.tableRows ?? 5;
+
+    return {
+      bars: BARS.map((h, i) => ({
+        style: "flex:1; height:" + h + "%; border-radius:3px 3px 1px 1px; background:" +
+          (i > BARS.length - 5 ? "rgba(232,133,58,0.62)" : "#EAE7E0") + ";"
+      })),
+      rows: [
+        { id:"usr_8f21", email:"ana@northwind.io", plan:"PRO" },
+        { id:"usr_7c04", email:"dev@lumenlabs.co", plan:"FREE" },
+        { id:"usr_6b93", email:"team@parsec.dev", plan:"PRO" },
+        { id:"usr_5a17", email:"ops@ridgeline.app", plan:"SCALE" }
+      ],
+      spans: [
+        { label:"edge", ms:"4ms", w:9 },
+        { label:"auth", ms:"7ms", w:16 },
+        { label:"query", ms:"22ms", w:58 },
+        { label:"render", ms:"9ms", w:24 }
+      ].map(s => ({
+        label: s.label, ms: s.ms,
+        barStyle: "display:block; height:100%; width:" + s.w + "%; border-radius:99px; background:" +
+          (s.label === "query" ? "rgba(232,133,58,0.75)" : "#C9C6BE") + ";"
+      })),
+      logos: LOGOS.concat(LOGOS).map((name, i) => ({ name, key: name + i })),
+      layers: LAYERS.map((l, i) => {
+        const inset = i * 22;
+        return {
+          ...l,
+          depth: LAYERS.length - 1 - i,
+          style: "position:absolute; left:" + inset + "px; right:" + (inset + 34) + "px; top:" + (76 + i * 104) +
+            "px; background:rgba(255,255,255," + (0.98 - i * 0.04) + "); border:1px solid #E7E4DD; border-radius:18px; padding:22px 24px; box-shadow:0 " +
+            (26 - i * 4) + "px " + (60 - i * 8) + "px -34px rgba(20,22,26,0.30); backdrop-filter:blur(6px); will-change:transform; z-index:" +
+            (10 - i) + ";"
+        };
+      }),
+      plans: PLANS.map(p => {
+        const on = p.name === featured;
+        return {
+          name: p.name, blurb: p.blurb, price: p.price, unit: p.unit, cta: p.cta, featured: on,
+          features: p.features.map(text => ({ text })),
+          cardStyle: "position:relative; overflow:hidden; border-radius:20px; padding:26px; display:flex; flex-direction:column; box-shadow:0 1px 2px rgba(20,22,26,0.04); background:" +
+            (on ? "linear-gradient(180deg,rgba(255,247,238,1),rgba(255,255,255,1) 46%)" : "#FFFFFF") +
+            "; border:1px solid " + (on ? "rgba(232,133,58,0.36)" : "#E7E4DD") + ";",
+          ctaStyle: "position:relative; text-align:center; font-size:14.5px; border-radius:99px; padding:13px 20px; cursor:pointer; " +
+            (on
+              ? "background:#17181C; color:#FBFAF8;"
+              : "background:#FFFFFF; border:1px solid #E0DCD3; color:#14161A;")
+        };
+      }),
+      tiers: TIERS.slice(0, dense).map((t, i) => ({
+        ...t,
+        rowStyle: "display:flex; gap:12px; align-items:center; padding:14px 22px;" +
+          (i < Math.min(dense, TIERS.length) - 1 ? " border-bottom:1px solid #F4F2ED;" : "")
+      })),
+      faqs: FAQS.map((f, i) => {
+        const open = this.state.openFaq === i;
+        return {
+          q: f.q, a: f.a, open,
+          toggle: () => this.setState({ openFaq: open ? -1 : i }),
+          style: "background:#FFFFFF; border:1px solid " + (open ? "#E0DCD3" : "#E7E4DD") +
+            "; border-radius:14px; padding:19px 21px; cursor:pointer; box-shadow:0 1px 2px rgba(20,22,26,0.04);",
+          iconStyle: "font-family:'Geist Mono',monospace; font-size:15px; color:#9A9AA0; flex-shrink:0; transition:transform 220ms; transform:rotate(" +
+            (open ? "45deg" : "0deg") + ");"
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

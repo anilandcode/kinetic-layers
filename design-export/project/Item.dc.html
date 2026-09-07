@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#0F0F0D; }
+  a { color:#94918A; text-decoration:none; }
+  a:hover { color:#E8F0D8; }
+  ::selection { background:#B9CE95; color:#12130A; }
+  @media (max-width:1180px) { [data-hide-narrow] { display:none !important; } }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@11.11.17/dist/motion.js"></script>
+<script src="./site-motion.js"></script>
+</helmet>
+
+<div style="background:#0F0F0D; color:#F6F4EE; font-family:Sora,sans-serif; font-weight:300; min-height:100vh;">
+
+  <div style="position:sticky; top:0; z-index:20; background:rgba(15,15,13,0.92); backdrop-filter:blur(12px); border-bottom:1px solid #1F1E19;">
+    <div style="max-width:1360px; margin:0 auto; padding:0 40px; height:66px; display:flex; align-items:center; gap:36px;">
+      <a data-nav href="./Homepage.dc.html" style="display:flex; align-items:center; gap:9px; color:#F6F4EE;">
+        <span style="width:16px; height:16px; border-radius:5px; background:linear-gradient(140deg,rgba(185,206,149,0.9),rgba(120,150,95,0.55)); border:1px solid rgba(185,206,149,0.5);"></span>
+        <span style="font-size:16px; font-weight:500; letter-spacing:-0.01em;">Kiln</span>
+      </a>
+      <div style="display:flex; gap:26px; font-size:14px; white-space:nowrap; flex-shrink:0;">
+        <a data-nav href="./Homepage.dc.html">Library</a>
+        <a data-nav href="./Collections.dc.html">Collections</a>
+        <a data-nav href="./Account.dc.html">Account</a>
+        <a data-nav href="./Pricing.dc.html">Pricing</a>
+      </div>
+      <div style="flex:1;"></div>
+      <a data-nav href="./Join.dc.html" style="font-size:14px; white-space:nowrap;">Sign in</a>
+      <a data-nav href="./Pricing.dc.html" style="background:linear-gradient(135deg,rgba(185,206,149,0.28),rgba(185,206,149,0.10)); border:1px solid rgba(185,206,149,0.40); backdrop-filter:blur(8px); color:#E8F0D8; font-size:13px; font-weight:500; border-radius:99px; padding:10px 18px; white-space:nowrap;">Get unlimited</a>
+    </div>
+  </div>
+
+  <div style="max-width:1360px; margin:0 auto; padding:26px 40px 0; display:flex; align-items:center; gap:10px; font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#6E6B64;">
+    <a data-nav href="./Homepage.dc.html" style="color:#6E6B64;">LIBRARY</a>
+    <span>/</span>
+    <span>MOTION</span>
+    <span>/</span>
+    <span style="color:#94918A;">VOLUMETRIC DRIFT</span>
+  </div>
+
+  <div style="max-width:1360px; margin:0 auto; padding:24px 40px 20px; display:grid; grid-template-columns:1.55fr 1fr; gap:34px; align-items:start;">
+
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div data-hero style="display:flex; flex-direction:column; gap:14px;">
+        <div style="height:520px; border-radius:13px; overflow:hidden; background:{{ shotBg }}; position:relative;">
+          <span style="position:absolute; left:16px; top:16px; font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#E8F0D8; background:rgba(11,11,10,0.5); backdrop-filter:blur(6px); border:1px solid rgba(232,240,216,0.18); border-radius:99px; padding:7px 14px;">{{ shotLabel }}</span>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <sc-for list="{{ shots }}" as="s" hint-placeholder-count="4">
+            <div onClick="{{ s.pick }}" style="{{ s.style }}" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)"></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div data-reveal style="display:flex; flex-direction:column; gap:16px; padding-top:22px;">
+        <h2 style="font-size:26px; font-weight:500; letter-spacing:-0.02em; margin:0;">What this is</h2>
+        <p style="font-size:16px; line-height:1.7; color:#94918A; margin:0; max-width:640px;">A volumetric fog scene for hero sections: three light shafts, a depth pass and a dust layer, all driven by four parameters you can tune from a single config. Built for a fintech landing page in July, then simplified until it ran at 60fps on a four-year-old laptop.</p>
+        <p style="font-size:16px; line-height:1.7; color:#94918A; margin:0; max-width:640px;">The scene ships as a Three.js module and an R3F component, plus the source blend file and the two prompts used to generate the dust maps. Swap the palette in one place and it reads warm, cold or neutral without re-baking anything.</p>
+      </div>
+
+      <div data-reveal style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding-top:14px;">
+        <sc-for list="{{ files }}" as="f" hint-placeholder-count="6">
+          <div style="border-radius:13px; border:1px solid #1F1E19; background:#121210; padding:18px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
+            <div style="display:flex; flex-direction:column; gap:5px; min-width:0;">
+              <span style="font-size:15px; color:#F6F4EE; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ f.name }}</span>
+              <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#6E6B64;">{{ f.meta }}</span>
+            </div>
+            <span style="{{ f.tagStyle }}">{{ f.tag }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="position:sticky; top:96px; display:flex; flex-direction:column; gap:20px;">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:center; gap:11px; flex-wrap:wrap;">
+          <h1 style="font-size:38px; font-weight:500; letter-spacing:-0.03em; line-height:1.1; margin:0;">Volumetric Drift</h1>
+          <span style="font-size:12px; color:#94918A; background:rgba(246,244,238,0.05); border:1px solid #23221C; border-radius:99px; padding:5px 13px;">Unlimited</span>
+        </div>
+        <p style="font-size:16px; line-height:1.65; color:#94918A; margin:0;">Fog, light shafts and depth for hero sections that need to feel expensive. Runs at 60fps, tunes from one config.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <sc-for list="{{ tags }}" as="t" hint-placeholder-count="4">
+            <span style="font-size:12px; color:#94918A; background:rgba(246,244,238,0.05); border:1px solid #23221C; border-radius:99px; padding:6px 13px;">{{ t }}</span>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="border-radius:13px; border:1px solid rgba(185,206,149,0.30); background:radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),#141412; padding:24px; display:flex; flex-direction:column; gap:13px;">
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#B9CE95;">INCLUDED WITH UNLIMITED</span>
+        <span style="font-size:15px; line-height:1.6; color:#E4E1D9;">Download the scene, both integrations and every source file. $24 a month for all 240 assets.</span>
+        <span onClick="{{ toggleOwn }}" style="background:linear-gradient(135deg,rgba(185,206,149,0.30),rgba(185,206,149,0.11)); border:1px solid rgba(185,206,149,0.45); backdrop-filter:blur(8px); color:#E8F0D8; font-size:15px; font-weight:500; border-radius:99px; padding:15px 22px; text-align:center; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">{{ ctaLabel }}</span>
+        <span style="border:1px solid #2C2A24; color:#C9C6BE; font-size:14px; border-radius:99px; padding:13px 22px; text-align:center; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">{{ secondaryLabel }}</span>
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#6E6B64; text-align:center;">{{ ctaNote }}</span>
+      </div>
+
+      <div style="border-radius:13px; border:1px solid #1F1E19; background:#121210; overflow:hidden;">
+        <sc-for list="{{ specs }}" as="s" hint-placeholder-count="7">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px; border-bottom:1px solid #1A1917;">
+            <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#6E6B64;">{{ s.k }}</span>
+            <span style="font-size:14px; color:#C9C6BE; text-align:right;">{{ s.v }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="border-radius:13px; border:1px solid #1F1E19; background:#121210; padding:22px; display:flex; flex-direction:column; gap:11px;">
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#6E6B64;">LICENSE</span>
+        <span style="font-size:14px; line-height:1.6; color:#94918A;">Use it in unlimited personal and client projects. Don't resell the file or republish it to another marketplace.</span>
+        <span style="font-size:14px; color:#E8F0D8; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">Read the full license →</span>
+      </div>
+    </div>
+  </div>
+
+  <div data-reveal style="max-width:1360px; margin:0 auto; padding:64px 40px 90px;">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; padding-bottom:20px;">
+      <h2 style="font-size:26px; font-weight:500; letter-spacing:-0.02em; margin:0;">From the same drop</h2>
+      <a data-nav href="./Collections.dc.html" style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em;">SEE THE COLLECTION</a>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px;">
+      <sc-for list="{{ related }}" as="r" hint-placeholder-count="4">
+        <div data-card data-chip="{{ r.chip }}" style="border-radius:13px; padding:5px; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(1.15)" style-active="transform:translateY(1px)">
+          <div style="{{ r.previewStyle }}">
+            <div data-preview-inner style="{{ r.innerStyle }}"></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:15px 4px 0;">
+            <span style="font-size:16px; font-weight:500; letter-spacing:-0.01em;">{{ r.name }}</span>
+            <span style="{{ r.badgeStyle }}">{{ r.access }}</span>
+          </div>
+          <div data-meta style="display:flex; gap:8px; padding:10px 4px 2px;">
+            <span style="font-size:12px; color:#94918A; background:rgba(246,244,238,0.05); border:1px solid #23221C; border-radius:99px; padding:6px 13px;">{{ r.type }}</span>
+            <span style="font-size:12px; color:#94918A; background:rgba(246,244,238,0.05); border:1px solid #23221C; border-radius:99px; padding:6px 13px;">{{ r.stack }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid #1F1E19;">
+    <div style="max-width:1360px; margin:0 auto; padding:40px; display:flex; align-items:center; justify-content:space-between; font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.1em; color:#6E6B64;">
+      <span>KILN — ONE STUDIO, SINCE 2026</span>
+      <div style="display:flex; gap:24px;"><span>LICENSE</span><span>CHANGELOG</span><span>CONTACT</span></div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const SHOTS = [
+  { label:"HERO — DEFAULT PALETTE", g:"linear-gradient(150deg,#1D2410,#0F0F0D 66%)" },
+  { label:"COLD PALETTE", g:"linear-gradient(150deg,#141C24,#0F0F0D 64%)" },
+  { label:"DEPTH PASS", g:"linear-gradient(150deg,#1E1E24,#0F0F0D 62%)" },
+  { label:"DUST LAYER ONLY", g:"linear-gradient(150deg,#241F16,#0F0F0D 62%)" }
+];
+
+const RELATED = [
+  { name:"Chrome Liquid", type:"3d scene", stack:"r3f", free:false, g:"linear-gradient(150deg,#1E1E24,#0F0F0D 62%)" },
+  { name:"Soft Static Field", type:"background", stack:"webgl", free:false, g:"linear-gradient(150deg,#1A1D26,#0F0F0D 62%)" },
+  { name:"Cold Open", type:"prompt", stack:"claude", free:true, g:"linear-gradient(150deg,#10241A,#0F0F0D 62%)" },
+  { name:"Slow Pan Loop", type:"video", stack:"runway", free:false, g:"linear-gradient(150deg,#161D18,#0F0F0D 62%)" }
+];
+
+class Component extends DCLogic {
+  state = { shot:0, owned:false };
+  componentDidMount() { if (window.KilnMotion) window.KilnMotion.init(); }
+
+  renderVals() {
+    const { shot, owned } = this.state;
+    return {
+      shotBg: SHOTS[shot].g,
+      shotLabel: SHOTS[shot].label,
+      shots: SHOTS.map((s, i) => ({
+        pick: () => this.setState({ shot: i }),
+        style: "flex:1; height:74px; border-radius:9px; cursor:pointer; background:" + s.g +
+          "; outline:1px solid " + (i === shot ? "rgba(185,206,149,0.55)" : "transparent") + "; outline-offset:2px; transition:outline-color 180ms;"
+      })),
+      tags: ["3d scene","three.js","r3f","hero","dark"],
+      ctaLabel: owned ? "Download — 84 MB" : "Get unlimited",
+      secondaryLabel: owned ? "Open the changelog" : "Save for later",
+      ctaNote: owned ? "LAST PULLED 22 AUG 2026" : "CANCEL ANYTIME · KEEP YOUR DOWNLOADS",
+      toggleOwn: () => this.setState({ owned: !owned }),
+      files: [
+        { name:"drift-scene.js", meta:"THREE.JS MODULE · 42 KB", tag:"CODE" },
+        { name:"DriftScene.tsx", meta:"R3F COMPONENT · 11 KB", tag:"CODE" },
+        { name:"drift.blend", meta:"SOURCE FILE · 61 MB", tag:"SOURCE" },
+        { name:"dust-maps/ (6)", meta:"EXR · 18 MB", tag:"ASSETS" },
+        { name:"palette.config.json", meta:"4 PARAMETERS · 2 KB", tag:"CONFIG" },
+        { name:"dust-prompts.md", meta:"2 PROMPTS · FLUX", tag:"PROMPTS" }
+      ].map(f => ({
+        name: f.name, meta: f.meta, tag: f.tag,
+        tagStyle: "font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#94918A; border:1px solid #26251F; border-radius:99px; padding:5px 11px; white-space:nowrap;"
+      })),
+      specs: [
+        { k:"TYPE", v:"3D scene" },
+        { k:"SHELF", v:"Motion" },
+        { k:"STACK", v:"Three.js · React Three Fiber" },
+        { k:"DROP", v:"019 — 20 Aug 2026" },
+        { k:"SIZE", v:"84 MB total" },
+        { k:"PERFORMANCE", v:"60fps · 4% CPU idle" },
+        { k:"SHIPPED ON", v:"1 client landing page" }
+      ],
+      related: RELATED.map(r => ({
+        name: r.name, type: r.type, stack: r.stack,
+        access: r.free ? "Free" : "Unlimited",
+        chip: r.free ? "FREE PREVIEW" : "UNLIMITED ONLY",
+        previewStyle: "height:190px; border-radius:9px; overflow:hidden;",
+        innerStyle: "width:100%; height:100%; background:" + r.g + "; will-change:transform;",
+        badgeStyle: r.free
+          ? "font-size:12px; background:linear-gradient(135deg,rgba(185,206,149,0.26),rgba(185,206,149,0.09)); border:1px solid rgba(185,206,149,0.40); color:#E8F0D8; border-radius:99px; padding:5px 13px;"
+          : "font-size:12px; color:#94918A; background:rgba(246,244,238,0.05); border:1px solid #23221C; border-radius:99px; padding:5px 13px;"
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

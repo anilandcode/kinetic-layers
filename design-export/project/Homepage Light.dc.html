@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#F6F4EE; }
+  a { color:#46602C; text-decoration:none; }
+  a:hover { color:#2B3A1B; }
+  ::selection { background:#46602C; color:#F6F4EE; }
+  @media (max-width:1180px) { [data-hide-narrow] { display:none !important; } }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@11.11.17/dist/motion.js"></script>
+<script src="./site-motion.js"></script>
+</helmet>
+
+<div style="background:#F6F4EE; color:#16180F; font-family:Sora,sans-serif; font-weight:300; min-height:100vh;">
+
+  <div style="position:sticky; top:0; z-index:20; background:rgba(246,244,238,0.88); backdrop-filter:blur(12px); border-bottom:1px solid #DCD6C7;">
+    <div style="max-width:1360px; margin:0 auto; padding:0 40px; height:66px; display:flex; align-items:center; gap:36px;">
+      <div style="display:flex; align-items:center; gap:9px;">
+        <span style="width:16px; height:16px; border-radius:5px; background:linear-gradient(140deg,rgba(96,128,58,0.9),rgba(52,74,30,0.6)); border:1px solid rgba(74,102,44,0.42);"></span>
+        <span style="font-size:16px; font-weight:500; letter-spacing:-0.01em;">Kiln</span>
+      </div>
+      <div style="display:flex; gap:26px; font-size:14px; color:#6A6A5F; white-space:nowrap; flex-shrink:0;">
+        <span style="color:#16180F;">Library</span>
+        <a data-nav href="./Collections.dc.html" style="color:#6A6A5F;">Collections</a>
+        <a data-nav href="./Account.dc.html" style="color:#6A6A5F;">Account</a>
+        <a data-nav href="./Pricing.dc.html" style="color:#6A6A5F;">Pricing</a>
+      </div>
+      <div style="flex:1;"></div>
+      <div data-hide-narrow onClick="{{ openSearch }}" style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex:0 1 250px; min-width:190px; border:1px solid #D3CCBB; border-radius:99px; padding:8px 12px; cursor:pointer; white-space:nowrap; overflow:hidden; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">
+        <span style="font-size:13px; color:#8A887E; overflow:hidden; text-overflow:ellipsis;">Search the vault</span>
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; color:#8A887E; border:1px solid #D3CCBB; border-radius:99px; padding:3px 8px; flex-shrink:0;">⌘K</span>
+      </div>
+      <a data-nav href="./Homepage.dc.html" style="display:flex; align-items:center; gap:4px; border:1px solid #D3CCBB; border-radius:99px; padding:4px; flex-shrink:0; cursor:pointer; transition:border-color 180ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)" style-hover="border-color:rgba(74,102,44,0.40)">
+        <span style="width:28px; height:28px; border-radius:99px; display:flex; align-items:center; justify-content:center; font-size:13px; color:#8A887E; border:1px solid transparent;">☾</span>
+        <span style="width:28px; height:28px; border-radius:99px; display:flex; align-items:center; justify-content:center; font-size:13px; background:linear-gradient(140deg,rgba(74,102,44,0.24),rgba(74,102,44,0.08)); border:1px solid rgba(74,102,44,0.38); color:#2B3A1B;">☀</span>
+      </a>
+      <a data-nav href="./Join.dc.html" style="font-size:14px; color:#6A6A5F; white-space:nowrap; flex-shrink:0;">Sign in</a>
+      <span style="background:linear-gradient(135deg,rgba(74,102,44,0.20),rgba(74,102,44,0.06)); border:1px solid rgba(74,102,44,0.34); backdrop-filter:blur(8px); color:#2B3A1B; font-size:13px; font-weight:500; border-radius:99px; padding:10px 18px; cursor:pointer; white-space:nowrap; flex-shrink:0; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">Get unlimited</span>
+    </div>
+  </div>
+
+  <div style="max-width:1360px; margin:0 auto; padding:88px 40px 56px; display:grid; grid-template-columns:1.15fr 0.85fr; gap:64px; align-items:end;">
+    <div data-hero style="display:flex; flex-direction:column; gap:26px;">
+      <div style="display:flex; align-items:center; gap:10px; font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#46602C;">
+        <span style="width:6px; height:6px; border-radius:99px; background:#46602C;"></span>
+        <span>Drop 019 — shipped Thursday</span>
+      </div>
+      <h1 style="font-family:Sora,sans-serif; font-size:66px; line-height:1.06; font-weight:500; letter-spacing:-0.035em; margin:0; text-wrap:pretty;">Two hundred and forty things worth stealing.</h1>
+      <p style="font-size:18px; line-height:1.65; color:#6A6A5F; max-width:480px; margin:0;">Prompts, templates, scenes and workflows built in one studio and shipped weekly. Every item comes with the output, the source, and one site already running on it.</p>
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+        <span style="background:linear-gradient(135deg,rgba(74,102,44,0.20),rgba(74,102,44,0.06)); border:1px solid rgba(74,102,44,0.34); backdrop-filter:blur(8px); color:#2B3A1B; font-size:14px; font-weight:500; border-radius:99px; padding:13px 24px; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">Get unlimited — $24/mo</span>
+        <span style="border:1px solid #CBC3B0; color:#16180F; font-size:14px; font-weight:500; border-radius:99px; padding:13px 24px; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">Browse 12 free</span>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:14px; padding-bottom:6px;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; padding-bottom:12px; border-bottom:1px solid #DCD6C7; font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#8A887E;"><span>THE VAULT</span><span>AUG 2026</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:baseline;"><span style="font-size:14px; color:#6A6A5F;">Assets</span><span style="font-family:Sora,sans-serif; font-size:26px; font-weight:500; color:#16180F;">240</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:baseline;"><span style="font-size:14px; color:#6A6A5F;">Free this month</span><span style="font-family:Sora,sans-serif; font-size:26px; font-weight:500; color:#16180F;">12</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:baseline;"><span style="font-size:14px; color:#6A6A5F;">Added this week</span><span style="font-family:Sora,sans-serif; font-size:26px; font-weight:500; color:#46602C;">9</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:baseline;"><span style="font-size:14px; color:#6A6A5F;">Sole maker</span><span style="font-family:'Geist Mono',monospace; font-size:12px; color:#6A6A5F;">ONE STUDIO</span></div>
+    </div>
+  </div>
+
+  <div data-morph data-bg="rgba(246,244,238,0.9)" data-bg-compact="rgba(246,244,238,0.96)" style="position:sticky; top:66px; z-index:15; background:rgba(246,244,238,0.9); backdrop-filter:blur(12px); border-top:1px solid #DCD6C7; border-bottom:1px solid #DCD6C7;">
+    <div style="max-width:1360px; margin:0 auto; padding:14px 40px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <sc-for list="{{ shelves }}" as="s" hint-placeholder-count="4">
+        <span onClick="{{ s.pick }}" style="{{ s.style }}" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">{{ s.label }}</span>
+      </sc-for>
+      <span style="width:1px; height:22px; background:#D3CCBB; margin:0 6px;"></span>
+      <sc-for list="{{ moods }}" as="m" hint-placeholder-count="5">
+        <span onClick="{{ m.pick }}" style="{{ m.style }}" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">{{ m.label }}</span>
+      </sc-for>
+      <div style="flex:1;"></div>
+      <span onClick="{{ toggleFree }}" style="{{ freeStyle }}" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">FREE ONLY</span>
+      <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#8A887E;">{{ countLabel }}</span>
+    </div>
+  </div>
+
+  <div style="max-width:1360px; margin:0 auto; padding:36px 40px 80px;">
+    <div style="columns:3; column-gap:26px;">
+      <sc-for list="{{ items }}" as="it" hint-placeholder-count="12">
+        <div data-reveal style="break-inside:avoid; margin-bottom:26px;">
+
+          <sc-if value="{{ it.isAsset }}" hint-placeholder-val="{{ true }}">
+            <a data-nav href="./Item.dc.html" data-card data-chip="{{ it.chip }}" onMouseEnter="{{ it.enter }}" onMouseLeave="{{ it.leave }}" style="{{ it.cardStyle }}">
+              <div style="{{ it.previewStyle }}">
+                <div data-preview-inner style="{{ it.previewInnerStyle }}"></div>
+              </div>
+              <div style="display:flex; align-items:center; gap:11px; padding:16px 4px 0;">
+                <span style="font-size:17px; font-weight:500; letter-spacing:-0.01em; color:#16180F;">{{ it.name }}</span>
+                <span style="{{ it.badgeStyle }}">{{ it.access }}</span>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; padding:11px 4px 2px;">
+                <span style="font-size:12px; color:#6A6A5F; background:rgba(22,24,15,0.05); border:1px solid #DAD3C3; border-radius:99px; padding:6px 13px; text-transform:lowercase;">{{ it.type }}</span>
+                <span style="font-size:12px; color:#6A6A5F; background:rgba(22,24,15,0.05); border:1px solid #DAD3C3; border-radius:99px; padding:6px 13px; text-transform:lowercase;">{{ it.stack }}</span>
+              </div>
+            </a>
+          </sc-if>
+
+          <sc-if value="{{ it.isUpgrade }}" hint-placeholder-val="{{ false }}">
+            <div style="border-radius:13px; border:1px solid #D3CCBB; background:radial-gradient(120% 90% at 85% 0%,rgba(74,102,44,0.10),rgba(20,20,17,0) 62%),#EAE5D9; padding:26px; min-height:380px; display:flex; flex-direction:column;">
+              <span style="width:52px; height:52px; border-radius:16px; background:linear-gradient(150deg,rgba(232,240,216,0.95),rgba(150,178,112,0.6)); display:flex; align-items:center; justify-content:center; font-size:20px; color:#1A1E12;">✦</span>
+              <h3 style="font-size:27px; font-weight:500; letter-spacing:-0.02em; line-height:1.2; margin:30px 0 12px;">Go full vault.</h3>
+              <p style="font-size:16px; line-height:1.6; color:#6A6A5F; margin:0;">Every prompt, template and scene — plus the source files and all future drops.</p>
+              <div style="flex:1; min-height:26px;"></div>
+              <span style="align-self:flex-start; background:linear-gradient(135deg,rgba(74,102,44,0.20),rgba(74,102,44,0.06)); border:1px solid rgba(74,102,44,0.34); backdrop-filter:blur(8px); color:#2B3A1B; font-size:15px; font-weight:500; border-radius:99px; padding:14px 32px; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">Upgrade</span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ it.isHire }}" hint-placeholder-val="{{ false }}">
+            <div style="border-radius:13px; border:1px solid #D3CCBB; background:radial-gradient(110% 80% at 10% 0%,rgba(74,102,44,0.09),rgba(18,18,16,0) 58%),#EFEBE1; padding:26px; min-height:320px; display:flex; flex-direction:column; justify-content:center; gap:14px;">
+              <span style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#46602C;">Hire the studio</span>
+              <h3 style="font-size:25px; font-weight:500; letter-spacing:-0.02em; line-height:1.24; margin:0; text-wrap:pretty;">Want something built only for you?</h3>
+              <p style="font-size:15px; line-height:1.6; color:#6A6A5F; margin:0;">Commissioned work never enters the vault.</p>
+              <span style="font-size:16px; color:#2B3A1B; cursor:pointer; margin-top:6px; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">Start a project →</span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ it.isNews }}" hint-placeholder-val="{{ false }}">
+            <div style="border-radius:13px; border:1px solid #D3CCBB; background:linear-gradient(200deg,#E7E2D6,#F1EDE3 60%); padding:26px; min-height:340px; display:flex; flex-direction:column; justify-content:center; gap:12px;">
+              <h3 style="font-size:22px; font-weight:500; letter-spacing:-0.015em; line-height:1.3; margin:0;">Fresh drops, every Thursday.</h3>
+              <p style="font-size:15px; line-height:1.6; color:#6A6A5F; margin:0 0 8px;">Nine new assets and what they were built for, once a week.</p>
+              <span style="border:1px solid #CBC3B0; border-radius:99px; padding:14px 20px; font-size:15px; color:#8A887E;">you@email.com</span>
+              <span style="border:1px solid #C3BAA6; border-radius:99px; padding:14px 20px; font-size:15px; color:#16180F; text-align:center; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">Subscribe</span>
+              <span style="font-size:12px; line-height:1.5; color:#8A887E;">One email a week. Unsubscribe whenever.</span>
+            </div>
+          </sc-if>
+
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-reveal style="border-top:1px solid #DCD6C7; background:#EFEBE1;">
+    <div style="max-width:1360px; margin:0 auto; padding:72px 40px; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;">
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <span style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#46602C;">Every Thursday</span>
+        <h2 style="font-family:Sora,sans-serif; font-size:40px; line-height:1.12; font-weight:500; letter-spacing:-0.025em; margin:0;">Nine new assets a week, and nothing that didn't ship somewhere first.</h2>
+        <p style="font-size:16px; line-height:1.65; color:#6A6A5F; max-width:440px; margin:0;">Each drop is built for a real brief, used on a real page, then cleaned up and filed. If it never left the studio, it never enters the vault.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:1px; background:#DCD6C7; border:1px solid #DCD6C7; border-radius:22px; overflow:hidden;">
+        <sc-for list="{{ drops }}" as="d" hint-placeholder-count="4">
+          <div style="background:#F6F4EE; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              <span style="font-size:15px; color:#16180F;">{{ d.title }}</span>
+              <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#8A887E;">{{ d.meta }}</span>
+            </div>
+            <span style="{{ d.tagStyle }}">{{ d.tag }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid #DCD6C7;">
+    <div style="max-width:1360px; margin:0 auto; padding:80px 40px; display:flex; flex-direction:column; align-items:center; gap:24px; text-align:center;">
+      <h2 style="font-family:Sora,sans-serif; font-size:44px; line-height:1.12; font-weight:500; letter-spacing:-0.03em; margin:0; max-width:640px; text-wrap:pretty;">Twelve are free. The other two hundred and twenty-eight are $24.</h2>
+      <p style="font-size:17px; line-height:1.65; color:#6A6A5F; max-width:460px; margin:0;">One subscription, the whole vault, every source file. Cancel and keep everything you downloaded.</p>
+      <div style="display:flex; gap:12px; margin-top:8px;">
+        <span style="background:linear-gradient(135deg,rgba(74,102,44,0.20),rgba(74,102,44,0.06)); border:1px solid rgba(74,102,44,0.34); backdrop-filter:blur(8px); color:#2B3A1B; font-size:14px; font-weight:500; border-radius:99px; padding:13px 26px; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">Get unlimited</span>
+        <span style="border:1px solid #CBC3B0; color:#16180F; font-size:14px; font-weight:500; border-radius:99px; padding:13px 26px; cursor:pointer; transition:filter 160ms, transform 160ms, border-color 160ms;" style-hover="filter:brightness(0.965)" style-active="transform:translateY(1px)">See pricing</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid #DCD6C7;">
+    <div style="max-width:1360px; margin:0 auto; padding:40px; display:flex; align-items:center; justify-content:space-between; font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.1em; color:#8A887E;">
+      <span>KILN — ONE STUDIO, SINCE 2026</span>
+      <div style="display:flex; gap:24px;"><span>LICENSE</span><span>CHANGELOG</span><span>CONTACT</span></div>
+    </div>
+  </div>
+
+  <sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSearch }}" style="position:fixed; inset:0; z-index:40; background:rgba(60,58,48,0.4); backdrop-filter:blur(6px); display:flex; align-items:flex-start; justify-content:center; padding-top:14vh;">
+      <div style="width:min(620px,90vw); background:#EAE5D9; border:1px solid #CBC3B0; border-radius:24px; overflow:hidden;">
+        <div style="padding:20px 22px; border-bottom:1px solid #D3CCBB; display:flex; align-items:center; gap:12px;">
+          <span style="color:#46602C; font-size:16px;">⌕</span>
+          <span style="font-size:16px; color:#8A887E;">Search prompts, templates, scenes…</span>
+        </div>
+        <div style="padding:12px; display:flex; flex-direction:column; gap:2px;">
+          <sc-for list="{{ searchHits }}" as="h" hint-placeholder-count="4">
+            <div style="padding:13px 14px; border-radius:99px; display:flex; align-items:center; justify-content:space-between;">
+              <span style="font-size:14px; color:#3D4033;">{{ h.name }}</span>
+              <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#8A887E;">{{ h.type }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:14px 22px; border-top:1px solid #D3CCBB; font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#8A887E;">ESC TO CLOSE</div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const DATA = [
+  { name:"Volumetric Drift", type:"3D SCENE", stack:"THREE.JS", shelf:"Motion", mood:"Luxe", free:true, h:230, g:"linear-gradient(155deg,#1D2410,#0F0F0D 65%)" },
+  { name:"Editorial Landing 04", type:"TEMPLATE", stack:"NEXT · TW", shelf:"Build", mood:"Editorial", free:false, h:300, g:"linear-gradient(155deg,#242014,#0F0F0D 60%)" },
+  { name:"Cold Open", type:"PROMPT", stack:"CLAUDE", shelf:"Build", mood:"Technical", free:true, h:170, g:"linear-gradient(155deg,#10241A,#0F0F0D 60%)" },
+  { name:"Soft Static Field", type:"BACKGROUND", stack:"WEBGL", shelf:"Motion", mood:"Organic", free:false, h:200, g:"linear-gradient(155deg,#1A1D26,#0F0F0D 62%)" },
+  { name:"Brutal Grid Pack", type:"TEMPLATE", stack:"ASTRO", shelf:"Build", mood:"Brutalist", free:false, h:260, g:"linear-gradient(155deg,#26221A,#0F0F0D 58%)" },
+  { name:"Ash & Ember 24", type:"IMAGE PACK", stack:"MIDJOURNEY", shelf:"Craft", mood:"Luxe", free:false, h:320, g:"linear-gradient(155deg,#2A1C12,#0F0F0D 60%)" },
+  { name:"Research Swarm", type:"MCP / AGENT", stack:"CLAUDE · MCP", shelf:"Build", mood:"Technical", free:true, h:180, g:"linear-gradient(155deg,#141C24,#0F0F0D 60%)" },
+  { name:"Chrome Liquid", type:"3D SCENE", stack:"R3F", shelf:"Motion", mood:"Luxe", free:false, h:280, g:"linear-gradient(155deg,#1E1E24,#0F0F0D 60%)" },
+  { name:"Paper Grain LoRA", type:"LORA", stack:"FLUX", shelf:"Craft", mood:"Organic", free:false, h:210, g:"linear-gradient(155deg,#241F16,#0F0F0D 62%)" },
+  { name:"Slow Pan Loop", type:"VIDEO", stack:"RUNWAY", shelf:"Motion", mood:"Editorial", free:false, h:250, g:"linear-gradient(155deg,#161D18,#0F0F0D 60%)" },
+  { name:"Terminal Hero", type:"TEMPLATE", stack:"NEXT · TW", shelf:"Build", mood:"Technical", free:true, h:190, g:"linear-gradient(155deg,#131614,#0F0F0D 60%)" },
+  { name:"Warm Studio Set", type:"IMAGE PACK", stack:"FLUX", shelf:"Craft", mood:"Organic", free:false, h:290, g:"linear-gradient(155deg,#2A2318,#0F0F0D 58%)" },
+  { name:"Refactor Pass", type:"PROMPT", stack:"CURSOR", shelf:"Build", mood:"Technical", free:false, h:165, g:"linear-gradient(155deg,#1A1A1E,#0F0F0D 62%)" },
+  { name:"Playful Blocks", type:"BACKGROUND", stack:"CSS", shelf:"Motion", mood:"Playful", free:true, h:220, g:"linear-gradient(155deg,#20240F,#0F0F0D 60%)" },
+  { name:"Marble Depth", type:"3D SCENE", stack:"THREE.JS", shelf:"Motion", mood:"Luxe", free:false, h:270, g:"linear-gradient(155deg,#1C1A22,#0F0F0D 60%)" }
+];
+
+class Component extends DCLogic {
+  state = { shelf:"All", mood:null, freeOnly:false, hover:null, searchOpen:false };
+
+  pill(active, muted) {
+    const base = "font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; border-radius:99px; padding:7px 13px; cursor:pointer; white-space:nowrap; transition:all 160ms;";
+    if (active) return base + "background:linear-gradient(135deg,rgba(74,102,44,0.20),rgba(74,102,44,0.06)); border:1px solid rgba(74,102,44,0.34); backdrop-filter:blur(8px); color:#2B3A1B; border:1px solid rgba(74,102,44,0.38);";
+    return base + "border:1px solid " + (muted ? "#D3CCBB" : "#CBC3B0") + "; color:#6A6A5F;";
+  }
+
+  componentDidMount() { if (window.KilnMotion) window.KilnMotion.init(); }
+
+  withPromos(cards) {
+    const promos = [{ isUpgrade:true }, { isHire:true }, { isNews:true }];
+    const at = [4, 9, 14];
+    const out = [];
+    let p = 0;
+    cards.forEach((c, i) => {
+      if (p < promos.length && i === at[p]) out.push(promos[p++]);
+      out.push(c);
+    });
+    while (p < promos.length && cards.length >= 4) out.push(promos[p++]);
+    return out;
+  }
+
+  renderVals() {
+    const { shelf, mood, freeOnly, hover } = this.state;
+    const list = DATA.filter(d =>
+      (shelf === "All" || d.shelf === shelf) &&
+      (!mood || d.mood === mood) &&
+      (!freeOnly || d.free));
+
+    return {
+      shelves: ["All","Build","Motion","Craft"].map(s => ({
+        label: s.toUpperCase(),
+        style: this.pill(shelf === s),
+        pick: () => this.setState({ shelf: s })
+      })),
+      moods: ["Luxe","Technical","Editorial","Organic","Brutalist","Playful"].map(m => ({
+        label: m.toUpperCase(),
+        style: this.pill(mood === m, true),
+        pick: () => this.setState({ mood: mood === m ? null : m })
+      })),
+      freeStyle: this.pill(freeOnly),
+      toggleFree: () => this.setState({ freeOnly: !freeOnly }),
+      countLabel: list.length + " OF " + DATA.length,
+      items: this.withPromos(list.map(d => {
+        const on = hover === d.name;
+        return {
+          isAsset: true, name: d.name, type: d.type, stack: d.stack,
+          access: d.free ? "Free" : "Unlimited",
+          chip: d.free ? "FREE PREVIEW" : "UNLIMITED ONLY",
+          cardStyle: "display:block; border-radius:13px; padding:5px; cursor:pointer; transition:background 180ms, border-color 180ms; border:1px solid " +
+            (on ? "#CBC3B0" : "transparent") + "; background:" + (on ? "#E6E1D4" : "transparent") + ";",
+          previewStyle: "height:" + d.h + "px; border-radius:9px; overflow:hidden; background:" + d.g +
+            "; transition:border-color 180ms;",
+          previewInnerStyle: "width:100%; height:100%; background:" + d.g + "; will-change:transform;",
+          badgeStyle: d.free
+            ? "font-size:12px; background:linear-gradient(135deg,rgba(74,102,44,0.18),rgba(74,102,44,0.06)); border:1px solid rgba(74,102,44,0.34); color:#2B3A1B; border-radius:99px; padding:5px 13px;"
+            : "font-size:12px; color:#6A6A5F; background:rgba(22,24,15,0.05); border:1px solid #DAD3C3; border-radius:99px; padding:5px 13px;",
+          enter: () => this.setState({ hover: d.name }),
+          leave: () => this.setState({ hover: null })
+        };
+      })),
+      drops: [
+        { title:"Drop 019 — Volumetric set", meta:"3 SCENES · 2 PROMPTS · AUG 20", tag:"NEW", tagStyle:"font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; background:linear-gradient(135deg,rgba(74,102,44,0.20),rgba(74,102,44,0.06)); border:1px solid rgba(74,102,44,0.34); backdrop-filter:blur(8px); color:#2B3A1B; border-radius:99px; padding:5px 11px;" },
+        { title:"Drop 018 — Editorial templates", meta:"4 TEMPLATES · AUG 13", tag:"LIVE", tagStyle:"font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; border:1px solid #CBC3B0; color:#6A6A5F; border-radius:99px; padding:5px 11px;" },
+        { title:"Drop 017 — Agent workflows", meta:"5 MCP CHAINS · AUG 6", tag:"LIVE", tagStyle:"font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; border:1px solid #CBC3B0; color:#6A6A5F; border-radius:99px; padding:5px 11px;" },
+        { title:"Drop 020 — Grain & film", meta:"IN THE KILN · AUG 27", tag:"SOON", tagStyle:"font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; border:1px solid rgba(74,102,44,0.30); color:#46602C; border-radius:99px; padding:5px 11px;" }
+      ],
+      searchOpen: this.state.searchOpen,
+      openSearch: () => this.setState({ searchOpen: true }),
+      closeSearch: () => this.setState({ searchOpen: false }),
+      searchHits: DATA.slice(0,5).map(d => ({ name: d.name, type: d.type }))
+    };
+  }
+}
+</script>
+</body>
+</html>

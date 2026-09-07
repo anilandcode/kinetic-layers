@@ -1,1 +1,5 @@
 @import "../styles/kiln.css";
+
+/* The Kinetic Layers palette. Scoped to [data-kl], so it restyles only the
+   screens that opt in — see the note at the top of the file. */
+@import "../styles/kl-tokens.css";

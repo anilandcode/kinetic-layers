@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#F7F6F3; }
+  a { color:#14161A; text-decoration:none; }
+  a:hover { color:#A4501A; }
+  ::selection { background:rgba(232,133,58,0.24); color:#14161A; }
+  @media (max-width:1180px) { [data-hide-narrow] { display:none !important; } }
+  @media (max-width:1080px) {
+    [data-cols-3] { grid-template-columns:1fr !important; }
+    [data-split] { grid-template-columns:1fr !important; }
+    [data-masonry] { columns:2 !important; }
+    [data-h1] { font-size:52px !important; }
+  }
+  @media (max-width:720px) {
+    [data-masonry] { columns:1 !important; }
+    [data-h1] { font-size:38px !important; }
+    [data-pad] { padding-left:20px !important; padding-right:20px !important; }
+  }
+  @media (max-width:560px) {
+    [data-shell-split] { grid-template-columns:1fr !important; }
+    [data-shell-grid] { grid-template-columns:1fr !important; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="./kl-motion.js"></script>
+</helmet>
+
+<div style="background:#F7F6F3; color:#14161A; font-family:Geist,'Helvetica Neue',sans-serif; font-weight:300; min-height:100vh; overflow-x:clip;">
+
+  <div style="position:sticky; top:0; z-index:40; padding:14px 0; background:linear-gradient(180deg,rgba(247,246,243,0.94),rgba(247,246,243,0));">
+    <div data-pad style="max-width:1240px; margin:0 auto; padding:0 32px;">
+      <div style="display:flex; align-items:center; gap:26px; background:rgba(255,255,255,0.88); backdrop-filter:blur(14px); border:1px solid #E7E4DD; border-radius:99px; padding:9px 10px 9px 18px; box-shadow:0 8px 26px -18px rgba(20,22,26,0.22);">
+        <div style="display:flex; align-items:center; gap:9px; flex-shrink:0;">
+          <span style="position:relative; width:18px; height:18px; flex-shrink:0;">
+            <span style="position:absolute; left:0; top:4px; width:13px; height:13px; border-radius:4px; background:#14161A;"></span>
+            <span style="position:absolute; left:5px; top:0; width:13px; height:13px; border-radius:4px; background:rgba(232,133,58,0.88); mix-blend-mode:multiply;"></span>
+          </span>
+          <span style="font-size:15.5px; font-weight:500; letter-spacing:-0.02em;">Kinetic Layers</span>
+        </div>
+        <div data-hide-narrow style="display:flex; gap:22px; font-size:14px; color:#6E7178; white-space:nowrap;">
+          <span style="color:#14161A;">Library</span>
+          <a data-nav href="./Collections.dc.html" style="color:#6E7178;">Collections</a>
+          <a data-nav href="./Pricing.dc.html" style="color:#6E7178;">Pricing</a>
+          <a data-nav href="./Account.dc.html" style="color:#6E7178;">Account</a>
+        </div>
+        <div style="flex:1;"></div>
+        <div data-hide-narrow onClick="{{ openSearch }}" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex:0 1 230px; min-width:170px; border:1px solid #E7E4DD; border-radius:99px; padding:8px 8px 8px 14px; cursor:pointer; white-space:nowrap; overflow:hidden; transition:border-color 180ms;" style-hover="border-color:#D6D1C6">
+          <span style="font-size:13px; color:#6B6E75; overflow:hidden; text-overflow:ellipsis;">Search the library</span>
+          <span style="font-family:'Geist Mono',monospace; font-size:10px; color:#6B6E75; background:#F4F2ED; border-radius:99px; padding:4px 8px; flex-shrink:0;">⌘K</span>
+        </div>
+        <a data-nav data-hide-narrow href="./Join.dc.html" style="font-size:14px; color:#6E7178; flex-shrink:0;">Sign in</a>
+        <a data-nav href="./Pricing.dc.html" style="background:#17181C; color:#FBFAF8; font-size:13.5px; border-radius:99px; padding:10px 18px; cursor:pointer; white-space:nowrap; flex-shrink:0; transition:filter 180ms, transform 160ms;" style-hover="filter:brightness(1.35)" style-active="transform:translateY(1px)">Get unlimited</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:relative; overflow:hidden;">
+    <div style="position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(20,22,26,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(20,22,26,0.035) 1px,transparent 1px); background-size:76px 76px,76px 76px; mask-image:radial-gradient(70% 56% at 50% 32%,#000,transparent 78%); -webkit-mask-image:radial-gradient(70% 56% at 50% 32%,#000,transparent 78%);"></div>
+    <div style="position:absolute; left:50%; top:110px; width:1120px; height:1120px; margin-left:-560px; pointer-events:none; opacity:0.55;">
+      <span style="position:absolute; inset:24%; border:1px solid rgba(20,22,26,0.05); border-radius:99px;"></span>
+      <span style="position:absolute; inset:12%; border:1px solid rgba(20,22,26,0.04); border-radius:99px;"></span>
+      <span style="position:absolute; inset:0; border:1px solid rgba(20,22,26,0.03); border-radius:99px;"></span>
+    </div>
+
+    <div data-pad style="position:relative; max-width:1240px; margin:0 auto; padding:70px 32px 0; display:flex; flex-direction:column; align-items:center; text-align:center;">
+      <div style="display:inline-flex; align-items:center; gap:9px; border:1px solid #E7E4DD; background:#FFFFFF; border-radius:99px; padding:6px 14px 6px 8px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+        <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.1em; background:rgba(232,133,58,0.14); color:#A4501A; border-radius:99px; padding:4px 8px;">DROP 019</span>
+        <span style="font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:#6E7178;">One studio · shipped Thursday</span>
+      </div>
+
+      <h1 data-mask data-h1 style="font-size:76px; line-height:1.03; font-weight:300; letter-spacing:-0.045em; margin:30px 0 0; max-width:900px; text-wrap:balance;">Two hundred and forty things worth stealing.</h1>
+
+      <p data-rise style="font-size:18.5px; line-height:1.65; color:#6E7178; max-width:560px; margin:24px 0 0;">Prompts, templates, scenes and workflows built in one studio and shipped every Thursday. Every item comes with the output, the source, and one site already running on it.</p>
+
+      <div data-rise style="display:flex; gap:11px; justify-content:center; flex-wrap:wrap; margin-top:32px;">
+        <a data-nav href="./Pricing.dc.html" style="background:#17181C; color:#FBFAF8; font-size:15px; border-radius:99px; padding:15px 28px; cursor:pointer; transition:filter 180ms, transform 160ms;" style-hover="filter:brightness(1.35)" style-active="transform:translateY(1px)">Get unlimited — $24/mo</a>
+        <a data-nav data-lift="4" href="./Collections.dc.html" style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; color:#14161A; font-size:15px; border-radius:99px; padding:14px 26px; cursor:pointer; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+          <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+          <span style="position:relative;">Browse 12 free</span>
+        </a>
+      </div>
+
+      <div data-rise style="display:flex; gap:26px; flex-wrap:wrap; justify-content:center; margin-top:26px; font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.14em; color:#6B6E75;">
+        <span>240 ASSETS</span><span>9 EVERY THURSDAY</span><span>SOURCE FILES INCLUDED</span><span>CANCEL, KEEP EVERYTHING</span>
+      </div>
+
+      <div style="position:relative; width:100%; max-width:960px; margin-top:96px;">
+        <div data-glow-arc="22" style="position:absolute; z-index:0; left:50%; top:-90px; width:1340px; height:420px; margin-left:-670px; pointer-events:none; background:radial-gradient(closest-side,rgba(232,133,58,0.5),rgba(232,133,58,0.15) 46%,rgba(247,246,243,0) 74%); filter:blur(34px);"></div>
+        <div data-glow-arc="14" style="position:absolute; z-index:0; left:50%; top:-40px; width:840px; height:240px; margin-left:-420px; pointer-events:none; background:radial-gradient(closest-side,rgba(255,201,120,0.6),rgba(247,246,243,0) 70%); filter:blur(20px);"></div>
+
+        <div style="position:relative; z-index:1; text-align:left; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:20px 20px 0 0; border-bottom:none; box-shadow:0 -1px 0 rgba(255,255,255,0.9), 0 30px 70px -44px rgba(20,22,26,0.28); overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:10px; padding:13px 16px; border-bottom:1px solid #EFEDE7;">
+            <span style="width:9px; height:9px; border-radius:99px; background:#E4E1DA;"></span>
+            <span style="width:9px; height:9px; border-radius:99px; background:#E4E1DA;"></span>
+            <span style="width:9px; height:9px; border-radius:99px; background:#E4E1DA;"></span>
+            <span style="flex:1;"></span>
+            <span style="font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#6B6E75;">kineticlayers.com/library</span>
+            <span style="flex:1;"></span>
+          </div>
+          <div data-shell-split style="display:grid; grid-template-columns:186px 1fr; min-height:300px;">
+            <div style="border-right:1px solid #EFEDE7; padding:16px 14px; display:flex; flex-direction:column; gap:6px; background:#FCFBF9;">
+              <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.14em; color:#6B6E75; padding:0 8px 4px;">SHELVES</span>
+              <span style="font-size:13px; background:rgba(232,133,58,0.10); border:1px solid rgba(232,133,58,0.22); border-radius:8px; padding:7px 9px;">Everything</span>
+              <span style="font-size:13px; color:#6E7178; padding:7px 9px;">Build</span>
+              <span style="font-size:13px; color:#6E7178; padding:7px 9px;">Motion</span>
+              <span style="font-size:13px; color:#6E7178; padding:7px 9px;">Craft</span>
+              <span style="font-size:13px; color:#6E7178; padding:7px 9px;">Agents</span>
+              <span style="flex:1; min-height:16px;"></span>
+              <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#6B6E75; border-top:1px solid #EFEDE7; padding:12px 8px 0;">240 FILED · 12 FREE</span>
+            </div>
+            <div style="padding:18px 20px; display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:14px;">
+                <span style="font-size:15.5px; letter-spacing:-0.01em;">Drop 019 — Volumetric set</span>
+                <span style="display:inline-flex; align-items:center; gap:7px; font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; border:1px solid rgba(232,133,58,0.3); background:rgba(232,133,58,0.10); border-radius:99px; padding:5px 10px; color:#A4501A;">
+                  <span style="width:5px; height:5px; border-radius:99px; background:#E8853A;"></span>NEW THIS WEEK
+                </span>
+              </div>
+              <div data-shell-grid style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+                <sc-for list="{{ shellTiles }}" as="t" hint-placeholder-count="6">
+                  <div style="{{ t.style }}">
+                    <div style="{{ t.patternStyle }}"></div>
+                    <span style="position:relative; font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:0.12em; color:#6E7178;">{{ t.label }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; border:1px solid #EFEDE7; border-radius:12px; padding:11px 13px;">
+                <span style="font-size:13px; color:#6B6E75; flex:1;">volumetric fog</span>
+                <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; background:rgba(232,133,58,0.12); color:#A4501A; border-radius:99px; padding:5px 10px;">4 HITS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1240px; margin:0 auto; padding:0 32px;">
+    <div data-cols-3 style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:-1px;">
+
+      <div data-lift="7" data-reveal style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; padding:22px; display:flex; flex-direction:column; gap:16px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+        <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+        <div style="position:relative; border:1px solid #EFEDE7; border-radius:12px; background:#FCFBF9; padding:14px; font-family:'Geist Mono',monospace; font-size:10.5px; line-height:1.9; color:#6B6E75;">
+          <div><span style="color:#6B6E75;">24</span>&nbsp; <span style="color:#A4501A;">export</span> const scene = {</div>
+          <div><span style="color:#6B6E75;">25</span>&nbsp; &nbsp;fog: <span style="color:#7A6A4F;">'volumetric'</span>,</div>
+          <div><span style="color:#6B6E75;">26</span>&nbsp; &nbsp;steps: <span style="color:#A4501A;">64</span>,</div>
+          <div><span style="color:#6B6E75;">27</span>&nbsp; &nbsp;light: [<span style="color:#A4501A;">0.9</span>, <span style="color:#A4501A;">0.4</span>],</div>
+          <div><span style="color:#6B6E75;">28</span>&nbsp; &nbsp;seed: <span style="color:#7A6A4F;">'drop-019'</span></div>
+          <div><span style="color:#6B6E75;">29</span>&nbsp; };</div>
+        </div>
+        <div style="position:relative;">
+          <h3 style="font-size:19px; font-weight:400; letter-spacing:-0.02em; margin:0 0 8px;">Source files, not screenshots</h3>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0;">Every asset ships with the project that made it — scene, config, prompt chain and all.</p>
+        </div>
+      </div>
+
+      <div data-lift="7" data-reveal style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; padding:22px; display:flex; flex-direction:column; gap:16px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+        <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+        <div style="position:relative; border:1px solid #EFEDE7; border-radius:12px; background:#FCFBF9; padding:14px; display:flex; flex-direction:column; gap:11px;">
+          <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#6B6E75;">FILED UNDER</span>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <span style="font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:0.1em; border:1px solid #E7E4DD; border-radius:99px; padding:5px 10px; color:#6E7178;">MOTION</span>
+            <span style="font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:0.1em; border:1px solid #E7E4DD; border-radius:99px; padding:5px 10px; color:#6E7178;">THREE.JS</span>
+            <span style="font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:0.1em; border:1px solid rgba(232,133,58,0.3); background:rgba(232,133,58,0.10); border-radius:99px; padding:5px 10px; color:#A4501A;">LUXE</span>
+          </div>
+          <span style="height:1px; background:#EFEDE7;"></span>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <sc-for list="{{ shelfBars }}" as="s" hint-placeholder-count="4">
+              <div style="display:flex; align-items:center; gap:9px;">
+                <span style="font-family:'Geist Mono',monospace; font-size:9.5px; color:#6B6E75; width:46px; flex-shrink:0;">{{ s.label }}</span>
+                <span style="flex:1; height:6px; border-radius:99px; background:#F1EFEA; overflow:hidden;">
+                  <span style="{{ s.barStyle }}"></span>
+                </span>
+                <span style="font-family:'Geist Mono',monospace; font-size:9.5px; color:#6E7178; width:24px; text-align:right; flex-shrink:0;">{{ s.n }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <h3 style="font-size:19px; font-weight:400; letter-spacing:-0.02em; margin:0 0 8px;">Filed so you can find it</h3>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0;">Two hundred and forty assets, indexed by shelf, stack and mood. No tag soup.</p>
+        </div>
+      </div>
+
+      <div data-lift="7" data-reveal style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; padding:22px; display:flex; flex-direction:column; gap:16px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+        <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+        <div style="position:relative; border:1px solid #EFEDE7; border-radius:12px; background:#FCFBF9; padding:14px; display:flex; align-items:flex-end; gap:9px; height:126px; box-sizing:border-box;">
+          <div style="flex:1; height:56%; border-radius:8px 8px 3px 3px; background:#EDEAE3;"></div>
+          <div style="flex:1; height:76%; border-radius:8px 8px 3px 3px; background:#E6E2D9;"></div>
+          <div style="flex:1; height:44%; border-radius:8px 8px 3px 3px; background:#EDEAE3;"></div>
+          <div style="flex:1; height:92%; border-radius:8px 8px 3px 3px; background:rgba(232,133,58,0.55);"></div>
+        </div>
+        <div style="position:relative;">
+          <h3 style="font-size:19px; font-weight:400; letter-spacing:-0.02em; margin:0 0 8px;">Nothing enters unless it shipped</h3>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0;">Each drop is made for a live brief, used on a real page, then cleaned up and filed with its receipts.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1240px; margin:0 auto; padding:64px 32px 0;">
+    <div style="display:flex; align-items:center; gap:20px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#6B6E75; flex-shrink:0;">BUILT WITH THE TOOLS YOU ALREADY RUN</span>
+      <span data-rule style="flex:1; height:1px; background:#E7E4DD;"></span>
+    </div>
+    <div style="overflow:hidden; margin-top:22px; mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);">
+      <div data-marquee style="display:flex; gap:52px; width:max-content; align-items:center;">
+        <sc-for list="{{ logos }}" as="l" hint-placeholder-count="16">
+          <span style="font-family:'Geist Mono',monospace; font-size:13px; letter-spacing:0.1em; color:#6B6E75; white-space:nowrap;">{{ l.name }}</span>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1240px; margin:0 auto; padding:92px 32px 0;">
+    <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#A4501A;">HOW A DROP IS MADE</span>
+      <h2 data-reveal style="font-size:42px; font-weight:300; letter-spacing:-0.035em; line-height:1.1; margin:0; max-width:620px; text-wrap:balance;">Four layers between a brief and the library.</h2>
+      <p data-reveal style="font-size:16.5px; line-height:1.65; color:#6E7178; max-width:500px; margin:0;">Nothing skips a step, which is why the file you download behaves the same as the one that shipped.</p>
+    </div>
+
+    <div data-layer-deck style="position:relative; height:580px; margin-top:40px;">
+      <sc-for list="{{ layers }}" as="ly" hint-placeholder-count="4">
+        <div data-layer="{{ ly.depth }}" style="{{ ly.style }}">
+          <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;">
+            <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#A4501A;">{{ ly.tag }}</span>
+            <span style="font-size:20px; font-weight:400; letter-spacing:-0.02em;">{{ ly.name }}</span>
+            <span style="flex:1;"></span>
+            <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#6B6E75;">{{ ly.meta }}</span>
+          </div>
+          <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:10px 0 0; max-width:520px;">{{ ly.copy }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-morph style="position:sticky; top:86px; z-index:20; background:rgba(247,246,243,0.92); backdrop-filter:blur(14px); border-top:1px solid #E7E4DD; border-bottom:1px solid #E7E4DD; margin-top:20px;">
+    <div data-pad style="max-width:1240px; margin:0 auto; padding:13px 32px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <sc-for list="{{ shelves }}" as="s" hint-placeholder-count="4">
+        <span onClick="{{ s.pick }}" style="{{ s.style }}">{{ s.label }}</span>
+      </sc-for>
+      <span style="width:1px; height:20px; background:#E7E4DD; margin:0 5px;"></span>
+      <sc-for list="{{ moods }}" as="m" hint-placeholder-count="6">
+        <span onClick="{{ m.pick }}" style="{{ m.style }}">{{ m.label }}</span>
+      </sc-for>
+      <div style="flex:1;"></div>
+      <span onClick="{{ toggleFree }}" style="{{ freeStyle }}">FREE ONLY</span>
+      <span style="font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#6B6E75;">{{ countLabel }}</span>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1240px; margin:0 auto; padding:30px 32px 0;">
+    <div data-masonry style="columns:3; column-gap:20px;">
+      <sc-for list="{{ items }}" as="it" hint-placeholder-count="12">
+        <div data-reveal style="break-inside:avoid; margin-bottom:20px;">
+
+          <sc-if value="{{ it.isAsset }}" hint-placeholder-val="{{ true }}">
+            <a data-nav data-lift="6" href="./Item.dc.html" style="{{ it.cardStyle }}">
+              <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none; border-radius:18px;"></span>
+              <div style="{{ it.previewStyle }}">
+                <div style="{{ it.patternStyle }}"></div>
+              </div>
+              <div style="position:relative; display:flex; align-items:center; gap:10px; padding:14px 4px 0;">
+                <span style="font-size:16px; font-weight:400; letter-spacing:-0.015em; color:#14161A;">{{ it.name }}</span>
+                <span style="{{ it.badgeStyle }}">{{ it.access }}</span>
+              </div>
+              <div style="position:relative; display:flex; gap:7px; flex-wrap:wrap; padding:10px 4px 2px;">
+                <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#6E7178; border:1px solid #E7E4DD; border-radius:99px; padding:6px 11px;">{{ it.type }}</span>
+                <span style="font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#6E7178; border:1px solid #E7E4DD; border-radius:99px; padding:6px 11px;">{{ it.stack }}</span>
+              </div>
+            </a>
+          </sc-if>
+
+          <sc-if value="{{ it.isUpgrade }}" hint-placeholder-val="{{ false }}">
+            <div data-lift="6" style="position:relative; overflow:hidden; border-radius:18px; border:1px solid rgba(232,133,58,0.32); background:linear-gradient(180deg,#FFF6EC,#FFFFFF 54%); padding:26px; min-height:360px; display:flex; flex-direction:column; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+              <div data-parallax="22" style="position:absolute; inset:-20% -10%; pointer-events:none; background-image:radial-gradient(rgba(20,22,26,0.055) 1px,transparent 1.4px); background-size:18px 18px;"></div>
+              <div style="position:relative; display:flex; flex-direction:column; height:100%;">
+                <span style="position:relative; width:44px; height:44px; flex-shrink:0;">
+                  <span style="position:absolute; left:0; top:10px; width:32px; height:32px; border-radius:10px; background:#14161A;"></span>
+                  <span style="position:absolute; left:12px; top:0; width:32px; height:32px; border-radius:10px; background:rgba(232,133,58,0.9); mix-blend-mode:multiply;"></span>
+                </span>
+                <h3 style="font-size:25px; font-weight:400; letter-spacing:-0.028em; line-height:1.2; margin:26px 0 12px;">Take the whole library.</h3>
+                <p style="font-size:15px; line-height:1.65; color:#6E7178; margin:0;">Every prompt, template and scene — plus the source files and all future drops.</p>
+                <div style="flex:1; min-height:24px;"></div>
+                <a data-nav href="./Pricing.dc.html" style="align-self:flex-start; background:#17181C; color:#FBFAF8; font-size:15px; border-radius:99px; padding:14px 30px; cursor:pointer; transition:filter 180ms, transform 160ms;" style-hover="filter:brightness(1.35)" style-active="transform:translateY(1px)">Upgrade — $24/mo</a>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ it.isHire }}" hint-placeholder-val="{{ false }}">
+            <div data-lift="6" style="position:relative; overflow:hidden; border-radius:18px; border:1px solid #E7E4DD; background:#FFFFFF; padding:26px; min-height:300px; display:flex; flex-direction:column; justify-content:center; gap:13px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+              <div data-parallax="18" style="position:absolute; inset:-20% -10%; pointer-events:none; background-image:repeating-linear-gradient(48deg,rgba(20,22,26,0.05) 0 1px,transparent 1px 9px);"></div>
+              <div style="position:relative; display:flex; flex-direction:column; gap:13px;">
+                <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#A4501A;">Hire the studio</span>
+                <h3 style="font-size:22px; font-weight:400; letter-spacing:-0.022em; line-height:1.26; margin:0; text-wrap:pretty;">Want something built only for you?</h3>
+                <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0;">Commissioned work never enters the library.</p>
+                <span style="font-size:15px; color:#A4501A; cursor:pointer; margin-top:4px;">Start a project →</span>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ it.isNews }}" hint-placeholder-val="{{ false }}">
+            <div data-lift="6" style="position:relative; overflow:hidden; border-radius:18px; border:1px solid #E7E4DD; background:#FFFFFF; padding:26px; min-height:330px; display:flex; flex-direction:column; justify-content:center; gap:11px; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+              <div style="position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(20,22,26,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(20,22,26,0.035) 1px,transparent 1px); background-size:34px 34px,34px 34px;"></div>
+              <div style="position:relative; display:flex; flex-direction:column; gap:11px;">
+                <h3 style="font-size:21px; font-weight:400; letter-spacing:-0.02em; line-height:1.3; margin:0;">Fresh drops, every Thursday.</h3>
+                <p style="font-size:14.5px; line-height:1.6; color:#6E7178; margin:0 0 4px;">Nine new assets and what they were built for, once a week.</p>
+                <span style="border:1px solid #E7E4DD; border-radius:99px; padding:13px 18px; font-size:14.5px; color:#6B6E75; background:#FCFBF9;">you@email.com</span>
+                <span style="background:#17181C; border-radius:99px; padding:13px 18px; font-size:14.5px; color:#FBFAF8; text-align:center; cursor:pointer; transition:filter 180ms, transform 160ms;" style-hover="filter:brightness(1.35)" style-active="transform:translateY(1px)">Subscribe</span>
+                <span style="font-size:12px; line-height:1.5; color:#6B6E75;">One email a week. Unsubscribe whenever.</span>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1240px; margin:0 auto; padding:74px 32px 0;">
+    <div data-split style="display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:center;">
+      <div data-reveal style="display:flex; flex-direction:column; gap:15px;">
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#A4501A;">THE DROP LOG</span>
+        <h2 style="font-size:38px; font-weight:300; letter-spacing:-0.035em; line-height:1.14; margin:0; text-wrap:pretty;">Nine new assets a week, and nothing that didn't ship somewhere first.</h2>
+        <p style="font-size:16px; line-height:1.7; color:#6E7178; max-width:440px; margin:0;">Each drop is built for a real brief, used on a real page, then cleaned up and filed. If it never left the studio, it never enters the library.</p>
+      </div>
+      <div data-reveal style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; overflow:hidden; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+        <sc-for list="{{ drops }}" as="d" hint-placeholder-count="4">
+          <div style="{{ d.rowStyle }}">
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              <span style="font-size:15px;">{{ d.title }}</span>
+              <span style="font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#6B6E75;">{{ d.meta }}</span>
+            </div>
+            <span style="{{ d.tagStyle }}">{{ d.tag }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1240px; margin:0 auto; padding:96px 32px 0;">
+    <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#A4501A;">PRICING</span>
+      <h2 data-reveal style="font-size:42px; font-weight:300; letter-spacing:-0.035em; line-height:1.1; margin:0; max-width:620px; text-wrap:balance;">Twelve are free. The other two hundred and twenty-eight are $24.</h2>
+      <p data-reveal style="font-size:16.5px; line-height:1.65; color:#6E7178; max-width:470px; margin:0;">One subscription, the whole library, every source file. Cancel and keep everything you downloaded.</p>
+    </div>
+
+    <div data-cols-3 style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:44px; align-items:start;">
+      <sc-for list="{{ plans }}" as="p" hint-placeholder-count="3">
+        <div data-lift="6" style="{{ p.cardStyle }}">
+          <span data-sheen style="position:absolute; inset:0; opacity:0; pointer-events:none;"></span>
+          <div style="position:relative; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span style="font-size:17px; font-weight:400; letter-spacing:-0.015em;">{{ p.name }}</span>
+            <sc-if value="{{ p.featured }}" hint-placeholder-val="{{ false }}">
+              <span style="font-family:'Geist Mono',monospace; font-size:9px; letter-spacing:0.12em; background:rgba(232,133,58,0.16); border:1px solid rgba(232,133,58,0.3); color:#A4501A; border-radius:99px; padding:4px 9px;">MOST PICKED</span>
+            </sc-if>
+          </div>
+          <p style="position:relative; font-size:14px; line-height:1.55; color:#6E7178; margin:9px 0 0;">{{ p.blurb }}</p>
+          <div style="position:relative; display:flex; align-items:baseline; gap:7px; margin:22px 0 20px;">
+            <span style="font-size:40px; font-weight:300; letter-spacing:-0.045em;">{{ p.price }}</span>
+            <span style="font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.1em; color:#6B6E75;">{{ p.unit }}</span>
+          </div>
+          <a data-nav href="./Pricing.dc.html" style="{{ p.ctaStyle }}">{{ p.cta }}</a>
+          <div style="position:relative; display:flex; flex-direction:column; gap:11px; margin-top:22px; border-top:1px solid #EFEDE7; padding-top:20px;">
+            <sc-for list="{{ p.features }}" as="f" hint-placeholder-count="5">
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="width:5px; height:5px; border-radius:99px; background:rgba(232,133,58,0.8); margin-top:7px; flex-shrink:0;"></span>
+                <span style="font-size:14px; line-height:1.5; color:#4A4D53;">{{ f.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div data-reveal style="margin-top:22px; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:18px; overflow:hidden; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 22px; border-bottom:1px solid #EFEDE7;">
+        <span style="font-size:16px; letter-spacing:-0.015em;">What's on the shelves</span>
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#6B6E75;">240 ITEMS · UPDATED WEEKLY</span>
+      </div>
+      <div style="display:flex; gap:12px; padding:13px 22px; border-bottom:1px solid #EFEDE7; font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.12em; color:#6B6E75;">
+        <span style="flex:1.6;">TYPE</span><span style="flex:1;">ITEMS</span><span style="flex:1;">FREE</span><span style="flex:1.4;">SHIPS WITH</span><span style="flex:1; text-align:right;">LICENSE</span>
+      </div>
+      <sc-for list="{{ tiers }}" as="t" hint-placeholder-count="5">
+        <div style="{{ t.rowStyle }}">
+          <span style="flex:1.6; font-size:14px;">{{ t.type }}</span>
+          <span style="flex:1; font-family:'Geist Mono',monospace; font-size:12.5px; color:#6E7178;">{{ t.items }}</span>
+          <span style="flex:1; font-family:'Geist Mono',monospace; font-size:12.5px; color:#6E7178;">{{ t.free }}</span>
+          <span style="flex:1.4; font-family:'Geist Mono',monospace; font-size:12.5px; color:#6E7178;">{{ t.ships }}</span>
+          <span style="flex:1; font-family:'Geist Mono',monospace; font-size:12.5px; text-align:right;">{{ t.license }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1240px; margin:0 auto; padding:96px 32px 0;">
+    <div data-split style="display:grid; grid-template-columns:0.8fr 1.2fr; gap:56px; align-items:start;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#A4501A;">FAQ</span>
+        <h2 style="font-size:36px; font-weight:300; letter-spacing:-0.035em; line-height:1.12; margin:0; text-wrap:pretty;">Before you subscribe.</h2>
+        <p style="font-size:15.5px; line-height:1.65; color:#6E7178; margin:0; max-width:320px;">Anything else, the license page goes deeper and email gets answered the same day.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="5">
+          <div onClick="{{ q.toggle }}" style="{{ q.style }}">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <span style="flex:1; font-size:15.5px; line-height:1.45; color:#14161A;">{{ q.q }}</span>
+              <span style="{{ q.iconStyle }}">+</span>
+            </div>
+            <sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:14.5px; line-height:1.65; color:#6E7178; margin:13px 0 0; max-width:560px;">{{ q.a }}</p>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1240px; margin:0 auto; padding:96px 32px 0;">
+    <div data-reveal style="position:relative; overflow:hidden; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:24px; padding:64px 32px 74px; text-align:center; box-shadow:0 1px 2px rgba(20,22,26,0.04);">
+      <div style="position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(20,22,26,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(20,22,26,0.03) 1px,transparent 1px); background-size:58px 58px,58px 58px; mask-image:radial-gradient(70% 90% at 50% 100%,#000,transparent 72%); -webkit-mask-image:radial-gradient(70% 90% at 50% 100%,#000,transparent 72%);"></div>
+      <div data-glow-arc="16" style="position:absolute; left:50%; bottom:-190px; width:780px; height:400px; margin-left:-390px; pointer-events:none; background:radial-gradient(closest-side,rgba(232,133,58,0.5),rgba(255,255,255,0) 74%); filter:blur(22px);"></div>
+      <div style="position:relative;">
+        <h2 style="font-size:44px; font-weight:300; letter-spacing:-0.04em; line-height:1.08; margin:0 auto 16px; max-width:560px; text-wrap:balance;">Start with the twelve free ones.</h2>
+        <p style="font-size:16.5px; line-height:1.65; color:#6E7178; margin:0 auto 30px; max-width:440px;">No card, no trial timer. If the source files are what you hoped, the rest is $24 a month.</p>
+        <div style="display:flex; gap:11px; justify-content:center; flex-wrap:wrap;">
+          <a data-nav href="./Collections.dc.html" style="background:#17181C; color:#FBFAF8; font-size:15px; border-radius:99px; padding:15px 30px; cursor:pointer; transition:filter 180ms, transform 160ms;" style-hover="filter:brightness(1.35)" style-active="transform:translateY(1px)">Browse 12 free</a>
+          <a data-nav href="./Pricing.dc.html" style="background:rgba(255,255,255,0.8); border:1px solid #E7E4DD; backdrop-filter:blur(8px); color:#14161A; font-size:15px; border-radius:99px; padding:14px 28px; cursor:pointer; transition:filter 180ms, transform 160ms;" style-hover="filter:brightness(0.98)" style-active="transform:translateY(1px)">See pricing</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div data-pad style="max-width:1240px; margin:0 auto; padding:52px 32px 44px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; border-top:1px solid #E7E4DD; padding-top:26px; font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:0.12em; color:#6B6E75;">
+      <span>KINETICLAYERS.COM — ONE STUDIO, SINCE 2026</span>
+      <div style="display:flex; gap:24px; flex-wrap:wrap;">
+        <span>LICENSE</span><span>CHANGELOG</span><span>CONTACT</span>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSearch }}" style="position:fixed; inset:0; z-index:50; background:rgba(247,246,243,0.78); backdrop-filter:blur(10px); display:flex; align-items:flex-start; justify-content:center; padding-top:13vh;">
+      <div style="width:min(620px,90vw); background:#FFFFFF; border:1px solid #E7E4DD; border-radius:22px; overflow:hidden; box-shadow:0 40px 90px -40px rgba(20,22,26,0.35);">
+        <div style="padding:20px 22px; border-bottom:1px solid #EFEDE7; display:flex; align-items:center; gap:12px;">
+          <span style="color:#A4501A; font-size:16px;">⌕</span>
+          <span style="font-size:16px; color:#6B6E75;">Search prompts, templates, scenes…</span>
+        </div>
+        <div style="padding:10px; display:flex; flex-direction:column; gap:2px;">
+          <sc-for list="{{ searchHits }}" as="h" hint-placeholder-count="5">
+            <div style="padding:13px 14px; border-radius:12px; display:flex; align-items:center; justify-content:space-between; gap:14px;">
+              <span style="font-size:14px; color:#4A4D53;">{{ h.name }}</span>
+              <span style="font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#6B6E75;">{{ h.type }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:14px 22px; border-top:1px solid #EFEDE7; font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#6B6E75;">ESC TO CLOSE</div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;motionEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;promoDensity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;All three&quot;,&quot;Upgrade only&quot;,&quot;None&quot;],&quot;default&quot;:&quot;All three&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;defaultShelf&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;All&quot;,&quot;Build&quot;,&quot;Motion&quot;,&quot;Craft&quot;,&quot;Agents&quot;],&quot;default&quot;:&quot;All&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;featuredPlan&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Free&quot;,&quot;Unlimited&quot;,&quot;Studio&quot;],&quot;default&quot;:&quot;Unlimited&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pricing&quot;}}">
+const PAT = {
+  mesh: "background-image:linear-gradient(rgba(20,22,26,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(20,22,26,0.05) 1px,transparent 1px); background-size:34px 34px,34px 34px;",
+  dots: "background-image:radial-gradient(rgba(20,22,26,0.10) 1px,transparent 1.4px); background-size:18px 18px;",
+  hatch: "background-image:repeating-linear-gradient(48deg,rgba(20,22,26,0.055) 0 1px,transparent 1px 9px);",
+  arcs: "background-image:repeating-radial-gradient(circle at 85% 115%,rgba(232,133,58,0.20) 0 1px,transparent 1px 22px);"
+};
+
+const G = {
+  warm:  "linear-gradient(158deg,#F3E4D4,#FDFCFA 72%)",
+  sand:  "linear-gradient(158deg,#EFE9DE,#FDFCFA 70%)",
+  cool:  "linear-gradient(158deg,#E4E8EE,#FDFCFA 70%)",
+  ember: "linear-gradient(158deg,#F6DEC8,#FDFCFA 74%)",
+  slate: "linear-gradient(158deg,#E6E5E1,#FDFCFA 68%)",
+  clay:  "linear-gradient(158deg,#EEE2DA,#FDFCFA 72%)"
+};
+
+const DATA = [
+  { name:"Volumetric Drift", type:"3D SCENE", stack:"THREE.JS", shelf:"Motion", mood:"Luxe", free:true, h:230, g:G.warm, p:"arcs" },
+  { name:"Editorial Landing 04", type:"TEMPLATE", stack:"NEXT · TW", shelf:"Build", mood:"Editorial", free:false, h:300, g:G.cool, p:"mesh" },
+  { name:"Cold Open", type:"PROMPT", stack:"CLAUDE", shelf:"Build", mood:"Technical", free:true, h:170, g:G.slate, p:"mesh" },
+  { name:"Soft Static Field", type:"BACKGROUND", stack:"WEBGL", shelf:"Motion", mood:"Organic", free:false, h:200, g:G.sand, p:"dots" },
+  { name:"Brutal Grid Pack", type:"TEMPLATE", stack:"ASTRO", shelf:"Build", mood:"Brutalist", free:false, h:260, g:G.slate, p:"mesh" },
+  { name:"Ash & Ember 24", type:"IMAGE PACK", stack:"MIDJOURNEY", shelf:"Craft", mood:"Luxe", free:false, h:320, g:G.ember, p:"hatch" },
+  { name:"Research Swarm", type:"MCP / AGENT", stack:"CLAUDE · MCP", shelf:"Agents", mood:"Technical", free:true, h:180, g:G.cool, p:"mesh" },
+  { name:"Chrome Liquid", type:"3D SCENE", stack:"R3F", shelf:"Motion", mood:"Luxe", free:false, h:280, g:G.clay, p:"arcs" },
+  { name:"Paper Grain LoRA", type:"LORA", stack:"FLUX", shelf:"Craft", mood:"Organic", free:false, h:210, g:G.sand, p:"dots" },
+  { name:"Slow Pan Loop", type:"VIDEO", stack:"RUNWAY", shelf:"Motion", mood:"Editorial", free:false, h:250, g:G.cool, p:"hatch" },
+  { name:"Terminal Hero", type:"TEMPLATE", stack:"NEXT · TW", shelf:"Build", mood:"Technical", free:true, h:190, g:G.slate, p:"mesh" },
+  { name:"Warm Studio Set", type:"IMAGE PACK", stack:"FLUX", shelf:"Craft", mood:"Organic", free:false, h:290, g:G.warm, p:"dots" },
+  { name:"Refactor Pass", type:"PROMPT", stack:"CURSOR", shelf:"Build", mood:"Technical", free:false, h:165, g:G.slate, p:"mesh" },
+  { name:"Playful Blocks", type:"BACKGROUND", stack:"CSS", shelf:"Motion", mood:"Playful", free:true, h:220, g:G.ember, p:"dots" },
+  { name:"Marble Depth", type:"3D SCENE", stack:"THREE.JS", shelf:"Motion", mood:"Luxe", free:false, h:270, g:G.clay, p:"arcs" }
+];
+
+const LOGOS = ["THREE.JS","NEXT.JS","CLAUDE","FLUX","R3F","ASTRO","RUNWAY","MIDJOURNEY","WEBGL","CURSOR"];
+
+const LAYERS = [
+  { tag:"L4", name:"The brief", meta:"A REAL CLIENT", copy:"Every asset starts as work someone asked for and paid for. Nothing is made to fill a shelf." },
+  { tag:"L3", name:"The build", meta:"ONE STUDIO", copy:"Built in the studio, in the same stack you'd use — no mockups, no assets that only exist as an image." },
+  { tag:"L2", name:"The ship", meta:"LIVE ON A PAGE", copy:"It runs in production somewhere before it is allowed near the library, which is where most ideas die." },
+  { tag:"L1", name:"The file", meta:"SOURCE INCLUDED", copy:"Cleaned up, documented and filed by shelf, stack and mood, with the project that made it attached." }
+];
+
+const PLANS = [
+  { name:"Free", blurb:"Twelve assets, picked so you can judge the rest.", price:"$0", unit:"FOREVER", cta:"Browse 12 free",
+    features:["12 assets across every shelf","Full source files","Personal and client work","New free item most months"] },
+  { name:"Unlimited", blurb:"The whole library, and every drop that follows.", price:"$24", unit:"/ MONTH", cta:"Get unlimited", featured:true,
+    features:["All 240 assets, source included","9 new assets every Thursday","Commercial license, unlimited clients","Cancel and keep everything downloaded"] },
+  { name:"Studio", blurb:"For teams sharing one library, or commissioned work.", price:"Custom", unit:"ANNUAL", cta:"Talk to us",
+    features:["Seats for the whole team","Commissioned assets, never filed publicly","Priority requests in the drop queue","Invoice billing"] }
+];
+
+const TIERS = [
+  { type:"3D scenes", items:"46", free:"2", ships:"PROJECT + CONFIG", license:"COMMERCIAL" },
+  { type:"Templates", items:"52", free:"3", ships:"REPO", license:"COMMERCIAL" },
+  { type:"Prompts & chains", items:"64", free:"4", ships:"MD + JSON", license:"COMMERCIAL" },
+  { type:"Image packs & LoRAs", items:"48", free:"2", ships:"WEIGHTS + PNG", license:"COMMERCIAL" },
+  { type:"Agents & workflows", items:"30", free:"1", ships:"MCP CONFIG", license:"COMMERCIAL" }
+];
+
+const FAQS = [
+  { q:"What exactly do I get with an asset?", a:"The output, the source project that made it, and a note on where it shipped. For a scene that means the project file and config; for a prompt, the full chain and the model it was tuned against." },
+  { q:"What happens if I cancel?", a:"Everything you downloaded stays yours under the same commercial license. You stop getting new drops, and you lose access to the library until you resubscribe." },
+  { q:"Can I use these for client work?", a:"Yes, on Free and Unlimited both, for unlimited clients. You cannot resell an asset as an asset — the file itself can't become your product." },
+  { q:"Who makes them?", a:"One studio, which is the point. The same hands file every item, so the naming, structure and quality don't drift between shelves." },
+  { q:"What lands in a Thursday drop?", a:"Nine items, usually a mix of one shelf's worth of depth and a few one-offs, always with the brief they were built for attached." }
+];
+
+class Component extends DCLogic {
+  state = { shelf:null, mood:null, freeOnly:false, openFaq:0, searchOpen:false };
+
+  componentDidMount() {
+    if ((this.props.motionEnabled ?? true) && window.KLMotion) window.KLMotion.init();
+  }
+
+  pill(active) {
+    const base = "font-family:'Geist Mono',monospace; font-size:10px; letter-spacing:0.12em; border-radius:99px; padding:7px 13px; cursor:pointer; white-space:nowrap; transition:all 170ms;";
+    if (active) return base + "background:rgba(232,133,58,0.12); border:1px solid rgba(232,133,58,0.34); color:#A4501A;";
+    return base + "background:#FFFFFF; border:1px solid #E7E4DD; color:#6E7178;";
+  }
+
+  withPromos(cards) {
+    const density = this.props.promoDensity ?? "All three";
+    if (density === "None") return cards;
+    const promos = density === "Upgrade only"
+      ? [{ isUpgrade:true }]
+      : [{ isUpgrade:true }, { isHire:true }, { isNews:true }];
+    const at = [4, 9, 14];
+    const out = [];
+    let p = 0;
+    cards.forEach((c, i) => {
+      if (p < promos.length && i === at[p]) out.push(promos[p++]);
+      out.push(c);
+    });
+    while (p < promos.length && cards.length >= 4) out.push(promos[p++]);
+    return out;
+  }
+
+  renderVals() {
+    const { mood, freeOnly } = this.state;
+    const shelf = this.state.shelf ?? (this.props.defaultShelf ?? "All");
+    const featured = this.props.featuredPlan ?? "Unlimited";
+    const list = DATA.filter(d =>
+      (shelf === "All" || d.shelf === shelf) &&
+      (!mood || d.mood === mood) &&
+      (!freeOnly || d.free));
+
+    return {
+      shellTiles: [
+        { label:"3D SCENE", g:G.warm, p:"arcs" },
+        { label:"TEMPLATE", g:G.cool, p:"mesh" },
+        { label:"PROMPT", g:G.slate, p:"mesh" },
+        { label:"IMAGE PACK", g:G.ember, p:"dots" },
+        { label:"LORA", g:G.sand, p:"dots" },
+        { label:"MCP AGENT", g:G.clay, p:"hatch" }
+      ].map(t => ({
+        label: t.label,
+        style: "position:relative; overflow:hidden; height:82px; border-radius:11px; border:1px solid #EFEDE7; padding:11px; box-sizing:border-box; display:flex; align-items:flex-end; background:" + t.g + ";",
+        patternStyle: "position:absolute; inset:0; pointer-events:none; " + PAT[t.p]
+      })),
+      shelfBars: [
+        { label:"BUILD", n:"88", w:88 },
+        { label:"MOTION", n:"64", w:64 },
+        { label:"CRAFT", n:"58", w:58 },
+        { label:"AGENTS", n:"30", w:30 }
+      ].map(s => ({
+        label: s.label, n: s.n,
+        barStyle: "display:block; height:100%; width:" + s.w + "%; border-radius:99px; background:" +
+          (s.label === "BUILD" ? "rgba(232,133,58,0.7)" : "#C9C6BE") + ";"
+      })),
+      logos: LOGOS.concat(LOGOS).map((name, i) => ({ name, key: name + i })),
+      layers: LAYERS.map((l, i) => {
+        const inset = i * 22;
+        return {
+          tag: l.tag, name: l.name, meta: l.meta, copy: l.copy,
+          depth: LAYERS.length - 1 - i,
+          style: "position:absolute; left:" + inset + "px; right:" + (inset + 34) + "px; top:" + (76 + i * 104) +
+            "px; background:rgba(255,255,255," + (0.98 - i * 0.04) + "); border:1px solid #E7E4DD; border-radius:18px; padding:22px 24px; box-shadow:0 " +
+            (26 - i * 4) + "px " + (60 - i * 8) + "px -34px rgba(20,22,26,0.30); backdrop-filter:blur(6px); will-change:transform; z-index:" + (10 - i) + ";"
+        };
+      }),
+      shelves: ["All","Build","Motion","Craft","Agents"].map(s => ({
+        label: s.toUpperCase(),
+        style: this.pill(shelf === s),
+        pick: () => this.setState({ shelf: s })
+      })),
+      moods: ["Luxe","Technical","Editorial","Organic","Brutalist","Playful"].map(m => ({
+        label: m.toUpperCase(),
+        style: this.pill(mood === m),
+        pick: () => this.setState({ mood: mood === m ? null : m })
+      })),
+      freeStyle: this.pill(freeOnly),
+      toggleFree: () => this.setState({ freeOnly: !freeOnly }),
+      countLabel: list.length + " OF " + DATA.length,
+      items: this.withPromos(list.map(d => ({
+        isAsset: true, name: d.name, type: d.type, stack: d.stack,
+        access: d.free ? "Free" : "Unlimited",
+        cardStyle: "position:relative; display:block; border-radius:18px; padding:6px; cursor:pointer; background:#FFFFFF; border:1px solid #E7E4DD; box-shadow:0 1px 2px rgba(20,22,26,0.04);",
+        previewStyle: "position:relative; overflow:hidden; height:" + d.h + "px; border-radius:13px; border:1px solid #EFEDE7; background:" + d.g + ";",
+        patternStyle: "position:absolute; inset:0; pointer-events:none; " + (PAT[d.p] || PAT.mesh),
+        badgeStyle: d.free
+          ? "font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.1em; background:rgba(232,133,58,0.14); border:1px solid rgba(232,133,58,0.3); color:#A4501A; border-radius:99px; padding:5px 10px;"
+          : "font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.1em; color:#6B6E75; border:1px solid #E7E4DD; border-radius:99px; padding:5px 10px;"
+      }))),
+      drops: [
+        { title:"Drop 019 — Volumetric set", meta:"3 SCENES · 2 PROMPTS · SEP 3", tag:"NEW", on:true },
+        { title:"Drop 018 — Editorial templates", meta:"4 TEMPLATES · AUG 27", tag:"FILED" },
+        { title:"Drop 017 — Agent workflows", meta:"5 MCP CHAINS · AUG 20", tag:"FILED" },
+        { title:"Drop 020 — Grain & film", meta:"IN THE STUDIO · SEP 10", tag:"SOON", soon:true }
+      ].map((d, i, a) => ({
+        title: d.title, meta: d.meta, tag: d.tag,
+        rowStyle: "padding:19px 22px; display:flex; align-items:center; justify-content:space-between; gap:20px;" +
+          (i < a.length - 1 ? " border-bottom:1px solid #EFEDE7;" : ""),
+        tagStyle: "font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:0.1em; border-radius:99px; padding:5px 11px; flex-shrink:0; " +
+          (d.on ? "background:rgba(232,133,58,0.14); border:1px solid rgba(232,133,58,0.3); color:#A4501A;"
+                : d.soon ? "border:1px solid #E7E4DD; color:#A4501A;"
+                : "border:1px solid #E7E4DD; color:#6B6E75;")
+      })),
+      plans: PLANS.map(p => {
+        const on = p.name === featured;
+        return {
+          name: p.name, blurb: p.blurb, price: p.price, unit: p.unit, cta: p.cta, featured: on,
+          features: p.features.map(text => ({ text })),
+          cardStyle: "position:relative; overflow:hidden; border-radius:20px; padding:26px; display:flex; flex-direction:column; box-shadow:0 1px 2px rgba(20,22,26,0.04); background:" +
+            (on ? "linear-gradient(180deg,#FFF7EE,#FFFFFF 46%)" : "#FFFFFF") +
+            "; border:1px solid " + (on ? "rgba(232,133,58,0.36)" : "#E7E4DD") + ";",
+          ctaStyle: "position:relative; display:block; text-align:center; font-size:14.5px; border-radius:99px; padding:13px 20px; cursor:pointer; transition:filter 180ms; " +
+            (on ? "background:#17181C; color:#FBFAF8;" : "background:#FFFFFF; border:1px solid #E0DCD3; color:#14161A;")
+        };
+      }),
+      tiers: TIERS.map((t, i) => ({
+        type: t.type, items: t.items, free: t.free, ships: t.ships, license: t.license,
+        rowStyle: "display:flex; gap:12px; align-items:center; padding:14px 22px;" +
+          (i < TIERS.length - 1 ? " border-bottom:1px solid #F4F2ED;" : "")
+      })),
+      faqs: FAQS.map((f, i) => {
+        const open = this.state.openFaq === i;
+        return {
+          q: f.q, a: f.a, open,
+          toggle: () => this.setState({ openFaq: open ? -1 : i }),
+          style: "background:#FFFFFF; border:1px solid " + (open ? "#E0DCD3" : "#E7E4DD") +
+            "; border-radius:14px; padding:19px 21px; cursor:pointer; box-shadow:0 1px 2px rgba(20,22,26,0.04);",
+          iconStyle: "font-family:'Geist Mono',monospace; font-size:15px; color:#6B6E75; flex-shrink:0; transition:transform 220ms; transform:rotate(" +
+            (open ? "45deg" : "0deg") + ");"
+        };
+      }),
+      searchOpen: this.state.searchOpen,
+      openSearch: () => this.setState({ searchOpen: true }),
+      closeSearch: () => this.setState({ searchOpen: false }),
+      searchHits: DATA.slice(0, 5).map(d => ({ name: d.name, type: d.type }))
+    };
+  }
+}
+</script>
+</body>
+</html>

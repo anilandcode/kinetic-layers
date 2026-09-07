@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#08080a; }
+  a { color:#C9C733; text-decoration:none; }
+  a:hover { color:#E4E26B; }
+</style>
+</helmet>
+
+<div style="background:#08080a; color:#e8e6e3; font-family:Inter,sans-serif; font-weight:300; padding:96px 7vw 140px; display:flex; flex-direction:column; gap:104px; max-width:1280px; margin:0 auto;">
+
+  <header style="display:flex; flex-direction:column; gap:28px;">
+    <div style="font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:#C9C733;">Plan v1 — August 2026</div>
+    <h1 style="font-size:64px; line-height:1.02; font-weight:400; letter-spacing:-0.03em; margin:0; max-width:900px; text-wrap:pretty;">A vault for AI outputs that reads like a design house, not a prompt dump.</h1>
+    <p style="font-size:19px; line-height:1.6; color:#9b9793; max-width:620px; margin:0;">Everything below is the decision set: what we sell, how it is gated, the screens we build, and the design system that makes it feel expensive. Nothing is built yet — react to this first and I'll change it before a single pixel is drawn.</p>
+  </header>
+
+  <section style="display:flex; flex-direction:column; gap:32px;">
+    <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #1e1e21; padding-bottom:16px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">01</span>
+      <h2 style="font-size:30px; font-weight:400; letter-spacing:-0.02em; margin:0;">Positioning</h2>
+    </div>
+    <p style="font-size:22px; line-height:1.5; margin:0; max-width:760px; font-weight:300; text-wrap:pretty;">Your words: <em style="font-style:normal; color:#C9C733;">the design should have real market value, not AI slop.</em> That's the entire strategy, so it has to be visible in the first three seconds.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px;">
+      <div style="background:#0e0e11; border:1px solid #1e1e21; border-radius:14px; padding:26px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66;">The competition</div>
+        <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">Grid of a thousand GIFs. Volume as the pitch. You can't tell one item from the next, and nothing proves it works.</div>
+      </div>
+      <div style="background:#0e0e11; border:1px solid #1e1e21; border-radius:14px; padding:26px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66;">Your edge</div>
+        <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">Fewer items, each with a live demo, the exact output, and the source. Curation stated out loud: a number, a date, a name behind it.</div>
+      </div>
+      <div style="background:#0e0e11; border:1px solid #1e1e21; border-radius:14px; padding:26px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66;">Proof of quality</div>
+        <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">Every item shows what it was built with, what it renders to, and one real site shipped from it. Receipts, not adjectives.</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:32px;">
+    <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #1e1e21; padding-bottom:16px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">02</span>
+      <h2 style="font-size:30px; font-weight:400; letter-spacing:-0.02em; margin:0;">Names to react to</h2>
+    </div>
+    <p style="font-size:17px; line-height:1.6; color:#9b9793; margin:0; max-width:640px;">Short, sayable, .com-plausible. Tell me which two you like and I'll check domains.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px;">
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:26px; letter-spacing:-0.02em;">Atelier</div>
+        <div style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">atelier.ai</div>
+        <div style="font-size:14px; line-height:1.5; color:#9b9793;">Workshop, craft, one maker. Directly answers "not slop".</div>
+      </div>
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:26px; letter-spacing:-0.02em;">Vaultwork</div>
+        <div style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">vaultwork.io</div>
+        <div style="font-size:14px; line-height:1.5; color:#9b9793;">Locked, valuable, membership-shaped. Fits the paywall model.</div>
+      </div>
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:26px; letter-spacing:-0.02em;">Sublayer</div>
+        <div style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">sublayer.co</div>
+        <div style="font-size:14px; line-height:1.5; color:#9b9793;">Technical, dev-native. Reads as infrastructure, not a store.</div>
+      </div>
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:26px; letter-spacing:-0.02em;">Ferrous</div>
+        <div style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">ferrous.studio</div>
+        <div style="font-size:14px; line-height:1.5; color:#9b9793;">Material, heavy, memorable. No AI cliché in the word at all.</div>
+      </div>
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:26px; letter-spacing:-0.02em;">Kiln</div>
+        <div style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">kiln.design</div>
+        <div style="font-size:14px; line-height:1.5; color:#9b9793;">One syllable. Heat, making, finishing. Pairs with the lime accent.</div>
+      </div>
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:26px; letter-spacing:-0.02em;">Nightshift</div>
+        <div style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">nightshift.ai</div>
+        <div style="font-size:14px; line-height:1.5; color:#9b9793;">Dark by nature, and it hints at the thing shipping while you sleep.</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:32px;">
+    <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #1e1e21; padding-bottom:16px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">03</span>
+      <h2 style="font-size:30px; font-weight:400; letter-spacing:-0.02em; margin:0;">Catalog &amp; taxonomy</h2>
+    </div>
+    <p style="font-size:17px; line-height:1.6; color:#9b9793; margin:0; max-width:700px;">You listed eight asset types. Eight top-level tabs would kill the homepage, so they collapse into three shelves with type as a filter. Order below is also the launch order — ship shelf one deep before shelf three exists.</p>
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:grid; grid-template-columns:minmax(140px,180px) 1fr; gap:28px; border:1px solid #1e1e21; border-radius:14px; padding:26px; align-items:start;">
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:20px;">Build</span><span style="font-family:'Geist Mono',monospace; font-size:11px; color:#C9C733;">SHELF 01</span></div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">Prompts, full site templates and code, agent + MCP workflows. The revenue core — this is what the vibe-coding buyer wakes up wanting.</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; font-family:'Geist Mono',monospace; font-size:11px;">
+            <span style="border:1px solid #2a2a2e; border-radius:99px; padding:5px 11px; color:#9b9793;">prompt</span>
+            <span style="border:1px solid #2a2a2e; border-radius:99px; padding:5px 11px; color:#9b9793;">template</span>
+            <span style="border:1px solid #2a2a2e; border-radius:99px; padding:5px 11px; color:#9b9793;">mcp / agent</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:minmax(140px,180px) 1fr; gap:28px; border:1px solid #1e1e21; border-radius:14px; padding:26px; align-items:start;">
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:20px;">Motion</span><span style="font-family:'Geist Mono',monospace; font-size:11px; color:#C9C733;">SHELF 02</span></div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">3D scenes, animated backgrounds, AI video clips. Highest visual impact, so this shelf feeds the homepage hero and the social loop.</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; font-family:'Geist Mono',monospace; font-size:11px;">
+            <span style="border:1px solid #2a2a2e; border-radius:99px; padding:5px 11px; color:#9b9793;">3d scene</span>
+            <span style="border:1px solid #2a2a2e; border-radius:99px; padding:5px 11px; color:#9b9793;">background</span>
+            <span style="border:1px solid #2a2a2e; border-radius:99px; padding:5px 11px; color:#9b9793;">video</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:minmax(140px,180px) 1fr; gap:28px; border:1px solid #1e1e21; border-radius:14px; padding:26px; align-items:start;">
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:20px;">Craft</span><span style="font-family:'Geist Mono',monospace; font-size:11px; color:#C9C733;">SHELF 03</span></div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">AI images and LoRAs / model files. Serves the marketer and the image-first buyer. Different licensing story, so it gets its own detail-page variant.</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; font-family:'Geist Mono',monospace; font-size:11px;">
+            <span style="border:1px solid #2a2a2e; border-radius:99px; padding:5px 11px; color:#9b9793;">image pack</span>
+            <span style="border:1px solid #2a2a2e; border-radius:99px; padding:5px 11px; color:#9b9793;">lora</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; padding-left:20px; border-left:2px solid #C9C733;">
+      <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#C9C733;">Cross-cutting filters</div>
+      <div style="font-size:16px; line-height:1.6; color:#c9c5c1; max-width:700px;">Tone (dark / light) · Mood (luxe, technical, organic, brutalist, playful) · Stack (Next, Three.js, Tailwind, Lovable, Cursor, Claude) · Access (free / unlimited). Mood is the filter buyers actually browse by — it goes in the primary rail, stack goes behind "all filters".</div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:32px;">
+    <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #1e1e21; padding-bottom:16px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">04</span>
+      <h2 style="font-size:30px; font-weight:400; letter-spacing:-0.02em; margin:0;">Money &amp; the gate</h2>
+    </div>
+    <p style="font-size:17px; line-height:1.6; color:#9b9793; margin:0; max-width:700px;">Free tier plus paid unlimited, and you chose all four gating mechanics. They shouldn't all fire at once — each asset type gets the gate that hurts least and teases most.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;">
+      <div style="background:#0e0e11; border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; color:#C9C733;">PROMPTS + TEMPLATES</div>
+        <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">Full preview, prompt redacted. You see the whole result and the first two lines of the prompt; the rest is blurred with a real character count showing.</div>
+      </div>
+      <div style="background:#0e0e11; border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; color:#C9C733;">3D + BACKGROUNDS</div>
+        <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">Live demo, unlocked and clickable. Interaction is the sell. Download and source are what you pay for.</div>
+      </div>
+      <div style="background:#0e0e11; border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; color:#C9C733;">IMAGES + VIDEO</div>
+        <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">Watermarked at low res. Clean file on unlock. Never blur these — buyers judge them visually.</div>
+      </div>
+      <div style="background:#0e0e11; border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; color:#C9C733;">FREE TIER</div>
+        <div style="font-size:16px; line-height:1.55; color:#c9c5c1;">A genuinely good handful, fully unlocked, refreshed monthly. The free items must be good enough to embarrass the competition's paid ones.</div>
+      </div>
+    </div>
+    <div style="font-size:16px; line-height:1.6; color:#9b9793; max-width:700px;">Pricing shape I'd propose: <span style="color:#e8e6e3;">Free</span> · <span style="color:#e8e6e3;">Monthly</span> · <span style="color:#e8e6e3;">Lifetime</span>, with lifetime priced at ~10× monthly and framed as founding-member. Since you're the sole supplier, "creator upload" and "creator earnings" become <span style="color:#e8e6e3;">your studio admin</span> — same screens, private, and they move to the end of the build.</div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:32px;">
+    <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #1e1e21; padding-bottom:16px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">05</span>
+      <h2 style="font-size:30px; font-weight:400; letter-spacing:-0.02em; margin:0;">Screens, in build order</h2>
+    </div>
+    <div style="display:flex; flex-direction:column;">
+      <div style="display:grid; grid-template-columns:56px 1fr 220px; gap:20px; padding:20px 0; border-top:1px solid #1e1e21; align-items:baseline;">
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">01</span>
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:19px;">Homepage / library grid</span><span style="font-size:15px; line-height:1.5; color:#9b9793;">Hero, shelf tabs, filter rail, the card grid. This screen is 80% of the product.</span></div>
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">3 variations</span>
+      </div>
+      <div style="display:grid; grid-template-columns:56px 1fr 220px; gap:20px; padding:20px 0; border-top:1px solid #1e1e21; align-items:baseline;">
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">02</span>
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:19px;">Item detail</span><span style="font-size:15px; line-height:1.5; color:#9b9793;">Big preview, redacted prompt block, stack badges, what-it-renders-to, related items.</span></div>
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">2 variations</span>
+      </div>
+      <div style="display:grid; grid-template-columns:56px 1fr 220px; gap:20px; padding:20px 0; border-top:1px solid #1e1e21; align-items:baseline;">
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">03</span>
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:19px;">Paywall moment</span><span style="font-size:15px; line-height:1.5; color:#9b9793;">The unlock overlay. Designed as a moment, not a modal accident.</span></div>
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">2 variations</span>
+      </div>
+      <div style="display:grid; grid-template-columns:56px 1fr 220px; gap:20px; padding:20px 0; border-top:1px solid #1e1e21; align-items:baseline;">
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">04</span>
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:19px;">Pricing</span><span style="font-size:15px; line-height:1.5; color:#9b9793;">Three tiers, one obvious winner, and the honest list of what free actually gets.</span></div>
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">2 variations</span>
+      </div>
+      <div style="display:grid; grid-template-columns:56px 1fr 220px; gap:20px; padding:20px 0; border-top:1px solid #1e1e21; align-items:baseline;">
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">05</span>
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:19px;">Search &amp; filters, collections</span><span style="font-size:15px; line-height:1.5; color:#9b9793;">Command-K search over the whole vault; collections as curated bundles with their own covers.</span></div>
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">single direction</span>
+      </div>
+      <div style="display:grid; grid-template-columns:56px 1fr 220px; gap:20px; padding:20px 0; border-top:1px solid #1e1e21; align-items:baseline;">
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">06</span>
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:19px;">Checkout &amp; onboarding</span><span style="font-size:15px; line-height:1.5; color:#9b9793;">One-screen checkout; onboarding that asks stack + mood and seeds the first collection.</span></div>
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">single direction</span>
+      </div>
+      <div style="display:grid; grid-template-columns:56px 1fr 220px; gap:20px; padding:20px 0; border-top:1px solid #1e1e21; border-bottom:1px solid #1e1e21; align-items:baseline;">
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">07</span>
+        <div style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:19px;">Dashboard + studio admin</span><span style="font-size:15px; line-height:1.5; color:#9b9793;">Saved and unlocked items; your private upload flow and earnings view.</span></div>
+        <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#6e6a66;">single direction</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:36px;">
+    <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid #1e1e21; padding-bottom:16px;">
+      <span style="font-family:'Geist Mono',monospace; font-size:12px; color:#C9C733;">06</span>
+      <h2 style="font-size:30px; font-weight:400; letter-spacing:-0.02em; margin:0;">The design system</h2>
+    </div>
+    <p style="font-size:17px; line-height:1.6; color:#9b9793; margin:0; max-width:700px;">Cinematic dark stays the default — that's the getlayers register you picked. From your reference boards I'm taking the warm near-black (not blue-black), the cream ink, the green-to-lime accent ladder, and the serif-display-over-neutral-UI type pairing. The same tokens invert into a cream light mode, so marketing pages can breathe while the library stays dark.</p>
+
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66;">Dark mode — surface &amp; ink</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px;">
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#12100F; border:1px solid #2B2723;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#12100F · void</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#1E1C1A; border:1px solid #2B2723;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#1E1C1A · card</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#2B2723;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#2B2723 · hairline</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#8A8580;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#8A8580 · muted</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#FAF8F4;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#FAF8F4 · ivory ink</div></div>
+      </div>
+
+      <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66; margin-top:14px;">Light mode — surface &amp; ink</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px;">
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#FAF8F4;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#FAF8F4 · paper</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#F5FFDD;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#F5FFDD · cream tint</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#EDE7DF;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#EDE7DF · beige</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#D6CEC7;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#D6CEC7 · taupe rule</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#2B2723;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#2B2723 · brown ink</div></div>
+      </div>
+
+      <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66; margin-top:14px;">Accent ladder — shared by both modes</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px;">
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#183A15;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#183A15 · forest</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#5D6F2D;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#5D6F2D · olive</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#A7A401;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#A7A401 · lime</div></div>
+        <div style="display:flex; flex-direction:column; gap:8px;"><div style="height:76px; border-radius:10px; background:#C9C733;"></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#9b9793;">#C9C733 · lime bright</div></div>
+      </div>
+      <div style="font-size:15px; line-height:1.6; color:#9b9793; max-width:720px;">One ladder, three jobs: <span style="color:#e8e6e3;">forest</span> for filled buttons and unlocked states on light, <span style="color:#e8e6e3;">lime</span> for the same on dark, <span style="color:#e8e6e3;">olive</span> for hover and active rules. Lime bright is text-on-dark only, where #A7A401 goes too dim. Nothing else gets colour — no per-category hues, no gradient backgrounds.</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px;">
+      <div style="background:#12100F; border:1px solid #2B2723; border-radius:14px; padding:26px; display:flex; flex-direction:column; gap:12px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#C9C733;">Dark is home</div>
+        <div style="font-size:15px; line-height:1.6; color:#c9c5c1;">Library grid, item detail, paywall, dashboard, checkout. Previews are the only bright thing on screen, which is exactly the getlayers effect.</div>
+      </div>
+      <div style="background:#FAF8F4; border:1px solid #D6CEC7; border-radius:14px; padding:26px; display:flex; flex-direction:column; gap:12px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#5D6F2D;">Light is for reading</div>
+        <div style="font-size:15px; line-height:1.6; color:#3a352f;">Pricing, docs, about, onboarding, emails. Cream paper with brown ink and forest buttons — the switch itself signals "this is the studio talking", not the vault.</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px;">
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:28px; display:flex; flex-direction:column; gap:18px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66;">Type</div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div><div style="font-family:'Instrument Serif',serif; font-size:48px; line-height:1.05; letter-spacing:-0.01em;">Instrument Serif <em>display</em></div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#6e6a66; margin-top:8px;">display · 44–96px · stands in for Test Tiempos Fine · italic for emphasis</div></div>
+          <div><div style="font-family:Inter,sans-serif; font-size:17px; line-height:1.6; color:#c9c5c1; font-weight:300;">Inter carries every paragraph and all UI chrome — nav, filters, buttons, tables. Exactly the split on your reference board: one expressive face, one that gets out of the way.</div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#6e6a66; margin-top:8px;">body + UI · 15–19px · 1.6</div></div>
+          <div><div style="font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:#C9C733;">GEIST MONO · METADATA</div><div style="font-family:'Geist Mono',monospace; font-size:11px; color:#6e6a66; margin-top:8px;">labels, counts, tags, prices · 11–12px · tracking 14%</div></div>
+        </div>
+      </div>
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:28px; display:flex; flex-direction:column; gap:18px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66;">Card anatomy</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="border:1px solid #2a2a2e; border-radius:12px; overflow:hidden; background:#0e0e11;">
+            <div style="height:130px; background:repeating-linear-gradient(135deg,#141417 0 10px,#0f0f12 10px 20px); display:flex; align-items:flex-start; justify-content:space-between; padding:12px;">
+              <span style="font-family:'Geist Mono',monospace; font-size:10px; color:#C9C733; border:1px solid #C9C733; border-radius:99px; padding:3px 8px;">UNLIMITED</span>
+              <span style="font-family:'Geist Mono',monospace; font-size:10px; color:#6e6a66;">preview loop</span>
+            </div>
+            <div style="padding:14px; display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+              <span style="font-size:15px;">Item name</span>
+              <span style="font-family:'Geist Mono',monospace; font-size:10px; color:#6e6a66;">3D SCENE · THREE</span>
+            </div>
+          </div>
+          <div style="font-size:15px; line-height:1.6; color:#9b9793;">Preview fills the frame edge to edge. Access badge top-left, type + stack bottom-right in mono. Title in Instrument Serif. No descriptions on cards, no author avatars, no hover-reveal buttons — the preview is the pitch.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;">
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66;">Grid</div>
+        <div style="font-size:15px; line-height:1.6; color:#c9c5c1;">12-column, 1440 max, 24px gutters. Cards in a 3-up masonry so tall 3D scenes and wide landing pages both sit right. 8px spacing scale throughout.</div>
+      </div>
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66;">Form</div>
+        <div style="font-size:15px; line-height:1.6; color:#c9c5c1;">Radius 12px on cards, 99px on pills, 0 on nothing. Borders are 1px hairlines, never shadows — shadows on near-black just look muddy.</div>
+      </div>
+      <div style="border:1px solid #1e1e21; border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6e6a66;">Motion</div>
+        <div style="font-size:15px; line-height:1.6; color:#c9c5c1;">Previews autoplay muted and loop, staggered so the grid never pulses in unison. Hover lifts the border to lime in 160ms. No parallax, no scroll-jacking, no entrance animation on the grid.</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:24px; border:1px solid #C9C733; border-radius:16px; padding:36px;">
+    <div style="font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#C9C733;">Open decisions — I need you on these</div>
+    <div style="display:flex; flex-direction:column; gap:14px; font-size:17px; line-height:1.6; color:#c9c5c1; max-width:760px;">
+      <div>1 — Which two names should I pursue?</div>
+      <div>2 — Real previews: do you have actual outputs I can drop in, or do I build with striped placeholders for now? This is the single biggest factor in whether it reads as premium.</div>
+      <div>3 — Roughly how many items exist at launch? Under 60 changes the pitch from "library" to "curated vault", and I'd design the grid differently.</div>
+      <div>4 — Monthly price point you have in mind, so pricing copy is honest rather than invented.</div>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}"></script>
+</body>
+</html>

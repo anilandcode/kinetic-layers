@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Sora, Source_Serif_4, Geist_Mono } from "next/font/google";
+import { Sora, Source_Serif_4, Geist_Mono, Figtree, Cormorant } from "next/font/google";
 import KilnMotion from "@/components/kiln/KilnMotion";
 import Analytics from "@/components/kiln/Analytics";
 import AssetModal from "@/components/kiln/AssetModal";
@@ -29,6 +29,30 @@ const mono = Geist_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-mono",
+  display: "swap",
+});
+
+/**
+ * Kinetic Layers typography.
+ *
+ * Figtree carries everything, Cormorant italic is reserved for the single pull
+ * line on each screen, and Geist Mono (above) is shared with the old palette
+ * for labels. Sora and Source Serif stay until the last unmigrated route is
+ * moved across — both sets are live at once, which is why these get their own
+ * variable names rather than reusing --font-sora.
+ */
+const figtree = Figtree({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--kl-sans",
+  display: "swap",
+});
+
+const cormorant = Cormorant({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["italic"],
+  variable: "--kl-serif",
   display: "swap",
 });
 
@@ -66,7 +90,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`no-js ${sora.variable} ${serif.variable} ${mono.variable}`}>
+    <html
+      lang="en"
+      className={`no-js ${sora.variable} ${serif.variable} ${mono.variable} ${figtree.variable} ${cormorant.variable}`}
+    >
       <body>
         {/* Drops the no-js class before paint, so the reveal starting states
             only apply when the motion layer can actually clear them. */}
