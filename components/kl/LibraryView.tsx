@@ -226,7 +226,6 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
                   <AssetCard
                     key={asset.slug}
                     asset={asset}
-                    index={i}
                     locked={!unlocked && !asset.free}
                   />
                 );

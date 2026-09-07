@@ -98,7 +98,7 @@ export default async function HomeView() {
           <div className="kl-masonry" data-masonry style={{ marginTop: 22 }}>
             {newest.flatMap((asset: Asset, i: number) => {
               const card = (
-                <AssetCard key={asset.slug} asset={asset} index={i} locked={!unlocked && !asset.free} />
+                <AssetCard key={asset.slug} asset={asset} locked={!unlocked && !asset.free} />
               );
               if (i === 3 && !unlocked)
                 return [card, <UpgradeCard key="promo-upgrade" price={settings.monthlyPrice} />];

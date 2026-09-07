@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Asset } from "@/lib/kl/types";
 import { mediaUrl } from "@/lib/kl/media";
+import { groundFor } from "@/lib/kl/ground";
 
 /**
  * One asset in the masonry.
@@ -15,20 +16,15 @@ import { mediaUrl } from "@/lib/kl/media";
  * layer, which is the point.
  */
 
-/* Six thumbnail grounds, cycled by index so a column never repeats itself. */
-const GROUNDS = ["--t1", "--t2", "--t3", "--t4", "--t5", "--t6"] as const;
-
 export default function AssetCard({
   asset,
-  index,
   locked,
 }: {
   asset: Asset;
-  index: number;
   /** Whether this one is behind the paywall for the current viewer. */
   locked: boolean;
 }) {
-  const ground = GROUNDS[index % GROUNDS.length];
+  const ground = groundFor(asset.slug);
   const poster = asset.poster ? mediaUrl(asset.poster) : null;
 
   return (

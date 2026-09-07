@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAsset, getAssets, getAssetSlugs, getRelated, getSettings } from "@/lib/sanity/queries";
+import { getAsset, getAssetSlugs, getRelated, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
 import { canDownload } from "@/lib/kl/gate";
 import { EARLY_ACCESS } from "@/lib/kl/access";
@@ -31,12 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [asset, viewer, settings, all] = await Promise.all([
-    getAsset(slug),
-    getViewer(),
-    getSettings(),
-    getAssets(),
-  ]);
+  const [asset, viewer, settings] = await Promise.all([getAsset(slug), getViewer(), getSettings()]);
   if (!asset) notFound();
 
   const related = await getRelated(slug);
@@ -44,10 +39,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   /* One rule, one home: canDownload is the same answer /api/download gives,
      so the button and the endpoint cannot disagree. */
   const locked = !EARLY_ACCESS && !canDownload(viewer, asset);
-
-  /* Position in the catalogue picks the thumbnail ground, so an item's colour
-     matches the card it was opened from. */
-  const index = Math.max(0, all.findIndex((a) => a.slug === slug));
 
   return (
     <ItemView
@@ -58,7 +49,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       locked={locked}
       monthlyPrice={settings.monthlyPrice}
       total={settings.totalAssets}
-      index={index}
     />
   );
 }

@@ -4,6 +4,7 @@ import Shell from "./Shell";
 import Footer from "./Footer";
 import GlassButton from "./GlassButton";
 import { mediaUrl } from "@/lib/kl/media";
+import { groundFor } from "@/lib/kl/ground";
 import { EARLY_ACCESS } from "@/lib/kl/access";
 import type { Asset, Viewer } from "@/lib/kl/types";
 
@@ -26,8 +27,6 @@ import type { Asset, Viewer } from "@/lib/kl/types";
  * components/kiln/ItemView.tsx is left in place and still holds all of that,
  * so none of it has to be rewritten to come back.
  */
-
-const GROUNDS = ["--t1", "--t2", "--t3", "--t4", "--t5", "--t6"] as const;
 
 /* What lands in the download. Three fixed layers, the same on every asset —
    the design's copy, and true of every item in the library. */
@@ -60,7 +59,6 @@ export default function ItemView({
   locked,
   monthlyPrice,
   total,
-  index = 0,
 }: {
   asset: Asset;
   related: Asset[];
@@ -71,9 +69,8 @@ export default function ItemView({
   monthlyPrice: number;
   /** Catalogue size, for the footer. */
   total: number;
-  index?: number;
 }) {
-  const ground = GROUNDS[index % GROUNDS.length];
+  const ground = groundFor(asset.slug);
   const poster = asset.poster ? mediaUrl(asset.poster) : null;
 
   /* Facts come from the asset's own specs first, then the fields every item
@@ -233,7 +230,7 @@ export default function ItemView({
                     <Link key={r.slug} href={`/item/${r.slug}`} className="kl-related">
                       <span
                         className="kl-related-thumb"
-                        style={{ background: `var(${GROUNDS[(index + i + 1) % GROUNDS.length]})` }}
+                        style={{ background: `var(${groundFor(r.slug)})` }}
                       >
                         {thumb ? <img src={thumb} alt="" decoding="async" /> : null}
                       </span>
