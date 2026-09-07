@@ -848,3 +848,310 @@
   flex-wrap: wrap;
   pointer-events: auto;
 }
+
+/* ---------- Process screen ------------------------------------------------ */
+
+[data-kl] .kl-section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+[data-kl] .kl-kicker {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--amber);
+}
+[data-kl] .kl-h2 {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  margin: 0;
+  max-width: 640px;
+  text-wrap: balance;
+  color: var(--ink);
+}
+[data-kl] .kl-lede {
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 500px;
+  margin: 0;
+}
+
+/* The deck. Layers are absolutely placed and fan apart on scroll; below
+   880px kl-tokens.css flows them into a stack instead, because absolute
+   layers overlap the moment the copy wraps. */
+[data-kl] .kl-deck {
+  position: relative;
+  height: 580px;
+  margin-top: 40px;
+}
+[data-kl] .kl-layer {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px 24px;
+  will-change: transform;
+}
+[data-kl] .kl-layer-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+[data-kl] .kl-layer-name {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.024em;
+  color: var(--ink);
+}
+[data-kl] .kl-layer-meta {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+[data-kl] .kl-layer p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 10px 0 0;
+  max-width: 520px;
+}
+
+/* Proof cards */
+[data-kl] .kl-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+}
+[data-kl] .kl-proof {
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow);
+}
+[data-kl] .kl-sheen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+[data-kl] .kl-mock {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  background: var(--inset);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  min-height: 126px;
+  box-sizing: border-box;
+}
+[data-kl] .kl-mock-bars {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+}
+[data-kl] .kl-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+[data-kl] .kl-bar-label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  width: 52px;
+  flex-shrink: 0;
+}
+[data-kl] .kl-bar-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--line3);
+  overflow: hidden;
+}
+[data-kl] .kl-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--dot);
+}
+[data-kl] .kl-bar-fill--hot {
+  background: rgba(232, 133, 58, 0.75);
+}
+[data-kl] .kl-bar-n {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  color: var(--body);
+  width: 26px;
+  text-align: right;
+  flex-shrink: 0;
+}
+[data-kl] .kl-proof h3 {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.024em;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+[data-kl] .kl-proof p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Pattern fills for the mock panels */
+[data-kl] .kl-pat {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+[data-kl] .kl-pat--dots {
+  background-image: radial-gradient(rgba(var(--pat), 0.09) 1px, transparent 1.4px);
+  background-size: 16px 16px;
+}
+[data-kl] .kl-pat--hatch {
+  background-image: repeating-linear-gradient(
+    48deg,
+    rgba(var(--pat), 0.07) 0 1px,
+    transparent 1px 9px
+  );
+}
+[data-kl] .kl-pat--mesh {
+  background-image:
+    linear-gradient(rgba(var(--pat), 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--pat), 0.06) 1px, transparent 1px);
+  background-size: 22px 22px, 22px 22px;
+}
+
+/* Logo marquee */
+[data-kl] .kl-rule-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 64px;
+}
+[data-kl] .kl-rule-label {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+[data-kl] .kl-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+[data-kl] .kl-marquee-mask {
+  overflow: hidden;
+  margin-top: 22px;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+[data-kl] .kl-marquee {
+  display: flex;
+  gap: 52px;
+  width: max-content;
+  align-items: center;
+}
+[data-kl] .kl-marquee span {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Drop log */
+[data-kl] .kl-split {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 56px;
+  align-items: center;
+  margin-top: 88px;
+}
+[data-kl] .kl-split-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+[data-kl] .kl-split-copy h2 {
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: pretty;
+  color: var(--ink);
+}
+[data-kl] .kl-split-copy p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 440px;
+  margin: 0;
+}
+[data-kl] .kl-log {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+[data-kl] .kl-log-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line2);
+}
+[data-kl] .kl-log-row:last-child {
+  border-bottom: 0;
+}
+[data-kl] .kl-log-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+[data-kl] .kl-log-title {
+  font-size: 15px;
+  color: var(--ink);
+}
+[data-kl] .kl-log-meta {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+[data-kl] .kl-log-tag {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  border-radius: 99px;
+  padding: 5px 10px;
+  flex-shrink: 0;
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-line);
+  color: var(--amber);
+}
