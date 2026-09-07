@@ -1155,3 +1155,62 @@
   border: 1px solid var(--amber-line);
   color: var(--amber);
 }
+
+/* ---------- Library ------------------------------------------------------- */
+
+/* The library headline sits lower than the home hero's, so it gets its own
+   size rather than overriding kl-h1 everywhere. */
+[data-kl] .kl-h1--library {
+  font-size: 52px;
+  letter-spacing: -0.046em;
+  line-height: 1.02;
+  margin: 0;
+  max-width: 720px;
+}
+
+/* The count inside a chip. facets.ts exists so this number answers "what
+   would I get if I picked this instead" — never the whole catalogue. */
+[data-kl] .kl-pill-n {
+  margin-left: 7px;
+  opacity: 0.62;
+  font-variant-numeric: tabular-nums;
+}
+[data-kl] .kl-pill[aria-current="true"] .kl-pill-n {
+  opacity: 0.85;
+}
+
+/* The "see everything" escape from the home strip. */
+[data-kl] .kl-strip-link {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--amber);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* The rail has more axes than the prototype's did — type, category, theme,
+   sort and saved, rather than shelf and mood. Wrapped at phone width that is
+   twenty pills and roughly a full screen of filters before any content.
+   Below 720px it becomes one horizontally-scrollable row instead: every
+   filter stays reachable, and the library is still the first thing you see. */
+@media (max-width: 720px) {
+  [data-kl] .kl-rail-inner {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  [data-kl] .kl-rail-inner::-webkit-scrollbar {
+    display: none;
+  }
+  [data-kl] .kl-pill {
+    flex-shrink: 0;
+  }
+  /* The spacer would consume the scroll width and push the count out of
+     reach, so it collapses when the row scrolls. */
+  [data-kl] .kl-rail-inner .kl-spacer {
+    flex: 0 0 12px;
+  }
+}

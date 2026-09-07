@@ -1,5 +1,5 @@
 import HomeView from "@/components/kl/HomeView";
 
-export default function Home({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
-  return <HomeView searchParams={searchParams} />;
+export default function Home() {
+  return <HomeView />;
 }
