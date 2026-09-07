@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { Asset } from "@/lib/kiln/types";
+import type { Asset } from "@/lib/kl/types";
 import { track } from "@/lib/track";
 
 /**

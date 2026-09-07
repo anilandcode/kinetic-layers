@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { admin } from "@/lib/supabase/admin";
-import { getViewer, canDownload } from "@/lib/kiln/viewer";
-import { consumeQuota, quotaRefusal, refund, subjectFor } from "@/lib/kiln/quota";
+import { getViewer, canDownload } from "@/lib/kl/viewer";
+import { consumeQuota, quotaRefusal, refund, subjectFor } from "@/lib/kl/quota";
 import { getAsset, getAssetFiles } from "@/lib/sanity/queries";
 
 /**

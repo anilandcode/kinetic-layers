@@ -3,9 +3,9 @@ import Header from "./Header";
 import Shell from "./Shell";
 import Footer from "./Footer";
 import GlassButton from "./GlassButton";
-import { mediaUrl } from "@/lib/kiln/media";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
-import type { Asset, Viewer } from "@/lib/kiln/types";
+import { mediaUrl } from "@/lib/kl/media";
+import { EARLY_ACCESS } from "@/lib/kl/access";
+import type { Asset, Viewer } from "@/lib/kl/types";
 
 /**
  * An asset, in the Kinetic Layers treatment.

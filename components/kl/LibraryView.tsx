@@ -7,7 +7,7 @@ import AssetCard from "./AssetCard";
 import DotFieldCta from "./DotFieldCta";
 import { UpgradeCard, HireCard, NewsCard } from "./PromoCards";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
-import { getViewer } from "@/lib/kiln/viewer";
+import { getViewer } from "@/lib/kl/viewer";
 import { createClient } from "@/lib/supabase/server";
 import {
   applyFilters,
@@ -17,9 +17,9 @@ import {
   SORTS,
   SORT_LABEL,
   type Filters,
-} from "@/lib/kiln/facets";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
-import type { Asset, Category, Theme } from "@/lib/kiln/types";
+} from "@/lib/kl/facets";
+import { EARLY_ACCESS } from "@/lib/kl/access";
+import type { Asset, Category, Theme } from "@/lib/kl/types";
 
 /**
  * The library, in the Kinetic Layers treatment.

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import AssetCard from "@/components/kiln/AssetCard";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import AssetCard from "@/components/legacy/AssetCard";
 import { getCollection, getCollectionSlugs } from "@/lib/sanity/queries";
-import { getViewer } from "@/lib/kiln/viewer";
+import { getViewer } from "@/lib/kl/viewer";
 import { createClient } from "@/lib/supabase/server";
-import SaveButton from "@/components/kiln/SaveButton";
+import SaveButton from "@/components/legacy/SaveButton";
 
 /* The design links Collections straight to an item and never draws the
    collection itself. This is that missing page. */

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { CONTACT_EMAIL } from "@/lib/kiln/site";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import { DraftNote, ProseHero, Terms } from "@/components/kiln/Prose";
-import { getViewer } from "@/lib/kiln/viewer";
+import { CONTACT_EMAIL } from "@/lib/kl/site";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import { DraftNote, ProseHero, Terms } from "@/components/legacy/Prose";
+import { getViewer } from "@/lib/kl/viewer";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/privacy" },
@@ -58,7 +58,7 @@ export default async function Privacy() {
     },
     {
       h: "Payments",
-      p: "There are none. Kiln is free while it is in early access and no checkout is connected, so no card details reach this site at all. If that changes, payment will go through a processor and card details will still never touch this server.",
+      p: "There are none. Kinetic Layers is free while it is in early access and no checkout is connected, so no card details reach this site at all. If that changes, payment will go through a processor and card details will still never touch this server.",
     },
   ];
 

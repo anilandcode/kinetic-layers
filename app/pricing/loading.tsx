@@ -1,4 +1,4 @@
-import { LoadingAnnouncement, Shimmer } from "@/components/kiln/Skeleton";
+import { LoadingAnnouncement, Shimmer } from "@/components/legacy/Skeleton";
 
 export default function Loading() {
   return (

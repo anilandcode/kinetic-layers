@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import AssetCard from "@/components/kiln/AssetCard";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import AssetCard from "@/components/legacy/AssetCard";
 import { getAssets, getDrops, getSettings } from "@/lib/sanity/queries";
-import { getViewer } from "@/lib/kiln/viewer";
-import { canDownload } from "@/lib/kiln/gate";
-import { Spell } from "@/lib/kiln/words";
-import type { Drop } from "@/lib/kiln/types";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import { getViewer } from "@/lib/kl/viewer";
+import { canDownload } from "@/lib/kl/gate";
+import { Spell } from "@/lib/kl/words";
+import type { Drop } from "@/lib/kl/types";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 /**
  * The landing page, in either treatment.
@@ -182,7 +182,7 @@ export default async function HomeView({
             </h2>
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", maxWidth: 460 }}>
               {EARLY_ACCESS
-                ? "The whole vault and every source file, free while Kiln is in early access. Make an account and take what you need."
+                ? "The whole vault and every source file, free while Kinetic Layers is in early access. Make an account and take what you need."
                 : "One subscription, the whole vault, every source file. Cancel and keep everything you downloaded."}
             </p>
             <div style={{ display: "flex", gap: 12, marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>

@@ -1,7 +1,7 @@
 import "server-only";
 import { groq } from "next-sanity";
 import { sanity } from "./client";
-import type { Asset, Collection, Drop, Settings } from "@/lib/kiln/types";
+import type { Asset, Collection, Drop, Settings } from "@/lib/kl/types";
 
 /**
  * Every read the site makes.

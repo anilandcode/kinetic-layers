@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { canReadPrompt } from "@/lib/kiln/gate";
-import { keyFromRequest, viewerFromApiKey } from "@/lib/kiln/apikey";
-import { consumeQuota, quotaRefusal, refund, subjectFor, type Subject } from "@/lib/kiln/quota";
-import { describeReset } from "@/lib/kiln/limits";
+import { canReadPrompt } from "@/lib/kl/gate";
+import { keyFromRequest, viewerFromApiKey } from "@/lib/kl/apikey";
+import { consumeQuota, quotaRefusal, refund, subjectFor, type Subject } from "@/lib/kl/quota";
+import { describeReset } from "@/lib/kl/limits";
 import { getAsset, getAssets, getPromptBody, searchAssets } from "@/lib/sanity/queries";
-import { SITE_URL } from "@/lib/kiln/site";
-import type { Viewer } from "@/lib/kiln/types";
+import { SITE_URL } from "@/lib/kl/site";
+import type { Viewer } from "@/lib/kl/types";
 
 /**
  * MCP server, over streamable HTTP.
@@ -46,7 +46,7 @@ const TOOLS = [
   {
     name: "search_assets",
     description:
-      "Search the Kiln catalogue of prompts, templates, 3D scenes, backgrounds and agent workflows. Returns names, slugs and whether each is free. Use get_prompt with a slug to read the full prompt text.",
+      "Search the Kinetic Layers catalogue of prompts, templates, 3D scenes, backgrounds and agent workflows. Returns names, slugs and whether each is free. Use get_prompt with a slug to read the full prompt text.",
     inputSchema: {
       type: "object",
       properties: {
@@ -62,7 +62,7 @@ const TOOLS = [
   {
     name: "get_prompt",
     description:
-      "Read the full prompt text for one asset. Free assets are readable without a key at a low daily rate; a Kiln API key raises the allowance, and paid assets require a key on an active unlimited subscription. Every read counts against the same daily budget as the website.",
+      "Read the full prompt text for one asset. Free assets are readable without a key at a low daily rate; a Kinetic Layers API key raises the allowance, and paid assets require a key on an active unlimited subscription. Every read counts against the same daily budget as the website.",
     inputSchema: {
       type: "object",
       properties: { slug: { type: "string", description: "The asset slug from search_assets." } },
@@ -131,7 +131,7 @@ async function runTool(
       return {
         error: viewer
           ? `"${asset.name}" is included with unlimited. Your key is on the free plan. ${SITE_URL}/pricing`
-          : `"${asset.name}" needs an account. Create a Kiln API key at ${SITE_URL}/account and send it as "Authorization: Bearer <key>".`,
+          : `"${asset.name}" needs an account. Create a Kinetic Layers API key at ${SITE_URL}/account and send it as "Authorization: Bearer <key>".`,
       };
     }
 
@@ -183,7 +183,7 @@ export async function POST(request: Request) {
       capabilities: { tools: { listChanged: false } },
       serverInfo: { name: "kiln", version: "1.0.0" },
       instructions:
-        "Kiln is a library of prompts, templates, scenes and agent workflows. Use search_assets to find something, then get_prompt with its slug to read the prompt in full. Prompt reads are rate limited per day and share one budget with the website; an API key from the Kiln account page raises the allowance, and paid assets need a key on an unlimited subscription.",
+        "Kinetic Layers is a library of prompts, templates, scenes and agent workflows. Use search_assets to find something, then get_prompt with its slug to read the prompt in full. Prompt reads are rate limited per day and share one budget with the website; an API key from the Kinetic Layers account page raises the allowance, and paid assets need a key on an unlimited subscription.",
     });
   }
 

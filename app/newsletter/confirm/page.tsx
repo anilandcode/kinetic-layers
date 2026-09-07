@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import NoticePage from "@/components/kiln/NoticePage";
-import { confirmByToken } from "@/lib/kiln/newsletter";
+import NoticePage from "@/components/legacy/NoticePage";
+import { confirmByToken } from "@/lib/kl/newsletter";
 
 /* Nothing here should be indexed or cached: it is a one-time action addressed
    by a token. */

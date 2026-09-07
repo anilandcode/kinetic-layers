@@ -1,12 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import CollectionFilter from "@/components/kiln/CollectionFilter";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import CollectionFilter from "@/components/legacy/CollectionFilter";
 import { getCollections, getSettings } from "@/lib/sanity/queries";
-import { getViewer } from "@/lib/kiln/viewer";
-import type { Shelf } from "@/lib/kiln/types";
-import PreviewMedia from "@/components/kiln/PreviewMedia";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import { getViewer } from "@/lib/kl/viewer";
+import type { Shelf } from "@/lib/kl/types";
+import PreviewMedia from "@/components/legacy/PreviewMedia";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/collections" },

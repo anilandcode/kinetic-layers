@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb, visitorHash } from "@/lib/supabase";
 import { clean, EVENT_NAMES, oneOf, truthy, VARIANTS } from "@/lib/contracts";
-import { throttle } from "@/lib/kiln/quota";
+import { throttle } from "@/lib/kl/quota";
 
 /**
  * First-party event sink.

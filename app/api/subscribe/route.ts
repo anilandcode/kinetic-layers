@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb, visitorHash } from "@/lib/supabase";
-import { throttle } from "@/lib/kiln/quota";
-import { EMAIL_READY, confirmationMail, sendMail } from "@/lib/kiln/email";
+import { throttle } from "@/lib/kl/quota";
+import { EMAIL_READY, confirmationMail, sendMail } from "@/lib/kl/email";
 import {
   clean,
   CONCEPTS,

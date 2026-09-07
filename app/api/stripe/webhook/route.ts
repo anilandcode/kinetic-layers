@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { admin } from "@/lib/supabase/admin";
-import { stripe, toEntitlementStatus } from "@/lib/kiln/stripe";
+import { stripe, toEntitlementStatus } from "@/lib/kl/stripe";
 
 /**
  * Stripe's half of the entitlement seam.

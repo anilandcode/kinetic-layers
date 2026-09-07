@@ -9,10 +9,10 @@ import { track } from "@/lib/track";
  *
  * `/api/event` and lib/track.ts were both written and both worked — nothing
  * ever mounted them, so the table stayed empty. This is the missing mount,
- * scoped to Kiln.
+ * scoped to Kinetic Layers.
  *
  * Deliberately NOT components/ClientRuntime.tsx: that one also drives a
- * `.reveal` class the archived demand test used, which Kiln does not have. Its
+ * `.reveal` class the archived demand test used, which Kinetic Layers does not have. Its
  * reveal logic would query nothing and quietly imply something is happening.
  *
  * Anything with `data-track="name"` reports on click. `data-track-detail`

@@ -1,14 +1,14 @@
 import { ImageResponse } from "next/og";
 import { getSettings } from "@/lib/sanity/queries";
-import { SITE_NAME } from "@/lib/kiln/site";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import { SITE_NAME } from "@/lib/kl/site";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
-export const alt = "Kiln — a library worth stealing from";
+export const alt = "Kinetic Layers — a library worth stealing from";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 /**
- * The card people actually see when a Kiln link is pasted anywhere.
+ * The card people actually see when a Kinetic Layers link is pasted anywhere.
  *
  * Drawn rather than uploaded, so the count on it is the real one and cannot go
  * stale the way a hand-made PNG would. next/og runs on the edge runtime and

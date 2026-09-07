@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAsset, getSettings } from "@/lib/sanity/queries";
-import { getViewer, gateReason } from "@/lib/kiln/viewer";
-import { promptGateReason } from "@/lib/kiln/gate";
+import { getViewer, gateReason } from "@/lib/kl/viewer";
+import { promptGateReason } from "@/lib/kl/gate";
 import { createClient } from "@/lib/supabase/server";
 
 /**

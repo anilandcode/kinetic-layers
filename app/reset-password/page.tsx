@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Mark } from "@/components/kiln/Chrome";
-import { getViewer } from "@/lib/kiln/viewer";
-import PasswordForm from "@/components/kiln/PasswordForm";
+import { Mark } from "@/components/legacy/Chrome";
+import { getViewer } from "@/lib/kl/viewer";
+import PasswordForm from "@/components/legacy/PasswordForm";
 import Link from "next/link";
 
 export const metadata: Metadata = { title: "Set a new password", robots: { index: false, follow: false } };
@@ -20,7 +20,7 @@ export default async function ResetPassword() {
         <div className="shell" style={{ height: 66, display: "flex", alignItems: "center", gap: 20 }}>
           <Link data-nav href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
             <Mark />
-            <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kiln</span>
+            <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kinetic Layers</span>
           </Link>
         </div>
       </header>

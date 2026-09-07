@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/kiln/site";
+import { SITE_URL } from "@/lib/kl/site";
 
 /**
  * The disallow list mirrors the pages that already carry `robots: noindex`

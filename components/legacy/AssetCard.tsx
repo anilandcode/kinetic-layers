@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Asset } from "@/lib/kiln/types";
+import type { Asset } from "@/lib/kl/types";
 import PreviewMedia from "./PreviewMedia";
 import CardCopy from "./CardCopy";
 

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getViewer } from "@/lib/kiln/viewer";
-import { canReadPrompt } from "@/lib/kiln/gate";
-import { consumeQuota, quotaRefusal, refund, subjectFor } from "@/lib/kiln/quota";
+import { getViewer } from "@/lib/kl/viewer";
+import { canReadPrompt } from "@/lib/kl/gate";
+import { consumeQuota, quotaRefusal, refund, subjectFor } from "@/lib/kl/quota";
 import { getAsset, getPromptBody } from "@/lib/sanity/queries";
 
 /**

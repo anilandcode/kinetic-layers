@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { Settings, Viewer } from "@/lib/kiln/types";
-import { LIMITS, describeAllowance } from "@/lib/kiln/limits";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import type { Settings, Viewer } from "@/lib/kl/types";
+import { LIMITS, describeAllowance } from "@/lib/kl/limits";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 /* These read the live counts rather than repeating them. A hardcoded "All 240
    assets" beside a price pulled from settings is a promise that silently stops
@@ -148,7 +148,7 @@ export default function PricingBody({
             </h1>
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", maxWidth: 500 }}>
               {EARLY_ACCESS
-                ? `Kiln is new, so all ${settings.totalAssets} assets and every source file are free while it is in early access — an account is the only requirement. This page is what it will cost when that ends, published early so it is never a surprise. Anything you download stays yours.`
+                ? `Kinetic Layers is new, so all ${settings.totalAssets} assets and every source file are free while it is in early access — an account is the only requirement. This page is what it will cost when that ends, published early so it is never a surprise. Anything you download stays yours.`
                 : "Cancel any time and keep every file you already downloaded. No seats, no credits, no per-asset fees."}
             </p>
 

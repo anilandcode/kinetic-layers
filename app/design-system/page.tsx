@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import AssetCard from "@/components/kiln/AssetCard";
+import AssetCard from "@/components/legacy/AssetCard";
 import { getAssets } from "@/lib/sanity/queries";
 
 /**

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import NoticePage from "@/components/kiln/NoticePage";
-import { unsubscribeByToken } from "@/lib/kiln/newsletter";
+import NoticePage from "@/components/legacy/NoticePage";
+import { unsubscribeByToken } from "@/lib/kl/newsletter";
 
 export const metadata: Metadata = { title: "Unsubscribed", robots: { index: false } };
 export const dynamic = "force-dynamic";

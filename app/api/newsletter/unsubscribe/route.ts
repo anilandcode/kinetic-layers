@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { unsubscribeByToken } from "@/lib/kiln/newsletter";
+import { unsubscribeByToken } from "@/lib/kl/newsletter";
 
 /**
  * The address in `List-Unsubscribe`.

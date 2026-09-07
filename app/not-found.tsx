@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Footer, Nav } from "@/components/kiln/Chrome";
+import { Footer, Nav } from "@/components/legacy/Chrome";
 
 export default function NotFound() {
   return (

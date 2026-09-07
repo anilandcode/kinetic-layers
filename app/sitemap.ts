@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAssetSlugs, getCollectionSlugs } from "@/lib/sanity/queries";
-import { SITE_URL } from "@/lib/kiln/site";
+import { SITE_URL } from "@/lib/kl/site";
 
 /**
  * Sitemap, generated from the catalogue rather than maintained by hand.

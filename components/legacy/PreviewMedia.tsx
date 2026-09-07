@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { mediaUrl } from "@/lib/kiln/media";
+import { mediaUrl } from "@/lib/kl/media";
 
 /**
  * Every preview on the site is drawn here, and nowhere else.

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CONTACT_EMAIL } from "@/lib/kiln/site";
+import { CONTACT_EMAIL } from "@/lib/kl/site";
 
 /**
  * The rule-and-links footer.

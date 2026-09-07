@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAsset, getAssets, getAssetSlugs, getRelated, getSettings } from "@/lib/sanity/queries";
-import { getViewer } from "@/lib/kiln/viewer";
-import { canDownload } from "@/lib/kiln/gate";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import { getViewer } from "@/lib/kl/viewer";
+import { canDownload } from "@/lib/kl/gate";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 import ItemView from "@/components/kl/ItemView";
 
 export async function generateStaticParams() {

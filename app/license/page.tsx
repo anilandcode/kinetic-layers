@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { CONTACT_EMAIL } from "@/lib/kiln/site";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import { getViewer } from "@/lib/kiln/viewer";
+import { CONTACT_EMAIL } from "@/lib/kl/site";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import { getViewer } from "@/lib/kl/viewer";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/license" },
   title: "License",
-  description: "What you may do with a Kiln asset.",
+  description: "What you may do with a Kinetic Layers asset.",
 };
 
 /**
@@ -26,7 +26,7 @@ const TERMS: Array<{ h: string; p: string }> = [
   },
   {
     h: "It is permanent, and it does not depend on your account",
-    p: "The licence attaches when you download, and it does not expire. Kiln is free during early access; when it becomes paid, and if you later stop paying or close your account, everything you already downloaded stays licensed to you on these terms. Losing access stops new downloads and new drops. It never reaches back into work you have already shipped.",
+    p: "The licence attaches when you download, and it does not expire. Kinetic Layers is free during early access; when it becomes paid, and if you later stop paying or close your account, everything you already downloaded stays licensed to you on these terms. Losing access stops new downloads and new drops. It never reaches back into work you have already shipped.",
   },
   {
     h: "You may modify it freely",
@@ -42,7 +42,7 @@ const TERMS: Array<{ h: string; p: string }> = [
   },
   {
     h: "Trained models and generated output",
-    p: "Output you generate using a prompt or model from Kiln belongs to you. You may not publish or sell a model whose training data is substantially our assets.",
+    p: "Output you generate using a prompt or model from Kinetic Layers belongs to you. You may not publish or sell a model whose training data is substantially our assets.",
   },
   {
     h: "No warranty",

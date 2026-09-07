@@ -3,8 +3,8 @@ import Shell from "./Shell";
 import Footer from "./Footer";
 import DotFieldCta from "./DotFieldCta";
 import { getDrops, getSettings, getAssets } from "@/lib/sanity/queries";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
-import type { Asset } from "@/lib/kiln/types";
+import { EARLY_ACCESS } from "@/lib/kl/access";
+import type { Asset } from "@/lib/kl/types";
 
 /**
  * How a drop is made.

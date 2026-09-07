@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Sora, Source_Serif_4, Geist_Mono, Figtree, Cormorant } from "next/font/google";
-import KilnMotion from "@/components/kiln/KilnMotion";
-import Analytics from "@/components/kiln/Analytics";
-import AssetModal from "@/components/kiln/AssetModal";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kiln/site";
+import KilnMotion from "@/components/legacy/KilnMotion";
+import Analytics from "@/components/legacy/Analytics";
+import AssetModal from "@/components/legacy/AssetModal";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kl/site";
 import "./globals.css";
 
 /**

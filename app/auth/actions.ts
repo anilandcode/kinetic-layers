@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { AUTH_UNAVAILABLE } from "@/lib/supabase/config";
-import { CONTACT_EMAIL, SITE_URL } from "@/lib/kiln/site";
+import { CONTACT_EMAIL, SITE_URL } from "@/lib/kl/site";
 
 /**
  * Auth as server actions.

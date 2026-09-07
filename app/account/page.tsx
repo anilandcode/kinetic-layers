@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Avatar, Footer, Nav } from "@/components/kiln/Chrome";
-import DownloadFilter from "@/components/kiln/DownloadFilter";
-import DownloadAgain from "@/components/kiln/DownloadAgain";
-import ApiKeys from "@/components/kiln/ApiKeys";
-import { getViewer } from "@/lib/kiln/viewer";
+import { Avatar, Footer, Nav } from "@/components/legacy/Chrome";
+import DownloadFilter from "@/components/legacy/DownloadFilter";
+import DownloadAgain from "@/components/legacy/DownloadAgain";
+import ApiKeys from "@/components/legacy/ApiKeys";
+import { getViewer } from "@/lib/kl/viewer";
 import { createClient } from "@/lib/supabase/server";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
-import { LIMITS, WINDOW_MS, tierOf } from "@/lib/kiln/limits";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import { LIMITS, WINDOW_MS, tierOf } from "@/lib/kl/limits";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 export const metadata: Metadata = { title: "Account", robots: { index: false, follow: false } };
 
@@ -182,7 +182,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               </div>
               <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
                 {EARLY_ACCESS
-                  ? `All ${settings.totalAssets} assets and every source file, free while Kiln is in early access. Nothing to cancel, and anything you download stays yours.`
+                  ? `All ${settings.totalAssets} assets and every source file, free while Kinetic Layers is in early access. Nothing to cancel, and anything you download stays yours.`
                   : viewer.unlimited
                     ? `Renews ${viewer.periodEnd ? new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "automatically"}. Cancel any time and keep every file you downloaded.`
                     : `${settings.freeThisMonth} free assets. Unlimited opens all ${settings.totalAssets} and every source file.`}

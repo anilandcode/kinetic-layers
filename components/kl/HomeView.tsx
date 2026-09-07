@@ -7,9 +7,9 @@ import AssetCard from "./AssetCard";
 import DotFieldCta from "./DotFieldCta";
 import { UpgradeCard, NewsCard } from "./PromoCards";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
-import { getViewer } from "@/lib/kiln/viewer";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
-import type { Asset } from "@/lib/kiln/types";
+import { getViewer } from "@/lib/kl/viewer";
+import { EARLY_ACCESS } from "@/lib/kl/access";
+import type { Asset } from "@/lib/kl/types";
 
 /**
  * The landing page.

@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import AssetCard from "./AssetCard";
-import { type Asset, type Viewer } from "@/lib/kiln/types";
-import { SORTS, SORT_LABEL, type Facets, type Sort } from "@/lib/kiln/facets";
-import { canDownload } from "@/lib/kiln/gate";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import { type Asset, type Viewer } from "@/lib/kl/types";
+import { SORTS, SORT_LABEL, type Facets, type Sort } from "@/lib/kl/facets";
+import { canDownload } from "@/lib/kl/gate";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 /**
  * The library: a sticky filter bar over a masonry.

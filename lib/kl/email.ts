@@ -87,7 +87,7 @@ export function confirmationMail(email: string, token: string): Mail {
   const confirm = confirmUrl(token);
   return {
     to: email,
-    subject: "Confirm your Kiln subscription",
+    subject: "Confirm your Kinetic Layers subscription",
     unsubscribeUrl: unsubscribePostUrl(token),
     text: [
       "One click and you are on the list.",
@@ -100,7 +100,7 @@ export function confirmationMail(email: string, token: string): Mail {
       "If you did not ask for this, ignore this message. You are not subscribed",
       "until you use the link above.",
       "",
-      "— Kiln",
+      "— Kinetic Layers",
       SITE_URL,
     ].join("\n"),
   };

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Mark } from "@/components/kiln/Chrome";
-import JoinForm from "@/components/kiln/JoinForm";
-import { getViewer } from "@/lib/kiln/viewer";
+import { Mark } from "@/components/legacy/Chrome";
+import JoinForm from "@/components/legacy/JoinForm";
+import { getViewer } from "@/lib/kl/viewer";
 import { getSettings } from "@/lib/sanity/queries";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 export const metadata: Metadata = {
   title: "Join",
@@ -44,7 +44,7 @@ export default async function Join({
         <div className="shell" style={{ height: 66, display: "flex", alignItems: "center", gap: 20 }}>
           <Link data-nav href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
             <Mark />
-            <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kiln</span>
+            <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kinetic Layers</span>
           </Link>
           <div style={{ flex: 1 }} />
           {!EARLY_ACCESS && (
@@ -123,7 +123,7 @@ export default async function Join({
               <div style={{ height: 1, background: "#232219", marginTop: 4 }} />
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 15, color: "var(--muted)" }}>
-                  {EARLY_ACCESS ? "Free while Kiln is in early access" : `$${settings.monthlyPrice} a month, cancel anytime`}
+                  {EARLY_ACCESS ? "Free while Kinetic Layers is in early access" : `$${settings.monthlyPrice} a month, cancel anytime`}
                 </span>
                 <Link data-nav href="/pricing" style={{ fontSize: 14, color: "var(--sage-ink)" }}>
                   {EARLY_ACCESS ? "What it will cost later →" : "See pricing →"}

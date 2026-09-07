@@ -4,12 +4,12 @@ import Footer from "./Footer";
 import GlassButton from "./GlassButton";
 import DotFieldCta from "./DotFieldCta";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
-import { getViewer } from "@/lib/kiln/viewer";
-import { checkoutConfigured } from "@/lib/kiln/stripe";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
-import { CONTACT_EMAIL } from "@/lib/kiln/site";
-import { LIMITS } from "@/lib/kiln/limits";
-import type { Asset } from "@/lib/kiln/types";
+import { getViewer } from "@/lib/kl/viewer";
+import { checkoutConfigured } from "@/lib/kl/stripe";
+import { EARLY_ACCESS } from "@/lib/kl/access";
+import { CONTACT_EMAIL } from "@/lib/kl/site";
+import { LIMITS } from "@/lib/kl/limits";
+import type { Asset } from "@/lib/kl/types";
 
 /**
  * Pricing.

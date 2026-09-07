@@ -45,7 +45,7 @@ export const SITE_URL = resolveSiteUrl();
 export const CONTACT_EMAIL =
   process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "hello@kineticlayers.com";
 
-export const SITE_NAME = "Kiln";
+export const SITE_NAME = "Kinetic Layers";
 export const SITE_TAGLINE = "a library worth stealing from";
 export const SITE_DESCRIPTION =
   "Prompts, templates, scenes and workflows built in one studio and shipped weekly. Every item comes with the output, the source, and one site already running on it.";

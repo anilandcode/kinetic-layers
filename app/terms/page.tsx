@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { CONTACT_EMAIL } from "@/lib/kiln/site";
+import { CONTACT_EMAIL } from "@/lib/kl/site";
 import Link from "next/link";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import { DraftNote, ProseHero, Terms } from "@/components/kiln/Prose";
-import { getViewer } from "@/lib/kiln/viewer";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import { DraftNote, ProseHero, Terms } from "@/components/legacy/Prose";
+import { getViewer } from "@/lib/kl/viewer";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
   title: "Terms",
-  description: "The agreement for using Kiln.",
+  description: "The agreement for using Kinetic Layers.",
 };
 
 /** Terms of use. What the licence page covers for assets, this covers for the service. */
@@ -36,7 +36,7 @@ export default async function TermsPage() {
     },
     {
       h: "It is free right now",
-      p: "Kiln is in early access. An account opens the whole catalogue and every source file at no cost, and there is no checkout to go through. This is not a promotion with a countdown — it is simply where the product is.",
+      p: "Kinetic Layers is in early access. An account opens the whole catalogue and every source file at no cost, and there is no checkout to go through. This is not a promotion with a countdown — it is simply where the product is.",
     },
     {
       h: "It will not be free forever",

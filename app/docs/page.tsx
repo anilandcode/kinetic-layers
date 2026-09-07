@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import { Code, ProseHero } from "@/components/kiln/Prose";
-import { getViewer } from "@/lib/kiln/viewer";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import { Code, ProseHero } from "@/components/legacy/Prose";
+import { getViewer } from "@/lib/kl/viewer";
 import { getSettings } from "@/lib/sanity/queries";
-import { LIMITS, describeAllowance } from "@/lib/kiln/limits";
+import { LIMITS, describeAllowance } from "@/lib/kl/limits";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/docs" },

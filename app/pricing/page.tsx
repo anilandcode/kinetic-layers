@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PricingView from "@/components/kl/PricingView";
 import { getSettings } from "@/lib/sanity/queries";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();

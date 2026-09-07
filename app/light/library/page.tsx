@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import LibraryView from "@/components/kiln/LibraryView";
+import LibraryView from "@/components/legacy/LibraryView";
 
 /* The same library in the storefront treatment: same grid, same filters, warm
    neutrals, forest green doing the work sage does on dark. Mirrors how

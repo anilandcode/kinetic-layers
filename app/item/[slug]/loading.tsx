@@ -1,4 +1,4 @@
-import { GridSkeleton, LoadingAnnouncement, Shimmer } from "@/components/kiln/Skeleton";
+import { GridSkeleton, LoadingAnnouncement, Shimmer } from "@/components/legacy/Skeleton";
 
 /** Shaped like the item page: buy rail beside a tall preview. */
 export default function Loading() {

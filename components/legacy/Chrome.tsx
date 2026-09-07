@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { CONTACT_EMAIL } from "@/lib/kiln/site";
+import { CONTACT_EMAIL } from "@/lib/kl/site";
 import SearchTrigger from "./SearchTrigger";
 import NavLinks, { ModeToggle } from "./NavLinks";
-import type { Viewer } from "@/lib/kiln/types";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import type { Viewer } from "@/lib/kl/types";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 /* ============================================================
    Nav and footer — shared by every page.
@@ -67,7 +67,7 @@ export function Nav({ light = false, viewer = null }: { light?: boolean; viewer?
       >
         <Link data-nav href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
           <Mark />
-          <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kiln</span>
+          <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kinetic Layers</span>
         </Link>
 
         <NavLinks />
@@ -167,7 +167,7 @@ export function Footer({ light = false }: { light?: boolean }) {
           color: "var(--faint)",
         }}
       >
-        <span>Kiln — one studio, since 2026</span>
+        <span>Kinetic Layers — one studio, since 2026</span>
         {/* The design hides the primary nav below 1180px and offers nothing in
             its place, which strands three of the four pages on a phone. These
             repeat it here rather than inventing a drawer the design never

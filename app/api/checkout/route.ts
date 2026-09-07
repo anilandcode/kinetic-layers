@@ -2,8 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { admin } from "@/lib/supabase/admin";
 import { getSettings } from "@/lib/sanity/queries";
-import { priceAmount, priceIdFor, stripe, type Interval } from "@/lib/kiln/stripe";
-import { SITE_URL } from "@/lib/kiln/site";
+import { priceAmount, priceIdFor, stripe, type Interval } from "@/lib/kl/stripe";
+import { SITE_URL } from "@/lib/kl/site";
 
 /**
  * Starts a subscription checkout.

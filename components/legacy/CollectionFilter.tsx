@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
-import { SHELVES, type Shelf } from "@/lib/kiln/types";
+import { SHELVES, type Shelf } from "@/lib/kl/types";
 
 /** Shelf filter for the collections index. State lives in the URL, as it does in the library. */
 export default function CollectionFilter({

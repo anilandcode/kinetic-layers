@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import HomeView from "@/components/kiln/HomeView";
+import HomeView from "@/components/legacy/HomeView";
 
 /* The same library in the storefront treatment: same grid, same type, warm
    neutrals, forest green doing the work sage does on dark. */

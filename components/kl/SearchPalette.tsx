@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Asset } from "@/lib/kiln/types";
+import type { Asset } from "@/lib/kl/types";
 
 /**
  * The ⌘K palette.

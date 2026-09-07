@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import gsap from "gsap";
 
 /**
- * The Kiln motion layer.
+ * The Kinetic Layers motion layer.
  *
  * A port of the design's `site-motion.js`. That file loaded GSAP and
  * Motion.dev from a CDN; here GSAP is a real dependency and the pointer

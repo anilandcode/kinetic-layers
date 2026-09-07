@@ -1,4 +1,4 @@
-import { CardSkeleton, LoadingAnnouncement } from "@/components/kiln/Skeleton";
+import { CardSkeleton, LoadingAnnouncement } from "@/components/legacy/Skeleton";
 
 export default function Loading() {
   return (

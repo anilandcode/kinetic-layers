@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Footer, Nav } from "./Chrome";
 import AssetCard from "./AssetCard";
-import type { Asset, Viewer } from "@/lib/kiln/types";
+import type { Asset, Viewer } from "@/lib/kl/types";
 import PreviewMedia from "./PreviewMedia";
 import SaveButton from "./SaveButton";
 import { track } from "@/lib/track";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 /**
  * Item page.
@@ -233,7 +233,7 @@ export default function ItemView({
                   : gate === "needs-account"
                     ? "This one is free — it just needs an account so your downloads have somewhere to live."
                     : EARLY_ACCESS
-                      ? "Download every source file. Free while Kiln is in early access — it just needs an account."
+                      ? "Download every source file. Free while Kinetic Layers is in early access — it just needs an account."
                       : `Download every source file. $${monthlyPrice} a month for the whole vault.`}
               </span>
 

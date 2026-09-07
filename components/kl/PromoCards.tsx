@@ -1,7 +1,7 @@
 import GlassButton from "./GlassButton";
 import NewsletterForm from "./NewsletterForm";
-import { EARLY_ACCESS } from "@/lib/kiln/access";
-import { CONTACT_EMAIL } from "@/lib/kiln/site";
+import { EARLY_ACCESS } from "@/lib/kl/access";
+import { CONTACT_EMAIL } from "@/lib/kl/site";
 
 /**
  * The three cards seeded into the masonry.

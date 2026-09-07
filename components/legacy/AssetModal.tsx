@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Modal from "./Modal";
 import ItemView from "./ItemView";
 import { Shimmer } from "./Skeleton";
-import type { Asset, Viewer } from "@/lib/kiln/types";
+import type { Asset, Viewer } from "@/lib/kl/types";
 
 type Gate = "open" | "needs-account" | "needs-unlimited";
 

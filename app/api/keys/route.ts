@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getViewer } from "@/lib/kiln/viewer";
+import { getViewer } from "@/lib/kl/viewer";
 import { admin } from "@/lib/supabase/admin";
-import { mintKey } from "@/lib/kiln/apikey";
+import { mintKey } from "@/lib/kl/apikey";
 
 /**
  * Mint and revoke API keys for the MCP endpoint.

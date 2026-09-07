@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import { getViewer } from "@/lib/kiln/viewer";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import { getViewer } from "@/lib/kl/viewer";
 
 /**
  * A one-sentence outcome page.

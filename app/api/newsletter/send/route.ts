@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 import { getDb } from "@/lib/supabase";
-import { EMAIL_READY, sendMail, unsubscribePostUrl, unsubscribeUrl } from "@/lib/kiln/email";
-import { SITE_URL } from "@/lib/kiln/site";
+import { EMAIL_READY, sendMail, unsubscribePostUrl, unsubscribeUrl } from "@/lib/kl/email";
+import { SITE_URL } from "@/lib/kl/site";
 
 /**
  * Send one issue.

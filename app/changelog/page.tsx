@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Footer, Nav } from "@/components/kiln/Chrome";
+import { Footer, Nav } from "@/components/legacy/Chrome";
 import { getDrops } from "@/lib/sanity/queries";
-import { getViewer } from "@/lib/kiln/viewer";
+import { getViewer } from "@/lib/kl/viewer";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/changelog" },

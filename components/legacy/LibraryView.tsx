@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import Library from "@/components/kiln/Library";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import Library from "@/components/legacy/Library";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
-import { getViewer } from "@/lib/kiln/viewer";
+import { getViewer } from "@/lib/kl/viewer";
 import { createClient } from "@/lib/supabase/server";
-import { applyFilters, asSort, countFacets, sortAssets } from "@/lib/kiln/facets";
-import type { Category, Theme } from "@/lib/kiln/types";
+import { applyFilters, asSort, countFacets, sortAssets } from "@/lib/kl/facets";
+import type { Category, Theme } from "@/lib/kl/types";
 
 /**
  * The library, in either treatment.

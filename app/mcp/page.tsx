@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Footer, Nav } from "@/components/kiln/Chrome";
-import { Code, ProseHero } from "@/components/kiln/Prose";
-import { getViewer } from "@/lib/kiln/viewer";
-import { SITE_URL } from "@/lib/kiln/site";
+import { Footer, Nav } from "@/components/legacy/Chrome";
+import { Code, ProseHero } from "@/components/legacy/Prose";
+import { getViewer } from "@/lib/kl/viewer";
+import { SITE_URL } from "@/lib/kl/site";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/mcp" },
@@ -43,7 +43,7 @@ export default async function Mcp() {
         <ProseHero
           eyebrow="MCP"
           title="Use the vault from inside your agent."
-          lead="Browsing a gallery to copy a string into another window is the long way round. Connect Kiln over MCP and your agent can search the catalogue and pull a prompt straight into what it is building."
+          lead="Browsing a gallery to copy a string into another window is the long way round. Connect Kinetic Layers over MCP and your agent can search the catalogue and pull a prompt straight into what it is building."
         />
 
         <section id="connect" className="shell prose" style={{ paddingBlock: "24px 20px" }}>
@@ -87,7 +87,7 @@ export default async function Mcp() {
             3. Ask for something
           </h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)" }}>
-            &ldquo;Find me a dark hero scene in Kiln and use its prompt.&rdquo; The agent
+            &ldquo;Find me a dark hero scene in Kinetic Layers and use its prompt.&rdquo; The agent
             searches, picks one, and reads the prompt without you leaving the
             editor.
           </p>

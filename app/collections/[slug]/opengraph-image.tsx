@@ -1,8 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getCollection } from "@/lib/sanity/queries";
-import { SITE_NAME } from "@/lib/kiln/site";
+import { SITE_NAME } from "@/lib/kl/site";
 
-export const alt = "Kiln collection";
+export const alt = "Kinetic Layers collection";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
