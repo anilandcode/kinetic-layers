@@ -3,7 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { admin } from "@/lib/supabase/admin";
 
 /**
- * Grants or revokes unlimited.
+ * Grants or revokes Premium.
  *
  * This is the seam Stripe's webhook will replace: when checkout exists, the
  * webhook writes the same row and this route can go. Until then it is how a
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
   }
 
   const email = String(body.email ?? "").trim().toLowerCase();
-  const plan = body.plan === "unlimited" ? "unlimited" : "free";
+  const plan = body.plan === "premium" ? "premium" : "free";
   const months = Number.isFinite(body.months) ? Number(body.months) : 1;
   if (!email) return NextResponse.json({ ok: false, message: "Which account?" }, { status: 400 });
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   if (!userId) return NextResponse.json({ ok: false, message: "No such account." }, { status: 404 });
 
   const periodEnd =
-    plan === "unlimited"
+    plan === "premium"
       ? new Date(Date.now() + months * 30 * 24 * 60 * 60 * 1000).toISOString()
       : null;
 

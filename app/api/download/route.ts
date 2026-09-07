@@ -42,9 +42,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         ok: false,
-        reason: viewer ? "needs-unlimited" : "needs-account",
+        reason: viewer ? "needs-premium" : "needs-account",
         message: viewer
-          ? "This one is included with unlimited."
+          ? "This one is included with Premium."
           : "Create a free account to download this.",
       },
       { status: viewer ? 403 : 401 }

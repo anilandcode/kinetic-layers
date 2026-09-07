@@ -18,7 +18,7 @@ import { EARLY_ACCESS } from "@/lib/kl/access";
  * the two can never disagree about what is allowed.
  */
 
-type Gate = "open" | "needs-account" | "needs-unlimited";
+type Gate = "open" | "needs-account" | "needs-premium";
 
 /**
  * Preview height, per entry point.
@@ -80,12 +80,12 @@ export default function ItemView({
      this a locked asset would still point at /pricing, where there is nothing
      to buy. */
   const unlockLabel =
-    !EARLY_ACCESS && (gate === "needs-unlimited" || (gate === "needs-account" && !asset.free))
-      ? "Get unlimited"
+    !EARLY_ACCESS && (gate === "needs-premium" || (gate === "needs-account" && !asset.free))
+      ? "Go Premium"
       : "Create a free account";
   const unlockHref = EARLY_ACCESS
     ? `/join?next=/item/${asset.slug}`
-    : gate === "needs-unlimited"
+    : gate === "needs-premium"
       ? "/pricing"
       : asset.free
         ? `/join?next=/item/${asset.slug}`
@@ -225,7 +225,7 @@ export default function ItemView({
               }}
             >
               <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>
-                {gate === "open" ? "Yours to download" : asset.free ? "Free with an account" : "Included with unlimited"}
+                {gate === "open" ? "Yours to download" : asset.free ? "Free with an account" : "Included with Premium"}
               </span>
               <span style={{ fontSize: 15, lineHeight: 1.6, color: "var(--ink-2)" }}>
                 {gate === "open"
@@ -549,8 +549,8 @@ export default function ItemView({
  * reaches the browser.
  *
  * Open: the prompt is fetched from /api/prompt and shown in full. This is the
- * half that was missing — the gate refused correctly but granted nothing, so an
- * unlimited subscriber saw the same two lines as a stranger. The fetch happens
+ * half that was missing — the gate refused correctly but granted nothing, so a
+ * Premium subscriber saw the same two lines as a stranger. The fetch happens
  * on mount rather than behind another button, because someone entitled to the
  * prompt came here to read it.
  */

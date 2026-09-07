@@ -59,12 +59,12 @@ export async function viewerFromApiKey(key: string | null): Promise<Viewer | nul
   /* Fire-and-forget: a failed touch must not deny an otherwise valid key. */
   void db.from("api_keys").update({ last_used: new Date().toISOString() }).eq("id", row.id);
 
-  const active = ent?.plan === "unlimited" && ent?.status === "active";
+  const active = ent?.plan === "premium" && ent?.status === "active";
   return {
     id: row.user_id,
     email: profile?.email ?? null,
-    plan: active ? "unlimited" : "free",
-    unlimited: active,
+    plan: active ? "premium" : "free",
+    premium: active,
     periodEnd: ent?.current_period_end ?? null,
   };
 }

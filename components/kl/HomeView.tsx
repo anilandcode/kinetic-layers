@@ -35,7 +35,7 @@ export default async function HomeView() {
 
   /* Early access hands the whole vault to anyone with an account, so nothing
      is locked and no card should claim otherwise. */
-  const unlocked = EARLY_ACCESS || Boolean(viewer?.unlimited);
+  const unlocked = EARLY_ACCESS || Boolean(viewer?.premium);
 
   return (
     <Shell>

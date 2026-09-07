@@ -29,7 +29,7 @@ export default async function Mcp() {
     },
     {
       name: "get_prompt",
-      what: "Read one prompt in full. This is the gated one — free assets need any key, paid assets need a key on an unlimited plan.",
+      what: "Read one prompt in full. This is the gated one — free assets need any key, paid assets need a key on a Premium plan.",
     },
     { name: "list_categories", what: "What the vault is filed under, with a count for each." },
   ];

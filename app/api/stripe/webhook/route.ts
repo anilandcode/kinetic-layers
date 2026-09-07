@@ -7,7 +7,7 @@ import { stripe, toEntitlementStatus } from "@/lib/kl/stripe";
  * Stripe's half of the entitlement seam.
  *
  * Writes exactly the row /api/admin/grant writes, so everything downstream —
- * has_unlimited(), gate.ts, the quota tiers, every plan state in the UI — keeps
+ * has_premium(), gate.ts, the quota tiers, every plan state in the UI — keeps
  * working without knowing payment exists. That is what made the seam worth
  * having.
  *
@@ -138,9 +138,9 @@ async function writeEntitlement(userId: string, subscription: Stripe.Subscriptio
     .upsert(
       {
         user_id: userId,
-        /* Only an active subscription is unlimited. past_due and cancelled both
+        /* Only an active subscription is Premium. past_due and cancelled both
            fall back to free, which is what the gate already understands. */
-        plan: status === "active" ? "unlimited" : "free",
+        plan: status === "active" ? "premium" : "free",
         status,
         current_period_end: periodEnd,
         source: "stripe",

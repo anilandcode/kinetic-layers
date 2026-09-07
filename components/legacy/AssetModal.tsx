@@ -8,7 +8,7 @@ import ItemView from "./ItemView";
 import { Shimmer } from "./Skeleton";
 import type { Asset, Viewer } from "@/lib/kl/types";
 
-type Gate = "open" | "needs-account" | "needs-unlimited";
+type Gate = "open" | "needs-account" | "needs-premium";
 
 type Detail = {
   asset: Asset;

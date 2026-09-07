@@ -79,7 +79,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
         <section className="shell" style={{ paddingBlock: "64px 34px" }}>
           <div data-hero style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
-              {viewer.unlimited
+              {viewer.premium
                 ? `Unlimited${viewer.periodEnd ? ` · renews ${new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : ""}`
                 : "Free plan"}
             </span>
@@ -98,7 +98,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           <Stat label="Downloaded" value={String(unique)} note={`of ${settings.totalAssets} assets`} big />
           <Stat label="This month" value={String(thisMonth)} note={thisMonth === 1 ? "1 file" : `${thisMonth} files`} big />
           <Stat label="Saved" value={String(savedTotal)} note="assets and collections" big />
-          <Stat label="Plan" value={viewer.unlimited ? "Unlimited" : "Free"} note={viewer.unlimited ? "full vault" : `${settings.freeThisMonth} free assets`} />
+          <Stat label="Plan" value={viewer.premium ? "Premium" : "Free"} note={viewer.premium ? "full vault" : `${settings.freeThisMonth} free assets`} />
           {/* Rolling 24 hours, not since midnight — the meter is a moving
               window, so a tile that reset at a fixed hour would disagree with
               the thing actually refusing requests. */}
@@ -174,23 +174,23 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>Subscription</span>
               <div style={{ display: "flex", alignItems: "baseline", gap: 9, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 34, fontWeight: 500, letterSpacing: "-0.03em" }}>
-                  {EARLY_ACCESS ? "Early access" : viewer.unlimited ? "Unlimited" : "Free"}
+                  {EARLY_ACCESS ? "Early access" : viewer.premium ? "Premium" : "Free"}
                 </span>
                 <span style={{ fontSize: 15, color: "var(--muted)" }}>
-                  {EARLY_ACCESS || !viewer.unlimited ? "$0" : `$${settings.monthlyPrice}/mo`}
+                  {EARLY_ACCESS || !viewer.premium ? "$0" : `$${settings.monthlyPrice}/mo`}
                 </span>
               </div>
               <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
                 {EARLY_ACCESS
                   ? `All ${settings.totalAssets} assets and every source file, free while Kinetic Layers is in early access. Nothing to cancel, and anything you download stays yours.`
-                  : viewer.unlimited
+                  : viewer.premium
                     ? `Renews ${viewer.periodEnd ? new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "automatically"}. Cancel any time and keep every file you downloaded.`
                     : `${settings.freeThisMonth} free assets. Unlimited opens all ${settings.totalAssets} and every source file.`}
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
-                {!EARLY_ACCESS && !viewer.unlimited && (
+                {!EARLY_ACCESS && !viewer.premium && (
                   <Link data-nav href="/pricing" className="btn btn--primary" style={{ fontSize: 13, padding: "11px 20px" }}>
-                    Get unlimited
+                    Go Premium
                   </Link>
                 )}
                 <form action="/auth/signout" method="post">

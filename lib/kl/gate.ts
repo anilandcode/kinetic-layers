@@ -4,7 +4,7 @@ import type { Asset, Viewer } from "./types";
  * The gate, in one place.
  *
  * Free assets need an account — the free tier is a reason to sign up, not a
- * reason to skip signing up. Everything else needs an active unlimited
+ * reason to skip signing up. Everything else needs an active Premium
  * entitlement.
  *
  * This lives apart from viewer.ts because that file is `server-only` (it reads
@@ -16,7 +16,7 @@ import type { Asset, Viewer } from "./types";
  */
 export function canDownload(viewer: Viewer | null, asset: Pick<Asset, "free">): boolean {
   if (!viewer) return false;
-  return asset.free ? true : viewer.unlimited;
+  return asset.free ? true : viewer.premium;
 }
 
 /**
@@ -33,25 +33,25 @@ export function canDownload(viewer: Viewer | null, asset: Pick<Asset, "free">): 
  */
 export function canReadPrompt(viewer: Viewer | null, asset: Pick<Asset, "free">): boolean {
   if (!viewer) return asset.free;
-  return asset.free ? true : viewer.unlimited;
+  return asset.free ? true : viewer.premium;
 }
 
 /** Why the gate is closed, for the copy on the item page. */
 export function gateReason(
   viewer: Viewer | null,
   asset: Pick<Asset, "free">
-): "open" | "needs-account" | "needs-unlimited" {
+): "open" | "needs-account" | "needs-premium" {
   if (canDownload(viewer, asset)) return "open";
   if (!viewer) return "needs-account";
-  return "needs-unlimited";
+  return "needs-premium";
 }
 
 /** The same question for prompts, which an anonymous visitor can now pass. */
 export function promptGateReason(
   viewer: Viewer | null,
   asset: Pick<Asset, "free">
-): "open" | "needs-account" | "needs-unlimited" {
+): "open" | "needs-account" | "needs-premium" {
   if (canReadPrompt(viewer, asset)) return "open";
   if (!viewer) return "needs-account";
-  return "needs-unlimited";
+  return "needs-premium";
 }

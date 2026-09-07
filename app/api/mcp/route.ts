@@ -62,7 +62,7 @@ const TOOLS = [
   {
     name: "get_prompt",
     description:
-      "Read the full prompt text for one asset. Free assets are readable without a key at a low daily rate; a Kinetic Layers API key raises the allowance, and paid assets require a key on an active unlimited subscription. Every read counts against the same daily budget as the website.",
+      "Read the full prompt text for one asset. Free assets are readable without a key at a low daily rate; a Kinetic Layers API key raises the allowance, and paid assets require a key on an active Premium subscription. Every read counts against the same daily budget as the website.",
     inputSchema: {
       type: "object",
       properties: { slug: { type: "string", description: "The asset slug from search_assets." } },
@@ -107,7 +107,7 @@ async function runTool(
     if (hits.length === 0) return { text: "Nothing matched." };
 
     const lines = hits.slice(0, 25).map((a) => {
-      const access = a.free ? "free" : "unlimited only";
+      const access = a.free ? "free" : "Premium only";
       const bits = [a.type, a.category, a.theme].filter(Boolean).join(" · ");
       return `${a.name}\n  slug: ${a.slug}\n  ${bits} — ${access}\n  ${SITE_URL}/item/${a.slug}`;
     });
@@ -130,7 +130,7 @@ async function runTool(
     if (!canReadPrompt(viewer, asset)) {
       return {
         error: viewer
-          ? `"${asset.name}" is included with unlimited. Your key is on the free plan. ${SITE_URL}/pricing`
+          ? `"${asset.name}" is included with Premium. Your key is on the free plan. ${SITE_URL}/pricing`
           : `"${asset.name}" needs an account. Create a Kinetic Layers API key at ${SITE_URL}/account and send it as "Authorization: Bearer <key>".`,
       };
     }
@@ -183,7 +183,7 @@ export async function POST(request: Request) {
       capabilities: { tools: { listChanged: false } },
       serverInfo: { name: "kiln", version: "1.0.0" },
       instructions:
-        "Kinetic Layers is a library of prompts, templates, scenes and agent workflows. Use search_assets to find something, then get_prompt with its slug to read the prompt in full. Prompt reads are rate limited per day and share one budget with the website; an API key from the Kinetic Layers account page raises the allowance, and paid assets need a key on an unlimited subscription.",
+        "Kinetic Layers is a library of prompts, templates, scenes and agent workflows. Use search_assets to find something, then get_prompt with its slug to read the prompt in full. Prompt reads are rate limited per day and share one budget with the website; an API key from the Kinetic Layers account page raises the allowance, and paid assets need a key on a Premium subscription.",
     });
   }
 

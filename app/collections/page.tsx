@@ -119,15 +119,15 @@ export default async function Collections({
         <section data-reveal style={{ borderTop: "1px solid var(--hairline)" }}>
           <div className="shell" style={{ paddingBlock: 80, display: "flex", flexDirection: "column", alignItems: "center", gap: 22, textAlign: "center" }}>
             <h2 style={{ fontSize: "clamp(30px, 3.5vw, 42px)", lineHeight: 1.12, fontWeight: 500, letterSpacing: "-0.03em", maxWidth: 620, textWrap: "pretty" }}>
-              Every collection is included in unlimited.
+              Every collection is included in Premium.
             </h2>
             <div style={{ display: "flex", gap: 12, marginTop: 6, flexWrap: "wrap", justifyContent: "center" }}>
               <Link
                 data-nav
-                href={viewer?.unlimited ? "/account" : EARLY_ACCESS ? "/join" : "/pricing"}
+                href={viewer?.premium ? "/account" : EARLY_ACCESS ? "/join" : "/pricing"}
                 className="btn btn--primary"
               >
-                {viewer?.unlimited ? "Your vault" : EARLY_ACCESS ? "Get free access" : "Get unlimited"}
+                {viewer?.premium ? "Your vault" : EARLY_ACCESS ? "Get free access" : "Go Premium"}
               </Link>
               <Link data-nav href="/library" className="btn btn--ghost">
                 Browse everything

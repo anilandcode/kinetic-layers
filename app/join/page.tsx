@@ -111,7 +111,7 @@ export default async function Join({
             </div>
 
             <div style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline-3)", background: "var(--surface)", padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
-              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>What unlimited opens</span>
+              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>What Premium opens</span>
               <ul style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {perks(settings).map((p) => (
                   <li key={p} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>

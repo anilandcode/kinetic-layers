@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (existing?.plan === "unlimited" && existing.status === "active") {
-    return json(409, { ok: false, message: "You already have unlimited." });
+  if (existing?.plan === "premium" && existing.status === "active") {
+    return json(409, { ok: false, message: "You already have Premium." });
   }
 
   /* The page prints Sanity's number; Stripe charges its own. Nobody is billed
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
         .upsert(
           {
             user_id: user.id,
-            plan: existing?.plan === "unlimited" ? "unlimited" : "free",
+            plan: existing?.plan === "premium" ? "premium" : "free",
             status: "active",
             source: "stripe-pending",
             stripe_customer_id: session.customer,

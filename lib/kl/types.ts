@@ -85,13 +85,14 @@ export type Settings = {
   collectionCount: number;
 };
 
-export type Plan = "free" | "unlimited";
+export type Plan = "free" | "premium";
 
 export type Viewer = {
   id: string;
   email: string | null;
   plan: Plan;
-  /** True only while an unlimited entitlement is active. */
-  unlimited: boolean;
+  /** True only while a Premium entitlement is active. */
+  /** Whether this account may take files. Named for the Premium plan. */
+  premium: boolean;
   periodEnd: string | null;
 };

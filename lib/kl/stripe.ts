@@ -5,7 +5,7 @@ import Stripe from "stripe";
  * One home for Stripe.
  *
  * Sits beside gate.ts and limits.ts for the same reason they exist: the answer
- * to "what does unlimited cost" is asked from several places, and a second copy
+ * to "what does Premium cost" is asked from several places, and a second copy
  * of it is a promise waiting to stop being true.
  *
  * Nothing here throws at import time. Checkout is optional infrastructure — the

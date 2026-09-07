@@ -67,7 +67,7 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
   const facets = countFacets(all, filters, saved);
   const items = sortAssets(applyFilters(all, filters, saved), sort);
 
-  const unlocked = EARLY_ACCESS || Boolean(viewer?.unlimited);
+  const unlocked = EARLY_ACCESS || Boolean(viewer?.premium);
 
   /* A pill toggles its own value off when it is already on, so the rail never
      becomes a trap you can only escape via Clear. */

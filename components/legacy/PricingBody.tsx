@@ -21,7 +21,7 @@ const freeFeatures = (s: Settings) => [
 
 const paidFeatures = (s: Settings) => [
   `All ${s.totalAssets} assets across the shelves`,
-  `Fair use: ${describeAllowance("unlimited")}`,
+  `Fair use: ${describeAllowance("premium")}`,
   "Every source file: prompts, scenes, weights, configs",
   "New assets every Thursday",
   `All ${s.collectionCount} collections`,
@@ -34,12 +34,12 @@ const rows = (s: Settings) => [
   {
     label: "Prompt reads a day",
     free: String(LIMITS.free.prompt),
-    paid: String(LIMITS.unlimited.prompt),
+    paid: String(LIMITS.premium.prompt),
   },
   {
     label: "Downloads a day",
     free: String(LIMITS.free.download),
-    paid: String(LIMITS.unlimited.download),
+    paid: String(LIMITS.premium.download),
   },
   { label: "New drops every Thursday", free: "—", paid: "Included" },
   { label: "Source files & prompt text", free: "Partial", paid: "Everything" },
@@ -60,7 +60,7 @@ const FAQ = [
   },
   {
     q: "Can I use these in client work?",
-    a: "Yes. Unlimited covers commercial use in unlimited client projects. You can't resell an asset as-is or republish it to another marketplace.",
+    a: "Yes. Premium covers commercial use in unlimited client projects. You can't resell an asset as-is or republish it to another marketplace.",
   },
   {
     q: "Do I get the source files?",
@@ -309,7 +309,7 @@ export default function PricingBody({
 
             {/* Nothing is for sale during early access, so the primary action
                 is the one that actually works: make an account and take it.
-                Leaving a live "Get unlimited" here would start a checkout that
+                Leaving a live "Go Premium" here would start a checkout that
                 answers 503. */}
             {EARLY_ACCESS ? (
               <Link
@@ -320,7 +320,7 @@ export default function PricingBody({
               >
                 {viewer ? "You already have all of it — open the library" : "Get it free while it lasts"}
               </Link>
-            ) : viewer?.unlimited ? (
+            ) : viewer?.premium ? (
               <Link data-nav href="/account" className="btn btn--primary" style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}>
                 You already have this — open your vault
               </Link>
@@ -333,7 +333,7 @@ export default function PricingBody({
                 className="btn btn--primary"
                 style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}
               >
-                {annual ? "Get a year of unlimited" : "Get unlimited"}
+                {annual ? "Get a year of Premium" : "Go Premium"}
               </Link>
             ) : checkoutReady ? (
               /* A button, not an anchor: KilnMotion intercepts a[data-nav] in
@@ -349,8 +349,8 @@ export default function PricingBody({
                 {busy
                   ? "Taking you to checkout…"
                   : annual
-                    ? "Get a year of unlimited"
-                    : "Get unlimited"}
+                    ? "Get a year of Premium"
+                    : "Go Premium"}
               </button>
             ) : (
               <span

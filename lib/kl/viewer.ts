@@ -28,20 +28,20 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     .maybeSingle();
 
   const entitled =
-    ent?.plan === "unlimited" &&
+    ent?.plan === "premium" &&
     ent.status === "active" &&
     (!ent.current_period_end || new Date(ent.current_period_end) > new Date());
 
   /* While early access is on, an account IS the entitlement. This is the only
-     place `unlimited` is decided, so the gate, the quota tier and every price
+     place `premium` is decided, so the gate, the quota tier and every price
      string downstream follow from it without a second rule to keep in step. */
   const active = EARLY_ACCESS || entitled;
 
   return {
     id: user.id,
     email: user.email ?? null,
-    plan: active ? "unlimited" : "free",
-    unlimited: Boolean(active),
+    plan: active ? "premium" : "free",
+    premium: Boolean(active),
     periodEnd: ent?.current_period_end ?? null,
   };
 });

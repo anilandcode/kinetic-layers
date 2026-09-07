@@ -16,7 +16,7 @@ import type { Viewer } from "./types";
  * catalogue, which is the only thing they are here to stop.
  */
 
-export type Tier = "anon" | "free" | "unlimited";
+export type Tier = "anon" | "free" | "premium";
 export type UsageKind = "prompt" | "download";
 
 export const LIMITS: Record<Tier, Record<UsageKind, number>> = {
@@ -25,7 +25,7 @@ export const LIMITS: Record<Tier, Record<UsageKind, number>> = {
      anything expensive on. */
   anon: { prompt: 1, download: 0 },
   free: { prompt: 5, download: 3 },
-  unlimited: { prompt: 50, download: 30 },
+  premium: { prompt: 50, download: 30 },
 };
 
 /** Rolling, not calendar: midnight is not a way to get a second allowance. */
@@ -34,7 +34,7 @@ export const WINDOW_MS = WINDOW_HOURS * 60 * 60 * 1000;
 
 export function tierOf(viewer: Viewer | null): Tier {
   if (!viewer) return "anon";
-  return viewer.unlimited ? "unlimited" : "free";
+  return viewer.premium ? "premium" : "free";
 }
 
 export const limitFor = (tier: Tier, kind: UsageKind) => LIMITS[tier][kind];

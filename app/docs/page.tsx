@@ -100,7 +100,7 @@ claude mcp add --transport http kiln https://your-kiln/api/mcp \\
           <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--muted)" }}>
             Reading a prompt and downloading a file each count against a daily
             allowance: {describeAllowance("free")} on a free account,{" "}
-            {describeAllowance("unlimited")} on unlimited. Without an account you
+            {describeAllowance("premium")} on Premium. Without an account you
             can read {LIMITS.anon.prompt} free prompt a day and download nothing.
           </p>
           <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--muted)", marginTop: 16 }}>

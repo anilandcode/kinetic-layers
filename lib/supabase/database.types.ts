@@ -21,7 +21,7 @@ export type Database = {
       entitlements: {
         Row: {
           user_id: string;
-          plan: "free" | "unlimited";
+          plan: "free" | "premium";
           status: "active" | "past_due" | "cancelled";
           current_period_end: Timestamp | null;
           source: string;
@@ -32,7 +32,7 @@ export type Database = {
         };
         Insert: {
           user_id: string;
-          plan?: "free" | "unlimited";
+          plan?: "free" | "premium";
           status?: "active" | "past_due" | "cancelled";
           current_period_end?: Timestamp | null;
           source?: string;
@@ -41,7 +41,7 @@ export type Database = {
           stripe_subscription_id?: string | null;
         };
         Update: {
-          plan?: "free" | "unlimited";
+          plan?: "free" | "premium";
           status?: "active" | "past_due" | "cancelled";
           current_period_end?: Timestamp | null;
           source?: string;
@@ -180,7 +180,7 @@ export type Database = {
     };
     Views: Record<never, never>;
     Functions: {
-      has_unlimited: { Args: { uid: string }; Returns: boolean };
+      has_premium: { Args: { uid: string }; Returns: boolean };
       /* Atomic quota spend. Counts and inserts behind a per-subject advisory
          lock, so concurrent requests cannot each read the same count and all
          pass. See supabase/migrations/*_atomic_quota.sql. */

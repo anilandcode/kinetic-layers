@@ -83,14 +83,14 @@ export default async function HomeView({
             <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginTop: 6 }}>
               <Link
                 data-nav
-                href={viewer?.unlimited ? "/account" : EARLY_ACCESS ? "/join" : "/pricing"}
+                href={viewer?.premium ? "/account" : EARLY_ACCESS ? "/join" : "/pricing"}
                 className="btn btn--primary"
               >
-                {viewer?.unlimited
+                {viewer?.premium
                   ? "Your vault"
                   : EARLY_ACCESS
                     ? "Get free access"
-                    : `Get unlimited — $${settings.monthlyPrice}/mo`}
+                    : `Go Premium — $${settings.monthlyPrice}/mo`}
               </Link>
               <Link data-nav href="/library" className="btn btn--ghost">
                 Browse {settings.freeThisMonth} free
@@ -195,9 +195,9 @@ export default async function HomeView({
                   ? viewer
                     ? "Browse the library"
                     : "Get free access"
-                  : viewer?.unlimited
+                  : viewer?.premium
                     ? "Manage your plan"
-                    : "Get unlimited"}
+                    : "Go Premium"}
               </Link>
               <Link data-nav href="/pricing" className="btn btn--ghost">
                 {EARLY_ACCESS ? "What it will cost later" : "See pricing"}

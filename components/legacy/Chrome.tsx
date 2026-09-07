@@ -109,14 +109,14 @@ export function Nav({ light = false, viewer = null }: { light?: boolean; viewer?
 
         {/* Signed in during early access there is nothing left to get, so the
             button goes rather than offering an upgrade that already happened. */}
-        {!viewer?.unlimited && (
+        {!viewer?.premium && (
           <Link
             data-nav
             href={EARLY_ACCESS ? "/join" : viewer ? "/pricing" : "/join?next=/pricing"}
             className="btn btn--primary"
             style={{ fontSize: 13, padding: "10px 18px" }}
           >
-            {EARLY_ACCESS ? "Get free access" : "Get unlimited"}
+            {EARLY_ACCESS ? "Get free access" : "Go Premium"}
           </Link>
         )}
       </nav>

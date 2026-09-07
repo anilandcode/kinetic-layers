@@ -120,7 +120,7 @@ export default async function PricingView() {
         `All ${all.length} assets, source included`,
         "New assets every Thursday",
         "Commercial license, unlimited clients",
-        `Fair use: ${LIMITS.unlimited.prompt} prompt reads and ${LIMITS.unlimited.download} downloads a day`,
+        `Fair use: ${LIMITS.premium.prompt} prompt reads and ${LIMITS.premium.download} downloads a day`,
         "Cancel and keep everything downloaded",
       ],
     },

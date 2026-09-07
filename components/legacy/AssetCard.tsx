@@ -32,7 +32,7 @@ export default function AssetCard({
       data-card
       href={`/item/${asset.slug}`}
       className="kiln-card"
-      aria-label={`${asset.name} — ${asset.free ? "free" : "unlimited only"}`}
+      aria-label={`${asset.name} — ${asset.free ? "free" : "Premium only"}`}
     >
       <div
         style={{
