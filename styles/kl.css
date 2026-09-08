@@ -1931,3 +1931,12 @@
   color: var(--ink);
   word-break: break-word;
 }
+
+/* The mono label, used for kickers, counts and tags across the carried-over
+   pages. Same treatment as .kl-kicker but inheriting its colour, since these
+   appear in both amber and muted contexts. */
+[data-kl] .kl-mono {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}

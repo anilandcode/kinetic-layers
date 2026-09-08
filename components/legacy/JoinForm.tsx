@@ -66,8 +66,8 @@ export default function JoinForm({
           display: "flex",
           alignItems: "center",
           gap: 8,
-          border: "1px solid var(--hairline-3)",
-          borderRadius: "var(--r-pill)",
+          border: "1px solid var(--line2)",
+          borderRadius: "99px",
           padding: 5,
           alignSelf: "flex-start",
         }}
@@ -81,13 +81,13 @@ export default function JoinForm({
             style={{
               fontSize: 13,
               fontWeight: 500,
-              borderRadius: "var(--r-pill)",
+              borderRadius: "99px",
               padding: "9px 18px",
               cursor: "pointer",
-              transition: "all var(--t-fast) var(--ease)",
-              background: mode === m ? "var(--sage-fill)" : "transparent",
+              transition: "all 0.18s cubic-bezier(0.22, 1, 0.36, 1)",
+              background: mode === m ? "var(--amber-bg)" : "transparent",
               border: `1px solid ${mode === m ? "rgba(185,206,149,0.42)" : "transparent"}`,
-              color: mode === m ? "var(--sage-ink)" : "var(--muted)",
+              color: mode === m ? "var(--amber)" : "var(--muted)",
             }}
           >
             {m === "signup" ? "Create account" : "Sign in"}
@@ -114,9 +114,9 @@ export default function JoinForm({
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 14, margin: "6px 0" }}>
-            <span style={{ flex: 1, height: 1, background: "var(--hairline)" }} />
-            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}>or</span>
-            <span style={{ flex: 1, height: 1, background: "var(--hairline)" }} />
+            <span style={{ flex: 1, height: 1, background: "var(--line)" }} />
+            <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--muted)" }}>or</span>
+            <span style={{ flex: 1, height: 1, background: "var(--line)" }} />
           </div>
         </>
       )}
@@ -162,12 +162,12 @@ export default function JoinForm({
       </form>
 
       {error && (
-        <p id="join-message" role="alert" style={{ fontSize: 13, lineHeight: 1.6, color: "var(--danger)", border: "1px solid var(--danger)", borderRadius: "var(--r-card)", padding: "12px 16px" }}>
+        <p id="join-message" role="alert" style={{ fontSize: 13, lineHeight: 1.6, color: "var(--danger)", border: "1px solid var(--danger)", borderRadius: "18px", padding: "12px 16px" }}>
           {error}
         </p>
       )}
       {state.notice && (
-        <p role="status" style={{ fontSize: 13, lineHeight: 1.6, color: "var(--sage-ink)", border: "1px solid var(--sage-line-2)", borderRadius: "var(--r-card)", padding: "12px 16px" }}>
+        <p role="status" style={{ fontSize: 13, lineHeight: 1.6, color: "var(--amber)", border: "1px solid var(--amber-line)", borderRadius: "18px", padding: "12px 16px" }}>
           {state.notice}
         </p>
       )}
@@ -190,7 +190,7 @@ export default function JoinForm({
         )}
       </div>
 
-      <span style={{ fontSize: 13, lineHeight: 1.6, color: "var(--faint)", marginTop: 4 }}>
+      <span style={{ fontSize: 13, lineHeight: 1.6, color: "var(--muted)", marginTop: 4 }}>
         {mode === "signup"
           ? "By creating an account you agree to the license terms. One email a week, nothing else."
           : "Sessions last until you sign out."}
@@ -217,7 +217,7 @@ function Submit({ mode }: { mode: Mode }) {
 function ProviderButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn btn--ghost" disabled={pending} style={{ padding: "15px 22px", fontSize: 15, color: "var(--ink-3)", width: "100%" }}>
+    <button type="submit" className="btn btn--ghost" disabled={pending} style={{ padding: "15px 22px", fontSize: 15, color: "var(--muted)", width: "100%" }}>
       {pending ? "Redirecting…" : `Continue with ${label}`}
     </button>
   );
@@ -233,8 +233,8 @@ function ProviderButton({ label }: { label: string }) {
  * a UI component boundary.
  */
 const field: React.CSSProperties = {
-  border: "1px solid var(--field-line)",
-  borderRadius: "var(--r-pill)",
+  border: "1px solid var(--ghost-line)",
+  borderRadius: "99px",
   padding: "15px 22px",
   fontSize: 15,
   background: "transparent",

@@ -37,11 +37,11 @@ export default function CollectionFilter({
         zIndex: 15,
         background: "rgba(15,15,13,0.94)",
         backdropFilter: "blur(12px)",
-        borderTop: "1px solid var(--hairline)",
-        borderBottom: "1px solid var(--hairline)",
+        borderTop: "1px solid var(--line)",
+        borderBottom: "1px solid var(--line)",
       }}
     >
-      <div className="shell" style={{ paddingBlock: 14, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+      <div className="kl-pad" style={{ paddingBlock: 14, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <div role="group" aria-label="Shelf" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {SHELVES.map((s) => (
             <button key={s} type="button" className="pill pill--muted" aria-pressed={active === s} onClick={() => pick(s)}>
@@ -50,7 +50,7 @@ export default function CollectionFilter({
           ))}
         </div>
         <div style={{ flex: 1 }} />
-        <span className="mono" aria-live="polite" style={{ fontSize: 10, color: "var(--faint)", opacity: pending ? 0.5 : 1 }}>
+        <span className="kl-mono" aria-live="polite" style={{ fontSize: 10, color: "var(--muted)", opacity: pending ? 0.5 : 1 }}>
           {shown} of {total}
         </span>
       </div>

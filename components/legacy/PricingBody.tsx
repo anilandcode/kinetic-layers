@@ -115,7 +115,7 @@ export default function PricingBody({
   return (
     <>
         <section
-          className="shell"
+          className="kl-pad"
           style={{
             paddingBlock: "84px 40px",
             display: "flex",
@@ -129,7 +129,7 @@ export default function PricingBody({
             data-hero
             style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}
           >
-            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
+            <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
               {EARLY_ACCESS ? "Not charging yet" : "One studio, one price"}
             </span>
             <h1
@@ -159,8 +159,8 @@ export default function PricingBody({
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
-                border: "1px solid var(--hairline-3)",
-                borderRadius: "var(--r-pill)",
+                border: "1px solid var(--line2)",
+                borderRadius: "99px",
                 padding: 5,
                 marginTop: 6,
               }}
@@ -176,13 +176,13 @@ export default function PricingBody({
                     style={{
                       fontSize: 13,
                       fontWeight: 500,
-                      borderRadius: "var(--r-pill)",
+                      borderRadius: "99px",
                       padding: "9px 20px",
                       cursor: "pointer",
-                      transition: "all var(--t-fast) var(--ease)",
-                      background: on ? "var(--sage-fill)" : "transparent",
+                      transition: "all 0.18s cubic-bezier(0.22, 1, 0.36, 1)",
+                      background: on ? "var(--amber-bg)" : "transparent",
                       border: `1px solid ${on ? "rgba(185,206,149,0.42)" : "transparent"}`,
-                      color: on ? "var(--sage-ink)" : "var(--muted)",
+                      color: on ? "var(--amber)" : "var(--muted)",
                     }}
                   >
                     {c}
@@ -199,7 +199,7 @@ export default function PricingBody({
           style={{
             maxWidth: 1100,
             margin: "0 auto",
-            padding: "26px var(--gutter) 20px",
+            padding: "26px 32px 20px",
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit,minmax(min(320px,100%),1fr))",
             gap: 24,
@@ -209,8 +209,8 @@ export default function PricingBody({
           <div
             data-reveal
             style={{
-              borderRadius: "var(--r-card)",
-              border: "1px solid var(--hairline-3)",
+              borderRadius: "18px",
+              border: "1px solid var(--line2)",
               background: "#121210",
               padding: 30,
               display: "flex",
@@ -219,7 +219,7 @@ export default function PricingBody({
             }}
           >
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <span className="mono" style={{ fontSize: 11, letterSpacing: "0.14em", color: "var(--faint)" }}>
+              <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.14em", color: "var(--muted)" }}>
                 Free
               </span>
               <span style={{ fontSize: 44, fontWeight: 500, letterSpacing: "-0.03em" }}>$0</span>
@@ -227,18 +227,18 @@ export default function PricingBody({
                 {settings.freeThisMonth} assets, free to any account.
               </span>
             </div>
-            <div style={{ height: 1, background: "var(--hairline)" }} />
+            <div style={{ height: 1, background: "var(--line)" }} />
             <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {freeFeatures(settings).map((f) => (
                 <li key={f} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
                   <span
-                    className="mono"
+                    className="kl-mono"
                     aria-hidden="true"
-                    style={{ fontSize: 11, color: "var(--faint)", paddingTop: 2 }}
+                    style={{ fontSize: 11, color: "var(--muted)", paddingTop: 2 }}
                   >
                     —
                   </span>
-                  <span style={{ fontSize: 15, lineHeight: 1.5, color: "var(--ink-3)" }}>{f}</span>
+                  <span style={{ fontSize: 15, lineHeight: 1.5, color: "var(--muted)" }}>{f}</span>
                 </li>
               ))}
             </ul>
@@ -251,10 +251,10 @@ export default function PricingBody({
           <div
             data-reveal
             style={{
-              borderRadius: "var(--r-card)",
+              borderRadius: "18px",
               border: "1px solid rgba(185,206,149,0.34)",
               background:
-                "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.16),rgba(20,20,17,0) 62%),var(--surface)",
+                "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.16),rgba(20,20,17,0) 62%),var(--card)",
               padding: 30,
               display: "flex",
               flexDirection: "column",
@@ -263,7 +263,7 @@ export default function PricingBody({
           >
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <span className="mono" style={{ fontSize: 11, letterSpacing: "0.14em", color: "var(--sage)" }}>
+                <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.14em", color: "var(--amber)" }}>
                   Unlimited
                 </span>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
@@ -279,13 +279,13 @@ export default function PricingBody({
                 </span>
               </div>
               <span
-                className="mono"
+                className="kl-mono"
                 style={{
                   fontSize: 10,
                   letterSpacing: "0.12em",
-                  color: "var(--sage)",
+                  color: "var(--amber)",
                   border: "1px solid rgba(185,206,149,0.34)",
-                  borderRadius: "var(--r-pill)",
+                  borderRadius: "99px",
                   padding: "6px 12px",
                   whiteSpace: "nowrap",
                 }}
@@ -299,10 +299,10 @@ export default function PricingBody({
             <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {paidFeatures(settings).map((f) => (
                 <li key={f} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>
-                  <span aria-hidden="true" style={{ fontSize: 12, color: "var(--sage)", paddingTop: 3 }}>
+                  <span aria-hidden="true" style={{ fontSize: 12, color: "var(--amber)", paddingTop: 3 }}>
                     ✦
                   </span>
-                  <span style={{ fontSize: 15, lineHeight: 1.5, color: "var(--ink-2)" }}>{f}</span>
+                  <span style={{ fontSize: 15, lineHeight: 1.5, color: "var(--body)" }}>{f}</span>
                 </li>
               ))}
             </ul>
@@ -363,13 +363,13 @@ export default function PricingBody({
             )}
 
             {checkoutError ? (
-              <span role="alert" style={{ fontSize: 13, color: "var(--ink-2)", textAlign: "center" }}>
+              <span role="alert" style={{ fontSize: 13, color: "var(--body)", textAlign: "center" }}>
                 {checkoutError}
               </span>
             ) : null}
             <span
-              className="mono"
-              style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)", textAlign: "center" }}
+              className="kl-mono"
+              style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)", textAlign: "center" }}
             >
               Cancel anytime · keep your downloads
             </span>
@@ -377,10 +377,10 @@ export default function PricingBody({
         </section>
 
         {/* ============ Comparison ============ */}
-        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "44px var(--gutter) 20px" }}>
+        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "44px 32px 20px" }}>
           <div
             data-reveal
-            style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", overflow: "hidden" }}
+            style={{ borderRadius: "18px", border: "1px solid var(--line)", overflow: "hidden" }}
           >
             {/* Three columns of copy do not fit a phone. The table used to push
                 the page 20px wider than a 375px screen, so the whole document
@@ -391,7 +391,7 @@ export default function PricingBody({
             <table style={{ width: "100%", minWidth: 460, borderCollapse: "collapse", textAlign: "left" }}>
               <caption className="visually-hidden">What each plan includes</caption>
               <thead>
-                <tr className="mono" style={{ background: "#121210", fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}>
+                <tr className="kl-mono" style={{ background: "#121210", fontSize: 10, letterSpacing: "0.14em", color: "var(--muted)" }}>
                   <th scope="col" style={{ padding: "16px 24px", fontWeight: 400 }}>
                     What you get
                   </th>
@@ -408,7 +408,7 @@ export default function PricingBody({
                   <tr key={r.label} style={{ borderTop: "1px solid #1A1917" }}>
                     <th
                       scope="row"
-                      style={{ padding: "17px 24px", fontSize: 15, fontWeight: 300, color: "var(--ink-3)" }}
+                      style={{ padding: "17px 24px", fontSize: 15, fontWeight: 300, color: "var(--muted)" }}
                     >
                       {r.label}
                     </th>
@@ -419,7 +419,7 @@ export default function PricingBody({
                         textAlign: "center",
                         /* The design greys the em-dash to #4E4C46, which measures
                            2.24:1. A "not included" marker still has to be legible. */
-                        color: "var(--faint)",
+                        color: "var(--muted)",
                       }}
                     >
                       {r.free === "—" ? (
@@ -431,7 +431,7 @@ export default function PricingBody({
                         r.free
                       )}
                     </td>
-                    <td style={{ padding: "17px 24px", fontSize: 14, textAlign: "center", color: "var(--sage)" }}>
+                    <td style={{ padding: "17px 24px", fontSize: 14, textAlign: "center", color: "var(--amber)" }}>
                       {r.paid}
                     </td>
                   </tr>
@@ -443,7 +443,7 @@ export default function PricingBody({
         </section>
 
         {/* ============ FAQ ============ */}
-        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "52px var(--gutter) 90px" }}>
+        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "52px 32px 90px" }}>
           <h2
             data-reveal
             style={{ fontSize: 32, fontWeight: 500, letterSpacing: "-0.025em", marginBottom: 22 }}
@@ -458,10 +458,10 @@ export default function PricingBody({
                   data-reveal
                   key={f.q}
                   style={{
-                    borderRadius: "var(--r-card)",
-                    border: `1px solid ${isOpen ? "var(--line)" : "var(--hairline)"}`,
-                    background: isOpen ? "var(--surface)" : "#111110",
-                    transition: "all var(--t-mid) var(--ease)",
+                    borderRadius: "18px",
+                    border: `1px solid ${isOpen ? "var(--line)" : "var(--line)"}`,
+                    background: isOpen ? "var(--card)" : "#111110",
+                    transition: "all 0.32s cubic-bezier(0.22, 1, 0.36, 1)",
                   }}
                 >
                   <h3 style={{ margin: 0 }}>
@@ -491,8 +491,8 @@ export default function PricingBody({
                         aria-hidden="true"
                         style={{
                           fontSize: 20,
-                          color: "var(--sage)",
-                          transition: "transform 220ms var(--ease)",
+                          color: "var(--amber)",
+                          transition: "transform 220ms cubic-bezier(0.22, 1, 0.36, 1)",
                           transform: `rotate(${isOpen ? 135 : 0}deg)`,
                         }}
                       >

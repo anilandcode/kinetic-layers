@@ -48,7 +48,7 @@ export default async function Mcp() {
           </h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)" }}>
             Keys live on your{" "}
-            <Link data-nav href="/account" style={{ color: "var(--sage)" }}>
+            <Link data-nav href="/account" style={{ color: "var(--amber)" }}>
               account page
             </Link>
             . A key carries your plan — it opens exactly what you can open on the
@@ -66,7 +66,7 @@ export default async function Mcp() {
   --header "Authorization: Bearer kiln_your_key_here"`}</Code>
 
           <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)", marginTop: 22 }}>
-            Cursor, or anything reading <span className="mono" style={{ fontSize: 13 }}>mcp.json</span>:
+            Cursor, or anything reading <span className="kl-mono" style={{ fontSize: 13 }}>mcp.json</span>:
           </p>
           <Code>{`{
   "mcpServers": {
@@ -95,8 +95,8 @@ export default async function Mcp() {
           </h2>
           <dl style={{ display: "flex", flexDirection: "column", margin: 0 }}>
             {tools.map((t) => (
-              <div key={t.name} style={{ padding: "20px 0", borderTop: "1px solid var(--hairline)" }}>
-                <dt className="mono" style={{ fontSize: 13, color: "var(--sage)", marginBottom: 7 }}>
+              <div key={t.name} style={{ padding: "20px 0", borderTop: "1px solid var(--line)" }}>
+                <dt className="kl-mono" style={{ fontSize: 13, color: "var(--amber)", marginBottom: 7 }}>
                   {t.name}
                 </dt>
                 <dd style={{ margin: 0, fontSize: 15.5, lineHeight: 1.7, color: "var(--muted)" }}>{t.what}</dd>
@@ -112,7 +112,7 @@ export default async function Mcp() {
           <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)" }}>
             The same things the site refuses, decided by the same code. A key on
             the free plan asking for a paid prompt gets told so and pointed at{" "}
-            <Link data-nav href="/pricing" style={{ color: "var(--sage)" }}>
+            <Link data-nav href="/pricing" style={{ color: "var(--amber)" }}>
               pricing
             </Link>
             ; a request with no key at all gets told to make one. There is no

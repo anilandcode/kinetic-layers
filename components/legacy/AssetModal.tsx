@@ -172,18 +172,18 @@ export default function AssetModal() {
           />
           {/* The URL no longer changes, so a visitor who wants a link to this
               asset has no way to get one from the address bar. This is it. */}
-          <div className="shell" style={{ paddingBottom: 26 }}>
+          <div className="kl-pad" style={{ paddingBottom: 26 }}>
             <Link
               href={`/item/${detail.asset.slug}`}
-              className="mono"
-              style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}
+              className="kl-mono"
+              style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--muted)" }}
             >
               OPEN THE FULL PAGE →
             </Link>
           </div>
         </>
       ) : failed ? (
-        <div className="shell" style={{ paddingBlock: 60, display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="kl-pad" style={{ paddingBlock: 60, display: "flex", flexDirection: "column", gap: 14 }}>
           <p style={{ fontSize: 16, color: "var(--muted)" }}>That did not load.</p>
           <Link data-nav href={`/item/${slug}`} className="btn btn--ghost" style={{ alignSelf: "flex-start" }}>
             Open the full page instead
@@ -191,7 +191,7 @@ export default function AssetModal() {
         </div>
       ) : (
         <div
-          className="shell"
+          className="kl-pad"
           aria-busy="true"
           style={{ paddingBlock: 40, display: "flex", flexDirection: "column", gap: 18 }}
         >

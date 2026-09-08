@@ -23,7 +23,7 @@ export default async function TermsPage() {
         <>
           Using the site and the service. What you may do with an asset once you
           have it is a separate document —{" "}
-          <Link data-nav href="/license" style={{ color: "var(--sage)" }}>
+          <Link data-nav href="/license" style={{ color: "var(--amber)" }}>
             the licence
           </Link>
           .

@@ -22,9 +22,9 @@ export default async function Changelog() {
 
   return (
     <PageShell>
-        <section className="shell" style={{ paddingBlock: "64px 34px" }}>
-          <div className="prose" data-hero style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
+        <section className="kl-pad" style={{ paddingBlock: "64px 34px" }}>
+          <div className="kl-prose" data-hero style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
               Changelog
             </span>
             <h1 style={{ fontSize: "clamp(34px,4.4vw,56px)", lineHeight: 1.06, fontWeight: 500, letterSpacing: "-0.035em" }}>
@@ -53,18 +53,18 @@ export default async function Changelog() {
                     alignItems: "baseline",
                     gap: 20,
                     padding: "22px 0",
-                    borderTop: "1px solid var(--hairline)",
+                    borderTop: "1px solid var(--line)",
                     flexWrap: "wrap",
                   }}
                 >
                   <span
-                    className="mono"
+                    className="kl-mono"
                     style={{
                       fontSize: 10,
                       letterSpacing: "0.14em",
-                      color: d.tag === "SOON" ? "var(--faint)" : "var(--sage)",
-                      border: "1px solid var(--hairline-3)",
-                      borderRadius: "var(--r-pill)",
+                      color: d.tag === "SOON" ? "var(--muted)" : "var(--amber)",
+                      border: "1px solid var(--line2)",
+                      borderRadius: "99px",
                       padding: "5px 11px",
                       whiteSpace: "nowrap",
                     }}
@@ -76,7 +76,7 @@ export default async function Changelog() {
                       {d.title}
                     </h2>
                     {d.meta && (
-                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
+                      <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
                         {d.meta}
                       </span>
                     )}

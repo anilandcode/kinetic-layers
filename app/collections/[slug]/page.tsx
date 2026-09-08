@@ -48,15 +48,15 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   return (
     <PageShell>
-        <nav className="shell mono" aria-label="Breadcrumb" style={{ paddingBlock: "26px 0", display: "flex", gap: 10, fontSize: 10, color: "var(--faint)" }}>
-          <Link data-nav href="/collections" style={{ color: "var(--faint)" }}>Collections</Link>
+        <nav className="shell mono" aria-label="Breadcrumb" style={{ paddingBlock: "26px 0", display: "flex", gap: 10, fontSize: 10, color: "var(--muted)" }}>
+          <Link data-nav href="/collections" style={{ color: "var(--muted)" }}>Collections</Link>
           <span aria-hidden="true">/</span>
           <span style={{ color: "var(--muted)" }}>{collection.name}</span>
         </nav>
 
-        <section className="shell" style={{ paddingBlock: "36px 44px" }}>
+        <section className="kl-pad" style={{ paddingBlock: "36px 44px" }}>
           <div data-hero style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 680 }}>
-            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
+            <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
               {collection.shelf} · {collection.items} items{collection.free > 0 ? ` · ${collection.free} free` : ""}
             </span>
             <h1 style={{ fontSize: "clamp(34px,4.4vw,56px)", lineHeight: 1.06, fontWeight: 500, letterSpacing: "-0.035em", textWrap: "pretty" }}>
@@ -83,7 +83,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           </div>
         </section>
 
-        <section id="items" className="shell" style={{ paddingBottom: 90 }}>
+        <section id="items" className="kl-pad" style={{ paddingBottom: 90 }}>
           {collection.assets.length === 0 ? (
             <p style={{ color: "var(--muted)", fontSize: 16, paddingBlock: 40 }}>
               Nothing filed under this collection yet.

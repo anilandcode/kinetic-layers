@@ -25,9 +25,9 @@ export default async function Collections({
 
   return (
     <PageShell>
-        <section className="shell" style={{ paddingBlock: "80px 44px" }}>
+        <section className="kl-pad" style={{ paddingBlock: "80px 44px" }}>
           <div data-hero style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: 660 }}>
-            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
+            <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
               {settings.collectionCount} collections
             </span>
             <h1
@@ -54,7 +54,7 @@ export default async function Collections({
             with its own column width and its own card proportions, which is why
             the page read as a different site — the cards are the same object in
             the same system and should be built on the same bones. */}
-        <section id="sets" className="shell" style={{ paddingBlock: "36px 90px" }}>
+        <section id="sets" className="kl-pad" style={{ paddingBlock: "36px 90px" }}>
           <div className="kiln-masonry">
           {list.map((c) => (
             <div key={c.slug} style={{ breakInside: "avoid", marginBottom: 26 }}>
@@ -65,7 +65,7 @@ export default async function Collections({
               <div
                 style={{
                   height: c.h,
-                  borderRadius: "var(--r-inner)",
+                  borderRadius: "12px",
                   overflow: "hidden",
                   background: c.g,
                   position: "relative",
@@ -94,7 +94,7 @@ export default async function Collections({
           ))}
 
           <div data-reveal className="kiln-promo kiln-promo--hire" style={{ breakInside: "avoid", marginBottom: 26, minHeight: 280 }}>
-            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
+            <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
               Hire the studio
             </span>
             <h2 style={{ fontSize: 26, fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1.24, textWrap: "pretty" }}>
@@ -103,15 +103,15 @@ export default async function Collections({
             <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)" }}>
               Commissioned work never enters the vault.
             </p>
-            <Link data-nav href={viewer ? "/account" : "/join"} style={{ fontSize: 16, color: "var(--sage-ink)", marginTop: 4 }}>
+            <Link data-nav href={viewer ? "/account" : "/join"} style={{ fontSize: 16, color: "var(--amber)", marginTop: 4 }}>
               Start a project →
             </Link>
           </div>
           </div>
         </section>
 
-        <section data-reveal style={{ borderTop: "1px solid var(--hairline)" }}>
-          <div className="shell" style={{ paddingBlock: 80, display: "flex", flexDirection: "column", alignItems: "center", gap: 22, textAlign: "center" }}>
+        <section data-reveal style={{ borderTop: "1px solid var(--line)" }}>
+          <div className="kl-pad" style={{ paddingBlock: 80, display: "flex", flexDirection: "column", alignItems: "center", gap: 22, textAlign: "center" }}>
             <h2 style={{ fontSize: "clamp(30px, 3.5vw, 42px)", lineHeight: 1.12, fontWeight: 500, letterSpacing: "-0.03em", maxWidth: 620, textWrap: "pretty" }}>
               Every collection is included in Premium.
             </h2>

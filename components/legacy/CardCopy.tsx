@@ -78,7 +78,7 @@ export default function CardCopy({ slug, name }: { slug: string; name: string })
          asset it copies, or a screen-reader user hears fifteen identical
          "Copy prompt" buttons. */
       aria-label={`${label} for ${name}`}
-      className="mono"
+      className="kl-mono"
     >
       {label}
     </button>

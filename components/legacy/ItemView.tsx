@@ -165,9 +165,9 @@ export default function ItemView({
         <nav
           className="shell mono"
           aria-label="Breadcrumb"
-          style={{ paddingBlock: "26px 0", display: "flex", alignItems: "center", gap: 10, fontSize: 10, color: "var(--faint)" }}
+          style={{ paddingBlock: "26px 0", display: "flex", alignItems: "center", gap: 10, fontSize: 10, color: "var(--muted)" }}
         >
-          <Link data-nav href="/library" style={{ color: "var(--faint)" }}>
+          <Link data-nav href="/library" style={{ color: "var(--muted)" }}>
             Library
           </Link>
           <span aria-hidden="true">/</span>
@@ -178,7 +178,7 @@ export default function ItemView({
               to nothing. */}
           {asset.category && (
             <>
-              <Link data-nav href={`/library?category=${encodeURIComponent(asset.category)}`} style={{ color: "var(--faint)" }}>
+              <Link data-nav href={`/library?category=${encodeURIComponent(asset.category)}`} style={{ color: "var(--muted)" }}>
                 {asset.category}
               </Link>
               <span aria-hidden="true">/</span>
@@ -189,7 +189,7 @@ export default function ItemView({
         )}
 
         <div
-          className="shell"
+          className="kl-pad"
           style={{
             paddingBlock: "24px 20px",
             display: "grid",
@@ -218,19 +218,19 @@ export default function ItemView({
 
             <div
               style={{
-                borderRadius: "var(--r-card)",
-                border: "1px solid var(--sage-line-2)",
-                background: "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),var(--surface)",
+                borderRadius: "18px",
+                border: "1px solid var(--amber-line)",
+                background: "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),var(--card)",
                 padding: 24,
                 display: "flex",
                 flexDirection: "column",
                 gap: 13,
               }}
             >
-              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>
+              <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--amber)" }}>
                 {gate === "open" ? "Yours to download" : asset.free ? "Free with an account" : "Included with Premium"}
               </span>
-              <span style={{ fontSize: 15, lineHeight: 1.6, color: "var(--ink-2)" }}>
+              <span style={{ fontSize: 15, lineHeight: 1.6, color: "var(--body)" }}>
                 {gate === "open"
                   ? "Every file, including the source. Yours to keep even if you cancel."
                   : gate === "needs-account"
@@ -280,21 +280,21 @@ export default function ItemView({
               {notice && (
                 <span
                   role={notice.kind === "error" ? "alert" : "status"}
-                  className="mono"
-                  style={{ fontSize: 10, letterSpacing: "0.1em", textAlign: "center", color: notice.kind === "error" ? "var(--danger)" : "var(--sage)" }}
+                  className="kl-mono"
+                  style={{ fontSize: 10, letterSpacing: "0.1em", textAlign: "center", color: notice.kind === "error" ? "var(--danger)" : "var(--amber)" }}
                 >
                   {notice.text}
                 </span>
               )}
               {!notice && (
-                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)", textAlign: "center" }}>
+                <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)", textAlign: "center" }}>
                   Cancel anytime · keep your downloads
                 </span>
               )}
             </div>
 
             {asset.specs?.length ? (
-              <dl style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", overflow: "hidden" }}>
+              <dl style={{ borderRadius: "18px", border: "1px solid var(--line)", background: "var(--inset)", overflow: "hidden" }}>
                 {asset.specs.map((s) => (
                   <div
                     key={s.k}
@@ -307,10 +307,10 @@ export default function ItemView({
                       borderBottom: "1px solid #1A1917",
                     }}
                   >
-                    <dt className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--faint)" }}>
+                    <dt className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.12em", color: "var(--muted)" }}>
                       {s.k}
                     </dt>
-                    <dd style={{ fontSize: 14, color: "var(--ink-3)", textAlign: "right" }}>{s.v}</dd>
+                    <dd style={{ fontSize: 14, color: "var(--muted)", textAlign: "right" }}>{s.v}</dd>
                   </div>
                 ))}
               </dl>
@@ -318,16 +318,16 @@ export default function ItemView({
 
             <div
               style={{
-                borderRadius: "var(--r-card)",
-                border: "1px solid var(--hairline)",
-                background: "var(--surface-2)",
+                borderRadius: "18px",
+                border: "1px solid var(--line)",
+                background: "var(--inset)",
                 padding: 22,
                 display: "flex",
                 flexDirection: "column",
                 gap: 11,
               }}
             >
-              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}>
+              <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--muted)" }}>
                 License
               </span>
               <span style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
@@ -357,22 +357,22 @@ export default function ItemView({
                 priority
                 style={{
                   height: chrome ? HERO_H_PAGE : HERO_H_MODAL,
-                  borderRadius: "var(--r-card)",
+                  borderRadius: "18px",
                 }}
               >
                 <span
-                  className="mono"
+                  className="kl-mono"
                   style={{
                     position: "absolute",
                     left: 16,
                     top: 16,
                     fontSize: 10,
                     letterSpacing: "0.14em",
-                    color: "var(--sage-ink)",
+                    color: "var(--amber)",
                     background: "rgba(11,11,10,0.5)",
                     backdropFilter: "blur(6px)",
                     border: "1px solid rgba(232,240,216,0.18)",
-                    borderRadius: "var(--r-pill)",
+                    borderRadius: "99px",
                     padding: "7px 14px",
                   }}
                 >
@@ -392,14 +392,14 @@ export default function ItemView({
                       style={{
                         flex: 1,
                         height: 74,
-                        borderRadius: "var(--r-inner)",
+                        borderRadius: "12px",
                         cursor: "pointer",
                         padding: 0,
                         background: s.gradient ?? asset.g,
                         border: 0,
                         outline: `1px solid ${i === shot ? "rgba(185,206,149,0.55)" : "transparent"}`,
                         outlineOffset: 2,
-                        transition: "outline-color var(--t-mid) var(--ease)",
+                        transition: "outline-color 0.32s cubic-bezier(0.22, 1, 0.36, 1)",
                         overflow: "hidden",
                       }}
                     >
@@ -468,9 +468,9 @@ export default function ItemView({
                           }
                         : {})}
                       style={{
-                        borderRadius: "var(--r-card)",
-                        border: "1px solid var(--hairline)",
-                        background: "var(--surface-2)",
+                        borderRadius: "18px",
+                        border: "1px solid var(--line)",
+                        background: "var(--inset)",
                         padding: "18px 20px",
                         display: "flex",
                         alignItems: "center",
@@ -482,25 +482,25 @@ export default function ItemView({
                         color: "inherit",
                         cursor: gate === "open" ? "pointer" : "default",
                         opacity: busy !== false && !rowBusy ? 0.55 : 1,
-                        transition: "opacity var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease)",
+                        transition: "opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.18s cubic-bezier(0.22, 1, 0.36, 1)",
                       }}
                     >
                       <div style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 0 }}>
                         <span style={{ fontSize: 15, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {f.name}
                         </span>
-                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
+                        <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
                           {rowBusy ? "PREPARING…" : f.meta}
                         </span>
                       </div>
                       <span
-                        className="mono"
+                        className="kl-mono"
                         style={{
                           fontSize: 10,
                           letterSpacing: "0.1em",
                           color: "var(--muted)",
-                          border: "1px solid var(--hairline-3)",
-                          borderRadius: "var(--r-pill)",
+                          border: "1px solid var(--line2)",
+                          borderRadius: "99px",
                           padding: "5px 11px",
                           whiteSpace: "nowrap",
                         }}
@@ -517,7 +517,7 @@ export default function ItemView({
         </div>
 
         {chrome && related.length > 0 && (
-          <section data-reveal className="shell" style={{ paddingBlock: "64px 90px" }}>
+          <section data-reveal className="kl-pad" style={{ paddingBlock: "64px 90px" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", paddingBottom: 20, gap: 20 }}>
               <h2 style={{ fontSize: 26, fontWeight: 500, letterSpacing: "-0.02em" }}>
                 {relatedReason === "drop"
@@ -526,7 +526,7 @@ export default function ItemView({
                     ? `More from the ${asset.shelf} shelf`
                     : "Recently added"}
               </h2>
-              <Link data-nav href="/collections" className="mono" style={{ fontSize: 10 }}>
+              <Link data-nav href="/collections" className="kl-mono" style={{ fontSize: 10 }}>
                 See the collections
               </Link>
             </div>
@@ -633,9 +633,9 @@ function PromptGate({
       data-reveal
       style={{
         marginTop: 22,
-        border: "1px solid var(--hairline-3)",
-        borderRadius: "var(--r-card)",
-        background: "var(--surface)",
+        border: "1px solid var(--line2)",
+        borderRadius: "18px",
+        background: "var(--card)",
         padding: 24,
         display: "flex",
         flexDirection: "column",
@@ -643,13 +643,13 @@ function PromptGate({
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-        <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
+        <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
           The prompt
         </span>
         {gate === "open" && full && (
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {left && (
-              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
+              <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
                 {left.remaining} OF {left.limit} LEFT TODAY
               </span>
             )}
@@ -666,18 +666,18 @@ function PromptGate({
       </div>
 
       <div
-        className="mono"
+        className="kl-mono"
         style={{
           border: "1px solid var(--line)",
           borderRadius: 12,
           padding: 20,
-          background: "var(--void)",
+          background: "var(--ground)",
           display: "flex",
           flexDirection: "column",
           gap: 10,
           fontSize: 12,
           lineHeight: 1.7,
-          color: "var(--ink-3)",
+          color: "var(--muted)",
           textTransform: "none",
           letterSpacing: 0,
         }}
@@ -690,7 +690,7 @@ function PromptGate({
               font: "inherit",
               whiteSpace: "pre-wrap",
               wordBreak: "break-word",
-              color: "var(--ink-2)",
+              color: "var(--body)",
             }}
           >
             {full}
@@ -714,7 +714,7 @@ function PromptGate({
               flexWrap: "wrap",
             }}
           >
-            <span style={{ color: "var(--faint)", fontSize: 10, letterSpacing: "0.1em" }}>
+            <span style={{ color: "var(--muted)", fontSize: 10, letterSpacing: "0.1em" }}>
               {failed ?? `${hidden.toLocaleString()} characters hidden`}
             </span>
             <button
@@ -731,10 +731,10 @@ function PromptGate({
 
         {gate !== "open" && hidden > 0 && (
           <>
-            <span aria-hidden="true" style={{ filter: "blur(4px)", color: "var(--faint)" }}>
+            <span aria-hidden="true" style={{ filter: "blur(4px)", color: "var(--muted)" }}>
               and a grain overlay at 6% opacity layered beneath the type
             </span>
-            <span aria-hidden="true" style={{ filter: "blur(5px)", color: "var(--faint)" }}>
+            <span aria-hidden="true" style={{ filter: "blur(5px)", color: "var(--muted)" }}>
               use a single warm key light positioned camera-left at 35 degrees
             </span>
             <div
@@ -749,7 +749,7 @@ function PromptGate({
                 flexWrap: "wrap",
               }}
             >
-              <span style={{ color: "var(--faint)", fontSize: 10, letterSpacing: "0.1em" }}>
+              <span style={{ color: "var(--muted)", fontSize: 10, letterSpacing: "0.1em" }}>
                 {hidden.toLocaleString()} characters hidden
               </span>
               <Link data-nav href={unlockHref} className="btn btn--primary" style={{ padding: "8px 14px", fontSize: 13 }}>

@@ -73,9 +73,9 @@ export default async function Account({ searchParams }: { searchParams: Promise<
 
   return (
     <PageShell>
-        <section className="shell" style={{ paddingBlock: "64px 34px" }}>
+        <section className="kl-pad" style={{ paddingBlock: "64px 34px" }}>
           <div data-hero style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--sage)" }}>
+            <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
               {viewer.premium
                 ? `Unlimited${viewer.periodEnd ? ` · renews ${new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : ""}`
                 : "Free plan"}
@@ -89,7 +89,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
         </section>
 
         <section
-          className="shell"
+          className="kl-pad"
           style={{ paddingBottom: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 20 }}
         >
           <Stat label="Downloaded" value={String(unique)} note={`of ${settings.totalAssets} assets`} big />
@@ -107,12 +107,12 @@ export default async function Account({ searchParams }: { searchParams: Promise<
         </section>
 
         <div
-          className="shell"
+          className="kl-pad"
           style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(420px,100%),1fr))", gap: 24, alignItems: "start" }}
         >
           {/* --- Downloads --- */}
-          <section data-reveal id="downloads" style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", overflow: "hidden" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 22px", background: "var(--surface-2)", borderBottom: "1px solid #1A1917", flexWrap: "wrap" }}>
+          <section data-reveal id="downloads" style={{ borderRadius: "18px", border: "1px solid var(--line)", overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 22px", background: "var(--inset)", borderBottom: "1px solid #1A1917", flexWrap: "wrap" }}>
               <h2 style={{ fontSize: 17, fontWeight: 500 }}>Downloads</h2>
               <div style={{ flex: 1 }} />
               <DownloadFilter active={kind ?? ""} kinds={kinds} />
@@ -138,11 +138,11 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                       <Link data-nav href={`/item/${d.asset_slug}`} style={{ fontSize: 15, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {d.asset_name ?? d.asset_slug}
                       </Link>
-                      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
+                      <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
                         {d.file_name}{d.bytes ? ` · ${(d.bytes / 1_048_576).toFixed(1)} MB` : ""}
                       </span>
                     </div>
-                    <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
+                    <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
                       {new Date(d.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase()}
                     </span>
                     <DownloadAgain slug={d.asset_slug} file={d.file_name} />
@@ -159,16 +159,16 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <section
               data-reveal
               style={{
-                borderRadius: "var(--r-card)",
-                border: "1px solid var(--sage-line-2)",
-                background: "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),var(--surface)",
+                borderRadius: "18px",
+                border: "1px solid var(--amber-line)",
+                background: "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),var(--card)",
                 padding: 26,
                 display: "flex",
                 flexDirection: "column",
                 gap: 14,
               }}
             >
-              <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--sage)" }}>Subscription</span>
+              <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--amber)" }}>Subscription</span>
               <div style={{ display: "flex", alignItems: "baseline", gap: 9, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 34, fontWeight: 500, letterSpacing: "-0.03em" }}>
                   {EARLY_ACCESS ? "Early access" : viewer.premium ? "Premium" : "Free"}
@@ -191,14 +191,14 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                   </Link>
                 )}
                 <form action="/auth/signout" method="post">
-                  <button type="submit" className="btn btn--ghost" style={{ fontSize: 13, padding: "11px 20px", color: "var(--ink-3)" }}>
+                  <button type="submit" className="btn btn--ghost" style={{ fontSize: 13, padding: "11px 20px", color: "var(--muted)" }}>
                     Sign out
                   </button>
                 </form>
               </div>
             </section>
 
-            <section data-reveal style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+            <section data-reveal style={{ borderRadius: "18px", border: "1px solid var(--line)", background: "var(--inset)", padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
               <h2 style={{ fontSize: 16, fontWeight: 500 }}>Saved</h2>
               {savedTotal === 0 ? (
                 <p style={{ fontSize: 14, color: "var(--muted)" }}>
@@ -210,7 +210,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                     <div key={s.collection_slug} style={{ display: "flex", alignItems: "center", gap: 13 }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
                         <span style={{ fontSize: 14, color: "var(--ink)" }}>{s.collection_slug}</span>
-                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>Collection</span>
+                        <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>Collection</span>
                       </div>
                       <Link data-nav href={`/collections/${s.collection_slug}`} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link>
                     </div>
@@ -219,7 +219,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                     <div key={s.asset_slug} style={{ display: "flex", alignItems: "center", gap: 13 }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
                         <span style={{ fontSize: 14, color: "var(--ink)" }}>{s.asset_slug}</span>
-                        <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>Asset</span>
+                        <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>Asset</span>
                       </div>
                       <Link data-nav href={`/item/${s.asset_slug}`} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link>
                     </div>
@@ -228,7 +228,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               )}
             </section>
 
-            <section data-reveal style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
+            <section data-reveal style={{ borderRadius: "18px", border: "1px solid var(--line)", background: "var(--inset)", padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
               <h2 style={{ fontSize: 16, fontWeight: 500 }}>Invoices</h2>
               {/* Honest: there is no billing yet, so there is nothing to list. */}
               <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
@@ -237,11 +237,11 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               </p>
             </section>
 
-            <section data-reveal style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", padding: 24, display: "flex", alignItems: "center", gap: 13 }}>
+            <section data-reveal style={{ borderRadius: "18px", border: "1px solid var(--line)", background: "var(--inset)", padding: 24, display: "flex", alignItems: "center", gap: 13 }}>
               <Avatar email={viewer.email} size={40} />
               <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
                 <span style={{ fontSize: 14, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis" }}>{viewer.email}</span>
-                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>Signed in</span>
+                <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>Signed in</span>
               </div>
             </section>
           </div>
@@ -252,8 +252,8 @@ export default async function Account({ searchParams }: { searchParams: Promise<
 
 function Stat({ label, value, note, big }: { label: string; value: string; note: string; big?: boolean }) {
   return (
-    <div data-reveal style={{ borderRadius: "var(--r-card)", border: "1px solid var(--hairline)", background: "var(--surface-2)", padding: 22, display: "flex", flexDirection: "column", gap: 9 }}>
-      <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--faint)" }}>{label}</span>
+    <div data-reveal style={{ borderRadius: "18px", border: "1px solid var(--line)", background: "var(--inset)", padding: 22, display: "flex", flexDirection: "column", gap: 9 }}>
+      <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--muted)" }}>{label}</span>
       <span style={{ fontWeight: 500, letterSpacing: "-0.03em", fontSize: big ? 34 : 26 }}>{value}</span>
       <span style={{ fontSize: 13, color: "var(--muted)" }}>{note}</span>
     </div>

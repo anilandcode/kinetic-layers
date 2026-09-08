@@ -32,15 +32,15 @@ export function Avatar({ email, size = 26 }: { email: string | null; size?: numb
       style={{
         width: size,
         height: size,
-        borderRadius: "var(--r-pill)",
+        borderRadius: "99px",
         /* Solid, not a gradient: the initial has to clear contrast against the
            darkest part of the fill, and the system bans gradient surfaces. */
-        background: "var(--sage)",
+        background: "var(--amber)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         fontSize: Math.round(size * 0.42),
-        color: "var(--sage-deep)",
+        color: "var(--amber)",
         fontWeight: 500,
         flexShrink: 0,
       }}

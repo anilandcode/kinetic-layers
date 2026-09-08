@@ -42,7 +42,7 @@ export default async function Docs() {
               ["The source files", "Whatever the thing is actually made of — scene modules, components, configs, weights, maps. Downloadable one at a time from the item page."],
               ["The spec", "Where it was used, what it costs to run, what it depends on. The honest version, including the parts that are awkward."],
             ].map(([h, p]) => (
-              <div key={h} style={{ padding: "20px 0", borderTop: "1px solid var(--hairline)" }}>
+              <div key={h} style={{ padding: "20px 0", borderTop: "1px solid var(--line)" }}>
                 <dt style={{ fontSize: 18, fontWeight: 500, letterSpacing: "-0.015em", color: "var(--ink)", marginBottom: 7 }}>
                   {h}
                 </dt>
@@ -78,7 +78,7 @@ export default async function Docs() {
           </h2>
           <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--muted)" }}>
             Connect the{" "}
-            <Link data-nav href="/mcp" style={{ color: "var(--sage)" }}>
+            <Link data-nav href="/mcp" style={{ color: "var(--amber)" }}>
               MCP endpoint
             </Link>{" "}
             and skip the browser entirely — your agent searches the vault and
@@ -121,7 +121,7 @@ claude mcp add --transport http kiln https://your-kiln/api/mcp \\
             Use it in client work, modify it freely, keep it after cancelling.
             Do not resell the asset as an asset. That is the whole of it — the
             detail is on the{" "}
-            <Link data-nav href="/license" style={{ color: "var(--sage)" }}>
+            <Link data-nav href="/license" style={{ color: "var(--amber)" }}>
               licence page
             </Link>
             .
@@ -130,7 +130,7 @@ claude mcp add --transport http kiln https://your-kiln/api/mcp \\
             {settings.freeThisMonth > 0
               ? `${settings.freeThisMonth} assets are free to any account, which is the cheapest way to find out whether the rest are worth it — each card says which.`
               : "Free assets appear here as they are published."}{" "}
-            <Link data-nav href="/library" style={{ color: "var(--sage)" }}>
+            <Link data-nav href="/library" style={{ color: "var(--amber)" }}>
               Browse the library
             </Link>
             .

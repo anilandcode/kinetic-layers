@@ -63,23 +63,23 @@ export default function SearchTrigger() {
           gap: 20,
           flex: "0 1 250px",
           minWidth: 190,
-          border: "1px solid var(--hairline-3)",
-          borderRadius: "var(--r-pill)",
+          border: "1px solid var(--line2)",
+          borderRadius: "99px",
           padding: "8px 12px",
           background: "transparent",
           cursor: "pointer",
           overflow: "hidden",
-          transition: "filter var(--t-fast) var(--ease)",
+          transition: "filter 0.18s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
-        <span style={{ fontSize: 13, color: "var(--faint)" }}>Search the vault</span>
+        <span style={{ fontSize: 13, color: "var(--muted)" }}>Search the vault</span>
         <span
-          className="mono"
+          className="kl-mono"
           style={{
             fontSize: 10,
-            color: "var(--faint)",
-            border: "1px solid var(--hairline-3)",
-            borderRadius: "var(--r-pill)",
+            color: "var(--muted)",
+            border: "1px solid var(--line2)",
+            borderRadius: "99px",
             padding: "3px 8px",
             flexShrink: 0,
           }}
@@ -195,7 +195,7 @@ function Palette({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
         style={{
           width: "min(620px,90vw)",
-          background: "var(--surface)",
+          background: "var(--card)",
           border: "1px solid var(--line)",
           borderRadius: 24,
           overflow: "hidden",
@@ -204,13 +204,13 @@ function Palette({ onClose }: { onClose: () => void }) {
         <div
           style={{
             padding: "20px 22px",
-            borderBottom: "1px solid var(--hairline-3)",
+            borderBottom: "1px solid var(--line2)",
             display: "flex",
             alignItems: "center",
             gap: 12,
           }}
         >
-          <span aria-hidden="true" style={{ color: "var(--sage)", fontSize: 16 }}>
+          <span aria-hidden="true" style={{ color: "var(--amber)", fontSize: 16 }}>
             ⌕
           </span>
           <input
@@ -237,15 +237,15 @@ function Palette({ onClose }: { onClose: () => void }) {
                 : ""}
           </p>
           {state === "idle" && (
-            <p style={{ padding: "13px 14px", fontSize: 14, color: "var(--faint)" }}>
+            <p style={{ padding: "13px 14px", fontSize: 14, color: "var(--muted)" }}>
               Type to search the whole vault.
             </p>
           )}
           {state === "loading" && hits.length === 0 && (
-            <p style={{ padding: "13px 14px", fontSize: 14, color: "var(--faint)" }}>Searching…</p>
+            <p style={{ padding: "13px 14px", fontSize: 14, color: "var(--muted)" }}>Searching…</p>
           )}
           {state === "done" && hits.length === 0 && (
-            <p style={{ padding: "13px 14px", fontSize: 14, color: "var(--faint)" }}>
+            <p style={{ padding: "13px 14px", fontSize: 14, color: "var(--muted)" }}>
               Nothing matches “{q}”.
             </p>
           )}
@@ -257,16 +257,16 @@ function Palette({ onClose }: { onClose: () => void }) {
                   onClick={onClose}
                   style={{
                     padding: "13px 14px",
-                    borderRadius: "var(--r-pill)",
+                    borderRadius: "99px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                     gap: 16,
-                    color: "var(--ink-3)",
+                    color: "var(--muted)",
                   }}
                 >
                   <span style={{ fontSize: 14 }}>{h.name}</span>
-                  <span className="mono" style={{ fontSize: 10, color: "var(--faint)" }}>
+                  <span className="kl-mono" style={{ fontSize: 10, color: "var(--muted)" }}>
                     {h.type}
                   </span>
                 </Link>
@@ -276,8 +276,8 @@ function Palette({ onClose }: { onClose: () => void }) {
         </div>
 
         <div
-          className="mono"
-          style={{ padding: "14px 22px", borderTop: "1px solid var(--hairline-3)", fontSize: 10, color: "var(--faint)" }}
+          className="kl-mono"
+          style={{ padding: "14px 22px", borderTop: "1px solid var(--line2)", fontSize: 10, color: "var(--muted)" }}
         >
           Esc to close
         </div>

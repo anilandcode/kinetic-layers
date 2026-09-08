@@ -49,7 +49,7 @@ export default function DownloadAgain({
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
       {error && (
-        <span role="status" style={{ fontSize: 12, color: "var(--faint)", maxWidth: 220 }}>
+        <span role="status" style={{ fontSize: 12, color: "var(--muted)", maxWidth: 220 }}>
           {error}
         </span>
       )}
@@ -58,7 +58,7 @@ export default function DownloadAgain({
         onClick={go}
         disabled={busy}
         className="btn btn--ghost"
-        style={{ fontSize: 13, padding: "7px 15px", color: "var(--ink-3)" }}
+        style={{ fontSize: 13, padding: "7px 15px", color: "var(--muted)" }}
       >
         {busy ? "Preparing…" : label}
       </button>

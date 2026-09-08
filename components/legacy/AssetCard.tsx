@@ -37,7 +37,7 @@ export default function AssetCard({
       <div
         style={{
           height: h,
-          borderRadius: "var(--r-inner)",
+          borderRadius: "12px",
           overflow: "hidden",
           background: asset.g,
           position: "relative",

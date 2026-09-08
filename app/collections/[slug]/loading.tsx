@@ -1,17 +1,25 @@
-import { GridSkeleton, LoadingAnnouncement, Shimmer } from "@/components/legacy/Skeleton";
+/* Shown while a server component fetches. Deliberately quiet — a spinner on
+   every navigation reads as slower than nothing at all.
 
+   Wrapped in [data-kl] so the skeleton is already in the new palette: without
+   it every navigation would flash the old ground for the length of the
+   fetch. */
 export default function Loading() {
   return (
-    <main>
-      <LoadingAnnouncement what="this collection" />
-      <div className="shell" style={{ paddingBlock: "60px 40px", display: "flex", flexDirection: "column", gap: 18, maxWidth: 680 }} aria-hidden="true">
-        <Shimmer h={12} w={220} />
-        <Shimmer h={52} w="80%" />
-        <Shimmer h={16} w="65%" />
+    <div data-kl className="kl-shell">
+      <div className="kl-pad" style={{ paddingBlock: 120 }} aria-busy="true" aria-live="polite">
+        <span
+          style={{
+            fontFamily: "var(--font-mono, ui-monospace, monospace)",
+            fontSize: 10,
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
+          }}
+        >
+          Opening the collection…
+        </span>
       </div>
-      <div className="shell" style={{ paddingBottom: 90 }}>
-        <GridSkeleton count={6} heights={[200, 200, 200, 200, 200, 200]} />
-      </div>
-    </main>
+    </div>
   );
 }

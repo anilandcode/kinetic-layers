@@ -87,8 +87,8 @@ export default function ApiKeys({ initial }: { initial: Key[] }) {
       data-reveal
       aria-labelledby="keys-heading"
       style={{
-        borderRadius: "var(--r-card)",
-        border: "1px solid var(--hairline)",
+        borderRadius: "18px",
+        border: "1px solid var(--line)",
         overflow: "hidden",
       }}
     >
@@ -98,7 +98,7 @@ export default function ApiKeys({ initial }: { initial: Key[] }) {
           alignItems: "center",
           gap: 12,
           padding: "18px 22px",
-          background: "var(--surface-2)",
+          background: "var(--inset)",
           borderBottom: "1px solid #1A1917",
           flexWrap: "wrap",
         }}
@@ -115,7 +115,7 @@ export default function ApiKeys({ initial }: { initial: Key[] }) {
       <div style={{ padding: "18px 22px", display: "flex", flexDirection: "column", gap: 16 }}>
         <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--muted)", maxWidth: 560 }}>
           For the{" "}
-          <a data-nav href="/mcp" style={{ color: "var(--sage)" }}>
+          <a data-nav href="/mcp" style={{ color: "var(--amber)" }}>
             MCP endpoint
           </a>
           , so an agent can search the vault and read prompts you have access to.
@@ -128,25 +128,25 @@ export default function ApiKeys({ initial }: { initial: Key[] }) {
             role="status"
             aria-live="polite"
             style={{
-              border: "1px solid var(--sage-line-2)",
-              borderRadius: "var(--r-inner)",
-              background: "var(--sage-fill)",
+              border: "1px solid var(--amber-line)",
+              borderRadius: "12px",
+              background: "var(--amber-bg)",
               padding: "16px 18px",
               display: "flex",
               flexDirection: "column",
               gap: 10,
             }}
           >
-            <strong style={{ fontSize: 13, fontWeight: 500, color: "var(--sage-ink)" }}>
+            <strong style={{ fontSize: 13, fontWeight: 500, color: "var(--amber)" }}>
               Copy this now — it is not shown again.
             </strong>
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               <code
-                className="mono"
+                className="kl-mono"
                 style={{
                   fontSize: 12,
                   color: "var(--ink)",
-                  background: "var(--void)",
+                  background: "var(--ground)",
                   border: "1px solid var(--line)",
                   borderRadius: 8,
                   padding: "9px 12px",
@@ -171,7 +171,7 @@ export default function ApiKeys({ initial }: { initial: Key[] }) {
         )}
 
         {keys.length === 0 ? (
-          <p style={{ fontSize: 14, color: "var(--faint)" }}>No keys yet.</p>
+          <p style={{ fontSize: 14, color: "var(--muted)" }}>No keys yet.</p>
         ) : (
           <ul style={{ display: "flex", flexDirection: "column", gap: 0, margin: 0, padding: 0, listStyle: "none" }}>
             {keys.map((k) => (
@@ -182,16 +182,16 @@ export default function ApiKeys({ initial }: { initial: Key[] }) {
                   alignItems: "center",
                   gap: 14,
                   padding: "12px 0",
-                  borderTop: "1px solid var(--hairline)",
+                  borderTop: "1px solid var(--line)",
                   flexWrap: "wrap",
                 }}
               >
-                <code className="mono" style={{ fontSize: 12, color: "var(--ink-3)" }}>
+                <code className="kl-mono" style={{ fontSize: 12, color: "var(--muted)" }}>
                   {k.prefix}…
                 </code>
                 <span style={{ fontSize: 13, color: "var(--muted)" }}>{k.name}</span>
                 <div style={{ flex: 1 }} />
-                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--faint)" }}>
+                <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
                   {k.last_used
                     ? `USED ${new Date(k.last_used).toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase()}`
                     : "NEVER USED"}

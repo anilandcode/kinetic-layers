@@ -1,17 +1,25 @@
-import { CardSkeleton, LoadingAnnouncement } from "@/components/legacy/Skeleton";
+/* Shown while a server component fetches. Deliberately quiet — a spinner on
+   every navigation reads as slower than nothing at all.
 
+   Wrapped in [data-kl] so the skeleton is already in the new palette: without
+   it every navigation would flash the old ground for the length of the
+   fetch. */
 export default function Loading() {
   return (
-    <main className="shell" style={{ paddingBlock: "64px 90px" }}>
-      <LoadingAnnouncement what="collections" />
-      <div
-        aria-hidden="true"
-        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(400px,100%),1fr))", gap: 26 }}
-      >
-        {Array.from({ length: 6 }, (_, i) => (
-          <CardSkeleton key={i} h={230} />
-        ))}
+    <div data-kl className="kl-shell">
+      <div className="kl-pad" style={{ paddingBlock: 120 }} aria-busy="true" aria-live="polite">
+        <span
+          style={{
+            fontFamily: "var(--font-mono, ui-monospace, monospace)",
+            fontSize: 10,
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
+          }}
+        >
+          Gathering the collections…
+        </span>
       </div>
-    </main>
+    </div>
   );
 }
