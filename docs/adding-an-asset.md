@@ -85,8 +85,18 @@ Without a `preview/` folder the card falls back to a generated gradient — run
 
 ## By hand
 
-For a tagline or a prompt, open **/studio**, edit the asset, publish. The
+For a tagline or a prompt, open the Studio, edit the asset, publish. The
 webhook revalidates only the tags that changed, so it is live in seconds.
+
+```bash
+npm run studio          # http://localhost:3333
+npm run studio:deploy   # publishes it to <project>.sanity.studio for everyone else
+```
+
+The Studio is **not** mounted at `/studio` in the app, and should not be: doing
+that pulls the whole Sanity bundle into the Next build and deadlocks with React
+19 over `useEffectEvent`. It was tried and reverted — see the note at the top of
+`sanity.config.ts`. Access is whoever you have invited to the Sanity project.
 
 Files are the part the Studio cannot do: they live in the private `assets`
 bucket in Supabase, not in Sanity. Upload at the path in the asset's

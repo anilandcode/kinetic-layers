@@ -57,13 +57,19 @@ async function make(dir, name, slug, seed = 0) {
 
   /* A drifting three-stop gradient in the asset's own hue, with a blurred
      cellular layer screened over it. Enough structure to prove the clip is
-     really playing, and to give the encoder something to chew on. */
+     really playing, and to give the encoder something to chew on.
+
+     These were near-black — lightness 22, 7 and 26 over a #0F0F0D bed, built
+     for the dark treatment. On the warm-white ground they read as holes, and
+     they defeat the thing they stand in for: the design's own answer to "no
+     image yet" is one of six pale paper tints. Same hue-per-slug, moved up into
+     that range, so a placeholder now looks like paper rather than a void. */
   const bed =
-    `gradients=s=1280x800:c0=${hex(h, 34, 22)}:c1=${hex((h + 30) % 360, 30, 7)}:` +
-    `c2=${hex((h + 60) % 360, 38, 26)}:n=3:x0=140:y0=90:x1=1140:y1=710:speed=0.010:d=4:r=24`;
+    `gradients=s=1280x800:c0=${hex(h, 42, 89)}:c1=${hex((h + 30) % 360, 30, 98)}:` +
+    `c2=${hex((h + 60) % 360, 38, 92)}:n=3:x0=140:y0=90:x1=1140:y1=710:speed=0.010:d=4:r=24`;
   const cells =
-    `life=s=1280x800:mold=10:r=24:ratio=0.10:death_color=0x0f0f0d:` +
-    `life_color=${hex((h + 20) % 360, 32, 26)},boxblur=26:2`;
+    `life=s=1280x800:mold=10:r=24:ratio=0.10:death_color=0xfdfcfa:` +
+    `life_color=${hex((h + 20) % 360, 34, 90)},boxblur=26:2`;
 
   await run("ffmpeg", [
     "-y", "-loglevel", "error",
