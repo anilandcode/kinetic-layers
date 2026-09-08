@@ -243,7 +243,7 @@ export default function PricingBody({
               ))}
             </ul>
             <div style={{ flex: 1 }} />
-            <Link data-nav href="/library" className="btn btn--ghost" style={{ marginTop: 8 }}>
+            <Link href="/library" className="btn btn--ghost" style={{ marginTop: 8 }}>
               Browse the free {settings.freeThisMonth}
             </Link>
           </div>
@@ -313,7 +313,6 @@ export default function PricingBody({
                 answers 503. */}
             {EARLY_ACCESS ? (
               <Link
-                data-nav
                 href={viewer ? "/library" : "/join"}
                 className="btn btn--primary"
                 style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}
@@ -321,14 +320,13 @@ export default function PricingBody({
                 {viewer ? "You already have all of it — open the library" : "Get it free while it lasts"}
               </Link>
             ) : viewer?.premium ? (
-              <Link data-nav href="/account" className="btn btn--primary" style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}>
+              <Link href="/account" className="btn btn--primary" style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}>
                 You already have this — open your vault
               </Link>
             ) : !viewer ? (
               /* Sign in first, then come back here rather than to the account
                  page — the visitor asked for a plan, not for settings. */
               <Link
-                data-nav
                 href="/join?next=/pricing"
                 className="btn btn--primary"
                 style={{ fontSize: 15, padding: "15px 24px", marginTop: 10 }}

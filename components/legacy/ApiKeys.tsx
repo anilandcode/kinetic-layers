@@ -115,7 +115,7 @@ export default function ApiKeys({ initial }: { initial: Key[] }) {
       <div style={{ padding: "18px 22px", display: "flex", flexDirection: "column", gap: 16 }}>
         <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--muted)", maxWidth: 560 }}>
           For the{" "}
-          <a data-nav href="/mcp" style={{ color: "var(--amber)" }}>
+          <a href="/mcp" style={{ color: "var(--amber)" }}>
             MCP endpoint
           </a>
           , so an agent can search the vault and read prompts you have access to.

@@ -41,7 +41,6 @@ export default function SaveButton({
   if (!signedIn) {
     return (
       <a
-        data-nav
         href={`/join?next=${encodeURIComponent(kind === "asset" ? `/item/${slug}` : `/collections/${slug}`)}`}
         className={className}
         style={style}

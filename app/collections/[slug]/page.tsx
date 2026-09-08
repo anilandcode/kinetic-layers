@@ -49,7 +49,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   return (
     <PageShell>
         <nav className="shell mono" aria-label="Breadcrumb" style={{ paddingBlock: "26px 0", display: "flex", gap: 10, fontSize: 10, color: "var(--muted)" }}>
-          <Link data-nav href="/collections" style={{ color: "var(--muted)" }}>Collections</Link>
+          <Link href="/collections" style={{ color: "var(--muted)" }}>Collections</Link>
           <span aria-hidden="true">/</span>
           <span style={{ color: "var(--muted)" }}>{collection.name}</span>
         </nav>
@@ -66,7 +66,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", maxWidth: 540 }}>{collection.blurb}</p>
             )}
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-              {collection.tags.map((t) => <span className="chip" key={t}>{t}</span>)}
+              {collection.tags.map((t) => <span className="kl-tag" key={t}>{t}</span>)}
             </div>
 
             {/* The only place a collection can be saved. Without this the
@@ -89,7 +89,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               Nothing filed under this collection yet.
             </p>
           ) : (
-            <div className="kiln-grid">
+            <div className="kl-3col">
               {collection.assets.map((a) => (
                 <div data-reveal key={a.slug}>
                   <AssetCard asset={a} height={200} />

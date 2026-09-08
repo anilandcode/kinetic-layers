@@ -28,10 +28,9 @@ export default function AssetCard({
 
   return (
     <Link
-      data-nav
       data-card
       href={`/item/${asset.slug}`}
-      className="kiln-card"
+      className="kl-card kl-card-link"
       aria-label={`${asset.name} — ${asset.free ? "free" : "Premium only"}`}
     >
       <div
@@ -60,13 +59,13 @@ export default function AssetCard({
           {asset.name}
         </span>
         <span className={asset.free ? "chip chip--sage" : "chip"} style={{ padding: "5px 13px" }}>
-          {asset.free ? "Free" : "Unlimited"}
+          {asset.free ? "Free" : "Premium"}
         </span>
       </div>
 
       <div data-meta style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "11px 4px 2px" }}>
-        <span className="chip">{asset.type.toLowerCase()}</span>
-        <span className="chip">{asset.stack.toLowerCase()}</span>
+        <span className="kl-tag">{asset.type.toLowerCase()}</span>
+        <span className="kl-tag">{asset.stack.toLowerCase()}</span>
       </div>
     </Link>
   );

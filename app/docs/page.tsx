@@ -78,7 +78,7 @@ export default async function Docs() {
           </h2>
           <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--muted)" }}>
             Connect the{" "}
-            <Link data-nav href="/mcp" style={{ color: "var(--amber)" }}>
+            <Link href="/mcp" style={{ color: "var(--amber)" }}>
               MCP endpoint
             </Link>{" "}
             and skip the browser entirely — your agent searches the vault and
@@ -121,7 +121,7 @@ claude mcp add --transport http kiln https://your-kiln/api/mcp \\
             Use it in client work, modify it freely, keep it after cancelling.
             Do not resell the asset as an asset. That is the whole of it — the
             detail is on the{" "}
-            <Link data-nav href="/license" style={{ color: "var(--amber)" }}>
+            <Link href="/license" style={{ color: "var(--amber)" }}>
               licence page
             </Link>
             .
@@ -130,7 +130,7 @@ claude mcp add --transport http kiln https://your-kiln/api/mcp \\
             {settings.freeThisMonth > 0
               ? `${settings.freeThisMonth} assets are free to any account, which is the cheapest way to find out whether the rest are worth it — each card says which.`
               : "Free assets appear here as they are published."}{" "}
-            <Link data-nav href="/library" style={{ color: "var(--amber)" }}>
+            <Link href="/library" style={{ color: "var(--amber)" }}>
               Browse the library
             </Link>
             .

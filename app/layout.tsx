@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Sora, Source_Serif_4, Geist_Mono, Figtree, Cormorant } from "next/font/google";
-import KilnMotion from "@/components/legacy/KilnMotion";
 import Analytics from "@/components/legacy/Analytics";
 import AssetModal from "@/components/legacy/AssetModal";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kl/site";
@@ -109,7 +108,6 @@ export default function RootLayout({
               "if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}",
           }}
         />
-        <KilnMotion />
         <Analytics />
         {children}
         {/* Opens an asset over whatever page you are on. Not a route: the URL

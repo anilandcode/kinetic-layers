@@ -185,7 +185,7 @@ export default function AssetModal() {
       ) : failed ? (
         <div className="kl-pad" style={{ paddingBlock: 60, display: "flex", flexDirection: "column", gap: 14 }}>
           <p style={{ fontSize: 16, color: "var(--muted)" }}>That did not load.</p>
-          <Link data-nav href={`/item/${slug}`} className="btn btn--ghost" style={{ alignSelf: "flex-start" }}>
+          <Link href={`/item/${slug}`} className="btn btn--ghost" style={{ alignSelf: "flex-start" }}>
             Open the full page instead
           </Link>
         </div>

@@ -167,7 +167,7 @@ export default function ItemView({
           aria-label="Breadcrumb"
           style={{ paddingBlock: "26px 0", display: "flex", alignItems: "center", gap: 10, fontSize: 10, color: "var(--muted)" }}
         >
-          <Link data-nav href="/library" style={{ color: "var(--muted)" }}>
+          <Link href="/library" style={{ color: "var(--muted)" }}>
             Library
           </Link>
           <span aria-hidden="true">/</span>
@@ -178,7 +178,7 @@ export default function ItemView({
               to nothing. */}
           {asset.category && (
             <>
-              <Link data-nav href={`/library?category=${encodeURIComponent(asset.category)}`} style={{ color: "var(--muted)" }}>
+              <Link href={`/library?category=${encodeURIComponent(asset.category)}`} style={{ color: "var(--muted)" }}>
                 {asset.category}
               </Link>
               <span aria-hidden="true">/</span>
@@ -204,12 +204,12 @@ export default function ItemView({
               <div style={{ display: "flex", alignItems: "center", gap: 11, flexWrap: "wrap" }}>
                 <h1 style={{ fontSize: 38, fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1.1 }}>{asset.name}</h1>
                 <span className={asset.free ? "chip chip--sage" : "chip"} style={{ padding: "5px 13px" }}>
-                  {asset.free ? "Free" : "Unlimited"}
+                  {asset.free ? "Free" : "Premium"}
                 </span>
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {[asset.type, asset.stack, asset.shelf, asset.mood].map((t) => (
-                  <span className="chip" key={t}>
+                  <span className="kl-tag" key={t}>
                     {t.toLowerCase()}
                   </span>
                 ))}
@@ -253,7 +253,6 @@ export default function ItemView({
                 </button>
               ) : (
                 <Link
-                  data-nav
                   data-track="unlock_click"
                   data-track-detail={`${gate}:${asset.slug}`}
                   href={unlockHref}
@@ -272,7 +271,7 @@ export default function ItemView({
                   signedIn={Boolean(viewer)}
                 />
               ) : (
-                <Link data-nav href={`/join?next=/item/${asset.slug}`} className="btn btn--quiet">
+                <Link href={`/join?next=/item/${asset.slug}`} className="btn btn--quiet">
                   Save for later
                 </Link>
               )}
@@ -526,11 +525,11 @@ export default function ItemView({
                     ? `More from the ${asset.shelf} shelf`
                     : "Recently added"}
               </h2>
-              <Link data-nav href="/collections" className="kl-mono" style={{ fontSize: 10 }}>
+              <Link href="/collections" className="kl-mono" style={{ fontSize: 10 }}>
                 See the collections
               </Link>
             </div>
-            <div className="kiln-grid">
+            <div className="kl-3col">
               {related.map((r) => (
                 <AssetCard key={r.slug} asset={r} height={190} />
               ))}
@@ -752,7 +751,7 @@ function PromptGate({
               <span style={{ color: "var(--muted)", fontSize: 10, letterSpacing: "0.1em" }}>
                 {hidden.toLocaleString()} characters hidden
               </span>
-              <Link data-nav href={unlockHref} className="btn btn--primary" style={{ padding: "8px 14px", fontSize: 13 }}>
+              <Link href={unlockHref} className="btn btn--primary" style={{ padding: "8px 14px", fontSize: 13 }}>
                 Unlock
               </Link>
             </div>

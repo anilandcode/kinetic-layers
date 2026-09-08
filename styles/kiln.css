@@ -331,16 +331,6 @@ a:hover { color: var(--sage-bright); }
 }
 [data-card]:hover [data-preview-inner] { transform: scale(1.045); }
 
-/* Page-transition veil, driven by the nav interceptor. */
-#km-veil {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  background: #0B0B0A;
-  pointer-events: none;
-  opacity: 0;
-}
-
 @media (max-width: 1180px) {
   [data-hide-narrow] { display: none !important; }
 }

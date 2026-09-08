@@ -14,7 +14,7 @@ import type { ReactNode } from "react";
  * Renders an <a> only when given an href. Anything with a handler stays a
  * <button>: KilnMotion intercepts `a[data-nav]` in the capture phase and stops
  * propagation, so a click handler on an anchor can silently never fire
- * (HANDOFF.md, trap 4). Nothing here sets data-nav.
+ * (HANDOFF.md, trap 4). Nothing here sets.
  */
 
 type Size = "sm" | "md" | "lg";

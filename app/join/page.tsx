@@ -44,15 +44,15 @@ export default async function Join({
       <a className="skip-link" href="#join">Skip to the form</a>
       <header style={{ borderBottom: "1px solid var(--line)" }}>
         <div className="kl-pad" style={{ height: 66, display: "flex", alignItems: "center", gap: 20 }}>
-          <Link data-nav href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
             <Mark />
             <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kinetic Layers</span>
           </Link>
           <div style={{ flex: 1 }} />
           {!EARLY_ACCESS && (
-            <Link data-nav href="/pricing" style={{ fontSize: 14, color: "var(--muted)" }}>Pricing</Link>
+            <Link href="/pricing" style={{ fontSize: 14, color: "var(--muted)" }}>Pricing</Link>
           )}
-          <Link data-nav href="/library" style={{ fontSize: 14, color: "var(--muted)" }}>Browse free</Link>
+          <Link href="/library" style={{ fontSize: 14, color: "var(--muted)" }}>Browse free</Link>
         </div>
       </header>
 
@@ -104,11 +104,11 @@ export default async function Join({
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "16px 4px 0" }}>
                 <span style={{ fontSize: 17, fontWeight: 500, letterSpacing: "-0.01em" }}>Volumetric Drift</span>
-                <span className="chip" style={{ padding: "5px 13px" }}>Unlimited</span>
+                <span className="kl-tag" style={{ padding: "5px 13px" }}>Unlimited</span>
               </div>
               <div style={{ display: "flex", gap: 8, padding: "11px 4px 2px" }}>
-                <span className="chip">3d scene</span>
-                <span className="chip">three.js</span>
+                <span className="kl-tag">3d scene</span>
+                <span className="kl-tag">three.js</span>
               </div>
             </div>
 
@@ -127,7 +127,7 @@ export default async function Join({
                 <span style={{ fontSize: 15, color: "var(--muted)" }}>
                   {EARLY_ACCESS ? "Free while Kinetic Layers is in early access" : `$${settings.monthlyPrice} a month, cancel anytime`}
                 </span>
-                <Link data-nav href="/pricing" style={{ fontSize: 14, color: "var(--amber)" }}>
+                <Link href="/pricing" style={{ fontSize: 14, color: "var(--amber)" }}>
                   {EARLY_ACCESS ? "What it will cost later →" : "See pricing →"}
                 </Link>
               </div>

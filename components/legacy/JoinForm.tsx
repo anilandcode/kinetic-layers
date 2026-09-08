@@ -208,8 +208,10 @@ function Submit({ mode }: { mode: Mode }) {
     reset: "Send a reset link",
   };
   return (
-    <button type="submit" className="btn btn--primary" disabled={pending} style={{ fontSize: 15, padding: "16px 22px" }}>
-      {pending ? "Working…" : label[mode]}
+    <button type="submit" className="kl-btn kl-btn--premium" disabled={pending} style={{ width: "100%" }}>
+      <span className="kl-btn-label" data-btn-label>
+        {pending ? "Working…" : label[mode]}
+      </span>
     </button>
   );
 }
@@ -217,8 +219,10 @@ function Submit({ mode }: { mode: Mode }) {
 function ProviderButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn btn--ghost" disabled={pending} style={{ padding: "15px 22px", fontSize: 15, color: "var(--muted)", width: "100%" }}>
-      {pending ? "Redirecting…" : `Continue with ${label}`}
+    <button type="submit" className="kl-btn kl-btn--ghost" disabled={pending} style={{ width: "100%" }}>
+      <span className="kl-btn-label" data-btn-label>
+        {pending ? "Redirecting…" : `Continue with ${label}`}
+      </span>
     </button>
   );
 }

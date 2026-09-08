@@ -20,7 +20,7 @@ export default async function ResetPassword() {
       <a className="skip-link" href="#reset">Skip to the form</a>
       <header style={{ borderBottom: "1px solid var(--line)" }}>
         <div className="kl-pad" style={{ height: 66, display: "flex", alignItems: "center", gap: 20 }}>
-          <Link data-nav href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
             <Mark />
             <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kinetic Layers</span>
           </Link>

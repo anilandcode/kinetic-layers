@@ -48,7 +48,7 @@ export default async function Mcp() {
           </h2>
           <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)" }}>
             Keys live on your{" "}
-            <Link data-nav href="/account" style={{ color: "var(--amber)" }}>
+            <Link href="/account" style={{ color: "var(--amber)" }}>
               account page
             </Link>
             . A key carries your plan — it opens exactly what you can open on the
@@ -112,7 +112,7 @@ export default async function Mcp() {
           <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)" }}>
             The same things the site refuses, decided by the same code. A key on
             the free plan asking for a paid prompt gets told so and pointed at{" "}
-            <Link data-nav href="/pricing" style={{ color: "var(--amber)" }}>
+            <Link href="/pricing" style={{ color: "var(--amber)" }}>
               pricing
             </Link>
             ; a request with no key at all gets told to make one. There is no

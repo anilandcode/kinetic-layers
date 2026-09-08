@@ -1,4 +1,5 @@
 import Link from "next/link";
+import GlassButton from "@/components/kl/GlassButton";
 import type { Metadata } from "next";
 import PageShell from "@/components/kl/PageShell";
 import CollectionFilter from "@/components/legacy/CollectionFilter";
@@ -55,10 +56,10 @@ export default async function Collections({
             the page read as a different site — the cards are the same object in
             the same system and should be built on the same bones. */}
         <section id="sets" className="kl-pad" style={{ paddingBlock: "36px 90px" }}>
-          <div className="kiln-masonry">
+          <div className="kl-masonry" data-masonry>
           {list.map((c) => (
             <div key={c.slug} style={{ breakInside: "avoid", marginBottom: 26 }}>
-            <Link data-nav data-card data-reveal href={`/collections/${c.slug}`} className="kiln-card" aria-label={`${c.name} — ${c.items} items`}>
+            <Link data-card data-reveal href={`/collections/${c.slug}`} className="kl-card kl-card-link" aria-label={`${c.name} — ${c.items} items`}>
               {/* background and position: relative match AssetCard — the
                   gradient paints under a poster that has not loaded, and the
                   wrapper is the positioning context an overlay needs. */}
@@ -77,14 +78,14 @@ export default async function Collections({
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "16px 4px 0" }}>
                 <span style={{ fontSize: 17, fontWeight: 500, letterSpacing: "-0.01em", color: "var(--ink)" }}>{c.name}</span>
-                <span className={c.free > 0 ? "chip chip--sage" : "chip"} style={{ padding: "5px 13px" }}>
-                  {c.free > 0 ? `${c.free} free` : "Unlimited"}
+                <span className={c.free > 0 ? "kl-badge" : "kl-tag"} style={{ padding: "5px 13px" }}>
+                  {c.free > 0 ? `${c.free} free` : "Premium"}
                 </span>
               </div>
               <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)", margin: "9px 4px 0", maxWidth: 420 }}>{c.blurb}</p>
               <div data-meta style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 4px 2px" }}>
                 {c.tags.map((t) => (
-                  <span className="chip" key={t}>
+                  <span className="kl-tag" key={t}>
                     {t}
                   </span>
                 ))}
@@ -93,7 +94,7 @@ export default async function Collections({
             </div>
           ))}
 
-          <div data-reveal className="kiln-promo kiln-promo--hire" style={{ breakInside: "avoid", marginBottom: 26, minHeight: 280 }}>
+          <div data-reveal className="kl-promo kl-promo--hire" style={{ breakInside: "avoid", marginBottom: 26, minHeight: 280 }}>
             <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
               Hire the studio
             </span>
@@ -103,7 +104,7 @@ export default async function Collections({
             <p style={{ fontSize: 15, lineHeight: 1.6, color: "var(--muted)" }}>
               Commissioned work never enters the vault.
             </p>
-            <Link data-nav href={viewer ? "/account" : "/join"} style={{ fontSize: 16, color: "var(--amber)", marginTop: 4 }}>
+            <Link href={viewer ? "/account" : "/join"} style={{ fontSize: 16, color: "var(--amber)", marginTop: 4 }}>
               Start a project →
             </Link>
           </div>
@@ -116,16 +117,15 @@ export default async function Collections({
               Every collection is included in Premium.
             </h2>
             <div style={{ display: "flex", gap: 12, marginTop: 6, flexWrap: "wrap", justifyContent: "center" }}>
-              <Link
-                data-nav
+              <GlassButton
                 href={viewer?.premium ? "/account" : EARLY_ACCESS ? "/join" : "/pricing"}
-                className="btn btn--primary"
+                premium
               >
                 {viewer?.premium ? "Your vault" : EARLY_ACCESS ? "Get free access" : "Go Premium"}
-              </Link>
-              <Link data-nav href="/library" className="btn btn--ghost">
+              </GlassButton>
+              <GlassButton href="/library" ghost>
                 Browse everything
-              </Link>
+              </GlassButton>
             </div>
           </div>
         </section>

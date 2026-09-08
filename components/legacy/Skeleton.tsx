@@ -34,7 +34,7 @@ export function CardSkeleton({ h = 220 }: { h?: number }) {
 export function GridSkeleton({ count = 8, heights }: { count?: number; heights?: number[] }) {
   const hs = heights ?? [230, 300, 170, 200, 260, 320, 180, 280];
   return (
-    <div className="kiln-masonry" aria-hidden="true">
+    <div className="kl-masonry" data-masonry aria-hidden="true">
       {Array.from({ length: count }, (_, i) => (
         <div key={i} style={{ marginBottom: 26, breakInside: "avoid" }}>
           <CardSkeleton h={hs[i % hs.length]} />

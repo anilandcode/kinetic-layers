@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Avatar } from "@/components/legacy/Chrome";
 import PageShell from "@/components/kl/PageShell";
+import GlassButton from "@/components/kl/GlassButton";
 import DownloadFilter from "@/components/legacy/DownloadFilter";
 import DownloadAgain from "@/components/legacy/DownloadAgain";
 import ApiKeys from "@/components/legacy/ApiKeys";
@@ -77,13 +78,13 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           <div data-hero style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
               {viewer.premium
-                ? `Unlimited${viewer.periodEnd ? ` · renews ${new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : ""}`
+                ? `Premium${viewer.periodEnd ? ` · renews ${new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : ""}`
                 : "Free plan"}
             </span>
-            <h1 style={{ fontSize: "clamp(30px, 3.8vw, 46px)", lineHeight: 1.08, fontWeight: 500, letterSpacing: "-0.035em" }}>
+            <h1 className="kl-prose-h1">
               {rows.length === 0
-                ? "Nothing out of the kiln yet."
-                : "Everything you’ve pulled out of the kiln."}
+                ? "Nothing downloaded yet."
+                : "Everything you’ve taken out of the library."}
             </h1>
           </div>
         </section>
@@ -112,7 +113,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
         >
           {/* --- Downloads --- */}
           <section data-reveal id="downloads" style={{ borderRadius: "18px", border: "1px solid var(--line)", overflow: "hidden" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 22px", background: "var(--inset)", borderBottom: "1px solid #1A1917", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "18px 22px", background: "var(--inset)", borderBottom: "1px solid var(--line2)", flexWrap: "wrap" }}>
               <h2 style={{ fontSize: 17, fontWeight: 500 }}>Downloads</h2>
               <div style={{ flex: 1 }} />
               <DownloadFilter active={kind ?? ""} kinds={kinds} />
@@ -126,16 +127,16 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                     ? `The ${settings.freeThisMonth} free assets are a good place to start.`
                     : "Free assets appear here as they are published."}
                 </p>
-                <Link data-nav href="/library" className="btn btn--ghost">
+                <GlassButton href="/library" ghost>
                   Browse the library
-                </Link>
+                </GlassButton>
               </div>
             ) : (
               <ul>
                 {filtered.map((d) => (
-                  <li key={d.id} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 22px", borderBottom: "1px solid #171614", flexWrap: "wrap" }}>
+                  <li key={d.id} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 22px", borderBottom: "1px solid var(--line2)", flexWrap: "wrap" }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: 1 }}>
-                      <Link data-nav href={`/item/${d.asset_slug}`} style={{ fontSize: 15, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <Link href={`/item/${d.asset_slug}`} style={{ fontSize: 15, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {d.asset_name ?? d.asset_slug}
                       </Link>
                       <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
@@ -161,7 +162,8 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               style={{
                 borderRadius: "18px",
                 border: "1px solid var(--amber-line)",
-                background: "radial-gradient(120% 90% at 85% 0%,rgba(185,206,149,0.15),rgba(20,20,17,0) 62%),var(--card)",
+                background:
+                  "radial-gradient(120% 90% at 85% 0%, var(--amber-bg), transparent 62%), var(--card)",
                 padding: 26,
                 display: "flex",
                 flexDirection: "column",
@@ -182,17 +184,19 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                   ? `All ${settings.totalAssets} assets and every source file, free while Kinetic Layers is in early access. Nothing to cancel, and anything you download stays yours.`
                   : viewer.premium
                     ? `Renews ${viewer.periodEnd ? new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "automatically"}. Cancel any time and keep every file you downloaded.`
-                    : `${settings.freeThisMonth} free assets. Unlimited opens all ${settings.totalAssets} and every source file.`}
+                    : `${settings.freeThisMonth} free assets. Premium opens all ${settings.totalAssets} and every source file.`}
               </p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
                 {!EARLY_ACCESS && !viewer.premium && (
-                  <Link data-nav href="/pricing" className="btn btn--primary" style={{ fontSize: 13, padding: "11px 20px" }}>
+                  <GlassButton href="/pricing" premium size="sm">
                     Go Premium
-                  </Link>
+                  </GlassButton>
                 )}
                 <form action="/auth/signout" method="post">
-                  <button type="submit" className="btn btn--ghost" style={{ fontSize: 13, padding: "11px 20px", color: "var(--muted)" }}>
-                    Sign out
+                  <button type="submit" className="kl-btn kl-btn--ghost kl-btn--sm">
+                    <span className="kl-btn-label" data-btn-label>
+                      Sign out
+                    </span>
                   </button>
                 </form>
               </div>
@@ -212,7 +216,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                         <span style={{ fontSize: 14, color: "var(--ink)" }}>{s.collection_slug}</span>
                         <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>Collection</span>
                       </div>
-                      <Link data-nav href={`/collections/${s.collection_slug}`} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link>
+                      <Link href={`/collections/${s.collection_slug}`} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link>
                     </div>
                   ))}
                   {(savedAssets ?? []).map((s) => (
@@ -221,7 +225,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                         <span style={{ fontSize: 14, color: "var(--ink)" }}>{s.asset_slug}</span>
                         <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>Asset</span>
                       </div>
-                      <Link data-nav href={`/item/${s.asset_slug}`} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link>
+                      <Link href={`/item/${s.asset_slug}`} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link>
                     </div>
                   ))}
                 </>
@@ -232,8 +236,8 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               <h2 style={{ fontSize: 16, fontWeight: 500 }}>Invoices</h2>
               {/* Honest: there is no billing yet, so there is nothing to list. */}
               <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
-                No invoices. Checkout is not connected yet — when it is, receipts appear here
-                automatically.
+                No invoices yet. Receipts appear here automatically once a subscription is
+                charged.
               </p>
             </section>
 
