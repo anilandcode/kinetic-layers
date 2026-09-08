@@ -10,5 +10,12 @@ export default defineCliConfig({
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "8vxxthrc",
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
   },
-  studioHost: "kiln",
+  /* "kiln" is taken on sanity.studio by someone else, and it is the retired
+     name anyway. This is the hosted Studio at kineticlayers.sanity.studio. */
+  studioHost: "kineticlayers",
+  /* Pinned so `sanity deploy` stays unattended — without it the CLI prompts
+     for the application id on every deploy. */
+  deployment: {
+    appId: "cwdswk0yv06yaxx10f11839c",
+  },
 });

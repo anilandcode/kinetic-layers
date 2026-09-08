@@ -88,9 +88,13 @@ Without a `preview/` folder the card falls back to a generated gradient — run
 For a tagline or a prompt, open the Studio, edit the asset, publish. The
 webhook revalidates only the tags that changed, so it is live in seconds.
 
+It is live at **https://kineticlayers.sanity.studio** — sign in with the Sanity
+account the project belongs to. To run it locally, or to push changes to the
+hosted one after editing a schema:
+
 ```bash
 npm run studio          # http://localhost:3333
-npm run studio:deploy   # publishes it to <project>.sanity.studio for everyone else
+npm run studio:deploy   # redeploys kineticlayers.sanity.studio
 ```
 
 The Studio is **not** mounted at `/studio` in the app, and should not be: doing

@@ -15,8 +15,8 @@ import { apiVersion, dataset, projectId } from "./lib/sanity/client";
  * Access is whoever you have invited to the Sanity project.
  */
 export default defineConfig({
-  name: "kiln",
-  title: "Kiln",
+  name: "kinetic-layers",
+  title: "Kinetic Layers",
   projectId,
   dataset,
   schema: { types: schemaTypes },

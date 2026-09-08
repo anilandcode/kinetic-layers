@@ -60,3 +60,7 @@ public/preview/
 # `graphify update .` (AST only, no API cost), so it is not worth the ~2 MB
 # of churn on every commit.
 graphify-out/
+
+# Sanity Studio build output — `sanity deploy` regenerates both
+dist/
+.sanity/
