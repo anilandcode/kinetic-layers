@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Sora, Source_Serif_4, Geist_Mono, Figtree, Cormorant } from "next/font/google";
 import Analytics from "@/components/legacy/Analytics";
-import AssetModal from "@/components/legacy/AssetModal";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kl/site";
 import "./globals.css";
 
@@ -92,8 +91,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
+  modal,
 }: {
   children: React.ReactNode;
+  /** The @modal parallel route — filled only when an interception matched. */
+  modal: React.ReactNode;
 }) {
   return (
     <html
@@ -117,9 +119,17 @@ export default function RootLayout({
         />
         <Analytics />
         {children}
-        {/* Opens an asset over whatever page you are on. Not a route: the URL
-            must not change, which an intercepting route could not honour. */}
-        <AssetModal />
+        {/* The asset popup. It replaced AssetModal, which delegated off
+            a[data-card] and rendered the pre-redesign dark ItemView — still
+            reachable from /collections/[slug], where it opened a dark overlay
+            on a light page.
+
+            The old comment here said an intercepting route could not honour
+            "the URL must not change". Changing it is the point: back closes
+            the overlay, refresh gives the full page, and the link someone
+            copies from the address bar is the one the sitemap already
+            publishes. */}
+        {modal}
       </body>
     </html>
   );

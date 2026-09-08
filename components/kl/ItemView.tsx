@@ -58,6 +58,7 @@ export default function ItemView({
   viewer,
   locked,
   monthlyPrice,
+  variant = "page",
 }: {
   asset: Asset;
   related: Asset[];
@@ -66,6 +67,13 @@ export default function ItemView({
   /** Whether the files are behind the paywall for this viewer. */
   locked: boolean;
   monthlyPrice: number;
+  /**
+   * "page" is the real route at /item/[slug] — the one the sitemap, the MCP
+   * tool, the OG image and every ?next= redirect point at (HANDOFF.md, trap 3).
+   * "modal" is the same content rendered inside the intercepting route, where
+   * ItemModal supplies the shell, the crumbs and a close that goes back.
+   */
+  variant?: "page" | "modal";
 }) {
   const ground = groundFor(asset.slug);
   const poster = asset.poster ? mediaUrl(asset.poster) : null;
@@ -109,11 +117,17 @@ export default function ItemView({
         ? "Free while the library is in early access — it just needs an account."
         : "An account is the only thing between you and the source files.";
 
-  return (
-    <Shell>
-      <Header />
+  const isModal = variant === "modal";
 
-      <main data-view className="kl-pad" style={{ paddingTop: 28, paddingBottom: 40 }}>
+  const content = (
+    <main
+      data-view
+      className={isModal ? undefined : "kl-pad"}
+      style={isModal ? undefined : { paddingTop: 28, paddingBottom: 40 }}
+    >
+      {/* The modal draws its own crumbs, because its close has to dismiss the
+          overlay rather than navigate to the library. */}
+      {isModal ? null : (
         <div className="kl-crumbs">
           <span>{asset.shelf.toUpperCase()}</span>
           <span>/</span>
@@ -123,6 +137,7 @@ export default function ItemView({
             CLOSE ✕
           </Link>
         </div>
+      )}
 
         <div className="kl-item" data-item-split>
           {/* ---------- Left: the goods ---------- */}
@@ -242,8 +257,15 @@ export default function ItemView({
             ) : null}
           </aside>
         </div>
-      </main>
+    </main>
+  );
 
+  if (isModal) return content;
+
+  return (
+    <Shell>
+      <Header />
+      {content}
       <Footer />
     </Shell>
   );
