@@ -26,6 +26,14 @@ type Common = {
   size?: Size;
   /** Magnetic pull in px, read by the motion layer. */
   pull?: number;
+  /**
+   * Adds the conic aura and the veil, and sweeps on a timer rather than only on
+   * hover. In the design this is not a property of premium buttons — "Go
+   * Premium" in the header and the hero CTA are premium and carry neither — it
+   * marks the two controls meant to catch the eye unprompted: the card's
+   * PREMIUM pill and the upgrade card's CTA.
+   */
+  autoGlass?: boolean;
   className?: string;
 };
 
@@ -39,6 +47,7 @@ export default function GlassButton({
   children,
   premium = false,
   ghost = false,
+  autoGlass = false,
   size = "md",
   pull = premium ? 7 : 5,
   className,
@@ -56,6 +65,12 @@ export default function GlassButton({
 
   const inner = (
     <>
+      {autoGlass ? (
+        <>
+          <span className="kl-btn-aura" data-btn-aura aria-hidden="true" />
+          <span className="kl-btn-veil" data-btn-veil aria-hidden="true" />
+        </>
+      ) : null}
       <span className="kl-btn-glow" data-btn-glow aria-hidden="true" />
       <span className="kl-btn-shine" data-btn-shine aria-hidden="true" />
       <span className="kl-btn-label" data-btn-label>
@@ -69,6 +84,7 @@ export default function GlassButton({
   const motion = {
     "data-glass-btn": String(pull),
     ...(premium ? { "data-premium": "true" } : {}),
+    ...(autoGlass ? { "data-auto-glass": "" } : {}),
   };
 
   if ("href" in rest && rest.href) {

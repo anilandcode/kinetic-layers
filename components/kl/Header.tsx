@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import Mark from "./Mark";
 import SearchPalette from "./SearchPalette";
 import GlassButton from "./GlassButton";
 import ThemeToggle from "./ThemeToggle";
@@ -49,17 +50,7 @@ export default function Header() {
       <div className="kl-pad">
         <div className="kl-bar">
           <Link href="/" className="kl-wordmark">
-            <svg width="20" height="20" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-              <defs>
-                <linearGradient id="klMark" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stopColor="#8C8A84" />
-                  <stop offset="1" stopColor="#E8853A" />
-                </linearGradient>
-              </defs>
-              <path d="M0 0H40V40H10C4.5 40 0 35.5 0 30V0Z" fill="url(#klMark)" />
-              <path d="M10 10H40V40H15C12.2 40 10 37.8 10 35V10Z" fill="#FFFFFF" fillOpacity="0.34" />
-              <path d="M20 20H40V40H22C20.9 40 20 39.1 20 38V20Z" fill="#FFFFFF" fillOpacity="0.52" />
-            </svg>
+            <Mark size={20} />
             Kinetic Layers
           </Link>
 

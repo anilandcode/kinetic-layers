@@ -28,13 +28,23 @@ export default async function Image() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "linear-gradient(150deg, #1D2410 0%, #0F0F0D 62%)",
-          color: "#F4F1E8",
+          background: "linear-gradient(150deg, #FBF3EA 0%, #F7F6F3 58%)",
+          color: "#14161A",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 26, letterSpacing: 6, color: "#B9CE95" }}>
-          <div style={{ width: 14, height: 14, borderRadius: 99, background: "#B9CE95" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 26, letterSpacing: 6, color: "#A4501A" }}>
+          <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
+            <defs>
+              <linearGradient id="klMarkOg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#8C8A84" />
+                <stop offset="1" stopColor="#E8853A" />
+              </linearGradient>
+            </defs>
+            <path d="M0 0H40V40H10C4.5 40 0 35.5 0 30V0Z" fill="url(#klMarkOg)" />
+            <path d="M10 10H40V40H15C12.2 40 10 37.8 10 35V10Z" fill="#FFFFFF" fillOpacity="0.34" />
+            <path d="M20 20H40V40H22C20.9 40 20 39.1 20 38V20Z" fill="#FFFFFF" fillOpacity="0.52" />
+          </svg>
           <div>{SITE_NAME.toUpperCase()}</div>
         </div>
 
@@ -45,12 +55,12 @@ export default async function Image() {
           {/* One string child, not three. Satori requires an explicit
               display on any element with multiple children, and interpolation
               splits text into separate nodes — "text {value} text" is three. */}
-          <div style={{ fontSize: 30, color: "#A8A395", maxWidth: 820 }}>
+          <div style={{ fontSize: 30, color: "#6B6E75", maxWidth: 820 }}>
             {`Built in one studio, shipped weekly. ${settings.freeThisMonth} free.`}
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 34, fontSize: 22, color: "#89857B", letterSpacing: 3 }}>
+        <div style={{ display: "flex", gap: 34, fontSize: 22, color: "#6B6E75", letterSpacing: 3 }}>
           <div>{`${settings.totalAssets} ASSETS`}</div>
           <div>{`${settings.collectionCount} COLLECTIONS`}</div>
           <div>{EARLY_ACCESS ? "FREE — EARLY ACCESS" : `$${settings.monthlyPrice}/MONTH`}</div>

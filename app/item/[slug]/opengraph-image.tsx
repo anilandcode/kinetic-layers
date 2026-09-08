@@ -18,7 +18,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const { slug } = await params;
   const asset = await getAsset(slug);
 
-  const gradient = asset?.g ?? "linear-gradient(155deg, #1D2410, #0F0F0D 65%)";
+  /* Not asset.g: those gradients were authored for the retired dark palette,
+     which is why the card grid refuses them too. */
+  const gradient = "linear-gradient(150deg, #FBF3EA 0%, #F7F6F3 58%)";
 
   return new ImageResponse(
     (
@@ -31,14 +33,24 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           justifyContent: "space-between",
           padding: 72,
           background: gradient,
-          color: "#F4F1E8",
+          color: "#14161A",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 24, letterSpacing: 6, color: "#B9CE95" }}>
-          <div style={{ width: 12, height: 12, borderRadius: 99, background: "#B9CE95" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 24, letterSpacing: 6, color: "#A4501A" }}>
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+            <defs>
+              <linearGradient id="klMarkOg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#8C8A84" />
+                <stop offset="1" stopColor="#E8853A" />
+              </linearGradient>
+            </defs>
+            <path d="M0 0H40V40H10C4.5 40 0 35.5 0 30V0Z" fill="url(#klMarkOg)" />
+            <path d="M10 10H40V40H15C12.2 40 10 37.8 10 35V10Z" fill="#FFFFFF" fillOpacity="0.34" />
+            <path d="M20 20H40V40H22C20.9 40 20 39.1 20 38V20Z" fill="#FFFFFF" fillOpacity="0.52" />
+          </svg>
           <div>{SITE_NAME.toUpperCase()}</div>
-          {asset?.free ? <div style={{ marginLeft: 12, color: "#89857B" }}>· FREE</div> : null}
+          {asset?.free ? <div style={{ marginLeft: 12, color: "#6B6E75" }}>· FREE</div> : null}
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -46,13 +58,13 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             {asset?.name ?? "Not found"}
           </div>
           {asset?.tagline ? (
-            <div style={{ fontSize: 30, color: "#A8A395", maxWidth: 860, lineHeight: 1.35 }}>
+            <div style={{ fontSize: 30, color: "#6B6E75", maxWidth: 860, lineHeight: 1.35 }}>
               {asset.tagline}
             </div>
           ) : null}
         </div>
 
-        <div style={{ display: "flex", gap: 30, fontSize: 21, color: "#89857B", letterSpacing: 3 }}>
+        <div style={{ display: "flex", gap: 30, fontSize: 21, color: "#6B6E75", letterSpacing: 3 }}>
           {asset?.type ? <div>{asset.type}</div> : null}
           {asset?.stack ? <div>{asset.stack}</div> : null}
           {asset?.category ? <div>{asset.category.toUpperCase()}</div> : null}

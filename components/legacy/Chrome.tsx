@@ -1,3 +1,5 @@
+import KlMark from "@/components/kl/Mark";
+
 /**
  * What survives of the old chrome.
  *
@@ -9,19 +11,11 @@
  * Mark is the wordmark glyph, Avatar the initials bubble.
  */
 export function Mark() {
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        width: 16,
-        height: 16,
-        borderRadius: 5,
-        background: "var(--amber)",
-        border: "1px solid var(--amber-line)",
-        flexShrink: 0,
-      }}
-    />
-  );
+  /* The real mark, not a coloured square. This used to be a sage gradient, then
+     a flat amber one — both were placeholders standing in for the layered glyph
+     the rest of the site shows. `klMarkAuth` keeps its gradient id distinct from
+     Header's. */
+  return <KlMark size={16} id="klMarkAuth" />;
 }
 
 export function Avatar({ email, size = 26 }: { email: string | null; size?: number }) {

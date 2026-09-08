@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Asset } from "@/lib/kl/types";
 import { mediaUrl } from "@/lib/kl/media";
-import { groundFor } from "@/lib/kl/ground";
+import { groundFor, patternFor } from "@/lib/kl/ground";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 /**
  * One asset in the masonry.
@@ -16,14 +17,7 @@ import { groundFor } from "@/lib/kl/ground";
  * layer, which is the point.
  */
 
-export default function AssetCard({
-  asset,
-  locked,
-}: {
-  asset: Asset;
-  /** Whether this one is behind the paywall for the current viewer. */
-  locked: boolean;
-}) {
+export default function AssetCard({ asset }: { asset: Asset }) {
   const ground = groundFor(asset.slug);
   const poster = asset.poster ? mediaUrl(asset.poster) : null;
 
@@ -62,15 +56,18 @@ export default function AssetCard({
                 height={asset.aspect ? Math.round(800 / asset.aspect) : undefined}
               />
             ) : null}
-            <div className="kl-preview-pattern" aria-hidden="true" />
+            <div className="kl-preview-pattern" data-pattern={patternFor(asset.slug)} aria-hidden="true" />
           </div>
 
           <div className="kl-card-head">
             <span className="kl-card-name">{asset.name}</span>
 
-            {locked ? (
-              /* The one auto-animated control on a card: aura, veil and a
-                 timed sweep, so the paid ones read as lit rather than shut. */
+            {!asset.free ? (
+              /* Keyed to the asset, as the design keys it — PREMIUM describes
+                 the material, not this viewer's entitlement. It used to take a
+                 `locked` prop, which early access made permanently false, so
+                 the pill never rendered anywhere. The one auto-animated control
+                 on a card: aura, veil and a timed sweep. */
               <span className="kl-chip-premium" data-auto-glass data-glass-btn="3" data-premium="true">
                 <span className="kl-btn-aura" data-btn-aura aria-hidden="true" />
                 <span className="kl-btn-veil" data-btn-veil aria-hidden="true" />
@@ -80,13 +77,20 @@ export default function AssetCard({
                 </span>
               </span>
             ) : (
-              <span className="kl-badge">{asset.free ? "FREE" : "INCLUDED"}</span>
+              <span className="kl-badge">Free</span>
             )}
           </div>
 
           <div className="kl-tags">
             <span className="kl-tag">{asset.type}</span>
             <span className="kl-tag">{asset.stack}</span>
+            {/* The design has no early-access state, so this chip is ours. It
+                sits in the tag row rather than beside PREMIUM because the head
+                row is a three-item flex with no wrap — a third chip there
+                overflows the narrow masonry columns. */}
+            {!asset.free && EARLY_ACCESS ? (
+              <span className="kl-tag kl-tag--free">Free now</span>
+            ) : null}
           </div>
         </Link>
       </div>

@@ -35,7 +35,10 @@ export default async function HomeView() {
 
   /* Early access hands the whole vault to anyone with an account, so nothing
      is locked and no card should claim otherwise. */
-  const unlocked = EARLY_ACCESS || Boolean(viewer?.premium);
+  /* The upgrade promo hides only from someone who already subscribes. It used
+     to hide from anyone `unlocked`, which early access makes everyone, so the
+     design's "Take the whole library." card never appeared at all. */
+  const subscribed = Boolean(viewer?.premium);
 
   return (
     <Shell>
@@ -98,9 +101,9 @@ export default async function HomeView() {
           <div className="kl-masonry" data-masonry style={{ marginTop: 22 }}>
             {newest.flatMap((asset: Asset, i: number) => {
               const card = (
-                <AssetCard key={asset.slug} asset={asset} locked={!unlocked && !asset.free} />
+                <AssetCard key={asset.slug} asset={asset} />
               );
-              if (i === 3 && !unlocked)
+              if (i === 3 && !subscribed)
                 return [card, <UpgradeCard key="promo-upgrade" price={settings.monthlyPrice} />];
               if (i === 6) return [card, <NewsCard key="promo-news" />];
               return [card];

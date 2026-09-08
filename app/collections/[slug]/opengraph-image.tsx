@@ -28,13 +28,23 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: c?.g ?? "linear-gradient(150deg, #242014, #0F0F0D 62%)",
-          color: "#F4F1E8",
+          background: "linear-gradient(150deg, #FBF3EA 0%, #F7F6F3 58%)",
+          color: "#14161A",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 24, letterSpacing: 6, color: "#B9CE95" }}>
-          <div style={{ width: 12, height: 12, borderRadius: 99, background: "#B9CE95" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 24, letterSpacing: 6, color: "#A4501A" }}>
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+            <defs>
+              <linearGradient id="klMarkOg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#8C8A84" />
+                <stop offset="1" stopColor="#E8853A" />
+              </linearGradient>
+            </defs>
+            <path d="M0 0H40V40H10C4.5 40 0 35.5 0 30V0Z" fill="url(#klMarkOg)" />
+            <path d="M10 10H40V40H15C12.2 40 10 37.8 10 35V10Z" fill="#FFFFFF" fillOpacity="0.34" />
+            <path d="M20 20H40V40H22C20.9 40 20 39.1 20 38V20Z" fill="#FFFFFF" fillOpacity="0.52" />
+          </svg>
           <div>{`${SITE_NAME.toUpperCase()} · COLLECTION`}</div>
         </div>
 
@@ -43,11 +53,11 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             {c?.name ?? "Not found"}
           </div>
           {c?.blurb ? (
-            <div style={{ fontSize: 29, color: "#A8A395", maxWidth: 880, lineHeight: 1.35 }}>{c.blurb}</div>
+            <div style={{ fontSize: 29, color: "#6B6E75", maxWidth: 880, lineHeight: 1.35 }}>{c.blurb}</div>
           ) : null}
         </div>
 
-        <div style={{ display: "flex", gap: 30, fontSize: 21, color: "#89857B", letterSpacing: 3 }}>
+        <div style={{ display: "flex", gap: 30, fontSize: 21, color: "#6B6E75", letterSpacing: 3 }}>
           <div>{`${c?.items ?? 0} ITEMS`}</div>
           {c?.free ? <div>{`${c.free} FREE`}</div> : null}
         </div>

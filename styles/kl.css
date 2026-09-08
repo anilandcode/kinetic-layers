@@ -582,7 +582,7 @@
   border-radius: 18px;
   border: 1px solid var(--line);
   background: var(--card);
-  padding: 10px;
+  padding: 6px;
   box-shadow: var(--shadow);
 }
 [data-kl] .kl-card-link {
@@ -592,7 +592,8 @@
 [data-kl] .kl-preview {
   position: relative;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 13px;
+  border: 1px solid var(--line2);
   background: var(--t1);
 }
 [data-kl] .kl-preview img,
@@ -606,8 +607,42 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(var(--pat), 0.08) 1px, transparent 1.4px);
-  background-size: 16px 16px;
+}
+
+/* The design's four preview patterns, picked per asset by patternFor(). A
+   single pattern made every card read as the same object in a different
+   colour. --pat is an RGB triplet so one rule serves both themes. */
+[data-kl] .kl-preview-pattern[data-pattern="mesh"] {
+  background-image:
+    linear-gradient(rgba(var(--pat), 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--pat), 0.05) 1px, transparent 1px);
+  background-size: 34px 34px, 34px 34px;
+}
+[data-kl] .kl-preview-pattern[data-pattern="dots"] {
+  background-image: radial-gradient(rgba(var(--pat), 0.11) 1px, transparent 1.4px);
+  background-size: 18px 18px;
+}
+[data-kl] .kl-preview-pattern[data-pattern="hatch"] {
+  background-image: repeating-linear-gradient(
+    48deg,
+    rgba(var(--pat), 0.06) 0 1px,
+    transparent 1px 9px
+  );
+}
+[data-kl] .kl-preview-pattern[data-pattern="arcs"] {
+  background-image: repeating-radial-gradient(
+    circle at 85% 115%,
+    rgba(232, 133, 58, 0.22) 0 1px,
+    transparent 1px 22px
+  );
+}
+
+/* The early-access chip: a tag, but amber so it reads as a claim about price
+   rather than another piece of metadata. */
+[data-kl] .kl-tag--free {
+  border-color: var(--amber-line);
+  color: var(--amber);
+  background: var(--amber-bg);
 }
 
 [data-kl] .kl-card-head {
@@ -645,9 +680,9 @@
   border-radius: 99px;
   padding: 5px 10px;
   flex-shrink: 0;
-  background: var(--moss-bg);
-  border: 1px solid var(--moss-line);
-  color: var(--moss);
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-line);
+  color: var(--amber);
 }
 
 /* The premium chip is the auto-animated button: aura, veil, timed sweep. */

@@ -67,7 +67,10 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
   const facets = countFacets(all, filters, saved);
   const items = sortAssets(applyFilters(all, filters, saved), sort);
 
-  const unlocked = EARLY_ACCESS || Boolean(viewer?.premium);
+  /* The upgrade promo hides only from someone who already subscribes. It used
+     to hide from anyone `unlocked`, which early access makes everyone, so the
+     design's "Take the whole library." card never appeared at all. */
+  const subscribed = Boolean(viewer?.premium);
 
   /* A pill toggles its own value off when it is already on, so the rail never
      becomes a trap you can only escape via Clear. */
@@ -223,17 +226,13 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
             <div className="kl-masonry" data-masonry>
               {items.flatMap((asset: Asset, i: number) => {
                 const card = (
-                  <AssetCard
-                    key={asset.slug}
-                    asset={asset}
-                    locked={!unlocked && !asset.free}
-                  />
+                  <AssetCard key={asset.slug} asset={asset} />
                 );
                 /* Promos are seeded into the grid, but never while filtering —
                    someone who narrowed the shelf asked a question, and an
                    advert is not an answer to it. */
                 if (filtering) return [card];
-                if (i === PROMO_AT.upgrade && !unlocked)
+                if (i === PROMO_AT.upgrade && !subscribed)
                   return [card, <UpgradeCard key="promo-upgrade" price={settings.monthlyPrice} />];
                 if (i === PROMO_AT.hire) return [card, <HireCard key="promo-hire" />];
                 if (i === PROMO_AT.news) return [card, <NewsCard key="promo-news" />];

@@ -44,7 +44,7 @@ export function UpgradeCard({ price }: { price: number }) {
           <h3>Take the whole library.</h3>
           <p>Every prompt, template and scene — plus the source files and all future drops.</p>
           <div className="kl-promo-grow" />
-          <GlassButton href="/pricing" premium pull={6} className="kl-btn--lg">
+          <GlassButton href="/pricing" premium autoGlass pull={6} className="kl-btn--lg">
             {EARLY_ACCESS ? "Free while in early access" : `Premium — $${price}/mo`}
           </GlassButton>
         </div>
