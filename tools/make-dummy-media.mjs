@@ -130,10 +130,23 @@ const main = async () => {
   }
 
   /* Pages reads this at deploy time. Harmless anywhere else — R2 and Sanity
-     just see one more small file they never serve. */
+     just see one more small file they never serve.
+
+     This used to say `max-age=31536000, immutable` on paths like
+     <slug>/card.webp. Those paths are stable — Sanity stores the path, not a
+     hash — so `immutable` was a promise the content would never change, and
+     the browser took it at its word: re-uploading a preview left every
+     returning visitor on the old file for up to a year. That is not a cache
+     tuning question, it is a correctness one, and it would have bitten the
+     first time a real asset's preview was replaced.
+
+     Split instead. The browser holds it five minutes and then revalidates;
+     the edge still holds it a year, and Pages purges the edge on every deploy.
+     Near-immutable delivery, with a change that actually propagates. */
   await writeFile(
     path.join(OUT, "_headers"),
-    "/*\n  Cache-Control: public, max-age=31536000, immutable\n" +
+    "/*\n" +
+      "  Cache-Control: public, max-age=300, s-maxage=31536000, stale-while-revalidate=86400\n" +
       "  Access-Control-Allow-Origin: *\n  X-Content-Type-Options: nosniff\n"
   );
 
