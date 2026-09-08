@@ -1,4 +1,7 @@
-@import "../styles/kiln.css";
+/* The pre-redesign stylesheet. Still loaded because it supplies the :root
+   base that the [data-kl]-scoped Kinetic Layers tokens sit on top of, and
+   because components/legacy/* still reads its classes. */
+@import "../styles/legacy.css";
 
 /* The Kinetic Layers palette. Scoped to [data-kl], so it restyles only the
    screens that opt in — see the note at the top of the file. */

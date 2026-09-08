@@ -64,10 +64,11 @@ export default function ItemView({
    * point is a lot of risk for no behaviour. The modal wants the asset, not a
    * second Nav and Footer inside a dialog.
    *
-   * The Nav and Footer are gone now — every page renders the Kinetic
-   * Layers header, and this component is only ever reached through
-   * AssetModal, which passes false. The prop stays because it still
-   * decides the preview height and whether the related grid renders.
+   * The Nav and Footer are gone now, and so is AssetModal, which was this
+   * component's only caller. Nothing renders it: it is kept because it still
+   * holds the prompt reader and the per-file download rows that the Kinetic
+   * Layers item view dropped, and that is the copy worth reading before
+   * rebuilding either. The prop stays with it.
    */
   chrome?: boolean;
 }) {

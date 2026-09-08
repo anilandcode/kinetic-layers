@@ -62,18 +62,18 @@ export default async function Mcp() {
           <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)" }}>
             Claude Code:
           </p>
-          <Code>{`claude mcp add --transport http kiln ${endpoint} \\
-  --header "Authorization: Bearer kiln_your_key_here"`}</Code>
+          <Code>{`claude mcp add --transport http kinetic-layers ${endpoint} \\
+  --header "Authorization: Bearer kl_your_key_here"`}</Code>
 
           <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--muted)", marginTop: 22 }}>
             Cursor, or anything reading <span className="kl-mono" style={{ fontSize: 13 }}>mcp.json</span>:
           </p>
           <Code>{`{
   "mcpServers": {
-    "kiln": {
+    "kinetic-layers": {
       "url": "${endpoint}",
       "headers": {
-        "Authorization": "Bearer kiln_your_key_here"
+        "Authorization": "Bearer kl_your_key_here"
       }
     }
   }

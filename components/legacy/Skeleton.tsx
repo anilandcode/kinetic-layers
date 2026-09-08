@@ -10,7 +10,7 @@
  * twenty grey rectangles helps nobody, but "Loading" does.
  */
 export function Shimmer({ h = 16, w = "100%", r = 8, style }: { h?: number | string; w?: number | string; r?: number; style?: React.CSSProperties }) {
-  return <div className="kiln-skel" style={{ height: h, width: w, borderRadius: r, ...style }} />;
+  return <div className="legacy-skel" style={{ height: h, width: w, borderRadius: r, ...style }} />;
 }
 
 export function LoadingAnnouncement({ what }: { what: string }) {

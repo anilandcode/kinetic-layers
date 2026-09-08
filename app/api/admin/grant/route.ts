@@ -17,7 +17,10 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function authorised(request: NextRequest) {
-  const expected = process.env.KILN_ADMIN_TOKEN;
+  /* Renamed from KILN_ADMIN_TOKEN. The old name is still read so the routes
+     keep working against a Vercel environment that has not been updated yet —
+     delete the fallback once ADMIN_TOKEN is set there. */
+  const expected = process.env.ADMIN_TOKEN ?? process.env.KILN_ADMIN_TOKEN;
   if (!expected) return false;
   const got = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? "";
   const a = Buffer.from(got);

@@ -11,10 +11,11 @@ import type { ReactNode } from "react";
  * The glow and shine spans are painted by the motion layer at pointer position
  * and stay invisible without it, so the button is complete either way.
  *
- * Renders an <a> only when given an href. Anything with a handler stays a
- * <button>: KilnMotion intercepts `a[data-nav]` in the capture phase and stops
- * propagation, so a click handler on an anchor can silently never fire
- * (HANDOFF.md, trap 4). Nothing here sets.
+ * Renders an <a> only when given an href; anything with a handler stays a
+ * <button>. That split was forced by the old motion layer, which intercepted
+ * `a[data-nav]` in the capture phase and could swallow an anchor's handler
+ * silently. That layer is gone, but the split is right on its own terms — a
+ * thing that navigates is a link, a thing that acts is a button.
  */
 
 type Size = "sm" | "md" | "lg";

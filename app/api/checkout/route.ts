@@ -9,8 +9,9 @@ import { SITE_URL } from "@/lib/kl/site";
  * Starts a subscription checkout.
  *
  * Returns a URL for the client to visit rather than redirecting, so the caller
- * stays a button. Trap 4: KilnMotion intercepts `a[data-nav]` in the capture
- * phase and stops propagation, so an anchor here would never fire its handler.
+ * stays a button rather than an anchor. That mattered acutely when the old
+ * motion layer intercepted `a[data-nav]` in the capture phase and could
+ * swallow the handler; it is simply the right shape now.
  */
 
 export const runtime = "nodejs";

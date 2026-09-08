@@ -23,7 +23,7 @@ export const sanityConfigured = Boolean(projectId);
 
 if (!sanityConfigured && typeof window === "undefined") {
   console.error(
-    "[kiln] NEXT_PUBLIC_SANITY_PROJECT_ID is not set — the catalogue will be empty. " +
+    "[kinetic-layers] NEXT_PUBLIC_SANITY_PROJECT_ID is not set — the catalogue will be empty. " +
       "Set it locally in .env.local, or on Vercel under Settings → Environment Variables."
   );
 }
@@ -32,7 +32,7 @@ if (!sanityConfigured && typeof window === "undefined") {
  * Read client, or null when unconfigured.
  *
  * No image-url builder here: preview media is not uploaded to Sanity at all.
- * It lives on the media host and is resolved by lib/kiln/media.ts.
+ * It lives on the media host and is resolved by lib/kl/media.ts.
  *
  * The dataset is public and holds catalogue metadata only — no token, and
  * nothing here is gated. What IS gated (the source files) lives in a private

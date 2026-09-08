@@ -85,8 +85,8 @@ export default async function Docs() {
             reads prompts you have access to, in the editor you are already in.
           </p>
           <Code>{`# in Claude Code
-claude mcp add --transport http kiln https://your-kiln/api/mcp \\
-  --header "Authorization: Bearer kiln_your_key"`}</Code>
+claude mcp add --transport http kinetic-layers https://kineticlayers.com/api/mcp \\
+  --header "Authorization: Bearer kl_your_key"`}</Code>
         </section>
 
         <section className="shell prose" style={{ paddingBlock: "26px 10px" }}>

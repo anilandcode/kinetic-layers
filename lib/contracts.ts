@@ -18,7 +18,7 @@ export const EVENT_NAMES = [
   "form_start",
   "form_submit",
   "qualified_submit",
-  /* Kiln. The four questions worth answering during validation: what do people
+  /* Kinetic Layers. The four questions worth answering during validation: what do people
      look for, what do they reach for, where does the paywall stop them, and
      does being stopped send them to pricing or away. */
   "search",

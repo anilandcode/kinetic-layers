@@ -1,9 +1,9 @@
 import { defineField, defineType, type SchemaTypeDefinition } from "sanity";
 
 /**
- * Kiln content schemas.
+ * Kinetic Layers content schemas.
  *
- * Field names mirror lib/kiln/types so nothing downstream has to rename
+ * Field names mirror lib/kl/types so nothing downstream has to rename
  * anything when it moves from the placeholder arrays to real content.
  *
  * Note what is NOT here: the downloadable files. Sanity's asset CDN is public
@@ -30,7 +30,7 @@ const THEMES = ["Dark", "Light"] as const;
  *
  * The files live in a public Cloudflare R2 bucket because previews are served
  * on every visit and R2 charges nothing for egress. Sanity holds the path and
- * the shape; lib/kiln/media.ts resolves it against the host. Derivatives are
+ * the shape; lib/kl/media.ts resolves it against the host. Derivatives are
  * baked once at upload with ffmpeg, so no transformation CDN is in the path.
  */
 const mediaFields = (prefix: string) => [

@@ -1,5 +1,5 @@
 {
-  "name": "direction-kit",
+  "name": "kinetic-layers",
   "version": "0.1.0",
   "private": true,
   "description": "Demand test for an original website-layer collection aimed at agencies.",
@@ -11,7 +11,7 @@
     "readout": "node tools/readout.mjs",
     "studio": "sanity dev",
     "studio:deploy": "sanity deploy",
-    "seed": "node tools/seed-sanity.mjs /tmp/kiln-seed.ndjson && sanity dataset import /tmp/kiln-seed.ndjson production --replace",
+    "seed": "node tools/seed-sanity.mjs /tmp/kl-seed.ndjson && sanity dataset import /tmp/kl-seed.ndjson production --replace",
     "media": "node --env-file=.env.local tools/make-dummy-media.mjs",
     "media:upload": "node --env-file=.env.local tools/upload-r2.mjs",
     "media:deploy": "npx --yes wrangler@4 pages deploy public/preview --project-name kiln-media --branch main --commit-dirty=true"

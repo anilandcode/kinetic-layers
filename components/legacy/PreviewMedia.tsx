@@ -132,11 +132,11 @@ export default function PreviewMedia({
   }, [enabled, play, attach, detach]);
 
   return (
-    <div ref={rootRef} id={id} className={`kiln-media ${className ?? ""}`} style={{ background: gradient, ...style }}>
+    <div ref={rootRef} id={id} className={`legacy-media ${className ?? ""}`} style={{ background: gradient, ...style }}>
       {posterUrl && (
-        // eslint-disable-next-line @next/next/no-img-element -- media is pre-baked; see lib/kiln/media.ts
+        // eslint-disable-next-line @next/next/no-img-element -- media is pre-baked; see lib/kl/media.ts
         <img
-          className="kiln-media__img"
+          className="legacy-media__img"
           src={posterUrl}
           alt={alt}
           loading={priority ? "eager" : "lazy"}
@@ -148,7 +148,7 @@ export default function PreviewMedia({
       {enabled && clipUrl && (
         <video
           ref={videoRef}
-          className="kiln-media__video"
+          className="legacy-media__video"
           data-playing={playing}
           muted
           loop

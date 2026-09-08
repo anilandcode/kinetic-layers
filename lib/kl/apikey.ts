@@ -14,7 +14,7 @@ import type { Viewer } from "./types";
  * and never again, so a database dump yields nothing usable.
  */
 
-const PREFIX = "kiln_";
+const PREFIX = "kl_";
 
 export function mintKey() {
   const secret = randomBytes(24).toString("base64url");

@@ -1,4 +1,4 @@
-# Kiln
+# Kinetic Layers
 
 A marketplace for AI design assets: prompts, templates, scenes and workflows,
 built in one studio and shipped weekly. Twelve are free; the rest are behind a
@@ -40,7 +40,7 @@ out is the account being disabled, not a bill. Both motionsites.ai and
 getlayers.ai serve from Cloudflare for the same reason.
 
 Derivatives are baked once at upload with ffmpeg, so there is no transformation
-CDN in the request path. `lib/kiln/media.ts` resolves a stored path against
+CDN in the request path. `lib/kl/media.ts` resolves a stored path against
 `NEXT_PUBLIC_MEDIA_BASE`; moving hosts is one environment variable.
 
 **Why the files are not in Sanity.** Sanity's asset CDN is public by URL. The
@@ -61,7 +61,7 @@ cookies; only the SHA-256 hash is stored, and the plaintext is shown once.
 
 ## The gate
 
-One function decides, in `lib/kiln/viewer.ts`, and **both** halves of the gate
+One function decides, in `lib/kl/viewer.ts`, and **both** halves of the gate
 ask it — `/api/download` for the files and `/api/prompt` for the text. There is
 deliberately no second copy of the rule, because for a while there was no
 second *caller*: the gate refused correctly and granted nothing, so a paying
@@ -119,7 +119,7 @@ problems and the app keeps only the read client.
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | **Safe to ship** — RLS protects the data, not the key |
 | `SUPABASE_SECRET_KEY` | Server only. Bypasses RLS. Used for grants, signing and the legacy routes |
 | `SUPABASE_DB_PASSWORD` | Only for `tools/apply-migration.mjs` |
-| `KILN_ADMIN_TOKEN` | Guards `/api/admin/grant` |
+| `ADMIN_TOKEN` | Guards `/api/admin/grant` |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Offered when a form fails to send |
 | `NEXT_PUBLIC_MEDIA_BASE` | `https://kiln-media.pages.dev`. Use `/preview` to serve the local folder instead |
 | `R2_*` | Upload script only. The app never talks to R2, it only builds URLs |

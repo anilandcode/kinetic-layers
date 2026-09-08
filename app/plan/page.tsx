@@ -7,7 +7,7 @@ import styles from "./plan.module.css";
  *
  * This is the strategy document that produced the rest of the site, not a
  * product page — so it keeps its own palette and its own type pairing
- * (Instrument Serif over Inter) rather than the Kiln tokens.
+ * (Instrument Serif over Inter) rather than the Kinetic Layers tokens.
  *
  * It is left as written, including the four open decisions at the foot. Those
  * are questions for the owner, not answered requirements.

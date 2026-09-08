@@ -24,7 +24,7 @@ import type { Asset, Viewer } from "@/lib/kl/types";
  * tested. Restoring it means putting CardCopy back on AssetCard, or a prompt
  * panel back here.
  *
- * components/kiln/ItemView.tsx is left in place and still holds all of that,
+ * components/legacy/ItemView.tsx is left in place and still holds all of that,
  * so none of it has to be rewritten to come back.
  */
 

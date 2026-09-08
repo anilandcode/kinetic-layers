@@ -31,7 +31,7 @@ const db = createClient(url, key, { auth: { persistSession: false } });
 const note = (what) =>
   `PLACEHOLDER — ${what}
 
-This file stands in for a real Kiln asset so the download path can be tested
+This file stands in for a real Kinetic Layers asset so the download path can be tested
 end to end. It is not the asset. Replace the object at this path in the
 Supabase "assets" bucket and the site will serve the real thing with no code
 change.

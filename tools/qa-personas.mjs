@@ -18,7 +18,7 @@ const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUP
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-export const PASSWORD = "kiln-test-pw-2026";
+export const PASSWORD = "kl-test-pw-2026";
 const PEOPLE = [
   { email: "qa-free@example.com", plan: "free" },
   { email: "qa-unlimited@example.com", plan: "unlimited" },

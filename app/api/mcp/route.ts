@@ -181,7 +181,7 @@ export async function POST(request: Request) {
     return ok(id, {
       protocolVersion: PROTOCOL_VERSION,
       capabilities: { tools: { listChanged: false } },
-      serverInfo: { name: "kiln", version: "1.0.0" },
+      serverInfo: { name: "kinetic-layers", version: "1.0.0" },
       instructions:
         "Kinetic Layers is a library of prompts, templates, scenes and agent workflows. Use search_assets to find something, then get_prompt with its slug to read the prompt in full. Prompt reads are rate limited per day and share one budget with the website; an API key from the Kinetic Layers account page raises the allowance, and paid assets need a key on a Premium subscription.",
     });
@@ -217,7 +217,7 @@ export async function POST(request: Request) {
 /** A GET here is usually a person pasting the URL into a browser. */
 export async function GET() {
   return NextResponse.json({
-    name: "kiln",
+    name: "kinetic-layers",
     protocol: "mcp",
     transport: "streamable-http",
     protocolVersion: PROTOCOL_VERSION,

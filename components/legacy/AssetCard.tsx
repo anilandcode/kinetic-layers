@@ -21,7 +21,7 @@ export default function AssetCard({
   /** Overrides the ragged masonry height — used by the even grids. */
   height?: number;
   /** Whether this viewer may already read the prompt. Decided by the caller
-      with the shared gate in lib/kiln/gate.ts, never guessed at here. */
+      with the shared gate in lib/kl/gate.ts, never guessed at here. */
   canCopy?: boolean;
 }) {
   const h = height ?? asset.h;

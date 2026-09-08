@@ -28,7 +28,7 @@ export function canDownload(viewer: Viewer | null, asset: Pick<Asset, "free">): 
  * allowance, and could not keep sharing it: they are different resources with
  * different costs, so they get different predicates rather than one with a flag.
  *
- * Eligibility only. How OFTEN is lib/kiln/quota.ts, and both are re-asked
+ * Eligibility only. How OFTEN is lib/kl/quota.ts, and both are re-asked
  * server-side before anything is released.
  */
 export function canReadPrompt(viewer: Viewer | null, asset: Pick<Asset, "free">): boolean {

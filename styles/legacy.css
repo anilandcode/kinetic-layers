@@ -1,5 +1,5 @@
 /* ============================================================
-   Kiln — design tokens
+   The pre-redesign stylesheet (was kiln.css) — design tokens
    Ported from the "AI Marketplace Website Planning" design system.
 
    Two modes that share a hue family: dark is the product (library,
@@ -303,7 +303,7 @@ a:hover { color: var(--sage-bright); }
  * content. */
 @media (prefers-reduced-motion: no-preference) {
   [data-hero] > * {
-    animation: kiln-rise 0.85s var(--ease) both;
+    animation: legacy-rise 0.85s var(--ease) both;
   }
   /* Staggered by position, the way the GSAP version was. */
   [data-hero] > *:nth-child(2) { animation-delay: 0.07s; }
@@ -313,14 +313,14 @@ a:hover { color: var(--sage-bright); }
   [data-hero] > *:nth-child(n+6) { animation-delay: 0.35s; }
 
   [data-reveal] {
-    animation: kiln-rise 0.7s var(--ease) 0.12s both;
+    animation: legacy-rise 0.7s var(--ease) 0.12s both;
   }
 
   html.no-js [data-hero] > *,
   html.no-js [data-reveal] { animation: none; opacity: 1; }
 }
 
-@keyframes kiln-rise {
+@keyframes legacy-rise {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: none; }
 }
@@ -339,7 +339,7 @@ a:hover { color: var(--sage-bright); }
    Asset card
    ============================================================ */
 
-.kiln-card {
+.legacy-card {
   display: block;
   border-radius: var(--r-card);
   padding: 5px;
@@ -351,8 +351,8 @@ a:hover { color: var(--sage-bright); }
     background-color var(--t-mid) var(--ease),
     border-color var(--t-mid) var(--ease);
 }
-.kiln-card:hover,
-.kiln-card:focus-visible {
+.legacy-card:hover,
+.legacy-card:focus-visible {
   border-color: var(--line);
   background: #161613;
 }
@@ -366,21 +366,21 @@ a:hover { color: var(--sage-bright); }
 /* With no container cap, a fixed three columns would stretch each card to
    an absurd width on a large display. The count grows with the viewport
    instead, so card size stays roughly constant. */
-.kiln-masonry {
+.legacy-masonry {
   columns: 3;
   column-gap: 26px;
 }
-.kiln-masonry > * {
+.legacy-masonry > * {
   break-inside: avoid;
   margin-bottom: 26px;
 }
-@media (max-width: 1080px) { .kiln-masonry { columns: 2; } }
-@media (max-width: 720px)  { .kiln-masonry { columns: 1; } }
-@media (min-width: 1600px) { .kiln-masonry { columns: 4; } }
-@media (min-width: 2100px) { .kiln-masonry { columns: 5; } }
+@media (max-width: 1080px) { .legacy-masonry { columns: 2; } }
+@media (max-width: 720px)  { .legacy-masonry { columns: 1; } }
+@media (min-width: 1600px) { .legacy-masonry { columns: 4; } }
+@media (min-width: 2100px) { .legacy-masonry { columns: 5; } }
 
 /* Even grid, used where the design calls for equal cards. */
-.kiln-grid {
+.legacy-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 22px;
@@ -390,20 +390,20 @@ a:hover { color: var(--sage-bright); }
    Promo cards in the library stream
    ============================================================ */
 
-.kiln-promo {
+.legacy-promo {
   border-radius: var(--r-card);
   border: 1px solid var(--hairline-3);
   padding: 26px;
   display: flex;
   flex-direction: column;
 }
-.kiln-promo--upgrade {
+.legacy-promo--upgrade {
   background:
     radial-gradient(120% 90% at 85% 0%, rgba(185,206,149,0.16), rgba(20,20,17,0) 62%),
     var(--surface);
   min-height: 380px;
 }
-.kiln-promo--hire {
+.legacy-promo--hire {
   background:
     radial-gradient(110% 80% at 10% 0%, rgba(185,206,149,0.13), rgba(18,18,16,0) 58%),
     #121210;
@@ -411,7 +411,7 @@ a:hover { color: var(--sage-bright); }
   justify-content: center;
   gap: 14px;
 }
-.kiln-promo--news {
+.legacy-promo--news {
   background: linear-gradient(200deg, #1B1B18, #111110 60%);
   min-height: 340px;
   justify-content: center;
@@ -426,7 +426,7 @@ a:hover { color: var(--sage-bright); }
 
 /* Values here come from Homepage Light, which is warmer than the system
    sheet's light column. The page is the later artifact, so it wins. */
-.kiln-light {
+.legacy-light {
   --void:        #F6F4EE;
   --surface:     #EAE5D9;
   --surface-2:   #EFEBE1;
@@ -459,42 +459,42 @@ a:hover { color: var(--sage-bright); }
   color: var(--ink);
   color-scheme: light;
 }
-body > .kiln-light { min-height: 100vh; }
+body > .legacy-light { min-height: 100vh; }
 /* The light treatment lives on a wrapper, so the document behind it would
    still paint the dark ground — visible on overscroll and anywhere the
    wrapper does not reach. Let the body follow its child. */
-/* Direct child only. A nested .kiln-light — the light swatch card on the
+/* Direct child only. A nested .legacy-light — the light swatch card on the
    design-system page — must not repaint the whole document. */
-body:has(> .kiln-light) { background: #F6F4EE; color-scheme: light; }
-.kiln-light ::selection { background: #46602C; color: #F6F4EE; }
+body:has(> .legacy-light) { background: #F6F4EE; color-scheme: light; }
+.legacy-light ::selection { background: #46602C; color: #F6F4EE; }
 /* sage/sage-deep is light-on-dark; in this treatment sage *is* the dark, so
    the pair has to flip rather than invert. */
-.kiln-light .skip-link { background: #183A15; color: #F6F4EE; }
+.legacy-light .skip-link { background: #183A15; color: #F6F4EE; }
 /* Hover brightens on dark; on paper it has to darken instead. */
-.kiln-light .btn:hover,
-.kiln-light .pill:hover { filter: brightness(0.965); }
-.kiln-light .kiln-card:hover,
-.kiln-light .kiln-card:focus-visible { background: #E6E1D4; border-color: var(--line); }
-.kiln-light .chip {
+.legacy-light .btn:hover,
+.legacy-light .pill:hover { filter: brightness(0.965); }
+.legacy-light .legacy-card:hover,
+.legacy-light .legacy-card:focus-visible { background: #E6E1D4; border-color: var(--line); }
+.legacy-light .chip {
   color: var(--muted);
   background: rgba(22, 24, 15, 0.05);
   border-color: var(--hairline-2);
 }
-.kiln-light .kiln-promo--upgrade {
+.legacy-light .legacy-promo--upgrade {
   background: radial-gradient(120% 90% at 85% 0%, rgba(74,102,44,0.10), rgba(20,20,17,0) 62%), #EAE5D9;
 }
-.kiln-light .kiln-promo--hire {
+.legacy-light .legacy-promo--hire {
   background: radial-gradient(110% 80% at 10% 0%, rgba(74,102,44,0.09), rgba(18,18,16,0) 58%), #EFEBE1;
 }
-.kiln-light .kiln-promo--news {
+.legacy-light .legacy-promo--news {
   background: linear-gradient(200deg, #E7E2D6, #F1EDE3 60%);
 }
-.kiln-light .chip--cream {
+.legacy-light .chip--cream {
   background: var(--cream);
   border-color: var(--cream-line);
   color: var(--forest-ink);
 }
-.kiln-light .chip--forest {
+.legacy-light .chip--forest {
   background: var(--forest);
   border-color: var(--forest);
   color: var(--cream);
@@ -508,14 +508,14 @@ body:has(> .kiln-light) { background: #F6F4EE; color-scheme: light; }
    ============================================================ */
 
 /* Hero: copy column beside the vault stats, stacking before it squashes. */
-.kiln-hero {
+.legacy-hero {
   display: grid;
   gap: 64px;
   align-items: end;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
 }
 @media (max-width: 900px) {
-  .kiln-hero { grid-template-columns: 1fr; gap: 40px; align-items: start; }
+  .legacy-hero { grid-template-columns: 1fr; gap: 40px; align-items: start; }
 }
 
 /* The nav keeps shedding secondary controls as it narrows; the wordmark
@@ -526,21 +526,21 @@ body:has(> .kiln-light) { background: #F6F4EE; color-scheme: light; }
 }
 
 /* ---------------------------------------------------------------------------
-   Preview media — components/kiln/PreviewMedia.tsx
+   Preview media — components/legacy/PreviewMedia.tsx
 
    The gradient is the element's own background, so it paints on the first
    frame with no request. Poster and clip stack on top of it absolutely, which
    means the box is sized by its container and nothing reflows when either one
    arrives late.
 --------------------------------------------------------------------------- */
-.kiln-media {
+.legacy-media {
   position: relative;
   overflow: hidden;
   isolation: isolate;
 }
 
-.kiln-media__img,
-.kiln-media__video {
+.legacy-media__img,
+.legacy-media__video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -552,14 +552,14 @@ body:has(> .kiln-light) { background: #F6F4EE; color-scheme: light; }
 /* The clip fades up over its own poster rather than cutting, so the swap at
    the moment of hover is not a flash. It starts transparent because the first
    decoded frame can land before playback actually begins. */
-.kiln-media__video {
+.legacy-media__video {
   opacity: 0;
   transition: opacity var(--t-mid) var(--ease);
 }
-.kiln-media__video[data-playing="true"] { opacity: 1; }
+.legacy-media__video[data-playing="true"] { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .kiln-media__video { transition: none; }
+  .legacy-media__video { transition: none; }
 }
 
 /* ---------------------------------------------------------------------------
@@ -618,7 +618,7 @@ select.pill option {
 }
 
 /* ---------------------------------------------------------------------------
-   Copy-prompt on a card — components/kiln/CardCopy.tsx
+   Copy-prompt on a card — components/legacy/CardCopy.tsx
 
    Sits over the preview, revealed on hover or when focused. Focus matters as
    much as hover: this is a real control, and a keyboard user tabbing to it
@@ -662,9 +662,9 @@ select.pill option {
 }
 
 /* ---------------------------------------------------------------------------
-   Loading skeletons — components/kiln/Skeleton.tsx
+   Loading skeletons — components/legacy/Skeleton.tsx
 --------------------------------------------------------------------------- */
-.kiln-skel {
+.legacy-skel {
   background: linear-gradient(
     90deg,
     var(--surface) 0%,
@@ -672,10 +672,10 @@ select.pill option {
     var(--surface) 80%
   );
   background-size: 300% 100%;
-  animation: kiln-skel-sweep 1.4s var(--ease) infinite;
+  animation: legacy-skel-sweep 1.4s var(--ease) infinite;
 }
 
-@keyframes kiln-skel-sweep {
+@keyframes legacy-skel-sweep {
   from { background-position: 120% 0; }
   to   { background-position: -40% 0; }
 }
@@ -683,7 +683,7 @@ select.pill option {
 /* A sweeping gradient is exactly the kind of ambient motion reduced-motion
    asks to be spared. The shape still reads as a placeholder without it. */
 @media (prefers-reduced-motion: reduce) {
-  .kiln-skel { animation: none; background: var(--surface-2); }
+  .legacy-skel { animation: none; background: var(--surface-2); }
 }
 
 /* ---------------------------------------------------------------------------

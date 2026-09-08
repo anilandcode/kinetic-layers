@@ -1,4 +1,4 @@
-# Kiln — handoff
+# Kinetic Layers — handoff
 
 State as of commit `79a2a60` on branch `fix/signup-and-email`. Read this before
 changing anything; it records the decisions and the traps, not the code.
@@ -6,9 +6,10 @@ changing anything; it records the decisions and the traps, not the code.
 ## Where the last session left off — 2026-09-07
 
 **Branding.** The product is now **Kinetic Layers**, at **kineticlayers.com**.
-The code still says Kiln everywhere (~288 mentions, 76 files, three directory
-moves). That rename is a deliberate separate job — do not start it in the middle
-of something else, and leave the two SQL migration filenames alone.
+The rename is **done**. Code, copy and identifiers all say Kinetic Layers. What
+still reads "kiln" is deliberate: applied migration filenames (renaming one
+breaks Supabase's ledger), the archived demand test, the GitHub repo slug, the
+`kiln-media` Pages project, and historical notes about the retired palette.
 
 **Hosting.** Staying on **Vercel** for now. DNS at Cloudflare, unproxied (grey
 cloud) — the certificate will not issue behind the orange cloud. Move to
@@ -21,7 +22,7 @@ that was designed out. R2 later, when the library outgrows deploy-the-whole-fold
 **Done on this branch.** Auth email links no longer derive their origin from the
 `x-forwarded-host` request header — a real vulnerability, since a genuine
 Supabase password-reset mail could be pointed at an attacker's domain. All four
-call sites now build from `SITE_URL` in `lib/kiln/site.ts`. Verified: production
+call sites now build from `SITE_URL` in `lib/kl/site.ts`. Verified: production
 build passes, canonical / og:url / og:image / sitemap all read
 `https://kineticlayers.com`, and a forged `X-Forwarded-Host: evil.example`
 changes nothing.
@@ -48,7 +49,7 @@ A marketplace for AI design assets — prompts, templates, 3D scenes, workflows.
 Free tier plus an unlimited subscription. Next.js 15 App Router, TypeScript.
 
 - **Repo** `github.com/anilandcode/direction-kit` (private)
-- **Live** https://direction-kit.vercel.app — Vercel project `direction-kit`,
+- **Live** https://kineticlayers.com — Vercel project `direction-kit`,
   linked, env vars set for production/preview/development
 - **Local** `~/Projects/direction-kit` — **not** in Google Drive. It was, and the
   Drive mount broke builds with `ECANCELED`. Do not move it back.
@@ -72,10 +73,10 @@ Do not write a second copy of any of these.
 
 | Rule | Where |
 | --- | --- |
-| May they have it | `lib/kiln/gate.ts` — `canDownload`, `canReadPrompt` |
-| How often | `lib/kiln/quota.ts` + `lib/kiln/limits.ts` |
-| Who are they | `lib/kiln/viewer.ts` (cookies), `lib/kiln/apikey.ts` (MCP) |
-| Where media lives | `lib/kiln/media.ts` — one env var swaps the host |
+| May they have it | `lib/kl/gate.ts` — `canDownload`, `canReadPrompt` |
+| How often | `lib/kl/quota.ts` + `lib/kl/limits.ts` |
+| Who are they | `lib/kl/viewer.ts` (cookies), `lib/kl/apikey.ts` (MCP) |
+| Where media lives | `lib/kl/media.ts` — one env var swaps the host |
 
 **Prompts and files are different resources.** `canReadPrompt` lets an
 anonymous visitor read a free asset's prompt; `canDownload` does not let them
@@ -94,7 +95,7 @@ free               5              3
 unlimited         50             30
 ```
 
-Rolling 24h, not calendar day. `LIMITS` in `lib/kiln/limits.ts` is read by the
+Rolling 24h, not calendar day. `LIMITS` in `lib/kl/limits.ts` is read by the
 routes that enforce it *and* the pricing page that promises it, so the printed
 number and the enforced number cannot drift. Change it there and both move.
 
@@ -117,14 +118,18 @@ Each of these cost real time. They are not hypothetical.
    reported "zero failures" on a form whose field borders were 1.24:1 and
    effectively invisible. `--field-line` exists for that; WCAG wants 3:1.
 3. **`/item/[slug]` is load-bearing externally** — sitemap, MCP tool output, OG
-   image, every `?next=` redirect. The popup is *not* a route: it is client
-   state in `components/kiln/AssetModal.tsx`, because an intercepting route
-   changed the address bar and a popup that changes the URL reads as a new
-   page. `history.pushState(null, "", location.href)` keeps back-to-close
-   without moving the URL. The full page must keep working untouched.
-4. **`KilnMotion` intercepts `a[data-nav]` in the capture phase** and
-   `stopPropagation`s. A React `onClick` on a card will never fire. Cards are
-   exempted via `data-card`.
+   image, every `?next=` redirect. The popup the design asks for is an
+   intercepting route at `app/@modal/(.)item/[slug]`, so a click inside the app
+   opens an overlay and a refresh, a shared link or a crawler gets the real
+   page. The earlier objection — that changing the address bar reads as a new
+   page — had it backwards: back closes the overlay, and the URL someone copies
+   is the one the sitemap already publishes. `AssetModal` and its `data-card`
+   delegation are gone. The full page must keep working untouched.
+4. **The old motion layer is gone.** It intercepted `a[data-nav]` in the capture
+   phase and `stopPropagation`d, so a React `onClick` on a card never fired —
+   and it faded pages to near-black before navigating, which on the warm ground
+   was a flash. Nothing binds `data-nav` now. `lib/kl/motion.ts` keys off
+   `[data-nav-link]` and never swallows a handler.
 5. **Removing a filter leaves links pointing at it.** A link to a param nobody
    reads silently shows everything, which is worse than no link.
 6. **`gsap.context().revert()` restores the pre-animation state**, so a badly
@@ -167,7 +172,7 @@ Each of these cost real time. They are not hypothetical.
 16. **A success message must describe what happened, not what was intended.**
    /api/subscribe answered "Thanks — you are on the list" while no provider
    was configured and no list existed — a silent no-op wearing a success
-   message. Every path in lib/kiln/email.ts now either sends or says plainly
+   message. Every path in lib/kl/email.ts now either sends or says plainly
    that it did not, and the library's card renders the server's wording
    instead of hardcoding its own.
 17. **Check the legal pages against the code, not against the plan.**
@@ -181,7 +186,7 @@ Each of these cost real time. They are not hypothetical.
 
 ## Outstanding — needs the account owner
 
-Kiln is **free while `NEXT_PUBLIC_EARLY_ACCESS=1`** (set in Vercel production).
+Kinetic Layers is **free while `NEXT_PUBLIC_EARLY_ACCESS=1`** (set in Vercel production).
 An account is the entitlement; Stripe and `entitlements` are untouched, so
 turning the flag off restores the paywall exactly as it was.
 
@@ -214,7 +219,7 @@ turning the flag off restores the paywall exactly as it was.
 ```bash
 npm run dev                                        # local
 npm run seed                                       # regenerate catalogue NDJSON
-npx sanity dataset import /tmp/kiln-seed.ndjson production --replace
+npx sanity dataset import /tmp/kl-seed.ndjson production --replace
 npm run media                                      # dummy posters + clips (ffmpeg)
 npm run media:deploy                               # push media to Cloudflare Pages
 node --env-file=.env.local tools/qa-personas.mjs --create   # free + unlimited test users

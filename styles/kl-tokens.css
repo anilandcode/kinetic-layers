@@ -112,7 +112,7 @@
 }
 
 /* ---------- The shell ----------------------------------------------
-   Paints the ground full-bleed, so the old dark body rule in kiln.css
+   Paints the ground full-bleed, so the old dark body rule in legacy.css
    cannot show through around a light screen. */
 [data-kl] {
   background: var(--ground);

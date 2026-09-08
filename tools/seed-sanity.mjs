@@ -2,7 +2,7 @@
 /**
  * Writes the placeholder catalogue out as NDJSON for `sanity dataset import`.
  *
- *   node tools/seed-sanity.mjs && npx sanity dataset import /tmp/kiln-seed.ndjson production --replace
+ *   node tools/seed-sanity.mjs && npx sanity dataset import /tmp/kl-seed.ndjson production --replace
  *
  * Importing through the CLI uses its own session, so this needs no write
  * token. Ids are deterministic (`asset-<slug>`), which makes the import
@@ -20,7 +20,7 @@ const drops = [
   { title: "Drop 019 — Volumetric set", meta: "3 SCENES · 2 PROMPTS · AUG 20", tag: "NEW", shippedAt: "2026-08-20" },
   { title: "Drop 018 — Editorial templates", meta: "4 TEMPLATES · AUG 13", tag: "LIVE", shippedAt: "2026-08-13" },
   { title: "Drop 017 — Agent workflows", meta: "5 MCP CHAINS · AUG 6", tag: "LIVE", shippedAt: "2026-08-06" },
-  { title: "Drop 020 — Grain & film", meta: "IN THE KILN · AUG 27", tag: "SOON", shippedAt: "2026-08-27" },
+  { title: "Drop 020 — Grain & film", meta: "IN PROGRESS · AUG 27", tag: "SOON", shippedAt: "2026-08-27" },
 ].map((d) => ({
   _id: `drop-${slugify(d.title)}`,
   _type: "drop",
@@ -109,7 +109,7 @@ const assets = raw.map(([name, type, stack, shelf, mood, free, h, tint, category
   tagline: TAGLINE[type] ?? "Built for a real brief, shipped, then cleaned up and filed.",
   previewHeight: h,
   gradient: `linear-gradient(155deg,${tint},#0F0F0D 62%)`,
-  /* Paths, not URLs — lib/kiln/media.ts resolves them against whichever host
+  /* Paths, not URLs — lib/kl/media.ts resolves them against whichever host
      NEXT_PUBLIC_MEDIA_BASE names. tools/make-dummy-media.mjs writes exactly
      these names, so the two stay in step without a manifest. */
   poster: `${slugify(name)}/card.webp`,
@@ -200,7 +200,7 @@ const settings = {
 
 const docs = [...drops, ...assets, ...collections, settings];
 const out = docs.map((d) => JSON.stringify(d)).join("\n") + "\n";
-const path = process.argv[2] ?? "/tmp/kiln-seed.ndjson";
+const path = process.argv[2] ?? "/tmp/kl-seed.ndjson";
 writeFileSync(path, out);
 console.log(
   `${docs.length} documents → ${path}  (${drops.length} drops, ${assets.length} assets, ${collections.length} collections, 1 settings)`

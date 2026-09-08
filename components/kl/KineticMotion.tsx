@@ -16,12 +16,12 @@ import { sweep, watch } from "@/lib/kl/motion";
  * per element, so already-bound nodes are skipped and only the new screen's
  * elements are picked up.
  *
- * This coexists with the older KilnMotion, which owns the navigation veil and
- * the sticky bar on unmigrated routes. The two share no attributes — that one
- * keys off `a[data-nav]`, this one off `[data-nav-link]`. Do not put `data-nav`
- * on a Kinetic Layers screen: KilnMotion intercepts it in the capture phase and
- * stops propagation, so a React handler on the same element never fires
- * (trap 4).
+ * This used to have to coexist with an older motion layer that owned the
+ * navigation veil and keyed off `a[data-nav]`. That layer was removed once
+ * every route had been migrated — it was fading pages to near-black before
+ * navigating, which on the warm ground read as a flash. Nothing binds
+ * `data-nav` now, and the capture-phase interception it warned about here is
+ * gone with it.
  */
 export default function KineticMotion() {
   const pathname = usePathname();

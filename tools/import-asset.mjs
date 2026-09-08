@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Bring one real asset into Kiln.
+ * Bring one real asset into Kinetic Layers.
  *
  *   node tools/import-asset.mjs ./incoming/volumetric-drift [--dry-run]
  *

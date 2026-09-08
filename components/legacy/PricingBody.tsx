@@ -334,9 +334,10 @@ export default function PricingBody({
                 {annual ? "Get a year of Premium" : "Go Premium"}
               </Link>
             ) : checkoutReady ? (
-              /* A button, not an anchor: KilnMotion intercepts a[data-nav] in
-                 the capture phase and stops propagation, so a link's handler
-                 would never run. */
+              /* A button, not an anchor. Originally because the old motion
+                 layer swallowed anchor handlers in the capture phase; now
+                 simply because starting a checkout is an action, not a
+                 destination. */
               <button
                 type="button"
                 className="btn btn--primary"

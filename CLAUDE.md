@@ -1,7 +1,12 @@
 # Start here
 
-This is **Kinetic Layers** (still named Kiln throughout the code; the rename is a
-pending job, not a mistake). Live at https://kineticlayers.com on Vercel.
+This is **Kinetic Layers**, live at https://kineticlayers.com on Vercel.
+
+The name is Kinetic Layers everywhere — in code, in copy, in identifiers. "Kiln"
+and "Direction Kit" are retired and should not appear in anything new. Where they
+survive it is deliberate and historical: the archived demand test at
+`app/_archive-direction-kit/`, applied Supabase migration filenames, the GitHub
+repo slug, and the `kiln-media` Cloudflare Pages project.
 
 Before doing anything else, in this order:
 
