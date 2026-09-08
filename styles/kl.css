@@ -680,9 +680,22 @@
   border-radius: 99px;
   padding: 5px 10px;
   flex-shrink: 0;
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+/* Amber is "ours" — free access, an offer. Moss is status. Grey, above, is a
+   plain fact and stays the default. Making the base amber turned SHIPPED into
+   an offer, which it is not. */
+[data-kl] .kl-badge--amber {
   background: var(--amber-bg);
-  border: 1px solid var(--amber-line);
+  border-color: var(--amber-line);
   color: var(--amber);
+}
+[data-kl] .kl-badge--moss {
+  background: var(--moss-bg);
+  border-color: var(--moss-line);
+  color: var(--moss);
 }
 
 /* The premium chip is the auto-animated button: aura, veil, timed sweep. */
@@ -1796,11 +1809,6 @@
   align-items: center;
   gap: 9px;
   flex-wrap: wrap;
-}
-[data-kl] .kl-badge--premium {
-  background: var(--amber-bg);
-  border-color: var(--amber-line);
-  color: var(--amber);
 }
 [data-kl] .kl-item-note {
   font-size: 13px;

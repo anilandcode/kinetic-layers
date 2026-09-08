@@ -78,7 +78,7 @@ export default async function Collections({
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "16px 4px 0" }}>
                 <span style={{ fontSize: 17, fontWeight: 500, letterSpacing: "-0.01em", color: "var(--ink)" }}>{c.name}</span>
-                <span className={c.free > 0 ? "kl-badge" : "kl-tag"} style={{ padding: "5px 13px" }}>
+                <span className={c.free > 0 ? "kl-badge kl-badge--amber" : "kl-tag"} style={{ padding: "5px 13px" }}>
                   {c.free > 0 ? `${c.free} free` : "Premium"}
                 </span>
               </div>

@@ -96,13 +96,13 @@ export default function ItemView({
         : "NEWEST IN THE LIBRARY";
 
   const cta = locked
-    ? { label: `Go Premium — $${monthlyPrice}/mo`, href: "/pricing" }
+    ? { label: "Unlock with Premium", href: "/pricing" }
     : viewer
-      ? { label: "Download the files", href: `/api/download?slug=${asset.slug}` }
+      ? { label: asset.free ? "Download — free" : "Download the files", href: `/api/download?slug=${asset.slug}` }
       : { label: "Create a free account", href: `/join?next=/item/${asset.slug}` };
 
   const ctaNote = locked
-    ? "Every source file, plus every drop that follows."
+    ? `Included in the $${monthlyPrice} subscription, with every other premium asset.`
     : viewer
       ? "Output, source and the receipt, in one archive."
       : EARLY_ACCESS
@@ -196,13 +196,13 @@ export default function ItemView({
           <aside className="kl-item-side" data-item-sticky>
             <div className="kl-item-card">
               <div className="kl-item-badges">
-                <span className={`kl-badge${locked ? " kl-badge--premium" : ""}`}>
-                  {locked ? "PREMIUM" : asset.free ? "FREE" : "INCLUDED"}
+                <span className={`kl-badge${asset.free ? " kl-badge--amber" : ""}`}>
+                  {asset.free ? "Free" : "Premium"}
                 </span>
-                <span className="kl-badge">SHIPPED</span>
+                <span className="kl-badge kl-badge--moss">SHIPPED</span>
               </div>
 
-              <GlassButton href={cta.href} premium={locked} pull={5}>
+              <GlassButton href={cta.href} premium={!asset.free} pull={5}>
                 {cta.label}
               </GlassButton>
 

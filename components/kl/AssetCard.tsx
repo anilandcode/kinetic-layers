@@ -77,7 +77,7 @@ export default function AssetCard({ asset }: { asset: Asset }) {
                 </span>
               </span>
             ) : (
-              <span className="kl-badge">Free</span>
+              <span className="kl-badge kl-badge--amber">Free</span>
             )}
           </div>
 
