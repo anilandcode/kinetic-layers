@@ -99,7 +99,7 @@ export default function ApiKeys({ initial }: { initial: Key[] }) {
           gap: 12,
           padding: "18px 22px",
           background: "var(--inset)",
-          borderBottom: "1px solid #1A1917",
+          borderBottom: "1px solid var(--line2)",
           flexWrap: "wrap",
         }}
       >

@@ -64,7 +64,7 @@ export default async function Join({
         <section
           style={{
             borderLeft: "1px solid var(--line)",
-            background: "radial-gradient(120% 80% at 80% 10%,rgba(185,206,149,0.12),rgba(15,15,13,0) 60%),var(--inset)",
+            background: "radial-gradient(120% 80% at 80% 10%,var(--amber-bg),transparent 60%),var(--inset)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -74,7 +74,7 @@ export default async function Join({
           <div data-reveal style={{ width: "100%", maxWidth: 460, display: "flex", flexDirection: "column", gap: 20 }}>
             <div data-card style={{ borderRadius: "18px", padding: 5 }}>
               <div style={{ height: 240, borderRadius: "12px", overflow: "hidden", position: "relative" }}>
-                <div data-preview-inner style={{ width: "100%", height: "100%", background: "linear-gradient(150deg,#1D2410,#0F0F0D 62%)" }} />
+                <div data-preview-inner style={{ width: "100%", height: "100%", background: "var(--t4)" }} />
                 <div
                   style={{
                     position: "absolute",
@@ -82,7 +82,7 @@ export default async function Join({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    background: "rgba(11,11,10,0.55)",
+                    background: "color-mix(in srgb, var(--ground) 55%, transparent)",
                     backdropFilter: "blur(3px)",
                   }}
                 >
@@ -92,7 +92,7 @@ export default async function Join({
                       fontSize: 10,
                       letterSpacing: "0.16em",
                       color: "var(--amber)",
-                      border: "1px solid rgba(185,206,149,0.45)",
+                      border: "1px solid var(--amber-line)",
                       background: "var(--amber-bg)",
                       borderRadius: "99px",
                       padding: "9px 18px",

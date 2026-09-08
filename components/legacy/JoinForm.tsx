@@ -86,7 +86,7 @@ export default function JoinForm({
               cursor: "pointer",
               transition: "all 0.18s cubic-bezier(0.22, 1, 0.36, 1)",
               background: mode === m ? "var(--amber-bg)" : "transparent",
-              border: `1px solid ${mode === m ? "rgba(185,206,149,0.42)" : "transparent"}`,
+              border: `1px solid ${mode === m ? "var(--amber-line)" : "transparent"}`,
               color: mode === m ? "var(--amber)" : "var(--muted)",
             }}
           >

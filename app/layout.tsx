@@ -80,7 +80,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0F0F0D",
+  /* Light is the default ground, so a single near-black bar sat wrong above a
+     warm-white page on mobile. These follow the OS preference; the in-page
+     toggle (localStorage['kl-theme']) is finer-grained than browser chrome
+     can track. */
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F7F6F3" },
+    { media: "(prefers-color-scheme: dark)", color: "#0C0D10" },
+  ],
 };
 
 export default function RootLayout({

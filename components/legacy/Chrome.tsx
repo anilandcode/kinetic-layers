@@ -16,8 +16,8 @@ export function Mark() {
         width: 16,
         height: 16,
         borderRadius: 5,
-        background: "linear-gradient(140deg,rgba(185,206,149,0.9),rgba(120,150,95,0.55))",
-        border: "1px solid rgba(185,206,149,0.5)",
+        background: "var(--amber)",
+        border: "1px solid var(--amber-line)",
         flexShrink: 0,
       }}
     />
@@ -40,7 +40,7 @@ export function Avatar({ email, size = 26 }: { email: string | null; size?: numb
         alignItems: "center",
         justifyContent: "center",
         fontSize: Math.round(size * 0.42),
-        color: "var(--amber)",
+        color: "var(--ground)",
         fontWeight: 500,
         flexShrink: 0,
       }}
