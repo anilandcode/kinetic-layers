@@ -12,9 +12,16 @@ import { defineField, defineType, type SchemaTypeDefinition } from "sanity";
  * so. What lives here is the manifest describing them — name, size, kind —
  * plus the storage path the download route resolves.
  *
- * That is why this schema has no image or file fields anywhere. Nothing is
- * uploaded through the Studio; it is uploaded by tools/import-asset.mjs, which
- * writes the object and this document together so they cannot disagree.
+ * So there are two kinds of media here, and the split is the paywall:
+ *
+ *   media, clip    the previews. Public by design — they are the marketing —
+ *                  and uploaded straight through the Studio.
+ *   files[]        the gated downloads. Never uploaded here; only described.
+ *                  tools/import-asset.mjs writes the object and the manifest
+ *                  entry together so the two cannot disagree.
+ *
+ * An upload field for files[] would quietly put paid source on a public CDN,
+ * which is why there is none and should never be one.
  */
 
 /**
@@ -48,6 +55,30 @@ const TYPES = [
 ] as const;
 
 const TIERS = ["Free", "Premium"] as const;
+
+/**
+ * What a grid can afford.
+ *
+ * These are not Sanity's limits — Sanity would take a far bigger file. They are
+ * the point at which a card stops working: the clip is transparent until
+ * playback starts, so every megabyte is time the tile spends blank. The first
+ * real upload was 16 MB of 50s 4K, which `tools/optimize-clip.mjs` turned into
+ * 1.8 MB without anyone being able to tell the difference in a 369px column.
+ *
+ * Over the warning it still publishes; over the ceiling it does not.
+ */
+const CLIP_WARN_MB = 5;
+const CLIP_MAX_MB = 25;
+
+/** Size lives on the asset document, not the reference, so this has to ask. */
+const clipMb = async (value: any, ctx: any): Promise<number | null> => {
+  const ref = value?.asset?._ref;
+  if (!ref || !ctx?.getClient) return null;
+  const size: number | null = await ctx
+    .getClient({ apiVersion: "2026-08-25" })
+    .fetch("*[_id == $id][0].size", { id: ref });
+  return typeof size === "number" ? size / 1048576 : null;
+};
 
 const fileEntry = defineType({
   name: "fileEntry",
@@ -117,9 +148,23 @@ const asset = defineType({
       group: "main",
       options: { accept: "video/*", storeOriginalFilename: true },
       description:
-        "Optional. Plays on hover when there is an image, or on its own when there is not. " +
+        "Optional. Autoplays when the card scrolls into view, muted and looping. " +
         "Keep it a few seconds and web-sized — this loads in a grid, and Sanity is a CMS " +
         "rather than a video host. A 5s 1280px loop is a few hundred KB; a 50s 4K one is 16 MB.",
+      validation: (r) => [
+        r.custom(async (value: any, ctx: any) => {
+          const mb = await clipMb(value, ctx);
+          if (mb === null || mb <= CLIP_MAX_MB) return true;
+          return `${mb.toFixed(1)} MB is past the ${CLIP_MAX_MB} MB ceiling. Run: node tools/optimize-clip.mjs <file>`;
+        }),
+        r
+          .custom(async (value: any, ctx: any) => {
+            const mb = await clipMb(value, ctx);
+            if (mb === null || mb <= CLIP_WARN_MB) return true;
+            return `${mb.toFixed(1)} MB leaves this card blank while it loads. \`node tools/optimize-clip.mjs <file>\` gets it under ${CLIP_WARN_MB} MB and writes a poster you can use as the Image.`;
+          })
+          .warning(),
+      ],
     }),
 
     /**
@@ -220,11 +265,23 @@ const asset = defineType({
   ],
   /* Neither field is required on its own, so the rule lives here: an asset
      with no media at all is a blank tile in the grid. */
-  validation: (r) =>
+  validation: (r) => [
     r.custom((doc) => {
       const d = doc as Record<string, unknown> | undefined;
       return d?.media || d?.clip ? true : "Add an image or a video.";
     }),
+    /* Video-only publishes, but it is worth knowing what it costs: the clip is
+       transparent until playback begins and Sanity records no dimensions for a
+       file, so the tile is blank at a default height until the bytes land. */
+    r
+      .custom((doc) => {
+        const d = doc as Record<string, unknown> | undefined;
+        return !d?.media && d?.clip
+          ? "No image: this card stays blank until the video loads, and falls back to a default height. optimize-clip.mjs writes a poster frame you can upload above."
+          : true;
+      })
+      .warning(),
+  ],
   preview: {
     select: { title: "name", subtitle: "type", media: "media", file: "media.asset.originalFilename" },
     prepare: ({ title, subtitle, media, file }: Record<string, any>) => ({
