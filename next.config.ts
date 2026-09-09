@@ -14,6 +14,11 @@ const origin = (value: string | undefined) => {
 };
 
 const media = origin(process.env.NEXT_PUBLIC_MEDIA_BASE);
+/* Preview media uploaded in the Studio is served from Sanity's asset CDN, which
+   is a fixed host rather than a configured one. Without it here, every image
+   uploaded through the Studio is blocked by the policy and renders as a broken
+   tile — which is exactly what happened to the first one. */
+const sanityCdn = "https://cdn.sanity.io";
 const supabase = origin(process.env.NEXT_PUBLIC_SUPABASE_URL);
 const list = (...parts: (string | null)[]) => parts.filter(Boolean).join(" ");
 
@@ -37,8 +42,8 @@ const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  `img-src ${list("'self'", "data:", "blob:", media, supabase)}`,
-  `media-src ${list("'self'", "blob:", media)}`,
+  `img-src ${list("'self'", "data:", "blob:", media, sanityCdn, supabase)}`,
+  `media-src ${list("'self'", "blob:", media, sanityCdn)}`,
   "font-src 'self' data:",
   `connect-src ${list("'self'", supabase, supabase && supabase.replace("https://", "wss://"))}`,
   "frame-ancestors 'self'",

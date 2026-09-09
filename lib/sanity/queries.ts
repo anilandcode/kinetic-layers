@@ -33,6 +33,10 @@ import type { Asset, Collection, Drop, Settings } from "@/lib/kl/types";
    The name falls back to the uploaded filename with its extension stripped,
    so an asset published with the name left empty still reads as something.
 
+   `type` is uppercased on the way out. The seed and the import script write
+   "TEMPLATE"; the Studio's dropdown writes "Template". Left alone that is two
+   tabs on /library for one type, and a filter that matches half the assets.
+
    `free` uses select() rather than coalesce() on purpose. GROQ evaluates
    `null == "Free"` to false rather than null, so a coalesce would stop at the
    first branch and never reach the legacy boolean — quietly paywalling every
@@ -54,14 +58,14 @@ const MEDIA = groq`
 
 const ASSET_CARD = groq`{
   "slug": slug.current,
-  type, tagline,
+  "type": upper(coalesce(type, "")), tagline,
   ${MEDIA},
   "promptLength": length(coalesce(prompt, promptBody, ""))
 }`;
 
 const ASSET_FULL = groq`{
   "slug": slug.current,
-  type, tagline,
+  "type": upper(coalesce(type, "")), tagline,
   "notes": coalesce(notes, ""),
   ${MEDIA},
   "files": coalesce(files[]{ name, meta, tag, bytes }, []),
