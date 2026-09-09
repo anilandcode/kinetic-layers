@@ -47,18 +47,23 @@ export default function AssetCard({ asset }: { asset: Asset }) {
               background: `var(${ground})`,
             }}
           >
-            {/* PreviewMedia rather than a bare <img>, because the card was
-                projecting `clip` and rendering it nowhere — a video uploaded in
-                the Studio did nothing at all. It also carries the rules worth
-                keeping: the clip gets no src until someone reaches for it, and
-                none ever on a coarse pointer or under reduced motion, so a grid
-                of cards does not pull megabytes of video on load. */}
+            {/* play="auto", so a clip starts when its card scrolls into view
+                rather than waiting for a hover nobody performs on a phone.
+
+                This is what getlayers does, checked rather than assumed: its
+                homepage ships 51 <video> tags, every one of them autoplay and
+                preload="none", and not one with a src attribute. The bytes are
+                still withheld — PreviewMedia attaches the source on
+                intersection and drops it again on the way out, which frees the
+                decoded buffer instead of leaving every clip you scrolled past
+                resident. Reduced motion still opts out entirely. */}
             {poster || clip ? (
               <PreviewMedia
                 gradient={`var(${ground})`}
                 poster={poster ?? undefined}
                 clip={clip ?? undefined}
                 alt={asset.name}
+                play="auto"
                 style={{ position: "absolute", inset: 0 }}
               />
             ) : (

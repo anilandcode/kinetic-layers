@@ -51,7 +51,7 @@ const MEDIA = groq`
     previewHeight,
     220
   ),
-  "name": coalesce(name, string::split(media.asset->originalFilename, ".")[0], "Untitled"),
+  "name": coalesce(name, string::split(media.asset->originalFilename, ".")[0], string::split(clip.asset->originalFilename, ".")[0], "Untitled"),
   "tags": coalesce(tags, []),
   "free": select(defined(tier) => tier == "Free", coalesce(free, false))
 `;
