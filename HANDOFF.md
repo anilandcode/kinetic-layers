@@ -227,14 +227,17 @@ node --env-file=.env.local tools/apply-migration.mjs <file.sql>
 npx vercel --prod --yes
 ```
 
-Demo accounts: `demo@kiln.build` (free) and `demo.pro@kiln.build` (premium).
-Both exist, and between them they are the only two rows in Supabase auth.
+Demo accounts: `demo@kineticlayers.com` (free) and `demo.pro@kineticlayers.com`
+(premium). Between them they are the only two rows in Supabase auth, and the
+premium one carries a real `premium` entitlement, so the paywall matrix can be
+driven end to end.
 
-Their password is **not written down here any more**, and was not worth writing
-down: it sat in this file in plain text, which also means it is in this repo's
-git history and cannot be removed from it by editing the file. Treat it as
-known. Rotate both in Supabase → Authentication → Users before anyone real signs
-up, or delete them — nothing in the app depends on them existing.
+Both were rotated on 2026-09-09 — new passwords, and moved off `@kiln.build`.
+The passwords are **deliberately not written here**. The previous one was, which
+put it in this repo's git history permanently; that is what made rotating
+necessary rather than optional. Keep them in a password manager. If they are
+lost, set new ones in Supabase → Authentication → Users — nothing in the app
+depends on either account.
 
 ## Conventions
 
