@@ -17,59 +17,37 @@ import { defineField, defineType, type SchemaTypeDefinition } from "sanity";
  * writes the object and this document together so they cannot disagree.
  */
 
-const SHELVES = ["Build", "Motion", "Craft"] as const;
-const MOODS = ["Luxe", "Technical", "Editorial", "Organic", "Brutalist", "Playful"] as const;
-
-/* What the asset is FOR, as opposed to what it is (`type`) or which shelf it
-   sits on. Both reference libraries lead with this — it is the question a
-   visitor actually arrives with. */
-const CATEGORIES = [
-  "Hero", "Landing page", "Portfolio", "SaaS", "Agency",
-  "Ecommerce", "Dashboard", "Editorial", "Background", "Texture", "Workflow",
+/**
+ * One vocabulary, not five.
+ *
+ * These were `shelf`, `mood`, `category`, `theme` and `stack` — five required
+ * dropdowns an author had to fill before anything could be published, four of
+ * which the library never sliced by. They are one optional `tags` list now.
+ * `type` stayed a field of its own because it is the library's tab row: it is
+ * the one axis the UI navigates by rather than filters on.
+ */
+const TAGS = [
+  /* was `shelf` */
+  "Build", "Motion", "Craft",
+  /* was `mood` */
+  "Luxe", "Technical", "Editorial", "Organic", "Brutalist", "Playful",
+  /* was `category` — what a visitor came looking for */
+  "Hero", "Landing page", "Portfolio", "SaaS", "Agency", "Ecommerce",
+  "Dashboard", "Background", "Texture", "Workflow",
+  /* was `theme` */
+  "Dark", "Light",
+  /* was `stack` */
+  "Next.js", "React", "Astro", "Tailwind", "Three.js", "R3F", "GSAP",
+  "Blender", "Figma", "Flux", "Claude", "GPT",
 ] as const;
 
-const THEMES = ["Dark", "Light"] as const;
+/** The tab row on /library. A closed list so the tabs cannot sprout typos. */
+const TYPES = [
+  "Template", "3D Scene", "Prompt", "Background",
+  "Image Pack", "LoRA", "Video", "MCP / Agent",
+] as const;
 
-/**
- * Preview media is stored as a *path*, not an uploaded Sanity asset.
- *
- * They are served from Cloudflare Pages — free, and unmetered bandwidth, which
- * matters because a preview loads on every visit. Sanity holds the path and the
- * shape; lib/kl/media.ts resolves it against whichever host
- * NEXT_PUBLIC_MEDIA_BASE names. Derivatives are baked once at upload with
- * ffmpeg, so no transformation CDN is in the path.
- */
-const mediaFields = (prefix: string) => [
-  defineField({
-    name: "poster",
-    title: "Poster path",
-    type: "string",
-    description: `Still frame inside the media bucket, e.g. "${prefix}/card.webp". Relative — no domain.`,
-  }),
-  defineField({
-    name: "clip",
-    title: "Clip path",
-    type: "string",
-    description: `Looping MP4, e.g. "${prefix}/card.mp4". Optional; it only plays on hover.`,
-  }),
-  defineField({
-    name: "aspect",
-    title: "Aspect ratio",
-    type: "number",
-    description: "width ÷ height. Reserves the box so the card never reflows when the poster lands.",
-  }),
-];
-
-const specRow = defineType({
-  name: "specRow",
-  title: "Spec row",
-  type: "object",
-  fields: [
-    defineField({ name: "k", title: "Label", type: "string", validation: (r) => r.required() }),
-    defineField({ name: "v", title: "Value", type: "string", validation: (r) => r.required() }),
-  ],
-  preview: { select: { title: "k", subtitle: "v" } },
-});
+const TIERS = ["Free", "Premium"] as const;
 
 const fileEntry = defineType({
   name: "fileEntry",
@@ -99,94 +77,149 @@ const fileEntry = defineType({
   preview: { select: { title: "name", subtitle: "meta" } },
 });
 
-const shot = defineType({
-  name: "shot",
-  title: "Preview shot",
-  type: "object",
-  fields: [
-    defineField({ name: "label", type: "string", validation: (r) => r.required() }),
-    ...mediaFields("<slug>/shot-1"),
-    defineField({
-      name: "gradient",
-      title: "Placeholder gradient",
-      type: "string",
-      description: "Painted instantly under the poster, and used alone when there is no render yet.",
-    }),
-  ],
-  preview: { select: { title: "label", subtitle: "poster" } },
-});
-
 const asset = defineType({
   name: "asset",
   title: "Asset",
   type: "document",
+  groups: [
+    { name: "main", title: "Asset", default: true },
+    { name: "words", title: "Words" },
+    { name: "advanced", title: "Advanced" },
+  ],
   fields: [
-    defineField({ name: "name", type: "string", validation: (r) => r.required() }),
+    /**
+     * The still. Required, because a masonry card has to paint something before
+     * any bytes arrive — a video-only card is a blank rectangle until it loads.
+     * Sanity stores dimensions on every image it ingests, which is where the
+     * card height now comes from; that is why `previewHeight` and `gradient`
+     * could both go.
+     *
+     * GIFs count as images here and keep their animation.
+     */
+    defineField({
+      name: "media",
+      title: "Media",
+      type: "image",
+      group: "main",
+      options: { storeOriginalFilename: true },
+      description: "Image or GIF. The card's still, and the source of its height.",
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: "clip",
+      title: "Hover clip",
+      type: "file",
+      group: "main",
+      options: { accept: "video/*", storeOriginalFilename: true },
+      description:
+        "Optional short loop, played on hover. Keep it a few seconds and web-sized — " +
+        "this loads in a grid, and Sanity is a CMS rather than a video host.",
+    }),
+
+    /**
+     * Optional. Empty means the query falls back to the media's original
+     * filename, then to a sequence — see nameOf() in lib/sanity/queries.ts.
+     */
+    defineField({
+      name: "name",
+      type: "string",
+      group: "main",
+      description: "Leave empty to use the uploaded filename.",
+    }),
     defineField({
       name: "slug",
       type: "slug",
-      options: { source: "name", maxLength: 96 },
+      group: "main",
+      options: {
+        maxLength: 96,
+        /* Async so an empty name can still produce a slug: it reads the
+           uploaded asset's original filename rather than making the author
+           invent one. */
+        source: async (doc: Record<string, any>, ctx: any) => {
+          if (doc?.name) return String(doc.name);
+          const ref = doc?.media?.asset?._ref;
+          if (ref && ctx?.getClient) {
+            const client = ctx.getClient({ apiVersion: "2026-08-25" });
+            const file: string | null = await client.fetch(
+              "*[_id == $id][0].originalFilename",
+              { id: ref }
+            );
+            if (file) return file.replace(/\.[^.]+$/, "");
+          }
+          return "asset";
+        },
+      },
       validation: (r) => r.required(),
     }),
-    defineField({ name: "type", title: "Type", type: "string", validation: (r) => r.required() }),
-    defineField({ name: "stack", type: "string", validation: (r) => r.required() }),
+
     defineField({
-      name: "shelf",
+      name: "type",
+      title: "Type",
       type: "string",
-      options: { list: [...SHELVES] },
+      group: "main",
+      options: { list: [...TYPES] },
+      description: "The tab it appears under on /library.",
       validation: (r) => r.required(),
     }),
     defineField({
-      name: "mood",
+      name: "tier",
       type: "string",
-      options: { list: [...MOODS] },
-      validation: (r) => r.required(),
+      group: "main",
+      options: { list: [...TIERS], layout: "radio", direction: "horizontal" },
+      initialValue: "Premium",
+      description: "Free assets download on any signed-in account.",
     }),
     defineField({
-      name: "category",
-      title: "Used for",
-      type: "string",
-      options: { list: [...CATEGORIES] },
-      description: "What a visitor came looking for. Drives the main filter row.",
+      name: "tags",
+      type: "array",
+      group: "main",
+      of: [{ type: "string" }],
+      options: { list: [...TAGS], layout: "tags" },
+      description: "Optional. Drives the library filters and what counts as related.",
+    }),
+
+    defineField({ name: "tagline", type: "text", rows: 2, group: "words" }),
+    defineField({
+      name: "notes",
+      title: "Notes",
+      type: "text",
+      rows: 12,
+      group: "words",
+      description: "Optional. Paste design.md here — markdown is fine.",
     }),
     defineField({
-      name: "theme",
-      type: "string",
-      options: { list: [...THEMES] },
-    }),
-    defineField({
-      name: "free",
-      title: "Free tier",
-      type: "boolean",
-      initialValue: false,
-      description: "Free assets are downloadable by any signed-in account.",
-    }),
-    defineField({ name: "tagline", type: "text", rows: 2 }),
-    defineField({ name: "body", title: "What this is", type: "array", of: [{ type: "block" }] }),
-    defineField({
-      name: "previewHeight",
-      title: "Masonry height",
-      type: "number",
-      initialValue: 220,
-      description: "Card height in px. The grid is deliberately ragged.",
-    }),
-    defineField({ name: "gradient", title: "Card gradient", type: "string" }),
-    ...mediaFields("<slug>"),
-    defineField({ name: "shots", type: "array", of: [{ type: "shot" }] }),
-    defineField({ name: "specs", type: "array", of: [{ type: "specRow" }] }),
-    defineField({ name: "files", type: "array", of: [{ type: "fileEntry" }] }),
-    defineField({
-      name: "promptBody",
+      name: "prompt",
       title: "Gated prompt text",
       type: "text",
       rows: 6,
+      group: "words",
       description:
         "The full prompt. Only the first two lines are ever sent to an unentitled visitor; the rest is counted, not shipped.",
     }),
-    defineField({ name: "drop", type: "reference", to: [{ type: "drop" }] }),
-    defineField({ name: "publishedAt", type: "datetime", initialValue: () => new Date().toISOString() }),
+
+    /**
+     * Written by tools/import-asset.mjs, which uploads the object and the
+     * document together. Editable here for a typo, but these are paths into a
+     * private bucket — nothing is uploaded through this field, and a path with
+     * no object behind it makes the download button return 409.
+     */
+    defineField({ name: "files", type: "array", of: [{ type: "fileEntry" }], group: "advanced" }),
+    defineField({ name: "drop", type: "reference", to: [{ type: "drop" }], group: "advanced" }),
+    defineField({
+      name: "publishedAt",
+      type: "datetime",
+      group: "advanced",
+      initialValue: () => new Date().toISOString(),
+    }),
   ],
-  preview: { select: { title: "name", subtitle: "type" } },
+  preview: {
+    select: { title: "name", subtitle: "type", media: "media", file: "media.asset.originalFilename" },
+    prepare: ({ title, subtitle, media, file }: Record<string, any>) => ({
+      title: title || file?.replace(/\.[^.]+$/, "") || "Untitled",
+      subtitle,
+      media,
+    }),
+  },
 });
 
 const collection = defineType({
@@ -203,18 +236,32 @@ const collection = defineType({
     }),
     defineField({ name: "blurb", type: "text", rows: 3 }),
     defineField({
-      name: "shelf",
-      type: "string",
-      options: { list: [...SHELVES] },
-      validation: (r) => r.required(),
+      name: "assets",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "asset" }] }],
+      description: "What is in it. The first one supplies the cover unless you pick another.",
     }),
-    defineField({ name: "tags", type: "array", of: [{ type: "string" }], options: { layout: "tags" } }),
-    defineField({ name: "previewHeight", type: "number", initialValue: 230 }),
-    defineField({ name: "gradient", type: "string" }),
-    ...mediaFields("collections/<slug>"),
-    defineField({ name: "assets", type: "array", of: [{ type: "reference", to: [{ type: "asset" }] }] }),
+    /**
+     * Borrowed, not uploaded. A collection is a shelf of assets that already
+     * have media, so re-uploading one of their images here would be a second
+     * copy to keep in step. Empty means the first asset in the list.
+     */
+    defineField({
+      name: "cover",
+      type: "reference",
+      to: [{ type: "asset" }],
+      description: "Optional. Which of its assets supplies the cover image.",
+    }),
+    defineField({
+      name: "tags",
+      type: "array",
+      of: [{ type: "string" }],
+      options: { list: [...TAGS], layout: "tags" },
+    }),
   ],
-  preview: { select: { title: "name", subtitle: "blurb" } },
+  preview: {
+    select: { title: "name", subtitle: "blurb", media: "cover.media" },
+  },
 });
 
 const drop = defineType({
@@ -266,7 +313,5 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   collection,
   drop,
   settings,
-  specRow,
   fileEntry,
-  shot,
 ];
