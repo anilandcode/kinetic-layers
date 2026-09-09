@@ -106,7 +106,12 @@ function serve(obj: R2Object | R2ObjectBody, request: Request, cacheControl: str
     return new Response(null, { status: 304, headers });
   }
 
-  const range = obj.range as
+  /* R2 reports a range covering the whole object even when the request asked
+     for no range at all, so trusting obj.range alone answers a plain GET with
+     206 Partial Content and a Content-Range spanning everything. That is
+     malformed, and a transformer is entitled to refuse it. The request header
+     is the only thing that says whether a range was actually wanted. */
+  const range = (request.headers.has("range") ? obj.range : undefined) as
     | { offset?: number; length?: number; suffix?: number }
     | undefined;
 
