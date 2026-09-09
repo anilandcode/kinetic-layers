@@ -6,7 +6,7 @@ The name is Kinetic Layers everywhere — in code, in copy, in identifiers. "Kil
 and "Direction Kit" are retired and should not appear in anything new. Where they
 survive it is deliberate and historical: the archived demand test at
 `app/_archive-direction-kit/`, applied Supabase migration filenames, the GitHub
-repo slug, and the `kiln-media` Cloudflare Pages project.
+repo slug, and nothing else.
 
 Before doing anything else, in this order:
 

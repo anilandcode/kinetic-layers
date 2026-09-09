@@ -9,7 +9,7 @@ changing anything; it records the decisions and the traps, not the code.
 The rename is **done**. Code, copy and identifiers all say Kinetic Layers. What
 still reads "kiln" is deliberate: applied migration filenames (renaming one
 breaks Supabase's ledger), the archived demand test, the GitHub repo slug, the
-`kiln-media` Pages project, and historical notes about the retired palette.
+and historical notes about the retired palette.
 
 **Hosting.** Staying on **Vercel** for now. DNS at Cloudflare, unproxied (grey
 cloud) — the certificate will not issue behind the orange cloud. Move to
@@ -59,7 +59,7 @@ Free tier plus an unlimited subscription. Next.js 15 App Router, TypeScript.
 ```
 Sanity  8vxxthrc/production   the catalogue: assets, collections, drops,
                               prices. Public dataset, no token to read.
-Cloudflare Pages              preview posters and clips, kiln-media.pages.dev.
+Cloudflare Pages              preview posters and clips, kinetic-layers-media.pages.dev.
                               Unlimited bandwidth, no card. NOT R2 — enabling
                               R2 needs a payment method, Pages does not.
 Supabase ubftlspopkfwwazwsinv auth, profiles, entitlements, downloads, saves,

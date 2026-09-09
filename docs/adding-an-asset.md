@@ -85,8 +85,19 @@ Without a `preview/` folder the card falls back to a generated gradient — run
 
 ## By hand
 
-For a tagline or a prompt, open the Studio, edit the asset, publish. The
-webhook revalidates only the tags that changed, so it is live in seconds.
+For a tagline or a prompt, open the Studio, edit the asset, publish.
+
+How fast it goes live depends on one thing that is **not currently set up**.
+`app/api/revalidate/route.ts` invalidates just the tags an edit touched, but no
+Sanity webhook calls it — `sanity hook list` returns nothing. Until one exists,
+an edit appears when the fetch's own hour expires (`revalidate: 3600` in
+`lib/sanity/queries.ts`), not in seconds.
+
+To wire it up, in the Sanity dashboard under **API → Webhooks**, add one
+pointing at `https://kineticlayers.com/api/revalidate`: POST, dataset
+`production`, trigger on create/update/delete, projection
+`{_type, slug}`, and the secret set to `SANITY_REVALIDATE_SECRET`. The CLI's
+`sanity hook create` can do it too, but only interactively.
 
 It is live at **https://kineticlayers.sanity.studio** — sign in with the Sanity
 account the project belongs to. To run it locally, or to push changes to the

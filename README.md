@@ -16,7 +16,7 @@ Sanity          the catalogue — assets, collections, drops, site numbers,
                 and the *paths* of preview media. No binaries.
 
 Cloudflare      preview posters and looping clips, on Pages at
-Pages           kiln-media.pages.dev. Public, unlimited bandwidth, free.
+Pages           kinetic-layers-media.pages.dev. Public, unlimited bandwidth, free.
 
 Supabase auth   users, sessions, OAuth.
 Supabase db     profiles, entitlements, downloads, saved items.
@@ -121,7 +121,7 @@ problems and the app keeps only the read client.
 | `SUPABASE_DB_PASSWORD` | Only for `tools/apply-migration.mjs` |
 | `ADMIN_TOKEN` | Guards `/api/admin/grant` |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Offered when a form fails to send |
-| `NEXT_PUBLIC_MEDIA_BASE` | `https://kiln-media.pages.dev`. Use `/preview` to serve the local folder instead |
+| `NEXT_PUBLIC_MEDIA_BASE` | `https://kinetic-layers-media.pages.dev`. Use `/preview` to serve the local folder instead |
 | `R2_*` | Upload script only. The app never talks to R2, it only builds URLs |
 
 Without the Supabase keys the site still renders: the catalogue is public, and
@@ -161,7 +161,7 @@ Measured on the built site, not assumed:
 
 ```
 / at 1600      15 cards · 15 videos, all with an empty src · 0 video requests
-               15 posters, all from kiln-media.pages.dev · 267 KB total page
+               15 posters, all from kinetic-layers-media.pages.dev · 267 KB total page
                0 requests to the local /preview folder — genuinely on the CDN
 hover one card exactly 1 video request, that card's clip, then it plays
 / at 375       0 <video> elements rendered at all · 0 video requests
@@ -196,7 +196,7 @@ category and theme chips match. "Newest" leads with a different asset than
 and each really is drawn from that asset's own drop.
 
 Media: 15 videos on the home page, all with an empty `src`, zero video requests
-on load, exactly one on hover, posters from `kiln-media.pages.dev`.
+on load, exactly one on hover, posters from `kinetic-layers-media.pages.dev`.
 
 The ⌘K palette traps Tab in both directions, restores focus to the trigger on
 close, and announces its result count.
