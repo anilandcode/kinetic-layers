@@ -9,9 +9,9 @@
  * Storage, signed per request by app/api/download/route.ts); nothing that
  * matters ever lands here.
  *
- * Content types and a long immutable cache are set explicitly: R2 does not
- * sniff, and a preview named <slug>/card.webp never changes in place — a new
- * render gets a new asset.
+ * Content types are set explicitly because R2 does not sniff. The cache is
+ * split rather than immutable: these keys are stable, so a replaced render has
+ * to be able to reach someone who already has the old one.
  *
  *   node --env-file=.env.local tools/upload-r2.mjs          # upload
  *   node --env-file=.env.local tools/upload-r2.mjs --dry    # list only
@@ -91,7 +91,12 @@ const main = async () => {
         Key: key,
         Body: await readFile(f),
         ContentType: TYPES[path.extname(f).toLowerCase()] ?? "application/octet-stream",
-        CacheControl: "public, max-age=31536000, immutable",
+        /* Not `immutable`. A preview key like <slug>/card.webp is stable, so
+           promising the bytes never change meant a replaced render never
+           reached a returning visitor — the same bug fixed for the Pages
+           _headers in 708cbb6. Five minutes in the browser, a year at the
+           edge. */
+        CacheControl: "public, max-age=300, s-maxage=31536000, stale-while-revalidate=86400",
       })
     );
     done++;

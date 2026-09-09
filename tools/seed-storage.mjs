@@ -12,7 +12,7 @@
  * Uses the service key, which is the only way to write to a private bucket.
  */
 import { readFileSync } from "node:fs";
-import { createClient } from "@supabase/supabase-js";
+import { putObject, driver } from "./storage.mjs";
 
 for (const line of readFileSync(".env.local", "utf8").split("\n")) {
   const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
@@ -26,7 +26,7 @@ if (!url || !key) {
   process.exit(1);
 }
 
-const db = createClient(url, key, { auth: { persistSession: false } });
+
 
 const note = (what) =>
   `PLACEHOLDER — ${what}
@@ -51,19 +51,29 @@ const files = [
 
 let ok = 0;
 for (const [path, body, contentType] of files) {
-  const { error } = await db.storage
-    .from("assets")
-    .upload(path, new Blob([body], { type: contentType }), { contentType, upsert: true });
-  if (error) console.error(`  ✗ ${path}: ${error.message}`);
-  else {
+  try {
+    await putObject(path, Buffer.from(body), contentType);
     ok++;
     console.log(`  ✓ ${path}`);
+  } catch (e) {
+    console.error(`  ✗ ${path}: ${e.message}`);
   }
 }
 
 console.log(`\n${ok}/${files.length} placeholder files in the private bucket.`);
 
-/* Prove the bucket is actually private: an unsigned fetch must fail. */
+/* Prove the bucket is actually private: an unsigned fetch must fail. This is
+   the check worth keeping when providers change — a gated file reachable by
+   plain URL is the whole paywall gone, and it fails silently. */
+if (driver() === "r2") {
+  console.log(
+    "\nSTORAGE_DRIVER=r2 — no unsigned-read probe here, because R2 has no fixed\n" +
+      "public URL to try unless a bucket is given one. Verify by hand that the\n" +
+      "gated bucket has NO public development URL and no custom domain attached."
+  );
+  process.exit(0);
+}
+
 const probe = `${url}/storage/v1/object/assets/placeholder/prompts.md`;
 const res = await fetch(probe);
 console.log(

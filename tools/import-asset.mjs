@@ -22,7 +22,7 @@
  */
 import { readFileSync, readdirSync, statSync, existsSync, mkdirSync, copyFileSync } from "node:fs";
 import path from "node:path";
-import { createClient } from "@supabase/supabase-js";
+import { putObject, driver } from "./storage.mjs";
 
 for (const line of readFileSync(".env.local", "utf8").split("\n")) {
   const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
@@ -40,7 +40,10 @@ const {
   SANITY_WRITE_TOKEN: TOKEN,
 } = process.env;
 
-if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) die("SUPABASE_URL and SUPABASE_SECRET_KEY must be set.");
+/* Only the Supabase driver needs these. Demanding them under STORAGE_DRIVER=r2
+   would refuse a perfectly valid import for a credential it will never use. */
+if (driver() === "supabase" && !dryRun && (!SUPABASE_URL || !SUPABASE_SECRET_KEY))
+  die("SUPABASE_URL and SUPABASE_SECRET_KEY must be set (or set STORAGE_DRIVER=r2).");
 if (!PID || !DS) die("NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET must be set.");
 if (!TOKEN && !dryRun)
   die("SANITY_WRITE_TOKEN is not set. Create one at sanity.io/manage → API → Tokens (Editor), or pass --dry-run.");
@@ -145,12 +148,15 @@ if (dryRun) {
 /* ---- upload, then publish ----------------------------------------------- */
 /* Files first. A document pointing at objects that are not there yet is a
    listing whose download button 409s; the reverse is merely an orphan. */
-const db = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, { auth: { persistSession: false } });
+/* Which store the bytes go into is tools/storage.mjs's decision, driven by
+   STORAGE_DRIVER. The key is the same either way, which is what makes moving
+   providers a config change rather than a re-import. */
 for (const f of files) {
-  const { error } = await db.storage
-    .from("assets")
-    .upload(f.storagePath, readFileSync(f._local), { upsert: true });
-  if (error) die(`upload ${f.storagePath}: ${error.message}`);
+  try {
+    await putObject(f.storagePath, readFileSync(f._local));
+  } catch (e) {
+    die(e.message);
+  }
   console.log(`  ↑ ${f.storagePath}`);
 }
 

@@ -3,6 +3,7 @@ import { admin } from "@/lib/supabase/admin";
 import { getViewer, canDownload } from "@/lib/kl/viewer";
 import { consumeQuota, quotaRefusal, refund, subjectFor } from "@/lib/kl/quota";
 import { getAsset, getAssetFiles } from "@/lib/sanity/queries";
+import { signedDownloadUrl } from "@/lib/kl/storage";
 
 /**
  * The gate.
@@ -76,13 +77,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const db = admin();
-  const { data, error } = await db.storage
-    .from("assets")
-    .createSignedUrl(file.storagePath, SIGNED_URL_TTL, { download: file.name });
-
-  if (error || !data?.signedUrl) {
-    console.error("signing failed:", error?.message);
+  /* Which backend holds the bytes is lib/kl/storage.ts's problem, not this
+     route's. What stays here is the part that matters: the URL is minted only
+     after the gate passed and a unit was spent, and it expires in a minute. */
+  let signedUrl: string;
+  try {
+    signedUrl = await signedDownloadUrl(file.storagePath, file.name, SIGNED_URL_TTL);
+  } catch (err) {
+    console.error("signing failed:", err instanceof Error ? err.message : err);
     /* No URL went out, so the unit goes back. */
     await refund(quota.usageId);
     return NextResponse.json(
@@ -90,6 +92,8 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+
+  const db = admin();
 
   /* Logged after the URL is issued, so a failed signing does not show up in
      someone's history as a download they never got. */
@@ -103,7 +107,7 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     ok: true,
-    url: data.signedUrl,
+    url: signedUrl,
     name: file.name,
     expiresIn: SIGNED_URL_TTL,
     remaining: quota.remaining,

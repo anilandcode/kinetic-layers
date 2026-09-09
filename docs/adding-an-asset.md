@@ -113,10 +113,23 @@ that pulls the whole Sanity bundle into the Next build and deadlocks with React
 19 over `useEffectEvent`. It was tried and reverted — see the note at the top of
 `sanity.config.ts`. Access is whoever you have invited to the Sanity project.
 
-Files are the part the Studio cannot do: they live in the private `assets`
-bucket in Supabase, not in Sanity. Upload at the path in the asset's
-`storagePath` field (Supabase dashboard → Storage → assets) and the download
-route signs it on request. Nothing else changes.
+Files are the part the Studio cannot do. They live in a private bucket, not in
+Sanity, so uploading one by hand means putting it at the asset's `storagePath`
+and letting `app/api/download/route.ts` sign it on request.
+
+Which bucket depends on `STORAGE_DRIVER`:
+
+| | |
+|---|---|
+| `supabase` (default) | the private `assets` bucket — Supabase dashboard → Storage → assets |
+| `r2` | the private R2 bucket named by `R2_ASSETS_BUCKET` |
+
+The key is the same either way — `storagePath` is a plain `<slug>/<name>` — so
+moving between them is a config change, not a re-import. Run
+`tools/migrate-storage-to-r2.mjs` to copy what is already there. The reason to
+move is Supabase's free tier: 1 GB stored and 5 GB egress a month, against R2's
+10 GB and no egress charge at any volume. R2 wants a card on file even when
+free; Supabase and Pages do not.
 
 ## What to check afterwards
 
