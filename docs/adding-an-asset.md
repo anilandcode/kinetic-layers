@@ -56,6 +56,25 @@ eight fields, five of which were taxonomies nobody filtered by.
 `meta` and `bytes` are read from the real files when you leave them out, so the
 size a visitor is shown is the size they get.
 
+### Video
+
+A card fetches a clip only when someone hovers it, so a heavy file costs one
+visitor one wait rather than costing the page. The item page is where size
+bites: that one plays on sight.
+
+```bash
+node tools/optimize-clip.mjs clip.mp4                  # 6s, 1280px, ~2 MB
+node tools/optimize-clip.mjs clip.mp4 --max-mb 12      # bigger, still sane
+node tools/optimize-clip.mjs clip.mp4 --seconds 10 --width 1600 --start 4
+```
+
+It writes a trimmed silent loop and a poster frame taken from that loop, so the
+still and the first frame match. Upload the poster as **Image** and the loop as
+**Video**.
+
+Roughly a second of waiting per 1.2 MB on a 10 Mbps connection. 2 MB is
+imperceptible; 18 MB is fifteen seconds of staring at a still.
+
 ### Then
 
 ```bash
