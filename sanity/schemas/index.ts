@@ -8,8 +8,13 @@ import { defineField, defineType, type SchemaTypeDefinition } from "sanity";
  *
  * Note what is NOT here: the downloadable files. Sanity's asset CDN is public
  * by URL, and the paywall is the product, so gated source files live in a
- * private Supabase Storage bucket. What lives here is the manifest describing
- * them — name, size, kind — plus the storage path the download route resolves.
+ * private bucket — Cloudflare R2, or Supabase Storage when STORAGE_DRIVER says
+ * so. What lives here is the manifest describing them — name, size, kind —
+ * plus the storage path the download route resolves.
+ *
+ * That is why this schema has no image or file fields anywhere. Nothing is
+ * uploaded through the Studio; it is uploaded by tools/import-asset.mjs, which
+ * writes the object and this document together so they cannot disagree.
  */
 
 const SHELVES = ["Build", "Motion", "Craft"] as const;
@@ -28,10 +33,11 @@ const THEMES = ["Dark", "Light"] as const;
 /**
  * Preview media is stored as a *path*, not an uploaded Sanity asset.
  *
- * The files live in a public Cloudflare R2 bucket because previews are served
- * on every visit and R2 charges nothing for egress. Sanity holds the path and
- * the shape; lib/kl/media.ts resolves it against the host. Derivatives are
- * baked once at upload with ffmpeg, so no transformation CDN is in the path.
+ * They are served from Cloudflare Pages — free, and unmetered bandwidth, which
+ * matters because a preview loads on every visit. Sanity holds the path and the
+ * shape; lib/kl/media.ts resolves it against whichever host
+ * NEXT_PUBLIC_MEDIA_BASE names. Derivatives are baked once at upload with
+ * ffmpeg, so no transformation CDN is in the path.
  */
 const mediaFields = (prefix: string) => [
   defineField({
@@ -82,7 +88,11 @@ const fileEntry = defineType({
       title: "Storage path",
       type: "string",
       description:
-        "Path inside the private Supabase bucket. The download route signs this; it is never exposed to the browser.",
+        "Key inside the private bucket, e.g. \"my-asset/scene.zip\". You cannot " +
+        "upload a file here — the Studio has no upload field for gated content. " +
+        "Run tools/import-asset.mjs, which puts the object in the bucket and " +
+        "writes this path in one step. A path with no object behind it makes the " +
+        "download button return 409.",
     }),
     defineField({ name: "bytes", title: "Size in bytes", type: "number" }),
   ],
