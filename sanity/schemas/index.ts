@@ -88,32 +88,38 @@ const asset = defineType({
   ],
   fields: [
     /**
-     * The still. Required, because a masonry card has to paint something before
-     * any bytes arrive — a video-only card is a blank rectangle until it loads.
-     * Sanity stores dimensions on every image it ingests, which is where the
-     * card height now comes from; that is why `previewHeight` and `gradient`
-     * could both go.
+     * Two fields, either of which will do — an asset needs one of them, not
+     * both. This was `media` required, which quietly meant "video not accepted
+     * here": an image field rejects video/mp4, so uploading one stalled at 0%
+     * with no explanation.
      *
-     * GIFs count as images here and keep their animation.
+     * A still is still worth having. Sanity records dimensions on images and
+     * not on files, so an image is what lets the card size itself, and it is
+     * what paints before any video has loaded. Video-only works; it just falls
+     * back to a default height and shows the paper tint until the first frame
+     * arrives.
+     *
+     * GIFs count as images and keep their animation.
      */
     defineField({
       name: "media",
-      title: "Media",
+      title: "Image",
       type: "image",
       group: "main",
       options: { storeOriginalFilename: true },
-      description: "Image or GIF. The card's still, and the source of its height.",
-      validation: (r) => r.required(),
+      description:
+        "Image or GIF. Sizes the card, and paints first. Optional if you upload a video below.",
     }),
     defineField({
       name: "clip",
-      title: "Hover clip",
+      title: "Video",
       type: "file",
       group: "main",
       options: { accept: "video/*", storeOriginalFilename: true },
       description:
-        "Optional short loop, played on hover. Keep it a few seconds and web-sized — " +
-        "this loads in a grid, and Sanity is a CMS rather than a video host.",
+        "Optional. Plays on hover when there is an image, or on its own when there is not. " +
+        "Keep it a few seconds and web-sized — this loads in a grid, and Sanity is a CMS " +
+        "rather than a video host. A 5s 1280px loop is a few hundred KB; a 50s 4K one is 16 MB.",
     }),
 
     /**
@@ -212,6 +218,13 @@ const asset = defineType({
       initialValue: () => new Date().toISOString(),
     }),
   ],
+  /* Neither field is required on its own, so the rule lives here: an asset
+     with no media at all is a blank tile in the grid. */
+  validation: (r) =>
+    r.custom((doc) => {
+      const d = doc as Record<string, unknown> | undefined;
+      return d?.media || d?.clip ? true : "Add an image or a video.";
+    }),
   preview: {
     select: { title: "name", subtitle: "type", media: "media", file: "media.asset.originalFilename" },
     prepare: ({ title, subtitle, media, file }: Record<string, any>) => ({

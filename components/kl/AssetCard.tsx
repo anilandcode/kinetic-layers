@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Asset } from "@/lib/kl/types";
 import { mediaUrl } from "@/lib/kl/media";
+import PreviewMedia from "@/components/legacy/PreviewMedia";
 import { groundFor, patternFor } from "@/lib/kl/ground";
 import { EARLY_ACCESS } from "@/lib/kl/access";
 
@@ -20,6 +21,7 @@ import { EARLY_ACCESS } from "@/lib/kl/access";
 export default function AssetCard({ asset }: { asset: Asset }) {
   const ground = groundFor(asset.slug);
   const poster = asset.poster ? mediaUrl(asset.poster) : null;
+  const clip = asset.clip ? mediaUrl(asset.clip) : null;
 
   return (
     <div className="kl-grid-item" data-grid-item>
@@ -45,21 +47,24 @@ export default function AssetCard({ asset }: { asset: Asset }) {
               background: `var(${ground})`,
             }}
           >
-            {poster ? (
-              <img
-                src={poster}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                width={asset.aspect ? 800 : undefined}
-                height={asset.aspect ? Math.round(800 / asset.aspect) : undefined}
+            {/* PreviewMedia rather than a bare <img>, because the card was
+                projecting `clip` and rendering it nowhere — a video uploaded in
+                the Studio did nothing at all. It also carries the rules worth
+                keeping: the clip gets no src until someone reaches for it, and
+                none ever on a coarse pointer or under reduced motion, so a grid
+                of cards does not pull megabytes of video on load. */}
+            {poster || clip ? (
+              <PreviewMedia
+                gradient={`var(${ground})`}
+                poster={poster ?? undefined}
+                clip={clip ?? undefined}
+                alt={asset.name}
+                style={{ position: "absolute", inset: 0 }}
               />
-            ) : null}
-            {/* Only where there is no image. The pattern is the design's
-                answer to "no render yet" — faint line-work on a paper tint —
-                and it sits after the <img> in the DOM, so leaving it in painted
-                a dot grid over every upload. */}
-            {poster ? null : (
+            ) : (
+              /* The design's answer to "no render yet" — faint line-work on a
+                 paper tint. It used to render over the image too, because it
+                 sits after it in the DOM. */
               <div className="kl-preview-pattern" data-pattern={patternFor(asset.slug)} aria-hidden="true" />
             )}
           </div>

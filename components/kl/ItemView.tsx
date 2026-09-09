@@ -4,6 +4,7 @@ import Shell from "./Shell";
 import Footer from "./Footer";
 import GlassButton from "./GlassButton";
 import { mediaUrl } from "@/lib/kl/media";
+import PreviewMedia from "@/components/legacy/PreviewMedia";
 import { groundFor } from "@/lib/kl/ground";
 import { EARLY_ACCESS } from "@/lib/kl/access";
 import type { Asset, Viewer } from "@/lib/kl/types";
@@ -77,6 +78,7 @@ export default function ItemView({
 }) {
   const ground = groundFor(asset.slug);
   const poster = asset.poster ? mediaUrl(asset.poster) : null;
+  const clip = asset.clip ? mediaUrl(asset.clip) : null;
 
   /* Facts come from the asset's own specs first, then the fields every item
      has — deduped by key, because specs already carry TYPE, SHELF and STACK
@@ -155,8 +157,22 @@ export default function ItemView({
                     background: `var(${ground})`,
                   }}
                 >
-                  {poster ? <img src={poster} alt="" decoding="async" /> : null}
-                  {poster ? null : <div className="kl-preview-pattern" aria-hidden="true" />}
+                  {/* play="auto" here, not "hover": this is one file on a page
+                      the visitor chose to open, rather than one of sixteen in a
+                      grid. Same component, different intent. */}
+                  {poster || clip ? (
+                    <PreviewMedia
+                      gradient={`var(${ground})`}
+                      poster={poster ?? undefined}
+                      clip={clip ?? undefined}
+                      alt={asset.name}
+                      play="auto"
+                      priority
+                      style={{ position: "absolute", inset: 0 }}
+                    />
+                  ) : (
+                    <div className="kl-preview-pattern" aria-hidden="true" />
+                  )}
                 </div>
                 <div className="kl-item-preview-foot">
                   <span>PREVIEW</span>
