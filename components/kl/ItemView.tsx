@@ -146,13 +146,17 @@ export default function ItemView({
                 <div
                   className="kl-preview"
                   data-preview
+                  /* asset.h is the CARD height — computed for a narrow
+                     masonry column and clamped 170–420. A hero preview in an
+                     1180px panel is a different measurement, so this derives
+                     its own from the same aspect at a larger base. */
                   style={{
-                    height: asset.h ? `${Math.max(asset.h, 300)}px` : "420px",
+                    height: `${Math.round(Math.min(560, Math.max(320, 520 / (asset.aspect || 1.4))))}px`,
                     background: `var(${ground})`,
                   }}
                 >
                   {poster ? <img src={poster} alt="" decoding="async" /> : null}
-                  <div className="kl-preview-pattern" aria-hidden="true" />
+                  {poster ? null : <div className="kl-preview-pattern" aria-hidden="true" />}
                 </div>
                 <div className="kl-item-preview-foot">
                   <span>PREVIEW</span>

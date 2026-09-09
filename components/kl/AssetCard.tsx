@@ -55,7 +55,13 @@ export default function AssetCard({ asset }: { asset: Asset }) {
                 height={asset.aspect ? Math.round(800 / asset.aspect) : undefined}
               />
             ) : null}
-            <div className="kl-preview-pattern" data-pattern={patternFor(asset.slug)} aria-hidden="true" />
+            {/* Only where there is no image. The pattern is the design's
+                answer to "no render yet" — faint line-work on a paper tint —
+                and it sits after the <img> in the DOM, so leaving it in painted
+                a dot grid over every upload. */}
+            {poster ? null : (
+              <div className="kl-preview-pattern" data-pattern={patternFor(asset.slug)} aria-hidden="true" />
+            )}
           </div>
 
           <div className="kl-card-head">
