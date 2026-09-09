@@ -227,8 +227,14 @@ node --env-file=.env.local tools/apply-migration.mjs <file.sql>
 npx vercel --prod --yes
 ```
 
-Demo accounts, if they still exist: `demo@kiln.build` / `demo.pro@kiln.build`,
-password `kiln-demo-2026`.
+Demo accounts: `demo@kiln.build` (free) and `demo.pro@kiln.build` (premium).
+Both exist, and between them they are the only two rows in Supabase auth.
+
+Their password is **not written down here any more**, and was not worth writing
+down: it sat in this file in plain text, which also means it is in this repo's
+git history and cannot be removed from it by editing the file. Treat it as
+known. Rotate both in Supabase → Authentication → Users before anyone real signs
+up, or delete them — nothing in the app depends on them existing.
 
 ## Conventions
 
