@@ -59,16 +59,22 @@ const TIERS = ["Free", "Premium"] as const;
 /**
  * What a grid can afford.
  *
- * These are not Sanity's limits — Sanity would take a far bigger file. They are
- * the point at which a card stops working: the clip is transparent until
- * playback starts, so every megabyte is time the tile spends blank. The first
- * real upload was 16 MB of 50s 4K, which `tools/optimize-clip.mjs` turned into
- * 1.8 MB without anyone being able to tell the difference in a 369px column.
+ * These are not Sanity's limits — Sanity would take a far bigger file. The
+ * ceiling is Cloudflare's: Media Transformations refuse an input over 100 MB,
+ * and every clip is served through one, so a file past that has no delivery
+ * path at all.
+ *
+ * The warning is lower on purpose. Nothing here has to be hand-optimised any
+ * more — the grid asks for `width=740` and gets a right-sized file back — but a
+ * big upload is still a big upload: slower to publish, slower to transform the
+ * first time, and permanently occupying the 10 GB R2 free tier. Small and crisp
+ * beats large and transformed. `tools/optimize-clip.mjs` still does that in one
+ * command.
  *
  * Over the warning it still publishes; over the ceiling it does not.
  */
-const CLIP_WARN_MB = 5;
-const CLIP_MAX_MB = 25;
+const CLIP_WARN_MB = 25;
+const CLIP_MAX_MB = 100;
 
 /** Size lives on the asset document, not the reference, so this has to ask. */
 const clipMb = async (value: any, ctx: any): Promise<number | null> => {
@@ -149,8 +155,10 @@ const asset = defineType({
       options: { accept: "video/*", storeOriginalFilename: true },
       description:
         "Optional. Autoplays when the card scrolls into view, muted and looping. " +
-        "Keep it a few seconds and web-sized — this loads in a grid, and Sanity is a CMS " +
-        "rather than a video host. A 5s 1280px loop is a few hundred KB; a 50s 4K one is 16 MB.",
+        "Cloudflare resizes it for the grid and cuts the still frame out of it, so no " +
+        "separate poster is needed. Upload it small and crisp anyway — a 6s 1280px loop " +
+        "is under 2 MB and transforms instantly; a 50s 4K one is 16 MB of stored bytes " +
+        "nobody ever sees. tools/optimize-clip.mjs does the conversion.",
       validation: (r) => [
         r.custom(async (value: any, ctx: any) => {
           const mb = await clipMb(value, ctx);
@@ -270,17 +278,11 @@ const asset = defineType({
       const d = doc as Record<string, unknown> | undefined;
       return d?.media || d?.clip ? true : "Add an image or a video.";
     }),
-    /* Video-only publishes, but it is worth knowing what it costs: the clip is
-       transparent until playback begins and Sanity records no dimensions for a
-       file, so the tile is blank at a default height until the bytes land. */
-    r
-      .custom((doc) => {
-        const d = doc as Record<string, unknown> | undefined;
-        return !d?.media && d?.clip
-          ? "No image: this card stays blank until the video loads, and falls back to a default height. optimize-clip.mjs writes a poster frame you can upload above."
-          : true;
-      })
-      .warning(),
+    /* There was a warning here for video with no image. It is gone: the card
+       now shows a frame cut from the clip itself, so video-only is an ordinary
+       state rather than a degraded one. An image is still worth adding when you
+       have one — Sanity records dimensions for images and not for files, so it
+       is what lets the card size itself instead of falling back to 220px. */
   ],
   preview: {
     select: { title: "name", subtitle: "type", media: "media", file: "media.asset.originalFilename" },

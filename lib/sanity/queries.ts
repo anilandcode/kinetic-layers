@@ -23,8 +23,9 @@ import type { Asset, Collection, Drop, Settings } from "@/lib/kl/types";
 /* Media, name and height all have to survive two shapes at once. Anything
    uploaded in the Studio has a `media` image asset, whose url and dimensions
    Sanity records for us; rows that predate that still carry a `poster` path
-   string resolved against NEXT_PUBLIC_MEDIA_BASE. mediaUrl() passes absolute
-   URLs through untouched, so one field serves both.
+   string. Both are handed to lib/kl/media.ts, which resolves a path against
+   NEXT_PUBLIC_MEDIA_BASE and rewrites a cdn.sanity.io URL onto the same host,
+   so one field serves both and neither is fetched from the CMS.
 
    The height is the real aspect ratio scaled into the band the masonry wants,
    which is why nobody types a number any more. Clamped, because a very tall

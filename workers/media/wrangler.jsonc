@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kinetic-layers-media",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "observability": { "enabled": true },
+
+  // The custom domain has to exist on the bucket first (R2 -> Settings ->
+  // Custom Domains). This route then sits in front of it.
+  "routes": [
+    { "pattern": "media.kineticlayers.com/*", "zone_name": "kineticlayers.com" }
+  ],
+
+  // The PUBLIC preview bucket. Never the gated one — R2_ASSETS_BUCKET holds
+  // paid source files and must not be reachable from a public hostname.
+  "r2_buckets": [
+    { "binding": "MEDIA", "bucket_name": "kinetic-layers-preview" }
+  ],
+
+  "vars": {
+    "SANITY_PROJECT_ID": "8vxxthrc",
+    "SANITY_DATASET": "production"
+  }
+}

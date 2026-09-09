@@ -3,7 +3,7 @@ import Header from "./Header";
 import Shell from "./Shell";
 import Footer from "./Footer";
 import GlassButton from "./GlassButton";
-import { mediaUrl } from "@/lib/kl/media";
+import { img, clip as clipUrl, frame, ITEM_W, CARD_W } from "@/lib/kl/media";
 import PreviewMedia from "@/components/legacy/PreviewMedia";
 import { groundFor } from "@/lib/kl/ground";
 import { EARLY_ACCESS } from "@/lib/kl/access";
@@ -77,8 +77,14 @@ export default function ItemView({
   variant?: "page" | "modal";
 }) {
   const ground = groundFor(asset.slug);
-  const poster = asset.poster ? mediaUrl(asset.poster) : null;
-  const clip = asset.clip ? mediaUrl(asset.clip) : null;
+  /* Wider than a card, so it asks for a wider file. Same fallback: a
+     video-only asset gets a frame cut from its own clip. */
+  const poster = asset.poster
+    ? img(asset.poster, ITEM_W)
+    : asset.clip
+      ? frame(asset.clip, ITEM_W)
+      : null;
+  const clip = asset.clip ? clipUrl(asset.clip, ITEM_W) : null;
 
   /* Facts come from the asset's own specs first, then the fields every item
      has — deduped by key, because specs already carry TYPE, SHELF and STACK
@@ -255,7 +261,7 @@ export default function ItemView({
               <div className="kl-item-card">
                 <span className="kl-item-related-head">{relatedHeading}</span>
                 {related.slice(0, 3).map((r, i) => {
-                  const thumb = r.poster ? mediaUrl(r.poster) : null;
+                  const thumb = r.poster ? img(r.poster, CARD_W) : r.clip ? frame(r.clip, CARD_W) : null;
                   return (
                     <Link key={r.slug} href={`/item/${r.slug}`} className="kl-related">
                       <span

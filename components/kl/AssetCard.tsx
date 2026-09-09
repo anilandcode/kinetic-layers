@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Asset } from "@/lib/kl/types";
-import { mediaUrl } from "@/lib/kl/media";
+import { img, clip as clipUrl, frame } from "@/lib/kl/media";
 import PreviewMedia from "@/components/legacy/PreviewMedia";
 import { groundFor, patternFor } from "@/lib/kl/ground";
 import { EARLY_ACCESS } from "@/lib/kl/access";
@@ -20,8 +20,12 @@ import { EARLY_ACCESS } from "@/lib/kl/access";
 
 export default function AssetCard({ asset }: { asset: Asset }) {
   const ground = groundFor(asset.slug);
-  const poster = asset.poster ? mediaUrl(asset.poster) : null;
-  const clip = asset.clip ? mediaUrl(asset.clip) : null;
+  /* A video with no image is no longer a blank tile: Cloudflare cuts the
+     poster out of the clip itself. Sanity records no dimensions for a file, so
+     an uploaded image is still what sizes the card — this only fixes what it
+     shows, not how tall it is. */
+  const poster = asset.poster ? img(asset.poster) : asset.clip ? frame(asset.clip) : null;
+  const clip = asset.clip ? clipUrl(asset.clip) : null;
 
   return (
     <div className="kl-grid-item" data-grid-item>
