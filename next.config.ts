@@ -54,6 +54,22 @@ const nextConfig: NextConfig = {
   // The demand test ships no raster assets at all — every visual is inline
   // SVG or CSS — so the image optimizer has nothing to do.
   images: { unoptimized: true },
+  /**
+   * /studio is a redirect, not a page.
+   *
+   * Mounting the Studio here pulled ~800 MB of Sanity into the build and
+   * clashed with React 19 over useEffectEvent, so it is hosted by Sanity
+   * instead. This keeps the address people actually try — kineticlayers.com/studio
+   * — pointing at it, for no bundle cost. `permanent: false` because where it
+   * is hosted is a deployment choice, and a 308 would be cached by browsers
+   * long after we changed our minds.
+   */
+  async redirects() {
+    return [
+      { source: "/studio", destination: "https://kineticlayers.sanity.studio", permanent: false },
+      { source: "/studio/:path*", destination: "https://kineticlayers.sanity.studio/:path*", permanent: false },
+    ];
+  },
   async headers() {
     return [
       {
@@ -77,10 +93,11 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        /* Everything except the Studio, which loads its own bundles and needs
-           eval — the editor is behind a Sanity login and is not a public
-           surface, so it keeps the headers above and skips this one. */
-        source: "/((?!studio).*)",
+        /* Every path. This used to exclude /studio, which needed eval for its
+           own bundles — but the Studio has not been mounted here since it was
+           pulled out of the build, so the exclusion was leaving anything under
+           that prefix with no CSP at all, protecting nothing. */
+        source: "/:path*",
         headers: [{ key: "Content-Security-Policy", value: csp }],
       },
     ];
