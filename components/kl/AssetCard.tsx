@@ -82,7 +82,9 @@ export default function AssetCard({ asset }: { asset: Asset }) {
 
           <div className="kl-tags">
             <span className="kl-tag">{asset.type}</span>
-            <span className="kl-tag">{asset.stack}</span>
+            {/* One tag, not the whole list: a card is a glance, and five
+                chips under a thumbnail is a paragraph. */}
+            {asset.tags?.[0] ? <span className="kl-tag">{asset.tags[0]}</span> : null}
             {/* The design has no early-access state, so this chip is ours. It
                 sits in the tag row rather than beside PREMIUM because the head
                 row is a three-item flex with no wrap — a third chip there

@@ -24,7 +24,7 @@ export default async function ItemModalPage({ params }: { params: Promise<{ slug
   const locked = !EARLY_ACCESS && !canDownload(viewer, asset);
 
   return (
-    <ItemModal shelf={asset.shelf} name={asset.name}>
+    <ItemModal shelf={asset.tags?.[0] ?? asset.type} name={asset.name}>
       <ItemView
         asset={asset}
         related={related.assets}

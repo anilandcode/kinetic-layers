@@ -2,15 +2,24 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
-import { SHELVES, type Shelf } from "@/lib/kl/types";
 
-/** Shelf filter for the collections index. State lives in the URL, as it does in the library. */
+/**
+ * Tag filter for the collections index. State lives in the URL, as it does in
+ * the library.
+ *
+ * It filtered by `shelf` — one of three fixed values — until shelf became a tag
+ * like any other. The options are derived from the collections actually on the
+ * page rather than a constant, so a chip can never offer a filter that returns
+ * nothing.
+ */
 export default function CollectionFilter({
   active,
+  options,
   shown,
   total,
 }: {
-  active: "All" | Shelf;
+  active?: string;
+  options: string[];
   shown: number;
   total: number;
 }) {
@@ -18,10 +27,10 @@ export default function CollectionFilter({
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
 
-  function pick(s: "All" | Shelf) {
+  function pick(t?: string) {
     const next = new URLSearchParams(params.toString());
-    if (s === "All") next.delete("shelf");
-    else next.set("shelf", s);
+    if (!t) next.delete("tag");
+    else next.set("tag", t);
     const qs = next.toString();
     startTransition(() => router.replace(qs ? `?${qs}` : "?", { scroll: false }));
   }
@@ -29,23 +38,37 @@ export default function CollectionFilter({
   return (
     <div
       data-morph
-      data-bg="rgba(15,15,13,0.94)"
-      data-bg-compact="rgba(13,13,11,0.97)"
       style={{
         position: "sticky",
         top: 66,
         zIndex: 15,
-        background: "rgba(15,15,13,0.94)",
+        /* Was a hardcoded near-black. The ground is warm now, and a bar that
+           ignores the theme is a dark stripe across a light page. */
+        background: "var(--veil)",
         backdropFilter: "blur(12px)",
         borderTop: "1px solid var(--line)",
         borderBottom: "1px solid var(--line)",
       }}
     >
       <div className="kl-pad" style={{ paddingBlock: 14, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <div role="group" aria-label="Shelf" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {SHELVES.map((s) => (
-            <button key={s} type="button" className="pill pill--muted" aria-pressed={active === s} onClick={() => pick(s)}>
-              {s}
+        <div role="group" aria-label="Tag" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button
+            type="button"
+            className="kl-tag"
+            aria-pressed={!active}
+            onClick={() => pick(undefined)}
+          >
+            All
+          </button>
+          {options.map((t) => (
+            <button
+              key={t}
+              type="button"
+              className={`kl-tag${active === t ? " kl-tag--free" : ""}`}
+              aria-pressed={active === t}
+              onClick={() => pick(active === t ? undefined : t)}
+            >
+              {t}
             </button>
           ))}
         </div>

@@ -24,7 +24,7 @@ import type { Asset, Viewer } from "@/lib/kl/types";
  * tested. Restoring it means putting CardCopy back on AssetCard, or a prompt
  * panel back here.
  *
- * components/legacy/ItemView.tsx is left in place and still holds all of that,
+ * the pre-redesign item view held all of that; it was deleted with the old
  * so none of it has to be rewritten to come back.
  */
 
@@ -62,7 +62,7 @@ export default function ItemView({
 }: {
   asset: Asset;
   related: Asset[];
-  relatedReason?: "drop" | "shelf" | "newest";
+  relatedReason?: "drop" | "tag" | "newest";
   viewer: Viewer | null;
   /** Whether the files are behind the paywall for this viewer. */
   locked: boolean;
@@ -84,13 +84,11 @@ export default function ItemView({
      Authored specs win: they say "84 MB total" where the field says nothing. */
   const facts = (() => {
     const seen = new Map<string, string>();
-    for (const s of asset.specs ?? []) seen.set(s.k.toUpperCase(), s.v);
     const fallbacks: Array<[string, string | undefined]> = [
       ["TYPE", asset.type],
-      ["STACK", asset.stack],
-      ["SHELF", asset.shelf],
-      ["MOOD", asset.mood],
-      ["BUILT FOR", asset.category],
+      /* Was five named columns. One tag list reads better here anyway — the
+         table was mostly repeating the same word under different headings. */
+      ["TAGS", asset.tags?.length ? asset.tags.join(", ") : undefined],
     ];
     for (const [k, v] of fallbacks) if (v && !seen.has(k)) seen.set(k, v);
     return [...seen].map(([k, v]) => ({ k, v }));
@@ -99,8 +97,8 @@ export default function ItemView({
   const relatedHeading =
     relatedReason === "drop"
       ? "FROM THE SAME DROP"
-      : relatedReason === "shelf"
-        ? "FROM THE SAME SHELF"
+      : relatedReason === "tag"
+        ? "RELATED"
         : "NEWEST IN THE LIBRARY";
 
   const cta = locked
@@ -129,7 +127,7 @@ export default function ItemView({
           overlay rather than navigate to the library. */}
       {isModal ? null : (
         <div className="kl-crumbs">
-          <span>{asset.shelf.toUpperCase()}</span>
+          <span>{(asset.tags?.[0] ?? asset.type).toUpperCase()}</span>
           <span>/</span>
           <span style={{ color: "var(--ink)" }}>{asset.name.toUpperCase()}</span>
           <span className="kl-spacer" />
@@ -160,7 +158,7 @@ export default function ItemView({
                   <span>PREVIEW</span>
                   <span className="kl-spacer" />
                   <span>{asset.type.toUpperCase()}</span>
-                  <span>{asset.stack}</span>
+                  <span>{asset.tags?.[0] ?? ""}</span>
                 </div>
               </div>
             </div>

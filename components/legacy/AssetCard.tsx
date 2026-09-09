@@ -38,14 +38,14 @@ export default function AssetCard({
           height: h,
           borderRadius: "12px",
           overflow: "hidden",
-          background: asset.g,
+          background: "var(--t3)",
           position: "relative",
         }}
       >
         {canCopy && asset.promptLength ? <CardCopy slug={asset.slug} name={asset.name} /> : null}
         <div data-preview-inner style={{ width: "100%", height: "100%" }}>
           <PreviewMedia
-            gradient={asset.g}
+            gradient="var(--t3)"
             poster={asset.poster}
             clip={asset.clip}
             alt=""
@@ -65,7 +65,7 @@ export default function AssetCard({
 
       <div data-meta style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "11px 4px 2px" }}>
         <span className="kl-tag">{asset.type.toLowerCase()}</span>
-        <span className="kl-tag">{asset.stack.toLowerCase()}</span>
+        {asset.tags?.[0] ? <span className="kl-tag">{asset.tags[0].toLowerCase()}</span> : null}
       </div>
     </Link>
   );

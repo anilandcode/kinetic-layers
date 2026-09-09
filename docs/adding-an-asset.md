@@ -33,43 +33,25 @@ my-asset/
 ```json
 {
   "name": "Volumetric Drift",
-  "type": "3d scene",
-  "stack": "three.js",
-  "shelf": "Motion",
-  "mood": "Technical",
-  "category": "Hero",
-  "theme": "Dark",
-  "free": true,
+  "type": "3D Scene",
+  "tier": "Premium",
+  "tags": ["Motion", "Luxe", "Hero", "Dark", "Three.js"],
   "tagline": "One sentence on what it is and what it was built for.",
-  "promptBody": "The full prompt text. Gated — only the first lines are ever sent to an unentitled visitor.",
-  "files": [{ "name": "scene.js", "tag": "Code", "meta": "MODULE · 42 KB" }],
-  "shots": [{ "label": "Hero — default palette" }],
-  "specs": [{ "k": "Type", "v": "3D scene" }],
-  "body": ["A paragraph.", "Another paragraph."]
+  "prompt": "The full prompt. Gated — only the first lines reach an unentitled visitor.",
+  "notes": "Markdown. Paste design.md straight in.",
+  "files": [{ "name": "scene.js", "tag": "Code", "meta": "MODULE · 42 KB" }]
 }
 ```
 
-Required: `name`, `type`, `stack`, `shelf`, `mood`, `category`, `theme`,
-`tagline`, `free`. The script refuses rather than guessing — a half-imported
-asset that renders but cannot be downloaded is worse than one that never
-appeared.
+Required: `name`, `type`, `tagline`. That is the whole list — it used to be
+eight fields, five of which were taxonomies nobody filtered by.
 
-Values that must match exactly:
-
-| Field      | Allowed |
-|------------|---------|
-| `shelf`    | Build, Motion, Craft |
-| `mood`     | Luxe, Technical, Editorial, Organic, Brutalist, Playful |
-| `theme`    | Dark, Light |
-| `category` | Hero, Landing page, Portfolio, SaaS, Agency, Ecommerce, Dashboard, Editorial, Background, Texture, Workflow |
-| `files[].tag` | Code, Source, Assets, Config, Prompts |
-
-`type` is free text and becomes a tab in the library — reuse an existing one
-(Template, 3D Scene, Prompt, Background, Image Pack, LoRA, Video, MCP / Agent)
-unless you mean a genuinely new kind of thing.
-
-`free: true` puts it in the free tier. While `NEXT_PUBLIC_EARLY_ACCESS=1` every
-asset is free to any account regardless, so this only matters once you charge.
+| Field | Notes |
+|---|---|
+| `type` | The tab on /library. Template, 3D Scene, Prompt, Background, Image Pack, LoRA, Video, MCP / Agent. |
+| `tier` | `Free` or `Premium`. **Defaults to Premium** — forgetting it should never give an asset away. |
+| `tags` | Free-form array. The Studio offers a picker; the script does not police it, because a closed list here is how the five dropdowns happened. |
+| `files[].tag` | Code, Source, Assets, Config, Prompts. |
 
 `meta` and `bytes` are read from the real files when you leave them out, so the
 size a visitor is shown is the size they get.

@@ -85,7 +85,7 @@ async function runTool(
   if (name === "list_categories") {
     const assets = await getAssets();
     const tally: Record<string, number> = {};
-    for (const a of assets) if (a.category) tally[a.category] = (tally[a.category] ?? 0) + 1;
+    for (const a of assets) for (const t of a.tags ?? []) tally[t] = (tally[t] ?? 0) + 1;
     const lines = Object.entries(tally)
       .sort(([, x], [, y]) => y - x)
       .map(([c, n]) => `${c} (${n})`);
@@ -101,14 +101,17 @@ async function runTool(
        rather than returning nothing — an agent filtering by category alone is
        a perfectly reasonable request. */
     let hits = query.trim() ? await searchAssets(query, 40) : await getAssets();
-    if (category) hits = hits.filter((a) => a.category?.toLowerCase() === category.toLowerCase());
+    if (category)
+      hits = hits.filter((a) =>
+        a.tags?.some((t) => t.toLowerCase() === category.toLowerCase())
+      );
     if (freeOnly) hits = hits.filter((a) => a.free);
 
     if (hits.length === 0) return { text: "Nothing matched." };
 
     const lines = hits.slice(0, 25).map((a) => {
       const access = a.free ? "free" : "Premium only";
-      const bits = [a.type, a.category, a.theme].filter(Boolean).join(" · ");
+      const bits = [a.type, ...(a.tags ?? []).slice(0, 2)].filter(Boolean).join(" · ");
       return `${a.name}\n  slug: ${a.slug}\n  ${bits} — ${access}\n  ${SITE_URL}/item/${a.slug}`;
     });
     return {

@@ -66,8 +66,8 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
         <div style={{ display: "flex", gap: 30, fontSize: 21, color: "#6B6E75", letterSpacing: 3 }}>
           {asset?.type ? <div>{asset.type}</div> : null}
-          {asset?.stack ? <div>{asset.stack}</div> : null}
-          {asset?.category ? <div>{asset.category.toUpperCase()}</div> : null}
+          {asset?.tags?.[0] ? <div>{asset.tags[0]}</div> : null}
+          {asset?.tags?.[1] ? <div>{asset.tags[1].toUpperCase()}</div> : null}
         </div>
       </div>
     ),

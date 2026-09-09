@@ -56,7 +56,7 @@ function shelfRows(all: Asset[]) {
     const row = byType.get(a.type) ?? { items: 0, free: 0, stacks: new Set<string>() };
     row.items += 1;
     if (a.free) row.free += 1;
-    if (a.stack) row.stacks.add(a.stack);
+    for (const t of a.tags ?? []) row.stacks.add(t);
     byType.set(a.type, row);
   }
   return [...byType.entries()]

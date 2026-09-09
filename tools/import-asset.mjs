@@ -52,14 +52,16 @@ if (!TOKEN && !dryRun)
    outside the app's TypeScript, and a wrong value here should fail before it
    reaches the dataset, not after. */
 const ENUMS = {
-  shelf: ["Build", "Motion", "Craft"],
-  mood: ["Luxe", "Technical", "Editorial", "Organic", "Brutalist", "Playful"],
-  theme: ["Dark", "Light"],
-  category: ["Hero", "Landing page", "Portfolio", "SaaS", "Agency", "Ecommerce",
-             "Dashboard", "Editorial", "Background", "Texture", "Workflow"],
+  tier: ["Free", "Premium"],
+  /* files[].tag, not the asset's tags — a different field with the same word. */
   tag: ["Code", "Source", "Assets", "Config", "Prompts"],
 };
-const REQUIRED = ["name", "type", "stack", "shelf", "mood", "category", "theme", "tagline"];
+
+/* `tags` is deliberately unvalidated. The vocabulary is editorial and the
+   Studio offers a picker; a closed list here would mean editing this script
+   every time someone coins a tag, which is how the five dropdowns this replaced
+   got there in the first place. */
+const REQUIRED = ["name", "type", "tagline"];
 
 const meta = JSON.parse(readFileSync(path.join(dir, "asset.json"), "utf8"));
 const slug = meta.slug ?? slugify(meta.name ?? "");
@@ -67,12 +69,9 @@ if (!slug) die("asset.json needs a `name` (or an explicit `slug`).");
 
 const problems = [];
 for (const k of REQUIRED) if (!meta[k]) problems.push(`missing "${k}"`);
-for (const [k, allowed] of Object.entries(ENUMS)) {
-  if (k === "tag") continue;
-  if (meta[k] && !allowed.includes(meta[k]))
-    problems.push(`"${k}" is "${meta[k]}" — must be one of: ${allowed.join(", ")}`);
-}
-if (typeof meta.free !== "boolean") problems.push('missing "free" (true = in the free tier)');
+if (meta.tier && !ENUMS.tier.includes(meta.tier))
+  problems.push(`"tier" is "${meta.tier}" — must be one of: ${ENUMS.tier.join(", ")}`);
+if (meta.tags && !Array.isArray(meta.tags)) problems.push('"tags" must be an array of strings');
 if (problems.length) die("asset.json:\n  - " + problems.join("\n  - "));
 
 /* ---- files -------------------------------------------------------------- */
@@ -110,35 +109,27 @@ const doc = {
   name: meta.name,
   slug: { _type: "slug", current: slug },
   type: String(meta.type).toUpperCase(),
-  stack: meta.stack,
-  shelf: meta.shelf,
-  mood: meta.mood,
-  category: meta.category,
-  theme: meta.theme,
-  free: meta.free,
+  tags: meta.tags ?? [],
+  /* Defaults to Premium: forgetting the field should keep an asset behind the
+     paywall, never hand it out. */
+  tier: meta.tier ?? (meta.free === true ? "Free" : "Premium"),
   tagline: meta.tagline,
-  previewHeight: meta.previewHeight ?? 320,
-  gradient: meta.gradient ?? "linear-gradient(155deg,#1D2410,#0F0F0D 62%)",
   poster: `${slug}/card.webp`,
   clip: `${slug}/card.mp4`,
   aspect: meta.aspect ?? 1.6,
-  shots: (meta.shots ?? []).map((s, i) => ({
-    _key: `shot-${i}`, _type: "shot", label: s.label,
-    gradient: s.gradient ?? "linear-gradient(150deg,#1D2410,#0F0F0D 64%)",
-    poster: `${slug}/shot-${i + 1}.webp`, clip: `${slug}/shot-${i + 1}.mp4`,
-  })),
-  specs: (meta.specs ?? []).map((s, i) => ({ _key: `s${i}`, _type: "specRow", k: s.k, v: s.v })),
   files: files.map(({ _local, ...f }) => f),
-  ...(meta.promptBody ? { promptBody: meta.promptBody } : {}),
-  ...(meta.body ? { body: blocks(meta.body) } : {}),
+  ...(meta.prompt || meta.promptBody ? { prompt: meta.prompt ?? meta.promptBody } : {}),
+  /* `notes` is plain markdown now, so design.md can be pasted or piped in
+     without being parsed into blocks first. */
+  ...(meta.notes ? { notes: meta.notes } : {}),
   publishedAt: meta.publishedAt ?? new Date().toISOString(),
 };
 
 console.log(`\n${meta.name}  (${slug})`);
-console.log(`  type ${doc.type} · ${doc.category} · ${doc.theme} · ${doc.free ? "free" : "paid"}`);
+console.log(`  ${doc.type} · ${doc.tier}${doc.tags.length ? " · " + doc.tags.join(", ") : ""}`);
 console.log(`  ${files.length} file(s), ${human(files.reduce((n, f) => n + f.bytes, 0))} total`);
-console.log(`  prompt: ${meta.promptBody ? `${meta.promptBody.length} chars` : "none"}`);
-console.log(`  shots : ${doc.shots.length}`);
+console.log(`  prompt: ${doc.prompt ? `${doc.prompt.length} chars` : "none"}`);
+console.log(`  notes : ${doc.notes ? `${doc.notes.length} chars` : "none"}`);
 
 if (dryRun) {
   console.log("\n--dry-run: nothing written.\n");
@@ -190,9 +181,3 @@ function human(b) {
   return `${Math.max(1, Math.round(b / 1024))} KB`;
 }
 /* Portable Text from plain paragraphs, so asset.json stays writable by hand. */
-function blocks(paragraphs) {
-  return (Array.isArray(paragraphs) ? paragraphs : [paragraphs]).map((text, i) => ({
-    _key: `b${i}`, _type: "block", style: "normal",
-    children: [{ _key: `b${i}s`, _type: "span", text }],
-  }));
-}

@@ -20,26 +20,53 @@ import type { Asset, Collection, Drop, Settings } from "@/lib/kl/types";
  * server-side and what ships is a number. (Comments live out here because GROQ
  * has no block-comment syntax; one inside the template is a parse error.)
  */
+/* Media, name and height all have to survive two shapes at once. Anything
+   uploaded in the Studio has a `media` image asset, whose url and dimensions
+   Sanity records for us; rows that predate that still carry a `poster` path
+   string resolved against NEXT_PUBLIC_MEDIA_BASE. mediaUrl() passes absolute
+   URLs through untouched, so one field serves both.
+
+   The height is the real aspect ratio scaled into the band the masonry wants,
+   which is why nobody types a number any more. Clamped, because a very tall
+   image should not own the column.
+
+   The name falls back to the uploaded filename with its extension stripped,
+   so an asset published with the name left empty still reads as something.
+
+   `free` uses select() rather than coalesce() on purpose. GROQ evaluates
+   `null == "Free"` to false rather than null, so a coalesce would stop at the
+   first branch and never reach the legacy boolean — quietly paywalling every
+   free asset that predates `tier`. Caught by a query returning free:false for
+   an asset that is free. */
+const MEDIA = groq`
+  "poster": coalesce(media.asset->url, poster),
+  "clip": coalesce(clip.asset->url, clip),
+  "aspect": coalesce(media.asset->metadata.dimensions.aspectRatio, aspect),
+  "h": coalesce(
+    round(math::min([420, math::max([170, 300 / coalesce(media.asset->metadata.dimensions.aspectRatio, 1.4)])])),
+    previewHeight,
+    220
+  ),
+  "name": coalesce(name, string::split(media.asset->originalFilename, ".")[0], "Untitled"),
+  "tags": coalesce(tags, []),
+  "free": select(defined(tier) => tier == "Free", coalesce(free, false))
+`;
+
 const ASSET_CARD = groq`{
   "slug": slug.current,
-  name, type, stack, shelf, mood, category, theme, free, tagline,
-  "h": coalesce(previewHeight, 220),
-  "g": coalesce(gradient, "linear-gradient(155deg,#1D2410,#0F0F0D 65%)"),
-  poster, clip, aspect,
-  "promptLength": length(coalesce(promptBody, ""))
+  type, tagline,
+  ${MEDIA},
+  "promptLength": length(coalesce(prompt, promptBody, ""))
 }`;
 
 const ASSET_FULL = groq`{
   "slug": slug.current,
-  name, type, stack, shelf, mood, category, theme, free, tagline, body,
-  "h": coalesce(previewHeight, 220),
-  "g": coalesce(gradient, "linear-gradient(155deg,#1D2410,#0F0F0D 65%)"),
-  poster, clip, aspect,
-  "shots": coalesce(shots[]{ label, gradient, poster, clip }, []),
-  "specs": coalesce(specs[]{ k, v }, []),
+  type, tagline,
+  "notes": coalesce(notes, ""),
+  ${MEDIA},
   "files": coalesce(files[]{ name, meta, tag, bytes }, []),
-  "promptLength": length(coalesce(promptBody, "")),
-  "promptPreview": array::join(string::split(coalesce(promptBody, ""), "\\n")[0..1], "\\n"),
+  "promptLength": length(coalesce(prompt, promptBody, "")),
+  "promptPreview": array::join(string::split(coalesce(prompt, promptBody, ""), "\\n")[0..1], "\\n"),
   "drop": drop->{ title, "slug": slug.current, meta, tag }
 }`;
 
@@ -81,7 +108,7 @@ export async function getAssetSlugs(): Promise<string[]> {
   return ask<string[]>([], groq`*[_type == "asset" && defined(slug.current)].slug.current`, {}, opts(["asset"]));
 }
 
-export type Related = { assets: Asset[]; reason: "drop" | "shelf" | "newest" };
+export type Related = { assets: Asset[]; reason: "drop" | "tag" | "newest" };
 
 /**
  * Genuinely related assets.
@@ -91,18 +118,18 @@ export type Related = { assets: Asset[]; reason: "drop" | "shelf" | "newest" };
  * while the item page headed them "From the same drop". The query was fine; the
  * claim was false.
  *
- * Now it prefers the same drop, falls back to the same shelf, and only then to
+ * Now it prefers the same drop, falls back to sharing a tag, and only then to
  * newest — and reports WHICH, so the heading can say what is actually true
  * rather than asserting a relationship that may not exist. One round trip:
  * all three candidate sets come back together and the choice happens here.
  */
 export async function getRelated(slug: string, limit = 4): Promise<Related> {
-  const r = await ask<{ drop: Asset[]; shelf: Asset[]; newest: Asset[] } | null>(
+  const r = await ask<{ drop: Asset[]; tag: Asset[]; newest: Asset[] } | null>(
     null,
     groq`*[_type == "asset" && slug.current == $slug][0] {
       "drop": *[_type == "asset" && slug.current != $slug && drop._ref == ^.drop._ref]
         | order(publishedAt desc) [0...$limit] ${ASSET_CARD},
-      "shelf": *[_type == "asset" && slug.current != $slug && shelf == ^.shelf]
+      "tag": *[_type == "asset" && slug.current != $slug && count(tags[@ in ^.^.tags]) > 0]
         | order(publishedAt desc) [0...$limit] ${ASSET_CARD},
       "newest": *[_type == "asset" && slug.current != $slug]
         | order(publishedAt desc) [0...$limit] ${ASSET_CARD}
@@ -112,24 +139,36 @@ export async function getRelated(slug: string, limit = 4): Promise<Related> {
   );
   if (!r) return { assets: [], reason: "newest" };
 
-  /* A single sibling is a thin claim to make a heading out of, so a drop or
-     shelf has to offer at least two before it earns the label. */
+  /* A single sibling is a thin claim to make a heading out of, so a drop or a
+     shared tag has to offer at least two before it earns the label. */
   if (r.drop?.length >= 2) return { assets: r.drop, reason: "drop" };
-  if (r.shelf?.length >= 2) return { assets: r.shelf, reason: "shelf" };
+  if (r.tag?.length >= 2) return { assets: r.tag, reason: "tag" };
   return { assets: r.newest ?? [], reason: "newest" };
 }
+
+/* A collection borrows its cover from an asset it already contains — the one
+   named in `cover`, else the first in the list. Uploading a second copy of an
+   image that is already in the catalogue is a copy to keep in step, which is
+   why there is no upload field on a collection at all. */
+const COLLECTION_COVER = groq`
+  "poster": coalesce(cover->media.asset->url, assets[0]->media.asset->url, cover->poster, assets[0]->poster),
+  "clip": coalesce(cover->clip.asset->url, assets[0]->clip.asset->url),
+  "aspect": coalesce(cover->media.asset->metadata.dimensions.aspectRatio, assets[0]->media.asset->metadata.dimensions.aspectRatio),
+  "h": coalesce(
+    round(math::min([420, math::max([170, 300 / coalesce(cover->media.asset->metadata.dimensions.aspectRatio, assets[0]->media.asset->metadata.dimensions.aspectRatio, 1.4)])])),
+    230
+  )
+`;
 
 export async function getCollections(): Promise<Collection[]> {
   return ask<Collection[]>(
     [],
     groq`*[_type == "collection"] | order(name asc) {
-      "slug": slug.current, name, blurb, shelf,
+      "slug": slug.current, name, blurb,
       "tags": coalesce(tags, []),
-      "h": coalesce(previewHeight, 230),
-      "g": coalesce(gradient, "linear-gradient(150deg,#242014,#0F0F0D 62%)"),
-      poster, clip, aspect,
+      ${COLLECTION_COVER},
       "items": count(assets),
-      "free": count(assets[]->[free == true])
+      "free": count(assets[]->[select(defined(tier) => tier == "Free", coalesce(free, false)) == true])
     }`,
     {},
     opts(["collection"])
@@ -140,13 +179,11 @@ export async function getCollection(slug: string): Promise<(Collection & { asset
   return ask<(Collection & { assets: Asset[] }) | null>(
     null,
     groq`*[_type == "collection" && slug.current == $slug][0] {
-      "slug": slug.current, name, blurb, shelf,
+      "slug": slug.current, name, blurb,
       "tags": coalesce(tags, []),
-      "h": coalesce(previewHeight, 230),
-      "g": coalesce(gradient, "linear-gradient(150deg,#242014,#0F0F0D 62%)"),
-      poster, clip, aspect,
+      ${COLLECTION_COVER},
       "items": count(assets),
-      "free": count(assets[]->[free == true]),
+      "free": count(assets[]->[select(defined(tier) => tier == "Free", coalesce(free, false)) == true]),
       "assets": coalesce(assets[]-> ${ASSET_CARD}, [])
     }`,
     { slug },

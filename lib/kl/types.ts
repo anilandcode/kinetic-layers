@@ -6,18 +6,11 @@
  * be rewritten when the data moved to Sanity.
  */
 
-export type Shelf = "Build" | "Motion" | "Craft";
-export type Theme = "Dark" | "Light";
-/** What the asset is FOR — the question a visitor arrives with. */
-export type Category =
-  | "Hero" | "Landing page" | "Portfolio" | "SaaS" | "Agency"
-  | "Ecommerce" | "Dashboard" | "Editorial" | "Background" | "Texture" | "Workflow";
-export type Mood = "Luxe" | "Technical" | "Editorial" | "Organic" | "Brutalist" | "Playful";
+/* Shelf, Mood, Category and Theme used to be four closed unions and four
+   required fields. They are values in `tags` now — see sanity/schemas/index.ts.
+   Nothing types a tag, deliberately: the vocabulary is editorial, and a union
+   here would mean a deploy every time someone coins one. */
 
-export const SHELVES: Array<"All" | Shelf> = ["All", "Build", "Motion", "Craft"];
-export const MOODS: Mood[] = ["Luxe", "Technical", "Editorial", "Organic", "Brutalist", "Playful"];
-
-export type Shot = { label: string; gradient?: string; poster?: string; clip?: string };
 export type SpecRow = { k: string; v: string };
 export type FileEntry = { name: string; meta?: string; tag?: string; bytes?: number };
 
@@ -25,26 +18,32 @@ export type Asset = {
   slug: string;
   name: string;
   type: string;
-  stack: string;
-  shelf: Shelf;
-  mood: Mood;
-  category?: Category;
-  theme?: Theme;
+  /**
+   * One list where there used to be five fields. `shelf`, `mood`, `category`,
+   * `theme` and `stack` are all in here now — the library filters on membership
+   * rather than on equality against a named column.
+   */
+  tags: string[];
   free: boolean;
   tagline?: string;
-  /** Masonry height in px — the grid is deliberately ragged. */
+  /**
+   * Masonry height in px. Derived from the uploaded image's real dimensions
+   * where there is one, so nobody types a number that the picture then
+   * disagrees with. Falls back to a default for video-only and legacy rows.
+   */
   h: number;
-  /** Preview fill. Paints instantly, and is the fallback when there is no render. */
-  g: string;
-  /** Still frame, path relative to NEXT_PUBLIC_MEDIA_BASE. */
+  /**
+   * Still frame. Either an absolute Sanity CDN URL for anything uploaded in the
+   * Studio, or a path relative to NEXT_PUBLIC_MEDIA_BASE for rows that predate
+   * that — mediaUrl() passes absolute URLs straight through, so both work.
+   */
   poster?: string;
   /** Looping clip, attached on intent rather than on load. */
   clip?: string;
   /** width/height of the media, so the card reserves the right box. */
   aspect?: number;
-  body?: unknown;
-  shots?: Shot[];
-  specs?: SpecRow[];
+  /** Markdown. The old block-array `body`, and where design.md gets pasted. */
+  notes?: string;
   files?: FileEntry[];
   /** Length of the full prompt. Sent to everyone; the text itself is not. */
   promptLength?: number;
@@ -57,10 +56,8 @@ export type Collection = {
   slug: string;
   name: string;
   blurb?: string;
-  shelf: Shelf;
   tags: string[];
   h: number;
-  g: string;
   poster?: string;
   clip?: string;
   aspect?: number;

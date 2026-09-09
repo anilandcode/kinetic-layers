@@ -5,7 +5,6 @@ import PageShell from "@/components/kl/PageShell";
 import CollectionFilter from "@/components/legacy/CollectionFilter";
 import { getCollections, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
-import type { Shelf } from "@/lib/kl/types";
 import PreviewMedia from "@/components/legacy/PreviewMedia";
 import { EARLY_ACCESS } from "@/lib/kl/access";
 
@@ -18,11 +17,11 @@ export const metadata: Metadata = {
 export default async function Collections({
   searchParams,
 }: {
-  searchParams: Promise<{ shelf?: string }>;
+  searchParams: Promise<{ tag?: string }>;
 }) {
-  const { shelf } = await searchParams;
+  const { tag } = await searchParams;
   const [all, settings, viewer] = await Promise.all([getCollections(), getSettings(), getViewer()]);
-  const list = shelf ? all.filter((c) => c.shelf === (shelf as Shelf)) : all;
+  const list = tag ? all.filter((c) => c.tags?.includes(tag)) : all;
 
   return (
     <PageShell>
@@ -49,7 +48,14 @@ export default async function Collections({
           </div>
         </section>
 
-        <CollectionFilter active={(shelf as Shelf) ?? "All"} shown={list.length} total={all.length} />
+        {/* Options come from the collections on the page, so a chip cannot
+            offer a filter that returns nothing. */}
+        <CollectionFilter
+          active={tag}
+          options={[...new Set(all.flatMap((c) => c.tags ?? []))].sort()}
+          shown={list.length}
+          total={all.length}
+        />
 
         {/* The same masonry the library uses. This was a bespoke inline grid
             with its own column width and its own card proportions, which is why
@@ -68,12 +74,12 @@ export default async function Collections({
                   height: c.h,
                   borderRadius: "12px",
                   overflow: "hidden",
-                  background: c.g,
+                  background: "var(--t3)",
                   position: "relative",
                 }}
               >
                 <div data-preview-inner style={{ width: "100%", height: "100%" }}>
-                  <PreviewMedia gradient={c.g} poster={c.poster} clip={c.clip} alt="" style={{ width: "100%", height: "100%" }} />
+                  <PreviewMedia gradient="var(--t3)" poster={c.poster} clip={c.clip} alt="" style={{ width: "100%", height: "100%" }} />
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "16px 4px 0" }}>

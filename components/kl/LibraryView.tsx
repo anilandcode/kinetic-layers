@@ -19,13 +19,13 @@ import {
   type Filters,
 } from "@/lib/kl/facets";
 import { EARLY_ACCESS } from "@/lib/kl/access";
-import type { Asset, Category, Theme } from "@/lib/kl/types";
+import type { Asset } from "@/lib/kl/types";
 
 /**
  * The library, in the Kinetic Layers treatment.
  *
  * The design's own library screen filters by shelf and mood. This one keeps
- * the axes the app actually slices on — type, category and theme — because
+ * the axes the app actually slices on — type and tags — because
  * those are the ones with faceted counts behind them, and a chip that cannot
  * tell you what it would return is the thing facets.ts was written to fix.
  * The rail is the design's; the vocabulary is the product's.
@@ -58,8 +58,8 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
 
   const filters: Filters = {
     type: one(params.type) || undefined,
-    category: (one(params.category) as Category) || undefined,
-    theme: (one(params.theme) as Theme) || undefined,
+    /* Repeated ?tag= params, so two tags narrow rather than replace. */
+    tags: params.tag ? (Array.isArray(params.tag) ? params.tag : [params.tag]) : undefined,
     saved: one(params.saved) === "1" || undefined,
   };
   const sort = asSort(one(params.sort));
@@ -74,17 +74,21 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
 
   /* A pill toggles its own value off when it is already on, so the rail never
      becomes a trap you can only escape via Clear. */
-  const href = (patch: Partial<Record<string, string | undefined>>) => {
+  const href = (patch: Partial<Record<string, string | string[] | undefined>>) => {
     const q = new URLSearchParams();
-    const merged: Record<string, string | undefined> = {
+    const merged: Record<string, string | string[] | undefined> = {
       type: filters.type,
-      category: filters.category,
-      theme: filters.theme,
+      tag: filters.tags,
       saved: filters.saved ? "1" : undefined,
       sort: sort === "newest" ? undefined : sort,
       ...patch,
     };
-    for (const [k, v] of Object.entries(merged)) if (v) q.set(k, v);
+    /* append, not set: `tags` is a list, and a second ?tag= has to survive
+       rather than overwrite the first. */
+    for (const [k, v] of Object.entries(merged)) {
+      if (Array.isArray(v)) v.forEach((x) => x && q.append(k, x));
+      else if (v) q.set(k, v);
+    }
     const qs = q.toString();
     return qs ? `/library?${qs}` : "/library";
   };
@@ -107,11 +111,14 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
   );
 
   const types = Object.entries(facets.type).sort((a, b) => b[1] - a[1]);
-  const categories = Object.entries(facets.category).sort((a, b) => b[1] - a[1]);
-  const themes = Object.entries(facets.theme);
+  /* Only tags that would still return something, best first. A chip promising
+     results it cannot deliver is the thing facets.ts exists to prevent. */
+  const tags = Object.entries(facets.tags)
+    .filter(([, n]) => n > 0)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 
   const isEmpty = items.length === 0;
-  const filtering = Boolean(filters.type || filters.category || filters.theme || filters.saved);
+  const filtering = Boolean(filters.type || filters.tags?.length || filters.saved);
 
   return (
     <Shell>
@@ -128,7 +135,7 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
             {`${settings.totalAssets} assets, filed by shelf.`}
           </h1>
           <p className="kl-lede" data-rise>
-            {settings.freeThisMonth} are free to download now. Filter by type, category or theme —
+            {settings.freeThisMonth} are free to download now. Filter by type or tag —
             every card opens on its source files.
           </p>
         </div>
@@ -149,27 +156,24 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
 
             <span className="kl-divider" aria-hidden="true" />
 
-            {categories.map(([c, n]) => (
-              <Pill
-                key={c}
-                label={c.toUpperCase()}
-                count={n}
-                active={filters.category === c}
-                to={href({ category: filters.category === c ? undefined : c })}
-              />
-            ))}
-
-            <span className="kl-divider" data-hide-narrow aria-hidden="true" />
-
-            {themes.map(([t, n]) => (
-              <Pill
-                key={t}
-                label={t.toUpperCase()}
-                count={n}
-                active={filters.theme === t}
-                to={href({ theme: filters.theme === t ? undefined : t })}
-              />
-            ))}
+            {tags.map(([t, n]) => {
+              const on = filters.tags?.includes(t);
+              return (
+                <Pill
+                  key={t}
+                  label={t.toUpperCase()}
+                  count={n}
+                  active={Boolean(on)}
+                  /* Toggling adds or removes one tag and leaves the others, so
+                     the rail composes instead of resetting. */
+                  to={href({
+                    tag: on
+                      ? (filters.tags ?? []).filter((x) => x !== t)
+                      : [...(filters.tags ?? []), t],
+                  })}
+                />
+              );
+            })}
 
             <span className="kl-spacer" />
 

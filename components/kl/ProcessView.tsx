@@ -55,8 +55,14 @@ const LOGOS = [
 
 /** Bars, scaled so the largest shelf fills the track. */
 function shelfBars(all: Asset[]) {
+  /* Counts the first tag on each asset. `shelf` used to be a required field
+     and made a tidy three-bar chart; a tag list is looser, so this is the
+     leading tag rather than a guaranteed axis. */
   const counts = new Map<string, number>();
-  for (const a of all) counts.set(a.shelf, (counts.get(a.shelf) ?? 0) + 1);
+  for (const a of all) {
+    const key = a.tags?.[0];
+    if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
   const rows = [...counts.entries()].sort((a, b) => b[1] - a[1]);
   const max = rows[0]?.[1] ?? 1;
   return rows.map(([label, n], i) => ({

@@ -57,7 +57,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         <section className="kl-pad" style={{ paddingBlock: "36px 44px" }}>
           <div data-hero style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 680 }}>
             <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
-              {collection.shelf} · {collection.items} items{collection.free > 0 ? ` · ${collection.free} free` : ""}
+              {collection.tags?.[0] ?? "COLLECTION"} · {collection.items} items{collection.free > 0 ? ` · ${collection.free} free` : ""}
             </span>
             <h1 style={{ fontSize: "clamp(34px,4.4vw,56px)", lineHeight: 1.06, fontWeight: 500, letterSpacing: "-0.035em", textWrap: "pretty" }}>
               {collection.name}

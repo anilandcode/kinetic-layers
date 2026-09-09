@@ -1,4 +1,4 @@
-import type { Asset, Category, Theme } from "./types";
+import type { Asset } from "./types";
 
 /**
  * Faceted counts for the library filters.
@@ -14,13 +14,17 @@ import type { Asset, Category, Theme } from "./types";
  * they do that we did not.
  */
 
-/* Shelf and mood stay on Asset as data — getRelated falls back to shelf, and
-   /collections filters by it — but nothing slices the library by them. */
+/**
+ * `type` is still its own axis because it is the tab row — the thing the UI
+ * navigates by. Everything else that used to be a named column (category,
+ * theme, mood, shelf, stack) is a tag, and filtering is membership rather than
+ * equality. `tags` is AND, not OR: picking two narrows, which is what a filter
+ * row is for.
+ */
 export type Filters = {
   /** Asset type: the tab row. A free string on Asset, so no enum to widen. */
   type?: string;
-  category?: Category;
-  theme?: Theme;
+  tags?: string[];
   /** Favourites. Not a field on Asset — see `saved` below. */
   saved?: boolean;
 };
@@ -34,8 +38,7 @@ export type Filters = {
  */
 const matches = (a: Asset, f: Filters, saved: ReadonlySet<string>) =>
   (!f.type || a.type === f.type) &&
-  (!f.category || a.category === f.category) &&
-  (!f.theme || a.theme === f.theme) &&
+  (!f.tags?.length || f.tags.every((t) => a.tags?.includes(t))) &&
   (!f.saved || saved.has(a.slug));
 
 const NONE: ReadonlySet<string> = new Set();
@@ -46,8 +49,7 @@ export function applyFilters(all: Asset[], f: Filters, saved: ReadonlySet<string
 
 export type Facets = {
   type: Record<string, number>;
-  category: Record<string, number>;
-  theme: Record<string, number>;
+  tags: Record<string, number>;
   /** Total with every current filter applied — what the grid actually shows. */
   matching: number;
 };
@@ -56,8 +58,6 @@ export function countFacets(all: Asset[], f: Filters, saved: ReadonlySet<string>
   /* For each dimension, drop that dimension's own selection before counting,
      so a chip's number answers "what would I get if I picked this instead". */
   const forType = all.filter((a) => matches(a, { ...f, type: undefined }, saved));
-  const forCategory = all.filter((a) => matches(a, { ...f, category: undefined }, saved));
-  const forTheme = all.filter((a) => matches(a, { ...f, theme: undefined }, saved));
 
   const tally = (rows: Asset[], key: (a: Asset) => string) =>
     rows.reduce<Record<string, number>>((m, a) => {
@@ -66,13 +66,25 @@ export function countFacets(all: Asset[], f: Filters, saved: ReadonlySet<string>
       return m;
     }, {});
 
+  /* A tag's count is measured with the OTHER selected tags still applied but
+     that tag itself dropped, so the number answers "what would adding this
+     give me" — the same rule as before, now per tag rather than per column. */
+  const tagCounts: Record<string, number> = {};
+  const selected = f.tags ?? [];
+  const universe = new Set(all.flatMap((a) => a.tags ?? []));
+  for (const tag of universe) {
+    const others = selected.filter((t) => t !== tag);
+    tagCounts[tag] = all.filter(
+      (a) => matches(a, { ...f, tags: others }, saved) && a.tags?.includes(tag)
+    ).length;
+  }
+
   return {
     /* Only values that actually occur are tallied, so the chip list is drawn
        from the catalogue rather than from an aspirational enum — the same
        reason DownloadFilter derives its options. */
     type: tally(forType.filter((a) => a.type), (a) => a.type),
-    category: tally(forCategory.filter((a) => a.category), (a) => a.category!),
-    theme: tally(forTheme.filter((a) => a.theme), (a) => a.theme!),
+    tags: tagCounts,
     matching: applyFilters(all, f, saved).length,
   };
 }
