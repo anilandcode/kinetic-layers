@@ -87,7 +87,6 @@ function init(g: Gsap) {
   autoGlass(g);
   dualGlow(g);
   cardLift(g);
-  tilt(g);
   layerDeck(g, hasST);
   parallax(g, hasST);
   reveal(g, hasST);
@@ -503,30 +502,6 @@ function cardLift(g: Gsap) {
   });
 }
 
-/* ---------- 3D tilt for preview surfaces --------------------------------- */
-function tilt(g: Gsap) {
-  all("[data-tilt]").forEach((el) => {
-    if (!once(el, "tilt")) return;
-    const max = num(el, "data-tilt", 5);
-    g.set(el, { transformPerspective: 1200, transformOrigin: "center" });
-    const rx = g.quickTo(el, "rotationX", { duration: 0.6, ease: "power3.out" });
-    const ry = g.quickTo(el, "rotationY", { duration: 0.6, ease: "power3.out" });
-    el.addEventListener(
-      "pointermove",
-      (e) => {
-        const r = el.getBoundingClientRect();
-        rx(-((e.clientY - r.top) / r.height - 0.5) * max * 2);
-        ry(((e.clientX - r.left) / r.width - 0.5) * max * 2);
-      },
-      { passive: true }
-    );
-    el.addEventListener("pointerleave", () => {
-      rx(0);
-      ry(0);
-    });
-  });
-}
-
 /* ---------- the signature: layers fan apart on scroll -------------------- */
 function layerDeck(g: Gsap, hasST: boolean) {
   if (!hasST) return;
@@ -788,7 +763,7 @@ export function themeFlash() {
 const TARGETS = [
   "[data-progress]", "[data-mask]", "[data-letters]", "[data-rise]", "[data-lamp]",
   "[data-rule]", "[data-nav-link]", "[data-glass-btn]", "[data-auto-glass]", "[data-glow2]",
-  "[data-lift]", "[data-tilt]", "[data-layer-deck]", "[data-parallax]", "[data-reveal]",
+  "[data-lift]", "[data-layer-deck]", "[data-parallax]", "[data-reveal]",
   "[data-marquee]", "[data-count]", "[data-rail]", "[data-dotfield]",
 ];
 

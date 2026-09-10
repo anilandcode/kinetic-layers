@@ -57,7 +57,6 @@ const MOTION: Array<[string, string]> = [
   ["data-glass-btn", "Magnetic pull, cursor glow, shine sweep. The number is the pull in px."],
   ["data-premium", "Marks the one lit button; adds the idle sweep."],
   ["data-glow2", "Card bloom and conic rim, both tracking the pointer."],
-  ["data-tilt", "3D tilt on a preview surface."],
   ["data-layer-deck", "The signature: layers fan apart on scroll."],
   ["data-parallax", "Backdrop drifts against the scroll."],
   ["data-marquee", "Rail scrolls, slowing under the cursor."],

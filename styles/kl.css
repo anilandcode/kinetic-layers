@@ -471,6 +471,18 @@
   color: var(--muted);
 }
 
+/* The shimmer, in this palette.
+
+   .legacy-skel (styles/legacy.css) sweeps between --surface and --surface-2,
+   which [data-kl] never redefines — so inside the new shell it would paint the
+   retired near-black surfaces onto the paper ground. Only the colours change
+   here; the sweep animation and its prefers-reduced-motion guard still come
+   from the base rule. */
+[data-kl] .legacy-skel {
+  background: linear-gradient(90deg, var(--skel) 0%, var(--skel-hi) 40%, var(--skel) 80%);
+  background-size: 300% 100%;
+}
+
 /* ---------- Rail dropdowns ------------------------------------------------
    A <details> disclosure, so the menus need no JavaScript and no hydration —
    the library is a Server Component whose every control is a link, and this
@@ -1914,6 +1926,13 @@
   pointer-events: none;
   background: radial-gradient(closest-side, rgba(232, 133, 58, 0.44), rgba(0, 0, 0, 0) 72%);
   filter: blur(30px);
+}
+/* The preview inside takes its height from the media's own ratio. This is the
+   backstop: at 0.5 aspect a portrait would otherwise be twice the panel's width
+   tall and push everything below it off the screen. object-fit: cover means the
+   extremes crop rather than overflow. */
+[data-kl] .kl-item-preview-frame .kl-preview {
+  max-height: 72vh;
 }
 [data-kl] .kl-item-preview-frame {
   position: relative;

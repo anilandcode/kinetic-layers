@@ -55,6 +55,13 @@
   /* Six thumbnail grounds, cycled per asset so a grid never repeats. */
   --t1: linear-gradient(158deg, #F3E4D4, #FDFCFA 72%);
   --t2: linear-gradient(158deg, #EFE9DE, #FDFCFA 70%);
+
+  /* Loading skeletons. Flat colours on purpose: .legacy-skel paints them as
+     gradient stops, and --t1/--t2 are themselves gradients. They also cannot
+     borrow --surface, which belongs to the retired palette and is near-black —
+     inside [data-kl] that would put black bars on the paper ground. */
+  --skel: #ECE9E2;
+  --skel-hi: #F8F6F2;
   --t3: linear-gradient(158deg, #E4E8EE, #FDFCFA 70%);
   --t4: linear-gradient(158deg, #F6DEC8, #FDFCFA 74%);
   --t5: linear-gradient(158deg, #E6E5E1, #FDFCFA 68%);
@@ -101,6 +108,9 @@
 
   --t1: linear-gradient(158deg, #3A2A1E, #15171B 72%);
   --t2: linear-gradient(158deg, #2E2A22, #15171B 70%);
+
+  --skel: #1B1E24;
+  --skel-hi: #272B33;
   --t3: linear-gradient(158deg, #1F2833, #15171B 70%);
   --t4: linear-gradient(158deg, #3D2A1A, #15171B 74%);
   --t5: linear-gradient(158deg, #26282C, #15171B 68%);

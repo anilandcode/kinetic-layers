@@ -150,18 +150,27 @@ export default function ItemView({
           <div className="kl-item-main">
             <div style={{ position: "relative" }}>
               <div className="kl-item-lamp" data-lamp="18" aria-hidden="true" />
-              <div className="kl-item-preview-frame" data-tilt="4">
+              <div className="kl-item-preview-frame">
                 <div
                   className="kl-preview"
                   data-preview
-                  /* asset.h is the CARD height — computed for a narrow
-                     masonry column and clamped 170–420. A hero preview in an
-                     1180px panel is a different measurement, so this derives
-                     its own from the same aspect at a larger base. */
-                  style={{
-                    height: `${Math.round(Math.min(560, Math.max(320, 520 / (asset.aspect || 1.4))))}px`,
-                    background: `var(${ground})`,
-                  }}
+                  /* The media's own ratio, not a computed pixel height.
+
+                     This used to derive a height from the aspect and then clamp
+                     it to 320–560, which meant an inline `height` that silently
+                     overrode the `aspect-ratio` .kl-preview already carries: a
+                     wide screenshot and a tall one both landed inside a 240px
+                     band and got cropped to fit. The card was fixed the same
+                     way; this is the panel catching up.
+
+                     .kl-item-preview-frame caps it at 72vh so an extreme
+                     portrait cannot push the panel off the screen. */
+                  style={
+                    {
+                      background: `var(${ground})`,
+                      "--kl-aspect": String(asset.aspect || 1.4),
+                    } as React.CSSProperties
+                  }
                 >
                   {/* play="auto" here, not "hover": this is one file on a page
                       the visitor chose to open, rather than one of sixteen in a
