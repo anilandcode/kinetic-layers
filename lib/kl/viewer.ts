@@ -21,11 +21,16 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: ent } = await supabase
-    .from("entitlements")
-    .select("plan, status, current_period_end")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  /* Both in flight at once: neither depends on the other, and this runs on
+     every page that renders the header. */
+  const [{ data: ent }, { data: profile }] = await Promise.all([
+    supabase
+      .from("entitlements")
+      .select("plan, status, current_period_end")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    supabase.from("profiles").select("display_name").eq("id", user.id).maybeSingle(),
+  ]);
 
   const entitled =
     ent?.plan === "premium" &&
@@ -40,6 +45,10 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   return {
     id: user.id,
     email: user.email ?? null,
+    /* profiles.display_name existed from the first migration and was read in
+       one place and shown on none. The header greets people by name now, so it
+       has somewhere to be. */
+    name: profile?.display_name ?? null,
     plan: active ? "premium" : "free",
     premium: Boolean(active),
     periodEnd: ent?.current_period_end ?? null,

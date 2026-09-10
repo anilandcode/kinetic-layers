@@ -52,7 +52,7 @@ export async function viewerFromApiKey(key: string | null): Promise<Viewer | nul
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
 
   const [{ data: profile }, { data: ent }] = await Promise.all([
-    db.from("profiles").select("email").eq("id", row.user_id).maybeSingle(),
+    db.from("profiles").select("email, display_name").eq("id", row.user_id).maybeSingle(),
     db.from("entitlements").select("plan, status, current_period_end").eq("user_id", row.user_id).maybeSingle(),
   ]);
 
@@ -63,6 +63,7 @@ export async function viewerFromApiKey(key: string | null): Promise<Viewer | nul
   return {
     id: row.user_id,
     email: profile?.email ?? null,
+    name: profile?.display_name ?? null,
     plan: active ? "premium" : "free",
     premium: active,
     periodEnd: ent?.current_period_end ?? null,

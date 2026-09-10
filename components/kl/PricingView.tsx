@@ -1,4 +1,4 @@
-import Header from "./Header";
+import SiteHeader from "./SiteHeader";
 import Shell from "./Shell";
 import Footer from "./Footer";
 import GlassButton from "./GlassButton";
@@ -143,7 +143,7 @@ export default async function PricingView() {
 
   return (
     <Shell>
-      <Header />
+      <SiteHeader />
 
       <main data-view className="kl-pad" style={{ paddingTop: 48 }}>
         <div className="kl-section-head">

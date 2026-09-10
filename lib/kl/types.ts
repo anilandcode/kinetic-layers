@@ -99,8 +99,9 @@ export type Plan = "free" | "premium";
 export type Viewer = {
   id: string;
   email: string | null;
+  /** profiles.display_name, when the account has set one. */
+  name: string | null;
   plan: Plan;
-  /** True only while a Premium entitlement is active. */
   /** Whether this account may take files. Named for the Premium plan. */
   premium: boolean;
   periodEnd: string | null;

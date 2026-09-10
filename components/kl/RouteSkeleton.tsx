@@ -32,7 +32,7 @@ type Shape = "grid" | "item" | "panel";
 export default function RouteSkeleton({ what, shape = "grid" }: { what: string; shape?: Shape }) {
   return (
     <div data-kl className="kl-shell">
-      <Header />
+      <Header pending />
       <main aria-busy="true">
         <LoadingAnnouncement what={what} />
 

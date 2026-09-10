@@ -1,4 +1,4 @@
-import Header from "./Header";
+import SiteHeader from "./SiteHeader";
 import Shell from "./Shell";
 import Footer from "./Footer";
 import DotFieldCta from "./DotFieldCta";
@@ -79,7 +79,7 @@ export default async function ProcessView() {
 
   return (
     <Shell>
-      <Header />
+      <SiteHeader />
 
       <main data-view>
         <div className="kl-pad" style={{ paddingTop: 48 }}>

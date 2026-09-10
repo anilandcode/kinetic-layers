@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Header from "./Header";
+import SiteHeader from "./SiteHeader";
 import Shell from "./Shell";
 import Footer from "./Footer";
 import GlassButton from "./GlassButton";
@@ -42,7 +42,7 @@ export default async function HomeView() {
 
   return (
     <Shell>
-      <Header />
+      <SiteHeader />
 
       <main data-view>
         {/* ---------- Hero ---------- */}
