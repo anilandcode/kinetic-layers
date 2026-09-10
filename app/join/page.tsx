@@ -7,6 +7,7 @@ import JoinForm from "@/components/legacy/JoinForm";
 import { getViewer } from "@/lib/kl/viewer";
 import { getSettings } from "@/lib/sanity/queries";
 import { EARLY_ACCESS } from "@/lib/kl/access";
+import { enabledProviders } from "@/lib/supabase/providers";
 
 export const metadata: Metadata = {
   title: "Join",
@@ -36,7 +37,7 @@ export default async function Join({
     redirect(dest);
   }
 
-  const settings = await getSettings();
+  const [settings, providers] = await Promise.all([getSettings(), enabledProviders()]);
 
   return (
     <Shell>
@@ -58,7 +59,7 @@ export default async function Join({
 
       <main id="join" style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(440px,100%),1fr))", minHeight: 0 }}>
         <section style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "70px 32px" }}>
-          <JoinForm next={next} initialError={error} initialMode={mode === "signin" ? "signin" : "signup"} />
+          <JoinForm next={next} initialError={error} initialMode={mode === "signin" ? "signin" : "signup"} providers={providers} />
         </section>
 
         <section

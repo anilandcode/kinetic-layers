@@ -46,10 +46,13 @@ export default function JoinForm({
   next,
   initialError,
   initialMode = "signup",
+  providers = [],
 }: {
   next?: string;
   initialError?: string;
   initialMode?: Mode;
+  /** Social logins this project actually has enabled. Empty is normal. */
+  providers?: ReadonlyArray<"google" | "github">;
 }) {
   const [mode, setMode] = useState<Mode>(initialMode);
   const [state, action] = useActionState<AuthState, FormData>(ACTION[mode], {});
@@ -100,11 +103,17 @@ export default function JoinForm({
       </h1>
       <p style={{ fontSize: 16, lineHeight: 1.6, color: "var(--muted)" }}>{SUB[mode]}</p>
 
-      {/* OAuth — separate forms so each posts only its own provider. */}
-      {showPassword && (
+      {/* OAuth — separate forms so each posts only its own provider.
+
+          Only providers Supabase reports as enabled. This list used to be
+          hardcoded, so a project with no OAuth app configured still showed both
+          buttons, and pressing one handed the visitor Supabase's raw
+          "provider is not enabled" JSON. A login screen should not offer a door
+          that is bricked up. */}
+      {showPassword && providers.length > 0 && (
         <>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
-            {(["google", "github"] as const).map((p) => (
+            {providers.map((p) => (
               <form key={p} action={signInWithProvider}>
                 <input type="hidden" name="provider" value={p} />
                 <input type="hidden" name="next" value={next ?? "/account"} />

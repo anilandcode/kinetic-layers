@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { AUTH_UNAVAILABLE } from "@/lib/supabase/config";
 import { CONTACT_EMAIL, SITE_URL } from "@/lib/kl/site";
+import { enabledProviders } from "@/lib/supabase/providers";
 
 /**
  * Auth as server actions.
@@ -134,14 +135,33 @@ export async function signInWithProvider(formData: FormData) {
   const supabase = await createClient();
   if (!supabase) redirect(`/join?error=${encodeURIComponent(AUTH_UNAVAILABLE)}`);
 
+  /* Ask whether the provider exists BEFORE handing anyone a URL to follow.
+
+     The check below cannot do it. signInWithOAuth composes the authorize URL
+     locally and never asks Supabase whether the provider is configured, so it
+     returns a url and no error every time — and the visitor found out by being
+     shown the raw response at the other end:
+
+       {"code":400,"error_code":"validation_failed",
+        "msg":"Unsupported provider: provider is not enabled"}
+
+     The join page already hides buttons for providers that are off, so
+     reaching this is either a stale page or a hand-posted form. Either way it
+     gets a sentence rather than JSON. */
+  const enabled = await enabledProviders();
+  if (!enabled.includes(provider)) {
+    const name = provider === "google" ? "Google" : "GitHub";
+    redirect(
+      `/join?error=${encodeURIComponent(`${name} sign-in is not enabled on this project yet. Use email for now.`)}`
+    );
+  }
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: { redirectTo: authUrl(`/auth/callback?next=${encodeURIComponent(next)}`) },
   });
 
-  /* Until the OAuth app exists in Supabase, this errors rather than
-     redirecting. Say which provider and what is missing, instead of dumping a
-     provider error the visitor cannot act on. */
+  /* Kept as the backstop for a real failure from the SDK itself. */
   if (error || !data.url) {
     const name = provider === "google" ? "Google" : "GitHub";
     redirect(
