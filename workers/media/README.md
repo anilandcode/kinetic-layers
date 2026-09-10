@@ -11,11 +11,28 @@ visit, and a grid of autoplaying video is the heaviest thing you can put on
 metered bandwidth. R2 charges nothing for egress at any volume, so the bytes
 belong here and the CMS keeps the upload box.
 
+## Status — live since 2026-09-10
+
+All of it is done and serving: the custom domain, Transformations on the zone,
+the Worker, and `NEXT_PUBLIC_MEDIA_MIRROR=1` in production. `/library` shows 50
+`/cdn-cgi/` URLs and zero references to `cdn.sanity.io`.
+
+Two things learned doing it, worth keeping:
+
+- **`NEXT_PUBLIC_MEDIA_BASE` has to move at the same time as the flag.** Both the
+  `/sanity/` rewrite and the `/cdn-cgi/` prefix are built from it, so flipping
+  the mirror while it still pointed at the old Pages host would have 404'd every
+  image on the site rather than merely serving them large.
+- **The custom domain was first attached to `kinetic-layers-assets`** — the
+  private bucket — because the preview bucket did not exist yet. An R2 custom
+  domain makes a bucket publicly readable. Corrected, nothing of value exposed,
+  and that bucket must never carry one.
+
 ## Order of operations
 
-Each step is checkable on its own. Do not skip ahead — `NEXT_PUBLIC_MEDIA_MIRROR`
-last, because until the first three are done it produces 404s rather than
-merely-large files.
+Kept because it is how to do this again on another zone. Each step is checkable
+on its own. Do not skip ahead — `NEXT_PUBLIC_MEDIA_MIRROR` last, because until
+the first three are done it produces 404s rather than merely-large files.
 
 1. **Custom domain.** R2 → `kinetic-layers-preview` → Settings → Custom Domains
    → add `media.kineticlayers.com`. The zone is already on Cloudflare, so this

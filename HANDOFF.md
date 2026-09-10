@@ -1,70 +1,83 @@
 # Kinetic Layers — handoff
 
-State as of commit `79a2a60` on branch `fix/signup-and-email`. Read this before
-changing anything; it records the decisions and the traps, not the code.
+State as of commit `2f93f45` on `main`. Read this before changing anything; it
+records the decisions and the traps, not the code.
 
-## Where the last session left off — 2026-09-07
+## Where things stand — 2026-09-10
 
-**Branding.** The product is now **Kinetic Layers**, at **kineticlayers.com**.
-The rename is **done**. Code, copy and identifiers all say Kinetic Layers. What
-still reads "kiln" is deliberate: applied migration filenames (renaming one
-breaks Supabase's ledger), the archived demand test, the GitHub repo slug, the
-and historical notes about the retired palette.
+**Branding.** The product is **Kinetic Layers**, at **kineticlayers.com**. The
+rename is done. What still reads "kiln" is deliberate: applied migration
+filenames (renaming one breaks Supabase's ledger), the archived demand test, the
+GitHub repo slug, and historical notes about the retired palette.
 
-**Hosting.** Staying on **Vercel** for now. DNS at Cloudflare, unproxied (grey
-cloud) — the certificate will not issue behind the orange cloud. Move to
-Cloudflare Workers ($5/mo, already proven on the `cloudflare-workers` branch) at
-the first payment taken, because Vercel Hobby forbids commercial use. Media stays
-on **Cloudflare Pages**: the pipeline pre-bakes every derivative, so there is no
-transformation CDN in the path and Cloudinary would bill credits for a capability
-that was designed out. R2 later, when the library outgrows deploy-the-whole-folder.
+**Hosting.** Vercel, DNS at Cloudflare. Move to Cloudflare Workers at the first
+payment taken — Vercel Hobby forbids commercial use.
 
-**Done on this branch.** Auth email links no longer derive their origin from the
-`x-forwarded-host` request header — a real vulnerability, since a genuine
-Supabase password-reset mail could be pointed at an attacker's domain. All four
-call sites now build from `SITE_URL` in `lib/kl/site.ts`. Verified: production
-build passes, canonical / og:url / og:image / sitemap all read
-`https://kineticlayers.com`, and a forged `X-Forwarded-Host: evil.example`
-changes nothing.
+**Media is on Cloudflare now, end to end.** This changed; older notes saying
+"Pages, not R2" are wrong.
 
-**Blocked on the account owner.** Signup is still broken for most visitors and
-no code change fixes it. Supabase is on its built-in SMTP, roughly 2-3 mails an
-hour, so people get "check your email" and no email. Needs, in order: a Resend
-account with kineticlayers.com verified by DNS (DNS-only records); Supabase
-custom SMTP pointed at Resend; `https://kineticlayers.com/**` allowlisted under
-Supabase → Authentication → URL Configuration; then `RESEND_API_KEY`,
-`EMAIL_FROM` and `NEXT_PUBLIC_SITE_URL` set in Vercel. Stopgap if Resend stalls:
-turning off "Confirm email" makes signup work immediately, but leaves password
-reset broken.
+```
+media.kineticlayers.com  →  Worker (workers/media)  →  R2 kinetic-layers-preview
+                            + /cdn-cgi/ transformations on the zone
+```
 
-**Still untested end to end**, once the above lands: real signup on a preview
-deploy, password reset opening `/reset-password` signed in, and
-`POST /api/subscribe` sending rather than falsely succeeding.
+The Worker is pull-through: the first request for a file fetches it from Sanity,
+stores it in R2 and serves it; every request after is R2 plus edge cache. There
+is no backfill step and no window where a document points at bytes that are not
+there. Transformations are enabled for the zone, so `img()`, `clip()` and
+`frame()` in `lib/kl/media.ts` emit `/cdn-cgi/` URLs — which is also how a
+video-only asset gets a poster: Cloudflare cuts a still out of the clip
+(`mode=frame`), so nobody has to upload one.
 
-**Tooling.** The repo now carries a graphify code graph — see `CLAUDE.md`.
+Live check on 2026-09-10: 50 `/cdn-cgi/` URLs on `/library`, **zero**
+`cdn.sanity.io` references, a 9.4 KB JPEG poster generated from a 16 MB video.
+
+**The catalogue moved to Sanity uploads.** The asset form went from twenty
+fields to twelve; five taxonomies collapsed into one `tags` list; `media` and
+`clip` are either-or so video-only works. **Tags are `tag` documents now**, not
+strings — 33 seeded, 12 marked `featured`, which is what the library offers as
+filters. `tools/seed-tags.mjs` plants them and is safe to re-run.
+
+**Email works.** Resend has kineticlayers.com verified (DKIM, SPF and the
+feedback MX live in Cloudflare DNS), and Supabase points its SMTP at Resend. That
+was the launch blocker and it is cleared — though see Outstanding: nobody has
+watched a confirmation arrive end to end.
+
+**OAuth is off, and now says nothing rather than lying.** Google and GitHub are
+both disabled on the project. The join page reads Supabase's live settings and
+renders only providers that are actually on, so today it shows email alone.
+
+**The account has a door.** `/account` is a layout with four sections —
+Dashboard, Downloads, Profile, Billing — and the header carries an avatar menu
+when someone is signed in. `profiles.display_name` is settable for the first
+time since the column was created.
+
+**Tooling.** `graphify-out/` holds the code graph: 1141 nodes, 2323 edges, 84
+communities over 186 files. Rebuild with `graphify update .`.
 
 ## What it is
 
 A marketplace for AI design assets — prompts, templates, 3D scenes, workflows.
-Free tier plus an unlimited subscription. Next.js 15 App Router, TypeScript.
+Free tier plus a Premium subscription. Next.js 15 App Router, TypeScript.
 
 - **Repo** `github.com/anilandcode/direction-kit` (private)
-- **Live** https://kineticlayers.com — Vercel project `direction-kit`,
-  linked, env vars set for production/preview/development
+- **Live** https://kineticlayers.com — Vercel project `direction-kit`
 - **Local** `~/Projects/direction-kit` — **not** in Google Drive. It was, and the
   Drive mount broke builds with `ECANCELED`. Do not move it back.
 
 ## Who owns what
 
 ```
-Sanity  8vxxthrc/production   the catalogue: assets, collections, drops,
-                              prices. Public dataset, no token to read.
-Cloudflare Pages              preview posters and clips, kinetic-layers-media.pages.dev.
-                              Unlimited bandwidth, no card. NOT R2 — enabling
-                              R2 needs a payment method, Pages does not.
+Sanity  8vxxthrc/production   the catalogue: assets, collections, drops, tags,
+                              prices. Reads need SANITY_API_READ_TOKEN — see
+                              trap 20.
+Cloudflare R2                 kinetic-layers-preview  public previews, fronted
+                              by the Worker at media.kineticlayers.com
+                              kinetic-layers-assets   PRIVATE, gated downloads.
+                              Must never carry a custom domain — see trap 19.
 Supabase ubftlspopkfwwazwsinv auth, profiles, entitlements, downloads, saves,
-                              api_keys, usage. Private `assets` bucket for
-                              gated files, signed per request.
+                              api_keys, usage.
+Resend                        transactional mail, and Supabase's SMTP.
 ```
 
 ## The rules, in one place each
@@ -77,14 +90,13 @@ Do not write a second copy of any of these.
 | How often | `lib/kl/quota.ts` + `lib/kl/limits.ts` |
 | Who are they | `lib/kl/viewer.ts` (cookies), `lib/kl/apikey.ts` (MCP) |
 | Where media lives | `lib/kl/media.ts` — one env var swaps the host |
+| Which providers exist | `lib/supabase/providers.ts` — read, never hardcoded |
 
-**Prompts and files are different resources.** `canReadPrompt` lets an
-anonymous visitor read a free asset's prompt; `canDownload` does not let them
-take a file. Reading is cheap, serving files is not.
+**Prompts and files are different resources.** `canReadPrompt` lets an anonymous
+visitor read a free asset's prompt; `canDownload` does not let them take a file.
 
 **Four doors lead to a prompt** and they share one budget: the item page,
-`CardCopy` on a library card, `/api/download`, and the MCP `get_prompt` tool. A
-per-route counter is four allowances wearing a trenchcoat.
+`CardCopy` on a library card, `/api/download`, and the MCP `get_prompt` tool.
 
 ## Allowances
 
@@ -92,19 +104,12 @@ per-route counter is four allowances wearing a trenchcoat.
               prompts/day   downloads/day
 anonymous          1              0
 free               5              3
-unlimited         50             30
+premium           50             30
 ```
 
 Rolling 24h, not calendar day. `LIMITS` in `lib/kl/limits.ts` is read by the
 routes that enforce it *and* the pricing page that promises it, so the printed
-number and the enforced number cannot drift. Change it there and both move.
-
-## What works, verified by driving it
-
-Auth (password, magic link, reset, session across refresh), the paywall matrix
-across all four doors, RLS isolation, quotas with 429 + `Retry-After`, MCP with
-API keys, media lazy-loading, SEO/OG/sitemap, 47 routes building clean, contrast
-and overflow clean at 375 and 1600.
+number and the enforced number cannot drift.
 
 ## Traps
 
@@ -112,139 +117,154 @@ Each of these cost real time. They are not hypothetical.
 
 1. **Never let CSS hide content that only JS can restore.** A CSS rule hid
    `[data-hero] > *` at `opacity: 0` for GSAP to reveal. When the motion layer
-   did not finish, the entire sign-in form was invisible — permanently. Entrance
-   animation is now a CSS keyframe with `both`. Do not reintroduce the pattern.
+   did not finish, the entire sign-in form was invisible — permanently.
 2. **Contrast audits must cover control boundaries, not just text.** A sweep
-   reported "zero failures" on a form whose field borders were 1.24:1 and
-   effectively invisible. `--field-line` exists for that; WCAG wants 3:1.
+   reported "zero failures" on a form whose field borders were 1.24:1.
 3. **`/item/[slug]` is load-bearing externally** — sitemap, MCP tool output, OG
-   image, every `?next=` redirect. The popup the design asks for is an
-   intercepting route at `app/@modal/(.)item/[slug]`, so a click inside the app
-   opens an overlay and a refresh, a shared link or a crawler gets the real
-   page. The earlier objection — that changing the address bar reads as a new
-   page — had it backwards: back closes the overlay, and the URL someone copies
-   is the one the sitemap already publishes. `AssetModal` and its `data-card`
-   delegation are gone. The full page must keep working untouched.
+   image, every `?next=` redirect. The overlay is an intercepting route at
+   `app/@modal/(.)item/[slug]`, so a click inside the app opens a panel and a
+   refresh or a crawler gets the real page. The full page must keep working.
 4. **The old motion layer is gone.** It intercepted `a[data-nav]` in the capture
-   phase and `stopPropagation`d, so a React `onClick` on a card never fired —
-   and it faded pages to near-black before navigating, which on the warm ground
-   was a flash. Nothing binds `data-nav` now. `lib/kl/motion.ts` keys off
-   `[data-nav-link]` and never swallows a handler.
+   phase and `stopPropagation`d, so a React `onClick` on a card never fired.
 5. **Removing a filter leaves links pointing at it.** A link to a param nobody
    reads silently shows everything, which is worse than no link.
 6. **`gsap.context().revert()` restores the pre-animation state**, so a badly
    timed cleanup puts elements back to `opacity: 0`.
 7. **Test by calling the route, not by reading the code.** The paywall refused
-   correctly for weeks while granting nothing — `getPromptBody` had zero
-   callers. A gate that only refuses is half-tested.
-8. **`usage` is a reserved-ish table name** but works fine through PostgREST.
-   The Supabase pooler can take ~7s cold; `/account` looks hung and is not.
-9. **A limit read in one statement and written in another is not a limit.**
-   The quota counted, then inserted. Ten concurrent requests on an allowance
-   of one were granted three *in production*. Serverless removes any
-   in-process fix: parallel requests land on different instances. Everything
-   that spends an allowance goes through `consume_quota()`, which does both
-   inside one transaction behind an advisory lock. Do not add a second path.
-10. **A limiter must fail closed.** The old code granted access when the
-   count query errored. "The database is struggling" is exactly when an
-   attacker wants the door open, and inducing errors becomes the bypass.
-11. **Two scripts that agree by counting are not in step.** `seed-sanity.mjs`
-   wrote four shots per asset; `make-dummy-media.mjs` made three. Every asset
-   shipped a 404ing thumbnail. The generator now reads the poster names out of
-   the documents. Any pair of scripts that must agree should share a source,
-   not a number.
-12. **Check images actually decoded, not just that the page rendered.** The
-   broken thumbnail survived several sweeps because nothing was visibly wrong
-   above the fold. `img.complete && img.naturalWidth === 0` is the test.
+   correctly for weeks while granting nothing — `getPromptBody` had zero callers.
+8. **`usage` is a reserved-ish table name** but works through PostgREST. The
+   Supabase pooler can take ~7s cold; `/account` looks hung and is not.
+9. **A limit read in one statement and written in another is not a limit.** Ten
+   concurrent requests on an allowance of one were granted three *in production*.
+   Everything that spends an allowance goes through `consume_quota()`.
+10. **A limiter must fail closed.** The old code granted access when the count
+    query errored.
+11. **Two scripts that agree by counting are not in step.** Any pair that must
+    agree should share a source, not a number.
+12. **Check images actually decoded**, not just that the page rendered.
+    `img.complete && img.naturalWidth === 0` is the test.
 13. **Never gate a filter row on its own facet if it also carries controls.**
-   The tone row drew only when more than one tone existed. On four of the
-   eight type tabs every asset shares a tone, so the row vanished — and took
-   Favourites and Clear all with it: the controls that undo a filter
-   disappeared exactly when a filter was on. A row must also draw whenever its
-   own filter is set, or an active filter has nothing to switch it off.
-14. **Browsing lives at `/library`, not `/`.** Home is a landing page: hero,
-   stats, the newest eight, drops. `/collections` is a different entity —
-   bundles, filtered by shelf — and deliberately shares no filter vocabulary
-   with the library.
-15. **`${x}` in JSX is a literal dollar sign plus an expression**, not a
-   template placeholder. The closing headline shipped reading "$5 are free.
-   The other $10 are $24 a month."
+14. **Browsing lives at `/library`, not `/`.**
+15. **`${x}` in JSX is a literal dollar sign plus an expression.**
 16. **A success message must describe what happened, not what was intended.**
-   /api/subscribe answered "Thanks — you are on the list" while no provider
-   was configured and no list existed — a silent no-op wearing a success
-   message. Every path in lib/kl/email.ts now either sends or says plainly
-   that it did not, and the library's card renders the server's wording
-   instead of hardcoding its own.
 17. **Check the legal pages against the code, not against the plan.**
-   /privacy promised "Every one of those emails can unsubscribe you" for weeks
-   before an unsubscribe existed. A page describing intent is a claim you have
-   already made to every visitor who read it.
-18. **Entitlement has exactly one decision point.** `getViewer` is the only
-   place `unlimited` is set, which is why going free was one flag and not a
-   rewrite across sixteen files. Keep it that way: a second rule that also
-   grants access is a second rule to forget when the paywall comes back.
+18. **Entitlement has exactly one decision point.** `getViewer` is the only place
+    `premium` is set. A second rule that also grants access is a second rule to
+    forget when the paywall comes back.
 
-## Outstanding — needs the account owner
+The rest were learned on 2026-09-09/10.
 
-Kinetic Layers is **free while `NEXT_PUBLIC_EARLY_ACCESS=1`** (set in Vercel production).
-An account is the entitlement; Stripe and `entitlements` are untouched, so
-turning the flag off restores the paywall exactly as it was.
+19. **A public hostname on the gated bucket is the paywall gone.**
+    `media.kineticlayers.com` was attached to `kinetic-layers-assets` — the
+    PRIVATE bucket — because the preview bucket did not exist yet and it was the
+    only one in the list. An R2 custom domain makes a bucket publicly readable.
+    Nothing of value leaked (six sub-1 KB placeholders), and it is corrected, but
+    that bucket must never carry a custom domain again.
+20. **Anonymous Sanity reads do not return newly created document types.** The
+    dataset's `aclMode` is `public` and this client sent no token for months,
+    which held only because every type predated the problem. Adding `tag` broke
+    it: authenticated reads see all 33, anonymous sees zero, and so does a
+    throwaway type created to test it. Deploying the schema changes nothing.
+    `SANITY_API_READ_TOKEN` is the fix; without it every tag dereferences to
+    nothing and the Category menu is empty.
+21. **`signInWithOAuth` never asks whether the provider exists.** It composes the
+    authorize URL locally and returns it with no error, so a guard written
+    against `error || !data.url` can never fire. The visitor finds out by being
+    handed Supabase's raw 400 JSON. Ask `/auth/v1/settings` instead.
+22. **Supabase falls back to the Site URL when `redirect_to` is not
+    allowlisted** — silently. The exchange lands on `/` carrying a `?code=`
+    nothing reads, and the sign-in evaporates with no error anywhere. The
+    middleware forwards a stray code to `/auth/callback`, but the allowlist is
+    the real fix.
+23. **In GROQ, an array of nulls is not null.** `tags[]->title` over legacy
+    *string* tags yields `[null, null, …]`, which `coalesce` passes straight
+    through — `list_categories` returned `"null (78)"`. Filter on
+    `defined(@->title)`.
+24. **An inline `height` silently overrides `aspect-ratio`.** Both the card and
+    the item panel computed a pixel height from the aspect and then clamped it,
+    so wide and tall media landed in the same band and got cropped. Set
+    `--kl-aspect` and let the ratio do it.
+25. **A scroll-scrubbed animation inside a modal never scrubs.** The download
+    deck was unstacked by a ScrollTrigger reading the window, but the overlay
+    scrolls `.kl-modal-veil`. The rows sat frozen mid-skew and read as a broken
+    layout, because functionally that is what a scroll animation with no scroll
+    is.
+26. **A parallel route slot with no `loading.tsx` suspends the whole route.**
+    `app/@modal/(.)item/[slug]` had none, so an intercepted click fell up to the
+    root loader and replaced the entire page — the panel then opened over a blank
+    screen, which looked like the veil failing to blur. It was not: there was
+    nothing behind it to blur.
+27. **`[data-kl]` does not redefine every legacy token.** `.legacy-skel` paints
+    with `--surface`, which resolves to `#141412` inside the new shell — black
+    bars on the paper ground. Check what a borrowed class actually resolves to
+    before reusing it across palettes.
+28. **A hidden Browser pane defers hydration and withholds IntersectionObserver.**
+    It produces a perfect imitation of broken code: no React fibers below
+    `<body>`, a stale `loading.tsx` shell beside real content, zero `<video>`
+    elements, `document.hasFocus()` false so `.focus()` does not land, and
+    `getBoundingClientRect()` returning zeros. Check `document.visibilityState`
+    before believing any DOM probe. This cost hours twice.
 
-1. **Resend.** Nothing emails until `RESEND_API_KEY` and `EMAIL_FROM` exist.
-   Create the account, verify a sending domain, then:
-   - Add both to Vercel. The newsletter starts working the moment they land —
-     until then /api/subscribe stores the address and says so plainly.
-   - Supabase → Project Settings → Authentication → SMTP → point at Resend.
-     That fixes signup, password reset and magic links together.
-2. **Email confirmation is still ON** and Supabase's built-in SMTP allows ~2–3
-   an hour, so signup often fails silently. Until SMTP is configured: Supabase
-   → Authentication → Providers → Email → turn **Confirm email** off.
-3. **Google / GitHub OAuth** — buttons exist and say they are unconfigured.
-   Callback `https://ubftlspopkfwwazwsinv.supabase.co/auth/v1/callback`.
-4. **`SANITY_WRITE_TOKEN`** — needed by `tools/import-asset.mjs`. Create at
-   sanity.io/manage → API → Tokens, with Editor permission. See
-   `docs/adding-an-asset.md`.
-5. **The catalogue is 15 invented assets.** Files in Storage are text
-   placeholders that say so. `tools/import-asset.mjs` replaces one end to end;
-   no code change is needed for real content.
-6. **The legal pages are still drafts.** They now describe what the code
-   actually does — free access, real unsubscribe, the usage meter — and each
-   says on the page that no lawyer has read it. Get them reviewed before
-   charging.
-7. `sudo chown -R 501:20 ~/.npm` — the npm cache is ~7.8GB and `npm cache
-   clean` fails without it.
+## Outstanding
+
+Kinetic Layers is **free while `NEXT_PUBLIC_EARLY_ACCESS=1`**. An account is the
+entitlement; Stripe and `entitlements` are untouched, so turning the flag off
+restores the paywall exactly as it was.
+
+**Needs the account owner:**
+
+1. **Supabase → Authentication → URL Configuration.** Site URL is still
+   `http://localhost:3000`, which is what caused trap 22. Set it to
+   `https://kineticlayers.com` and allowlist `/auth/callback` and `/auth/confirm`
+   on both that origin and localhost.
+2. **Tag the assets.** Every Category count reads 0. The 15 dummy assets carry
+   old *string* tags that no longer resolve, so they show none; delete them and
+   tag the real ones in the Studio.
+3. **Confirm a real signup end to end.** Resend is verified and SMTP is
+   configured, but nobody has watched a confirmation mail arrive and complete.
+4. **DMARC** — one record, `TXT _dmarc` → `v=DMARC1; p=none;`.
+5. **Google / GitHub OAuth**, if wanted. Callback
+   `https://ubftlspopkfwwazwsinv.supabase.co/auth/v1/callback`. The buttons
+   reappear on their own within five minutes of enabling.
+6. **The Sanity revalidation webhook.** `sanity hook list` returns nothing, so an
+   edit appears when the fetch's own hour expires. See `docs/adding-an-asset.md`.
+7. **Production `ADMIN_TOKEN` is 11 characters**, and it guards
+   `/api/admin/grant`.
+8. **The R2 token is Admin Read & Write on all buckets.** Narrow it to Object
+   Read & Write on the two it needs.
+9. **The legal pages are drafts** and say so on the page. Review before charging.
+
+**Known hazard, not yet bitten:**
+`supabase/migrations/20260907130000_premium_contract.sql` is deliberately unrun —
+its own header says so. If `entitlements.plan` still holds `'unlimited'`,
+`lib/kl/viewer.ts` tests for `'premium'` and returns `premium: false` for a
+paying customer. `EARLY_ACCESS=1` masks it today; `/account/billing` will make it
+visible the moment early access ends.
 
 ## Commands
 
 ```bash
 npm run dev                                        # local
-npm run seed                                       # regenerate catalogue NDJSON
-npx sanity dataset import /tmp/kl-seed.ndjson production --replace
-npm run media                                      # dummy posters + clips (ffmpeg)
-npm run media:deploy                               # push media to Cloudflare Pages
-node --env-file=.env.local tools/qa-personas.mjs --create   # free + unlimited test users
-node --env-file=.env.local tools/apply-migration.mjs <file.sql>
-npx vercel --prod --yes
+npm run build                                      # production build
+npm run studio                                     # Sanity Studio at :3333
+npm run studio:deploy                              # publish to kineticlayers.sanity.studio
+node --env-file=.env.local tools/seed-tags.mjs     # plant the tag vocabulary
+node --env-file=.env.local tools/import-asset.mjs ./incoming/x --dry-run
+node tools/optimize-clip.mjs clip.mp4              # trim + poster, ~2 MB
+npx wrangler deploy --config workers/media/wrangler.jsonc
+graphify update .                                  # refresh the code graph
+npx vercel --prod
 ```
 
 Demo accounts: `demo@kineticlayers.com` (free) and `demo.pro@kineticlayers.com`
-(premium). Between them they are the only two rows in Supabase auth, and the
-premium one carries a real `premium` entitlement, so the paywall matrix can be
-driven end to end.
-
-Both were rotated on 2026-09-09 — new passwords, and moved off `@kiln.build`.
-The passwords are **deliberately not written here**. The previous one was, which
-put it in this repo's git history permanently; that is what made rotating
-necessary rather than optional. Keep them in a password manager. If they are
-lost, set new ones in Supabase → Authentication → Users — nothing in the app
-depends on either account.
+(premium). Passwords are **deliberately not written here** — the previous one
+was, which put it in git history permanently and is what made rotation necessary
+rather than optional.
 
 ## Conventions
 
 - Verification means driving the running app or calling the route and asserting
   on what comes back. Reading the code is not verification.
 - Comments explain *why*, especially where the obvious approach was wrong.
-- URL is the filter state, so a filtered view is shareable and the back button
-  works.
-- The catalogue's counts are counted, never stored. A settings document holding
-  "240 assets" was wrong the day after it was written.
+- URL is the filter state, so a filtered view is shareable and back works.
+- The catalogue's counts are counted, never stored.

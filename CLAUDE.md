@@ -12,9 +12,10 @@ Before doing anything else, in this order:
 
 1. **`HANDOFF.md`** — the decisions, the traps and what is still broken. It is
    the state of the product; this file is only tooling rules.
-2. **`graphify-out/GRAPH_REPORT.md`** — the code graph. 815 nodes over 151 files.
-   Read it before answering any architecture question, and prefer
-   `graphify query "..."` over grep for anything that crosses module boundaries.
+2. **`graphify-out/GRAPH_REPORT.md`** — the code graph. 1141 nodes and 2323
+   edges over 186 files, in 84 communities. Read it before answering any
+   architecture question, and prefer `graphify query "..."` over grep for
+   anything that crosses module boundaries.
    Details in the graphify section at the bottom of this file.
 
 If `graphify-out/` is missing, rebuild it with `graphify update .` — seconds,

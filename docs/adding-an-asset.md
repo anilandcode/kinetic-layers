@@ -43,14 +43,18 @@ my-asset/
 }
 ```
 
-Required: `name`, `type`, `tagline`. That is the whole list — it used to be
-eight fields, five of which were taxonomies nobody filtered by.
+Required: `name`, `type`, `tagline`. That is the whole list — the form used to
+carry twenty fields, five of which were taxonomies nobody filtered by.
+
+Tags are **documents** now, not strings. `tools/seed-tags.mjs` plants the
+vocabulary (33 tags, 12 marked `featured`, which is what the library offers as
+filters) and is safe to re-run — it never overwrites an edit you made.
 
 | Field | Notes |
 |---|---|
 | `type` | The tab on /library. Template, 3D Scene, Prompt, Background, Image Pack, LoRA, Video, MCP / Agent. |
 | `tier` | `Free` or `Premium`. **Defaults to Premium** — forgetting it should never give an asset away. |
-| `tags` | Free-form array. The Studio offers a picker; the script does not police it, because a closed list here is how the five dropdowns happened. |
+| `tags` | Titles of existing `tag` documents. **Unknown ones are refused, not created** — silently minting tags is how the rail grew to ~35 chips nobody chose. Add it in the Studio, or run `tools/seed-tags.mjs`. |
 | `files[].tag` | Code, Source, Assets, Config, Prompts. |
 
 `meta` and `bytes` are read from the real files when you leave them out, so the
@@ -58,9 +62,9 @@ size a visitor is shown is the size they get.
 
 ### Video
 
-A card fetches a clip only when someone hovers it, so a heavy file costs one
-visitor one wait rather than costing the page. The item page is where size
-bites: that one plays on sight.
+A card attaches its clip when it scrolls into view and plays it muted, so size
+is paid by everyone who scrolls past — not just by whoever hovers. That makes it
+matter more than it used to, not less.
 
 ```bash
 node tools/optimize-clip.mjs clip.mp4                  # 6s, 1280px, ~2 MB
@@ -72,17 +76,27 @@ It writes a trimmed silent loop and a poster frame taken from that loop, so the
 still and the first frame match. Upload the poster as **Image** and the loop as
 **Video**.
 
+The poster is optional now — Cloudflare cuts a still out of the clip
+(`mode=frame`) for a video-only asset, and a 16 MB source produced a 9.4 KB
+JPEG. Uploading one is still better: an image is what carries dimensions, so it
+is what lets the card size itself before any video has loaded.
+
+The Studio warns over 25 MB and refuses over 100 MB, which is Cloudflare's
+transform input ceiling.
+
 Roughly a second of waiting per 1.2 MB on a 10 Mbps connection. 2 MB is
 imperceptible; 18 MB is fifteen seconds of staring at a still.
 
 ### Then
 
 ```bash
-npm run media:deploy    # if you added preview/ images
+npm run media:upload    # if you added preview/ images
 ```
 
-Without a `preview/` folder the card falls back to a generated gradient — run
-`node --env-file=.env.local tools/make-dummy-media.mjs` to produce one.
+Only needed for the legacy path-based previews. Anything uploaded through the
+Studio needs no deploy step at all: the Worker at `media.kineticlayers.com`
+pulls it from Sanity on first request, stores it in R2, and serves it from there
+afterwards.
 
 ## By hand
 

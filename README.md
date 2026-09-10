@@ -12,24 +12,36 @@ entitlement and files.
 The split matters, and it is not arbitrary:
 
 ```
-Sanity          the catalogue — assets, collections, drops, site numbers,
-                and the *paths* of preview media. No binaries.
+Sanity          the catalogue — assets, collections, drops, tags, site
+                numbers. Uploaded media lives on its CDN; the Worker mirrors it.
 
-Cloudflare      preview posters and looping clips, on Pages at
-Pages           kinetic-layers-media.pages.dev. Public, unlimited bandwidth, free.
+Cloudflare R2   kinetic-layers-preview  public previews, served through the
+                Worker at media.kineticlayers.com
+                kinetic-layers-assets   PRIVATE, the gated downloads
 
-Supabase auth   users, sessions, OAuth.
-Supabase db     profiles, entitlements, downloads, saved items.
-Supabase store  the actual downloadable files. PRIVATE bucket, signed URLs.
+Cloudflare      workers/media — pull-through mirror, plus /cdn-cgi/ image and
+Worker          video transformations on the zone
+
+Supabase auth   users, sessions.
+Supabase db     profiles, entitlements, downloads, saved items, usage, api_keys.
+Resend          transactional mail, and Supabase's SMTP.
 ```
 
-**Why Pages and not R2.** R2 was the first choice and is still the better
-long-term home — it is object storage, so uploads are per-object rather than a
-folder redeploy. But enabling R2 requires a payment method on the account even
-for the free tier, and Pages does not. Pages free serves unlimited bandwidth
-from the same CDN, caps at 20,000 files and 25 MiB each (this catalogue is 134
-files at ~30 KB), and needs no card. `NEXT_PUBLIC_MEDIA_BASE` is the only thing
-that would change if you move to R2 later.
+**Why R2 with a Worker in front.** Making the Studio the upload surface put
+every preview on `cdn.sanity.io`, which is metered per plan — and autoplaying
+video in a grid is the heaviest possible thing to put on metered bandwidth. The
+CMS keeps the upload box; it stops being the CDN.
+
+`workers/media` is pull-through rather than pushed on a webhook: the first
+request for a file fetches it from Sanity, stores it in R2 and serves it, and
+every request after is R2 plus edge cache. Nothing to backfill, nothing to keep
+in step, and no window after a publish where a document points at bytes that are
+not there.
+
+Range and HEAD support in that Worker are load-bearing, not polish —
+Transformations require an origin to answer both with `Content-Range`, which is
+why a cache miss stores the object and re-reads it through R2 instead of
+streaming the upstream response back.
 
 **Why not a media SaaS.** Previews are served on every
 visit, so bandwidth is the recurring cost, not storage. R2 charges nothing for
@@ -39,9 +51,14 @@ library for the same allowance — and on the free plan the penalty for running
 out is the account being disabled, not a bill. Both motionsites.ai and
 getlayers.ai serve from Cloudflare for the same reason.
 
-Derivatives are baked once at upload with ffmpeg, so there is no transformation
-CDN in the request path. `lib/kl/media.ts` resolves a stored path against
-`NEXT_PUBLIC_MEDIA_BASE`; moving hosts is one environment variable.
+Every URL goes through `/cdn-cgi/`, so a visitor gets a right-sized file
+whatever was uploaded — crispness comes from asking for 2x the rendered column
+(740 on a card, 1400 in the item panel), not from shipping the source. It is
+also how a video-only asset gets a still: `mode=frame` cuts one out of the clip,
+so nobody uploads a poster.
+
+`lib/kl/media.ts` holds all of it behind `NEXT_PUBLIC_MEDIA_MIRROR`. Off, it
+behaves exactly as it did before.
 
 **Why the files are not in Sanity.** Sanity's asset CDN is public by URL. The
 paywall is the product, so a gated file has to sit behind something that can
@@ -70,7 +87,7 @@ subscriber saw the same two-line preview as a stranger.
 ```
 canDownload(viewer, asset)
   free asset  → needs any account
-  paid asset  → needs an active unlimited entitlement
+  paid asset  → needs an active premium entitlement
 ```
 
 The item page asks it to decide which of three states to draw. `/api/download`
@@ -97,9 +114,12 @@ npm run dev
 | `npm run studio:deploy` | Publish the Studio to `<project>.sanity.studio` |
 | `npm run seed` | Re-seed the catalogue from `tools/seed-sanity.mjs` |
 | `npm run media` | Generate dummy posters + clips into `public/preview/` |
-| `npm run media:deploy` | Push `public/preview/` to Cloudflare Pages |
-| `npm run media:upload` | Mirror `public/preview/` into an R2 bucket (unused) |
-| `node --env-file=.env.local tools/qa-personas.mjs --create` | Free + unlimited test accounts |
+| `npm run media:upload` | Mirror `public/preview/` into the R2 preview bucket |
+| `node --env-file=.env.local tools/seed-tags.mjs` | Plant the tag vocabulary (idempotent) |
+| `node tools/optimize-clip.mjs <file>` | Trim a video to a web-sized loop + poster |
+| `npx wrangler deploy --config workers/media/wrangler.jsonc` | Deploy the media Worker |
+| `graphify update .` | Refresh the code graph in `graphify-out/` |
+| `node --env-file=.env.local tools/qa-personas.mjs --create` | Free + premium test accounts |
 | `node tools/seed-storage.mjs` | Put placeholder files in the private bucket |
 | `node tools/apply-migration.mjs <file.sql>` | Apply a migration directly over Postgres |
 
@@ -121,8 +141,15 @@ problems and the app keeps only the read client.
 | `SUPABASE_DB_PASSWORD` | Only for `tools/apply-migration.mjs` |
 | `ADMIN_TOKEN` | Guards `/api/admin/grant` |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Offered when a form fails to send |
-| `NEXT_PUBLIC_MEDIA_BASE` | `https://kinetic-layers-media.pages.dev`. Use `/preview` to serve the local folder instead |
-| `R2_*` | Upload script only. The app never talks to R2, it only builds URLs |
+| `SANITY_API_READ_TOKEN` | **Required.** Viewer role. Without it `tag` documents are invisible to the app — see HANDOFF trap 20 |
+| `NEXT_PUBLIC_SITE_URL` | `https://kineticlayers.com`. Every auth email link, canonical URL and OG image is built from it |
+| `NEXT_PUBLIC_MEDIA_BASE` | `https://media.kineticlayers.com`. Use `/preview` to serve the local folder instead |
+| `NEXT_PUBLIC_MEDIA_MIRROR` | `1` routes media through the Worker and `/cdn-cgi/`. `0` behaves as before |
+| `NEXT_PUBLIC_EARLY_ACCESS` | `1` makes an account the entitlement. Turning it off restores the paywall untouched |
+| `RESEND_API_KEY` / `EMAIL_FROM` | Both needed, or `EMAIL_READY` is false and nothing sends |
+| `STORAGE_DRIVER` | `supabase` (default) or `r2` — which bucket holds gated files |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | Server and scripts |
+| `R2_BUCKET` / `R2_ASSETS_BUCKET` | Public previews / private downloads. Deliberately separate — see HANDOFF trap 19 |
 
 Without the Supabase keys the site still renders: the catalogue is public, and
 every auth path reports that accounts are not connected rather than throwing.
@@ -139,10 +166,12 @@ through legal review, and says so on the page.
 
 ## Still to wire
 
-1. **Google and GitHub OAuth.** The buttons are built and say so plainly until
-   configured. Create the app on each provider, set the callback to
-   `https://<project>.supabase.co/auth/v1/callback`, and paste the client ID and
-   secret into Supabase → Authentication → Providers.
+1. **Google and GitHub OAuth.** Both are disabled on the project, so the join
+   page shows neither — it reads `/auth/v1/settings` and renders only what is
+   actually on, rather than offering a door that answers with a 400. Enable one
+   in Supabase → Authentication → Providers (callback
+   `https://<project>.supabase.co/auth/v1/callback`) and its button reappears
+   within five minutes. No redeploy.
 2. **Checkout.** No Stripe yet. Entitlement, the gate and the plan states are
    all real; `/api/admin/grant` changes a plan until a webhook can.
 3. **Real files.** `tools/seed-storage.mjs` writes honest placeholders so the
@@ -151,26 +180,33 @@ through legal review, and says so on the page.
 
 ## How previews load
 
-Grid cards render a gradient immediately, a lazy WebP poster on top, and a
-`<video>` with **no `src` at all** until someone reaches for it. On the item
-page one clip plays on purpose, which is also the only way a phone sees motion —
-the grid withholds video from coarse pointers entirely, and from anyone who
-asked for reduced motion.
+Grid cards paint a gradient immediately, a poster on top, and a `<video>` with
+**no `src` at all** until the card scrolls into view. Then the source attaches,
+it plays muted and looping, and on the way out the source is removed and the
+element reloaded — which frees the decoded buffer instead of leaving every clip
+you scrolled past resident in memory. Reduced motion opts out entirely.
 
-Measured on the built site, not assumed:
+Autoplay replaced hover because the reference sites do it, checked rather than
+assumed: getlayers.ai ships 51 `<video>` tags, every one `autoplay` and
+`preload="none"`, and not one with a `src` attribute. A code comment here
+claimed the opposite for months.
+
+The poster is not necessarily uploaded. A video-only asset gets one cut from the
+clip by Cloudflare — a 16 MB source produced a 9.4 KB JPEG.
+
+Measured on the live site, not assumed:
 
 ```
-/ at 1600      15 cards · 15 videos, all with an empty src · 0 video requests
-               15 posters, all from kinetic-layers-media.pages.dev · 267 KB total page
-               0 requests to the local /preview folder — genuinely on the CDN
-hover one card exactly 1 video request, that card's clip, then it plays
-/ at 375       0 <video> elements rendered at all · 0 video requests
-/item/[slug]   hero clip autoplays · 4 real thumbnails · 413 KB
+/library       50 /cdn-cgi/ URLs · 0 references to cdn.sanity.io
+               media.kineticlayers.com cold 5.5s (pulling from Sanity), warm 248ms
+frame poster   200 image/jpeg · 9,403 bytes, generated from the clip
+range request  bytes=0-99 → 206 with a correct Content-Range; HEAD → 200
+gated key      /placeholder/maps.zip → 404, and path traversal → 404
 ```
 
 ## Verified
 
-Build clean, 46 routes. Across `/`, `/docs`, `/mcp`, `/privacy`, `/terms`,
+Build clean, 50 routes. Across `/`, `/docs`, `/mcp`, `/privacy`, `/terms`,
 `/license`, `/changelog`, `/collections`, `/pricing` and `/item/[slug]`, at 375
 and 1600 **on production**: zero contrast failures, no horizontal overflow, no
 image missing an `alt`, exactly one `h1` per page and no heading skipped.
@@ -190,13 +226,12 @@ MCP get_prompt paid      refused     refused      917 chars
 
 Revoked and forged API keys are refused. Unknown slugs 404 everywhere.
 
-Filter counts are verified against the rows their filter returns — all eleven
-category and theme chips match. "Newest" leads with a different asset than
-"A–Z", so the two orderings genuinely differ. Related assets differ per asset
-and each really is drawn from that asset's own drop.
-
-Media: 15 videos on the home page, all with an empty `src`, zero video requests
-on load, exactly one on hover, posters from `kinetic-layers-media.pages.dev`.
+The library rail is a type row plus three menus — Category, Sort, Pricing —
+down from ~44 chips. Counts are verified against the rows their filter returns:
+`?price=free&sort=name` gives 6 of 17, every card carrying the Free badge, in
+alphabetical order. The Category menu lists the curated vocabulary from Sanity
+including tags nothing carries yet, shown with a `0` and rendered as text rather
+than a link, so nothing offers a click that can only land on the empty state.
 
 The ⌘K palette traps Tab in both directions, restores focus to the trigger on
 close, and announces its result count.
