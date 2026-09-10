@@ -4,21 +4,24 @@ import Footer from "./Footer";
 import DotFieldCta from "./DotFieldCta";
 import { getDrops, getSettings, getAssets } from "@/lib/sanity/queries";
 import { EARLY_ACCESS } from "@/lib/kl/access";
-import type { Asset } from "@/lib/kl/types";
 
 /**
  * How a drop is made.
  *
- * The signature is the layer deck: four cards stacked at increasing depth that
- * fan apart as you scroll, driven by `data-layer-deck` and the `data-layer`
- * depth on each. Below 880px they stop being a deck and become a stack —
- * absolutely-placed layers overlap the moment the copy wraps.
+ * Four steps, three claims, and the drop log. That is the whole page.
  *
- * The proof cards' bar charts are counted from the catalogue rather than typed
- * out. The prototype hardcoded "Two hundred and forty assets, indexed by shelf"
- * beside bars reading 88/64/58/30; those numbers described a library that does
- * not exist yet, and a promise that stops being true is the failure this
- * codebase keeps writing comments about.
+ * It used to open with a layer deck — the four steps placed absolutely and
+ * fanned apart by a scroll-scrubbed timeline — plus a twelve-logo marquee and
+ * three bar charts. The deck put the page's own explanation behind an
+ * interaction, and the charts were the older failure this file has always
+ * complained about in comments: the prototype hardcoded "Two hundred and forty
+ * assets" beside bars reading 88/64/58/30, describing a library that did not
+ * exist. Replacing those with real counts only moved the problem, because
+ * BRIEFED 31 / BUILT 22 were still typed out, and the one chart that was
+ * genuinely counted read a.tags?.[0] — empty since tags became references.
+ *
+ * A page explaining that nothing here is invented should not lead with invented
+ * numbers. It leads with the four steps instead.
  */
 
 const LAYERS = [
@@ -44,70 +47,35 @@ const LAYERS = [
     tag: "L1",
     name: "The file",
     meta: "SOURCE INCLUDED",
-    copy: "Cleaned up, documented and filed by shelf, stack and mood, with the project that made it attached.",
+    copy: "Cleaned up, documented and filed by type and tag, with the project that made it attached.",
   },
 ];
-
-const LOGOS = [
-  "FIGMA", "BLENDER", "AFTER EFFECTS", "NEXT.JS", "WEBFLOW", "MIDJOURNEY",
-  "CLAUDE", "GSAP", "THREE.JS", "TAILWIND", "RIVE", "SPLINE",
-];
-
-/** Bars, scaled so the largest shelf fills the track. */
-function shelfBars(all: Asset[]) {
-  /* Counts the first tag on each asset. `shelf` used to be a required field
-     and made a tidy three-bar chart; a tag list is looser, so this is the
-     leading tag rather than a guaranteed axis. */
-  const counts = new Map<string, number>();
-  for (const a of all) {
-    const key = a.tags?.[0];
-    if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
-  }
-  const rows = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  const max = rows[0]?.[1] ?? 1;
-  return rows.map(([label, n], i) => ({
-    label: label.toUpperCase(),
-    n: String(n),
-    w: Math.round((n / max) * 100),
-    hot: i === 0,
-  }));
-}
 
 export default async function ProcessView() {
   const [all, drops, settings] = await Promise.all([getAssets(), getDrops(), getSettings()]);
 
-  const bars = shelfBars(all);
   const free = all.filter((a) => a.free).length;
 
+  /* Titles and copy, no charts. The bars beside these read BRIEFED 31 / BUILT 22
+     — numbers describing a library that does not exist — and the third chart was
+     counted from a.tags?.[0], which is empty now that tags are references. A
+     chart with invented figures and a chart with no figures are both worse than
+     the sentence they sat next to. */
   const proof = [
     {
       title: "Source files, not screenshots",
       copy: "Every asset ships with the project that made it — scene, config, prompt chain and all.",
-      pattern: "mesh",
-      bars: [
-        { label: "OUTPUT", n: "1", w: 22, hot: false },
-        { label: "SOURCE", n: "1", w: 64, hot: true },
-        { label: "CONFIG", n: "3", w: 44, hot: false },
-        { label: "LICENSE", n: "1", w: 18, hot: false },
-      ],
     },
     {
       title: "Filed so you can find it",
-      copy: `${settings.totalAssets} assets, indexed by shelf, stack and mood. No tag soup.`,
-      pattern: "dots",
-      bars,
+      copy: `${settings.totalAssets} assets, filed by type and tag, and every filter carries its own count.`,
     },
     {
       title: "Nothing enters unless it shipped",
       copy: "Each drop is made for a live brief, used on a real page, then filed with its receipts.",
-      pattern: "hatch",
-      bars: [
-        { label: "BRIEFED", n: "31", w: 96, hot: false },
-        { label: "BUILT", n: "22", w: 68, hot: false },
-        { label: "SHIPPED", n: String(settings.totalAssets), w: 38, hot: true },
-      ],
     },
   ];
+
 
   return (
     <Shell>
@@ -126,22 +94,15 @@ export default async function ProcessView() {
             </p>
           </div>
 
-          {/* ---------- The deck ---------- */}
-          <div className="kl-deck" data-layer-deck>
-            {LAYERS.map((l, i) => (
-              <div
-                key={l.tag}
-                className="kl-layer"
-                data-layer={LAYERS.length - 1 - i}
-                style={{
-                  position: "absolute",
-                  left: i * 22,
-                  right: i * 22 + 34,
-                  top: 76 + i * 104,
-                  zIndex: 10 - i,
-                  boxShadow: `0 ${26 - i * 4}px ${60 - i * 8}px -34px rgba(0,0,0,0.4)`,
-                }}
-              >
+          {/* ---------- The four layers ----------
+              A list, not a deck. These were absolutely placed and fanned apart
+              by a scroll-scrubbed timeline, which put the page's own
+              explanation behind an interaction: until you scrolled just far
+              enough, the four steps overlapped each other. Four short steps are
+              a list, and a list is legible the moment it arrives. */}
+          <ol className="kl-stack-rows" style={{ marginTop: 28 }}>
+            {LAYERS.map((l) => (
+              <li key={l.tag} className="kl-stack-row" data-reveal>
                 <div className="kl-layer-head">
                   <span className="kl-kicker">{l.tag}</span>
                   <span className="kl-layer-name">{l.name}</span>
@@ -149,32 +110,15 @@ export default async function ProcessView() {
                   <span className="kl-layer-meta">{l.meta}</span>
                 </div>
                 <p>{l.copy}</p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
 
           {/* ---------- Proof ---------- */}
           <div className="kl-3col" data-3col>
             {proof.map((p) => (
               <div key={p.title} className="kl-proof" data-lift="7" data-reveal>
                 <span className="kl-sheen" data-sheen aria-hidden="true" />
-                <div className="kl-mock">
-                  <div className={`kl-pat kl-pat--${p.pattern}`} aria-hidden="true" />
-                  <div className="kl-mock-bars">
-                    {p.bars.map((b) => (
-                      <div key={b.label} className="kl-bar-row">
-                        <span className="kl-bar-label">{b.label}</span>
-                        <span className="kl-bar-track">
-                          <span
-                            className={`kl-bar-fill${b.hot ? " kl-bar-fill--hot" : ""}`}
-                            style={{ width: `${b.w}%` }}
-                          />
-                        </span>
-                        <span className="kl-bar-n">{b.n}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
                 <div style={{ position: "relative" }}>
                   <h3>{p.title}</h3>
                   <p>{p.copy}</p>
@@ -183,29 +127,15 @@ export default async function ProcessView() {
             ))}
           </div>
 
-          {/* ---------- Tools ---------- */}
-          <div className="kl-rule-row">
-            <span className="kl-rule-label">BUILT WITH THE TOOLS YOU ALREADY RUN</span>
-            <span className="kl-rule" data-rule aria-hidden="true" />
-          </div>
-          <div className="kl-marquee-mask">
-            {/* Doubled, because the marquee tweens by half the rail's width
-                and a single copy would leave a gap on the wrap. */}
-            <div className="kl-marquee" data-marquee aria-hidden="true">
-              {[...LOGOS, ...LOGOS].map((name, i) => (
-                <span key={`${name}-${i}`}>{name}</span>
-              ))}
-            </div>
-          </div>
-
           {/* ---------- Drop log ---------- */}
           <div className="kl-split" data-split>
             <div className="kl-split-copy" data-reveal>
               <span className="kl-kicker">THE DROP LOG</span>
-              <h2>Nine new assets a week, and nothing that didn&rsquo;t ship somewhere first.</h2>
+              <h2>Nothing enters that didn&rsquo;t ship somewhere first.</h2>
               <p>
                 Each drop is built for a real brief, used on a real page, then cleaned up and filed.
-                If it never left the studio, it never enters the library.
+                If it never left the studio, it never enters the library. New work appears when
+                it is ready rather than to a schedule.
               </p>
             </div>
             <div className="kl-log" data-reveal>

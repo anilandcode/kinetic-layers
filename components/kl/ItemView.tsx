@@ -201,23 +201,27 @@ export default function ItemView({
               ) : null}
             </div>
 
+            {/* Three rows in normal flow, not a deck.
+
+                This was `data-layer-deck`: the rows sat absolutely at
+                left: i*22 / right: i*22+34, each 44px narrower than the last,
+                inside a fixed 430px box, and a scroll-scrubbed GSAP timeline
+                (layerDeck, lib/kl/motion.ts) unstacked them as the page moved.
+
+                In the overlay it never could. The scrolling element there is
+                .kl-modal-veil rather than the window, so the scrub never
+                advanced and the three rows sat frozen mid-skew — which read as
+                a broken layout rather than an effect, because that is what it
+                was: a scroll animation with no scroll.
+
+                Flat here fixes the overlay and the full page together, and the
+                fixed 430px went with it, so the panel no longer reserves height
+                it may not fill. */}
             <div className="kl-item-download">
               <span className="kl-kicker">WHAT&rsquo;S IN THE DOWNLOAD</span>
-              <div className="kl-deck kl-deck--item" data-layer-deck>
-                {STACK.map((s, i) => (
-                  <div
-                    key={s.tag}
-                    className="kl-layer"
-                    data-layer={STACK.length - 1 - i}
-                    style={{
-                      position: "absolute",
-                      left: i * 22,
-                      right: i * 22 + 34,
-                      top: 40 + i * 118,
-                      zIndex: 10 - i,
-                      boxShadow: `0 ${26 - i * 4}px ${60 - i * 8}px -34px rgba(0,0,0,0.4)`,
-                    }}
-                  >
+              <ol className="kl-stack-rows">
+                {STACK.map((s) => (
+                  <li key={s.tag} className="kl-stack-row">
                     <div className="kl-layer-head">
                       <span className="kl-kicker">{s.tag}</span>
                       <span className="kl-layer-name">{s.name}</span>
@@ -225,9 +229,9 @@ export default function ItemView({
                       <span className="kl-layer-meta">{s.meta}</span>
                     </div>
                     <p>{s.copy}</p>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
           </div>
 

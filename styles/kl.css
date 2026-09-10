@@ -684,13 +684,50 @@
 
 /* ---------- Asset card ---------------------------------------------------- */
 
+/* Bare at rest, framed on hover.
+
+   The padding and the border WIDTH stay; only their colour goes. That is the
+   whole trick, and it is not laziness about the "no padding" ask: the grid is
+   CSS `columns`, so animating padding or border-width would relayout the entire
+   column under the pointer every time it entered a card. Keeping the box
+   constant and changing only paint leaves the masonry perfectly still.
+
+   Transparent padding reads as no padding. At rest the card's silhouette is the
+   media itself, and what shows through those 6px is the page behind it.
+
+   It also preserves the thing .kl-glow-rim depends on — see the note above. The
+   rim is a sibling painted behind the card and masks itself against the card's
+   opaque background. It is only ever visible on hover, which is precisely when
+   this background comes back. A frame drawn OUTSIDE the card instead (a
+   pseudo-element at inset:-6px, the obvious first idea) would cover the rim
+   completely and quietly delete the glow. */
 [data-kl] .kl-card {
   position: relative;
   border-radius: 18px;
-  border: 1px solid var(--line);
-  background: var(--card);
+  border: 1px solid transparent;
+  background: transparent;
   padding: 6px;
+  box-shadow: none;
+  transition:
+    border-color 240ms var(--ease, cubic-bezier(0.22, 0.8, 0.2, 1)),
+    background-color 240ms var(--ease, cubic-bezier(0.22, 0.8, 0.2, 1)),
+    box-shadow 240ms var(--ease, cubic-bezier(0.22, 0.8, 0.2, 1));
+}
+/* :focus-within alongside :hover, so tabbing to a card shows the same frame a
+   pointer gets — the pairing styles/legacy.css:627 already uses. */
+[data-kl] .kl-glow:hover .kl-card,
+[data-kl] .kl-card:focus-within {
+  border-color: var(--line);
+  background: var(--card);
   box-shadow: var(--shadow);
+}
+/* motion.ts checks reduced() before it binds any of the GSAP hover work, so the
+   card is inert under reduce — but that guard cannot know about a CSS
+   transition. The frame still appears; it just arrives instantly. */
+@media (prefers-reduced-motion: reduce) {
+  [data-kl] .kl-card {
+    transition: none;
+  }
 }
 [data-kl] .kl-card-link {
   display: block;
@@ -1911,11 +1948,27 @@
   gap: 14px;
   margin-top: 10px;
 }
-/* Three layers rather than four, so the deck is shorter than the one on the
-   process screen. */
-[data-kl] .kl-deck--item {
-  height: 430px;
-  margin-top: 0;
+/* Was .kl-deck--item, a 430px box holding three absolutely-placed layers that a
+   scroll-scrubbed timeline unstacked. The overlay scrolls .kl-modal-veil rather
+   than the window, so that scrub never ran and the rows stayed skewed. They are
+   list items now: same card treatment, full width, readable on arrival, and no
+   reserved height to leave a gap when the copy is short. */
+[data-kl] .kl-stack-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+[data-kl] .kl-stack-row {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px 20px;
+}
+[data-kl] .kl-stack-row p {
+  margin: 8px 0 0;
 }
 
 [data-kl] .kl-item-side {
