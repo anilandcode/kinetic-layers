@@ -169,18 +169,35 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
     count?: number;
     active: boolean;
     to: string;
-  }) => (
-    <Link
-      href={to}
-      role="menuitem"
-      className="kl-drop-item"
-      aria-current={active ? "true" : undefined}
-      scroll={false}
-    >
-      <span>{label}</span>
-      {typeof count === "number" ? <span className="kl-pill-n">{count}</span> : null}
-    </Link>
-  );
+  }) => {
+    const body = (
+      <>
+        <span>{label}</span>
+        {typeof count === "number" ? <span className="kl-pill-n">{count}</span> : null}
+      </>
+    );
+    /* A tag nothing carries is still worth listing — it is the vocabulary, and
+       an author needs to see it — but it is not worth clicking, because the
+       only place it goes is the empty state. Shown, counted, not offered. */
+    if (count === 0 && !active) {
+      return (
+        <span className="kl-drop-item kl-drop-item--empty" aria-disabled="true">
+          {body}
+        </span>
+      );
+    }
+    return (
+      <Link
+        href={to}
+        role="menuitem"
+        className="kl-drop-item"
+        aria-current={active ? "true" : undefined}
+        scroll={false}
+      >
+        {body}
+      </Link>
+    );
+  };
 
   const types = Object.entries(facets.type).sort((a, b) => b[1] - a[1]);
 
@@ -189,10 +206,21 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
      selected but no longer featured is appended anyway, so a shared URL still
      explains itself instead of filtering by something invisible. */
   const selectedTags = filters.tags ?? [];
+  /* The whole curated list, including tags nothing carries yet.
+
+     The rail hid empty tags, and that rule was right for the rail: a chip row
+     drawn from the catalogue should not offer a filter that returns nothing.
+     This menu is the opposite thing — a vocabulary somebody chose in the Studio
+     — and hiding the unused half of it makes a correctly configured library
+     look broken. An empty menu says "this is not working"; a menu reading
+     "Hero 0" says "nothing is tagged Hero yet", which is true and useful.
+
+     Zero-count entries render as text rather than links below, so nothing here
+     ever offers a click that lands on an empty grid. */
   const categories = [
     ...filterTags,
     ...selectedTags.filter((t) => !filterTags.includes(t)),
-  ].filter((t) => (facets.tags[t] ?? 0) > 0 || selectedTags.includes(t));
+  ];
 
   const categoryValue =
     selectedTags.length === 0

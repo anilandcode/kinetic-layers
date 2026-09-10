@@ -548,6 +548,15 @@
 [data-kl] .kl-drop-item:hover {
   background: var(--t1);
 }
+/* Listed so the vocabulary is visible, dimmed so it does not invite a click
+   that can only land on the empty state. */
+[data-kl] .kl-drop-item--empty {
+  color: var(--muted);
+  cursor: default;
+}
+[data-kl] .kl-drop-item--empty:hover {
+  background: none;
+}
 [data-kl] .kl-drop-item[aria-current="true"] {
   background: var(--t2);
   font-weight: 500;
