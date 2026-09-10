@@ -27,6 +27,8 @@ export type Filters = {
   tags?: string[];
   /** Favourites. Not a field on Asset — see `saved` below. */
   saved?: boolean;
+  /** Tier. Its own axis rather than a tag, because it is what you can take. */
+  price?: "free" | "premium";
 };
 
 /**
@@ -39,6 +41,7 @@ export type Filters = {
 const matches = (a: Asset, f: Filters, saved: ReadonlySet<string>) =>
   (!f.type || a.type === f.type) &&
   (!f.tags?.length || f.tags.every((t) => a.tags?.includes(t))) &&
+  (!f.price || (f.price === "free") === a.free) &&
   (!f.saved || saved.has(a.slug));
 
 const NONE: ReadonlySet<string> = new Set();
@@ -50,6 +53,7 @@ export function applyFilters(all: Asset[], f: Filters, saved: ReadonlySet<string
 export type Facets = {
   type: Record<string, number>;
   tags: Record<string, number>;
+  price: { free: number; premium: number };
   /** Total with every current filter applied — what the grid actually shows. */
   matching: number;
 };
@@ -58,6 +62,7 @@ export function countFacets(all: Asset[], f: Filters, saved: ReadonlySet<string>
   /* For each dimension, drop that dimension's own selection before counting,
      so a chip's number answers "what would I get if I picked this instead". */
   const forType = all.filter((a) => matches(a, { ...f, type: undefined }, saved));
+  const forPrice = all.filter((a) => matches(a, { ...f, price: undefined }, saved));
 
   const tally = (rows: Asset[], key: (a: Asset) => string) =>
     rows.reduce<Record<string, number>>((m, a) => {
@@ -85,28 +90,61 @@ export function countFacets(all: Asset[], f: Filters, saved: ReadonlySet<string>
        reason DownloadFilter derives its options. */
     type: tally(forType.filter((a) => a.type), (a) => a.type),
     tags: tagCounts,
+    price: {
+      free: forPrice.filter((a) => a.free).length,
+      premium: forPrice.filter((a) => !a.free).length,
+    },
     matching: applyFilters(all, f, saved).length,
   };
 }
 
-export const SORTS = ["newest", "name"] as const;
+export const SORTS = ["featured", "popular", "newest", "name"] as const;
 export type Sort = (typeof SORTS)[number];
 
 export const SORT_LABEL: Record<Sort, string> = {
-  newest: "Newest",
+  featured: "Featured",
+  popular: "Popular",
+  newest: "Recent",
   name: "A–Z",
 };
 
 /**
  * The Sanity query already returns newest-first, so "newest" is a no-op rather
- * than a re-sort on a date the card projection does not even carry.
+ * than a re-sort on a date the card projection does not even carry. Every other
+ * sort is stable on top of that, so ties fall back to newest rather than to
+ * whatever order the array happened to be in.
  */
 export function sortAssets(assets: Asset[], sort: Sort): Asset[] {
   if (sort === "newest") return assets;
   const out = [...assets];
-  if (sort === "name") out.sort((a, b) => a.name.localeCompare(b.name));
+
+  if (sort === "name") {
+    out.sort((a, b) => a.name.localeCompare(b.name));
+    return out;
+  }
+
+  if (sort === "featured") {
+    out.sort(
+      (a, b) =>
+        Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
+        (a.priority ?? Number.POSITIVE_INFINITY) - (b.priority ?? Number.POSITIVE_INFINITY)
+    );
+    return out;
+  }
+
+  /* Popularity is real but young: until someone has downloaded or saved
+     something, every count is zero and sorting by it would present an arbitrary
+     order as a ranking. Fall back to the editorial one until there is a signal
+     worth showing. */
+  if (sort === "popular") {
+    if (!assets.some((a) => (a.popularity ?? 0) > 0)) return sortAssets(assets, "featured");
+    out.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
+    return out;
+  }
+
   return out;
 }
 
+/** Featured is the default: it is the one order somebody actually chose. */
 export const asSort = (v: unknown): Sort =>
-  typeof v === "string" && (SORTS as readonly string[]).includes(v) ? (v as Sort) : "newest";
+  typeof v === "string" && (SORTS as readonly string[]).includes(v) ? (v as Sort) : "featured";

@@ -45,11 +45,18 @@ export default function AssetCard({ asset }: { asset: Asset }) {
             /* The design's own ground, not `asset.g`. That field holds
                gradients authored for the old dark palette and reads as a
                black hole on the warm ground — it is styling, not content, so
-               the redesign owns it. A real poster covers it anyway. */
-            style={{
-              height: asset.h ? `${asset.h}px` : undefined,
-              background: `var(${ground})`,
-            }}
+               the redesign owns it. A real poster covers it anyway.
+
+               The ratio replaces the old inline `height: asset.h`. See the
+               note on .kl-preview in styles/kl.css: a pixel height computed
+               for a narrow column crops the media once the column is wide.
+               asset.h is still projected — Skeleton reserves space with it. */
+            style={
+              {
+                background: `var(${ground})`,
+                "--kl-aspect": String(asset.aspect || 1.4),
+              } as React.CSSProperties
+            }
           >
             {/* play="auto", so a clip starts when its card scrolls into view
                 rather than waiting for a hover nobody performs on a phone.
@@ -78,6 +85,11 @@ export default function AssetCard({ asset }: { asset: Asset }) {
             )}
           </div>
 
+          {/* Name, tier, then the format pinned right — one line, as the
+              reference grids do it. The separate chip row this replaces led
+              with the type, so the only thing lost by deleting it is a
+              duplicate; the first tag went with it, which is the trade: a card
+              is a glance, and the tag is one click away on the item page. */}
           <div className="kl-card-head">
             <span className="kl-card-name">{asset.name}</span>
 
@@ -98,20 +110,16 @@ export default function AssetCard({ asset }: { asset: Asset }) {
             ) : (
               <span className="kl-badge kl-badge--amber">Free</span>
             )}
-          </div>
 
-          <div className="kl-tags">
-            <span className="kl-tag">{asset.type}</span>
-            {/* One tag, not the whole list: a card is a glance, and five
-                chips under a thumbnail is a paragraph. */}
-            {asset.tags?.[0] ? <span className="kl-tag">{asset.tags[0]}</span> : null}
             {/* The design has no early-access state, so this chip is ours. It
-                sits in the tag row rather than beside PREMIUM because the head
-                row is a three-item flex with no wrap — a third chip there
-                overflows the narrow masonry columns. */}
+                lived in the deleted tag row because the head could not fit a
+                third chip at 370px; a full-bleed grid gives the column ~600px,
+                and the name ellipses before anything overflows. */}
             {!asset.free && EARLY_ACCESS ? (
               <span className="kl-tag kl-tag--free">Free now</span>
             ) : null}
+
+            <span className="kl-card-type">{asset.type}</span>
           </div>
         </Link>
       </div>

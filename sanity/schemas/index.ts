@@ -33,20 +33,13 @@ import { defineField, defineType, type SchemaTypeDefinition } from "sanity";
  * `type` stayed a field of its own because it is the library's tab row: it is
  * the one axis the UI navigates by rather than filters on.
  */
-const TAGS = [
-  /* was `shelf` */
-  "Build", "Motion", "Craft",
-  /* was `mood` */
-  "Luxe", "Technical", "Editorial", "Organic", "Brutalist", "Playful",
-  /* was `category` — what a visitor came looking for */
-  "Hero", "Landing page", "Portfolio", "SaaS", "Agency", "Ecommerce",
-  "Dashboard", "Background", "Texture", "Workflow",
-  /* was `theme` */
-  "Dark", "Light",
-  /* was `stack` */
-  "Next.js", "React", "Astro", "Tailwind", "Three.js", "R3F", "GSAP",
-  "Blender", "Figma", "Flux", "Claude", "GPT",
-] as const;
+/**
+ * There is no TAGS list here any more.
+ *
+ * It was 34 values compiled into the schema, which made adding a tag a code
+ * change and a deploy. A vocabulary is content, so it lives in the dataset as
+ * `tag` documents — see below. tools/seed-tags.mjs plants the original 34.
+ */
 
 /** The tab row on /library. A closed list so the tabs cannot sprout typos. */
 const TYPES = [
@@ -229,12 +222,26 @@ const asset = defineType({
       description: "Free assets download on any signed-in account.",
     }),
     defineField({
+      name: "featured",
+      type: "boolean",
+      group: "main",
+      initialValue: false,
+      description: "Leads the library under the Featured sort.",
+    }),
+    defineField({
+      name: "priority",
+      type: "number",
+      group: "advanced",
+      description: "Optional. Lower sorts first among featured assets.",
+    }),
+    defineField({
       name: "tags",
       type: "array",
       group: "main",
-      of: [{ type: "string" }],
-      options: { list: [...TAGS], layout: "tags" },
-      description: "Optional. Drives the library filters and what counts as related.",
+      of: [{ type: "reference", to: [{ type: "tag" }] }],
+      description:
+        "Optional. Drives the library filters and what counts as related. " +
+        "To add or remove a tag from the list itself, edit Tag — this picker follows it.",
     }),
 
     defineField({ name: "tagline", type: "text", rows: 2, group: "words" }),
@@ -294,6 +301,61 @@ const asset = defineType({
   },
 });
 
+/**
+ * The tag vocabulary, as documents.
+ *
+ * `featured` is what keeps the library legible. Every tag is available for
+ * tagging, but only featured ones are offered as filters — the chip row had
+ * grown to ~35 because it was drawn from whatever the catalogue happened to
+ * contain, which is a vocabulary nobody chose.
+ *
+ * Nothing downstream knows these are references: lib/sanity/queries.ts projects
+ * `tags[]->title`, so facets, cards, the MCP tool and the OG images all still
+ * receive string[] exactly as they did when this was a list of strings.
+ */
+const tag = defineType({
+  name: "tag",
+  title: "Tag",
+  type: "document",
+  fields: [
+    defineField({ name: "title", type: "string", validation: (r) => r.required() }),
+    defineField({
+      name: "slug",
+      type: "slug",
+      options: { source: "title", maxLength: 64 },
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: "featured",
+      type: "boolean",
+      initialValue: false,
+      description: "Offer this tag as a filter on the library. Unfeatured tags still tag assets.",
+    }),
+    defineField({
+      name: "order",
+      type: "number",
+      description: "Optional. Lower sorts first in the filter list.",
+    }),
+  ],
+  orderings: [
+    {
+      title: "Filter order",
+      name: "order",
+      by: [
+        { field: "order", direction: "asc" },
+        { field: "title", direction: "asc" },
+      ],
+    },
+  ],
+  preview: {
+    select: { title: "title", featured: "featured" },
+    prepare: ({ title, featured }: Record<string, any>) => ({
+      title,
+      subtitle: featured ? "Filter" : "Tag only",
+    }),
+  },
+});
+
 const collection = defineType({
   name: "collection",
   title: "Collection",
@@ -327,8 +389,7 @@ const collection = defineType({
     defineField({
       name: "tags",
       type: "array",
-      of: [{ type: "string" }],
-      options: { list: [...TAGS], layout: "tags" },
+      of: [{ type: "reference", to: [{ type: "tag" }] }],
     }),
   ],
   preview: {
@@ -382,6 +443,7 @@ const settings = defineType({
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   asset,
+  tag,
   collection,
   drop,
   settings,

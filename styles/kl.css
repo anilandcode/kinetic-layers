@@ -17,15 +17,22 @@
   color: var(--ink);
 }
 
-/* The prototype capped this at 1240, which left ~340px of dead margin each
-   side of a 1920 screen. 1600 gives the grid room without letting any line of
-   text grow: every prose block carries its own max-width (--kl-pull 620,
-   .kl-lede 500, .kl-faq p 560), so the measure is unchanged by this. */
+/* Full-bleed. The prototype capped this at 1240 and we raised it to 1600, but a
+   cap is still a cap: at 2560 that is 480px of dead margin each side. Only the
+   gutter holds content off the bezel now.
+
+   No line of text grows because of this. Every prose block carries its own
+   max-width (--kl-pull 620, .kl-lede 500, .kl-faq p 560) — those are line-length
+   measures, not the container. What widens is the grid, and only the grid.
+
+   --gutter is the token styles/legacy.css already scales (20/40/56/72 at
+   720/1600/2000); reusing it keeps one system rather than two. The fallback is
+   the old value, so this still behaves if that layer is ever dropped. */
 [data-kl] .kl-pad {
-  max-width: 1600px;
+  width: 100%;
   margin: 0 auto;
-  padding-left: 32px;
-  padding-right: 32px;
+  padding-left: var(--gutter, 32px);
+  padding-right: var(--gutter, 32px);
 }
 
 /* Blocks that are read rather than scanned stay at the old width, centred.
@@ -71,8 +78,13 @@
   background: var(--ghost);
   backdrop-filter: blur(16px);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 9px 10px 9px 18px;
+  /* A pill, not a rounded rectangle. Everything already inside it — the search
+     trigger, the theme toggle, the Go Premium button — is 99px, so the 14px
+     shell was the one square thing in a row of round ones. The left inset goes
+     up with the radius: at 99px the curve eats into the corner, and 18px left
+     the wordmark sitting in it. */
+  border-radius: 99px;
+  padding: 9px 10px 9px 26px;
   box-shadow: 0 8px 26px -18px rgba(20, 22, 26, 0.24);
 }
 
@@ -459,6 +471,88 @@
   color: var(--muted);
 }
 
+/* ---------- Rail dropdowns ------------------------------------------------
+   A <details> disclosure, so the menus need no JavaScript and no hydration —
+   the library is a Server Component whose every control is a link, and this
+   keeps it that way. The summary is styled as a pill so it sits in the same
+   rail as the type chips without looking like a different species. */
+[data-kl] .kl-drop {
+  position: relative;
+}
+[data-kl] .kl-drop > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  list-style: none;
+  user-select: none;
+}
+/* Safari draws its own triangle and ignores list-style. */
+[data-kl] .kl-drop > summary::-webkit-details-marker {
+  display: none;
+}
+[data-kl] .kl-drop[open] > summary {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+/* The chosen value, so a closed menu still says what it is doing. */
+[data-kl] .kl-drop-value {
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+[data-kl] .kl-drop-caret {
+  font-size: 8px;
+  line-height: 1;
+  opacity: 0.6;
+  transition: transform 0.2s;
+}
+[data-kl] .kl-drop[open] .kl-drop-caret {
+  transform: rotate(180deg);
+}
+[data-kl] .kl-drop-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  min-width: 190px;
+  /* A long vocabulary scrolls rather than running off the viewport. */
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px -22px rgba(20, 22, 26, 0.45);
+}
+/* Right-anchored near the end of the rail, so the last menu cannot push the
+   page into a horizontal scroll. */
+[data-kl] .kl-drop:last-of-type .kl-drop-menu {
+  left: auto;
+  right: 0;
+}
+[data-kl] .kl-drop-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 13px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+[data-kl] .kl-drop-item:hover {
+  background: var(--t1);
+}
+[data-kl] .kl-drop-item[aria-current="true"] {
+  background: var(--t2);
+  font-weight: 500;
+}
+
 [data-kl] .kl-spacer {
   flex: 1;
 }
@@ -477,7 +571,12 @@
 }
 /* A fourth column once there is room for it. Below this the cards would be
    narrower than the previews they hold, which is worse than empty margin.
-   kl-tokens.css drops to 2 at 1080 and 1 at 720. */
+   kl-tokens.css drops to 2 at 1080 and 1 at 720.
+
+   It stops at four on purpose. Now that .kl-pad is full-bleed, a fifth column
+   would spend the extra width on *more* cards; four spends it on bigger ones,
+   so a preview at 2560 is around 600px wide instead of 370. The media is the
+   product here — it should get the pixels. */
 @media (min-width: 1500px) {
   [data-kl] .kl-masonry {
     columns: 4;
@@ -603,6 +702,12 @@
   border-radius: 13px;
   border: 1px solid var(--line2);
   background: var(--t1);
+  /* The card used to carry an inline pixel height from GROQ, computed for a
+     ~370px column and clamped 170–420. A full-bleed grid makes that wrong: at
+     2560 the column is ~600px and a fixed height crops the media rather than
+     showing it. The ratio is the honest measurement — it scales with whatever
+     width the column happens to have. AssetCard sets --kl-aspect per asset. */
+  aspect-ratio: var(--kl-aspect, 1.4);
 }
 [data-kl] .kl-preview img,
 [data-kl] .kl-preview video {
@@ -653,23 +758,44 @@
   background: var(--amber-bg);
 }
 
+/* One line, not two. The card used to carry a head row and a chip row beneath
+   it; the chip row repeated the type that now sits at the right end of this
+   one, so it was a second line of furniture under every thumbnail. */
 [data-kl] .kl-card-head {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 4px 0;
+  padding: 14px 4px 2px;
+}
+/* The name is the only thing allowed to shrink. Everything else is a chip whose
+   text cannot be truncated without becoming a lie ("PREMIU…"), so they hold
+   their width and a long name ellipses instead. */
+[data-kl] .kl-card-head > *:not(.kl-card-name) {
+  flex: none;
+}
+/* Pinned right, so the eye finds the format in the same place on every card
+   however long the name is. */
+[data-kl] .kl-card-type {
+  margin-left: auto;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
 }
 [data-kl] .kl-card-name {
   font-size: 16px;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--ink);
-}
-[data-kl] .kl-tags {
-  display: flex;
-  gap: 7px;
-  flex-wrap: wrap;
-  padding: 10px 4px 2px;
+  /* min-width: 0 is what actually lets a flex child ellipse — without it the
+     item floors at its content width and pushes the chips out of the card. */
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 [data-kl] .kl-tag {
   font-family: var(--font-mono, ui-monospace, monospace);

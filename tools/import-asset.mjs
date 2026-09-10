@@ -102,6 +102,41 @@ const files = entries.map((name, i) => {
   };
 });
 
+/* ---- tags --------------------------------------------------------------- *
+ * Tags are documents now, not strings, so a title in asset.json has to become
+ * a reference. Unknown titles are refused rather than created: silently
+ * minting a tag here is exactly how the old rail grew to ~35 chips nobody
+ * chose. Add it in the Studio (or run tools/seed-tags.mjs) and re-run.
+ */
+async function resolveTags(titles) {
+  if (!titles.length) return [];
+  if (dryRun) return titles.map((t) => ({ _type: "reference", _ref: `tag.?(${t})` }));
+
+  const query = encodeURIComponent(`*[_type == "tag"]{ _id, title }`);
+  const res = await fetch(`https://${PID}.api.sanity.io/v2024-01-01/data/query/${DS}?query=${query}`, {
+    headers: { Authorization: `Bearer ${TOKEN}` },
+  });
+  if (!res.ok) die(`Sanity query ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const { result = [] } = await res.json();
+
+  const byTitle = new Map(result.map((t) => [String(t.title).toLowerCase(), t._id]));
+  const missing = titles.filter((t) => !byTitle.has(String(t).toLowerCase()));
+  if (missing.length) {
+    die(
+      `Unknown tag(s): ${missing.join(", ")}\n` +
+      `Tags are documents now. Create them in the Studio, or run:\n` +
+      `  node --env-file=.env.local tools/seed-tags.mjs`
+    );
+  }
+
+  /* Array items need a _key or the Studio cannot tell two entries apart. */
+  return titles.map((t) => ({
+    _type: "reference",
+    _key: String(t).toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    _ref: byTitle.get(String(t).toLowerCase()),
+  }));
+}
+
 /* ---- the document ------------------------------------------------------- */
 const doc = {
   _id: `asset-${slug}`,
@@ -109,7 +144,7 @@ const doc = {
   name: meta.name,
   slug: { _type: "slug", current: slug },
   type: String(meta.type).toUpperCase(),
-  tags: meta.tags ?? [],
+  tags: await resolveTags(meta.tags ?? []),
   /* Defaults to Premium: forgetting the field should keep an asset behind the
      paywall, never hand it out. */
   tier: meta.tier ?? (meta.free === true ? "Free" : "Premium"),
@@ -126,7 +161,7 @@ const doc = {
 };
 
 console.log(`\n${meta.name}  (${slug})`);
-console.log(`  ${doc.type} · ${doc.tier}${doc.tags.length ? " · " + doc.tags.join(", ") : ""}`);
+console.log(`  ${doc.type} · ${doc.tier}${meta.tags?.length ? " · " + meta.tags.join(", ") : ""}`);
 console.log(`  ${files.length} file(s), ${human(files.reduce((n, f) => n + f.bytes, 0))} total`);
 console.log(`  prompt: ${doc.prompt ? `${doc.prompt.length} chars` : "none"}`);
 console.log(`  notes : ${doc.notes ? `${doc.notes.length} chars` : "none"}`);

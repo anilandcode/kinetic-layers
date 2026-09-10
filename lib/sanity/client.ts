@@ -41,6 +41,30 @@ if (!sanityConfigured && typeof window === "undefined") {
  * `useCdn: false` because pages are cached by Next with tag revalidation; a
  * second cache in front of it would only delay edits.
  */
+/**
+ * A read token, when one is set — and it has to be, for anything new.
+ *
+ * The dataset's aclMode is "public" and this client sent no token for months,
+ * which worked because every document type predated the problem. It does not
+ * hold for new types: `tag` documents are returned to an authenticated query
+ * and not to an anonymous one, and so is a throwaway type created purely to
+ * test it. Anonymous `array::unique(*[]._type)` lists exactly the four original
+ * types. Deploying the schema does not change it.
+ *
+ * Whatever the underlying rule is, it is not diagnosable from the API with an
+ * Editor token, and a reference that will not dereference is not a half-working
+ * feature — `tags[]->title` comes back empty for everyone. So the token is the
+ * fix, and it costs nothing when absent: without it this behaves exactly as it
+ * did before.
+ *
+ * Server-only, deliberately. It is never NEXT_PUBLIC_, and the guard below
+ * means that even if this module were pulled into a client bundle the token
+ * would not travel with it. `perspective: "published"` still applies, so a
+ * token cannot surface drafts either.
+ */
+const readToken =
+  typeof window === "undefined" ? process.env.SANITY_API_READ_TOKEN : undefined;
+
 export const sanity = sanityConfigured
   ? createClient({
       projectId,
@@ -48,5 +72,6 @@ export const sanity = sanityConfigured
       apiVersion,
       useCdn: false,
       perspective: "published",
+      ...(readToken ? { token: readToken } : {}),
     })
   : null;

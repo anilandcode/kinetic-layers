@@ -6,7 +6,8 @@ import GlassButton from "./GlassButton";
 import AssetCard from "./AssetCard";
 import DotFieldCta from "./DotFieldCta";
 import { UpgradeCard, HireCard, NewsCard } from "./PromoCards";
-import { getAssets, getSettings } from "@/lib/sanity/queries";
+import { getAssets, getFilterTags, getSettings } from "@/lib/sanity/queries";
+import { getPopularity } from "@/lib/kl/popularity";
 import { getViewer } from "@/lib/kl/viewer";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -45,7 +46,20 @@ const PROMO_AT = { upgrade: 4, hire: 9, news: 14 };
 
 export default async function LibraryView({ searchParams }: { searchParams?: Promise<Search> }) {
   const params = (await searchParams) ?? {};
-  const [all, settings, viewer] = await Promise.all([getAssets(), getSettings(), getViewer()]);
+  const [raw, settings, viewer, filterTags, popularity] = await Promise.all([
+    getAssets(),
+    getSettings(),
+    getViewer(),
+    getFilterTags(),
+    getPopularity(),
+  ]);
+
+  /* The catalogue is in Sanity and the counts are in Supabase, so the two meet
+     here rather than inside either query. Skipped entirely when there is no
+     signal, which keeps every asset's shape identical to what it was. */
+  const all: Asset[] = popularity.size
+    ? raw.map((a) => ({ ...a, popularity: popularity.get(a.slug) ?? 0 }))
+    : raw;
 
   /* Favourites are the viewer's own rows, so this reads through the
      RLS-scoped client rather than the service role. Signed out, no query. */
@@ -61,6 +75,7 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
     /* Repeated ?tag= params, so two tags narrow rather than replace. */
     tags: params.tag ? (Array.isArray(params.tag) ? params.tag : [params.tag]) : undefined,
     saved: one(params.saved) === "1" || undefined,
+    price: one(params.price) === "free" ? "free" : one(params.price) === "premium" ? "premium" : undefined,
   };
   const sort = asSort(one(params.sort));
 
@@ -80,7 +95,9 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
       type: filters.type,
       tag: filters.tags,
       saved: filters.saved ? "1" : undefined,
-      sort: sort === "newest" ? undefined : sort,
+      price: filters.price,
+      /* Featured is the default, so it is the one value left out of the URL. */
+      sort: sort === "featured" ? undefined : sort,
       ...patch,
     };
     /* append, not set: `tags` is a list, and a second ?tag= has to survive
@@ -110,15 +127,84 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
     </Link>
   );
 
+  /**
+   * A disclosure, not a client component.
+   *
+   * This page has no client state at all — every control is a link and the
+   * filters live in the URL. `<details>` is the one native element that opens a
+   * menu without hydration, so the menus cost nothing and keep working before
+   * (and without) JavaScript. components/legacy/CollectionFilter.tsx is the
+   * client-state counterpart; deliberately not copied here.
+   */
+  const Drop = ({
+    label,
+    value,
+    children,
+  }: {
+    label: string;
+    value?: string;
+    children: React.ReactNode;
+  }) => (
+    <details className="kl-drop">
+      <summary className="kl-pill" aria-haspopup="menu">
+        {label}
+        {value ? <span className="kl-drop-value">{value}</span> : null}
+        <span className="kl-drop-caret" aria-hidden="true">
+          ▾
+        </span>
+      </summary>
+      <div className="kl-drop-menu" role="menu">
+        {children}
+      </div>
+    </details>
+  );
+
+  const DropItem = ({
+    label,
+    count,
+    active,
+    to,
+  }: {
+    label: string;
+    count?: number;
+    active: boolean;
+    to: string;
+  }) => (
+    <Link
+      href={to}
+      role="menuitem"
+      className="kl-drop-item"
+      aria-current={active ? "true" : undefined}
+      scroll={false}
+    >
+      <span>{label}</span>
+      {typeof count === "number" ? <span className="kl-pill-n">{count}</span> : null}
+    </Link>
+  );
+
   const types = Object.entries(facets.type).sort((a, b) => b[1] - a[1]);
-  /* Only tags that would still return something, best first. A chip promising
-     results it cannot deliver is the thing facets.ts exists to prevent. */
-  const tags = Object.entries(facets.tags)
-    .filter(([, n]) => n > 0)
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+  /* The curated vocabulary from Sanity, not everything the catalogue happens to
+     contain — that is what grew the old rail to ~35 chips. A tag that is
+     selected but no longer featured is appended anyway, so a shared URL still
+     explains itself instead of filtering by something invisible. */
+  const selectedTags = filters.tags ?? [];
+  const categories = [
+    ...filterTags,
+    ...selectedTags.filter((t) => !filterTags.includes(t)),
+  ].filter((t) => (facets.tags[t] ?? 0) > 0 || selectedTags.includes(t));
+
+  const categoryValue =
+    selectedTags.length === 0
+      ? undefined
+      : selectedTags.length === 1
+        ? selectedTags[0]
+        : `${selectedTags.length} selected`;
 
   const isEmpty = items.length === 0;
-  const filtering = Boolean(filters.type || filters.tags?.length || filters.saved);
+  const filtering = Boolean(
+    filters.type || filters.tags?.length || filters.saved || filters.price
+  );
 
   return (
     <Shell>
@@ -156,25 +242,6 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
 
             <span className="kl-divider" aria-hidden="true" />
 
-            {tags.map(([t, n]) => {
-              const on = filters.tags?.includes(t);
-              return (
-                <Pill
-                  key={t}
-                  label={t.toUpperCase()}
-                  count={n}
-                  active={Boolean(on)}
-                  /* Toggling adds or removes one tag and leaves the others, so
-                     the rail composes instead of resetting. */
-                  to={href({
-                    tag: on
-                      ? (filters.tags ?? []).filter((x) => x !== t)
-                      : [...(filters.tags ?? []), t],
-                  })}
-                />
-              );
-            })}
-
             <span className="kl-spacer" />
 
             {viewer ? (
@@ -185,14 +252,50 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
               />
             ) : null}
 
-            {SORTS.map((s) => (
-              <Pill
-                key={s}
-                label={SORT_LABEL[s].toUpperCase()}
-                active={sort === s}
-                to={href({ sort: s })}
+            <Drop label="CATEGORY" value={categoryValue}>
+              <DropItem label="All" active={selectedTags.length === 0} to={href({ tag: undefined })} />
+              {categories.map((t) => {
+                const on = selectedTags.includes(t);
+                return (
+                  <DropItem
+                    key={t}
+                    label={t}
+                    count={facets.tags[t] ?? 0}
+                    active={on}
+                    /* Toggling adds or removes one and leaves the rest, so the
+                       menu composes rather than resetting. Tags are AND. */
+                    to={href({
+                      tag: on ? selectedTags.filter((x) => x !== t) : [...selectedTags, t],
+                    })}
+                  />
+                );
+              })}
+            </Drop>
+
+            <Drop label="SORT" value={SORT_LABEL[sort]}>
+              {SORTS.map((s) => (
+                <DropItem key={s} label={SORT_LABEL[s]} active={sort === s} to={href({ sort: s })} />
+              ))}
+            </Drop>
+
+            <Drop
+              label="PRICING"
+              value={filters.price ? (filters.price === "free" ? "Free" : "Premium") : undefined}
+            >
+              <DropItem label="All" active={!filters.price} to={href({ price: undefined })} />
+              <DropItem
+                label="Free"
+                count={facets.price.free}
+                active={filters.price === "free"}
+                to={href({ price: filters.price === "free" ? undefined : "free" })}
               />
-            ))}
+              <DropItem
+                label="Premium"
+                count={facets.price.premium}
+                active={filters.price === "premium"}
+                to={href({ price: filters.price === "premium" ? undefined : "premium" })}
+              />
+            </Drop>
 
             <span className="kl-count">
               {facets.matching} of {all.length}

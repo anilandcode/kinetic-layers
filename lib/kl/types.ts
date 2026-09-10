@@ -25,6 +25,18 @@ export type Asset = {
    */
   tags: string[];
   free: boolean;
+  /**
+   * Editorial ordering. `featured` leads the library under the Featured sort;
+   * `priority` breaks ties among featured assets, lower first. Both are set in
+   * the Studio — nothing derives them.
+   */
+  featured?: boolean;
+  priority?: number;
+  /**
+   * Downloads plus saves, counted in Supabase and merged in by the library.
+   * Absent everywhere else, and zero for everything until there is traffic.
+   */
+  popularity?: number;
   tagline?: string;
   /**
    * Masonry height in px. Derived from the uploaded image's real dimensions

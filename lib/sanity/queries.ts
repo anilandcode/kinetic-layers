@@ -53,13 +53,14 @@ const MEDIA = groq`
     220
   ),
   "name": coalesce(name, string::split(media.asset->originalFilename, ".")[0], string::split(clip.asset->originalFilename, ".")[0], "Untitled"),
-  "tags": coalesce(tags, []),
+  "tags": coalesce(tags[defined(@->title)]->title, []),
   "free": select(defined(tier) => tier == "Free", coalesce(free, false))
 `;
 
 const ASSET_CARD = groq`{
   "slug": slug.current,
   "type": upper(coalesce(type, "")), tagline,
+  "featured": coalesce(featured, false), priority,
   ${MEDIA},
   "promptLength": length(coalesce(prompt, promptBody, ""))
 }`;
@@ -67,6 +68,7 @@ const ASSET_CARD = groq`{
 const ASSET_FULL = groq`{
   "slug": slug.current,
   "type": upper(coalesce(type, "")), tagline,
+  "featured": coalesce(featured, false), priority,
   "notes": coalesce(notes, ""),
   ${MEDIA},
   "files": coalesce(files[]{ name, meta, tag, bytes }, []),
@@ -134,7 +136,7 @@ export async function getRelated(slug: string, limit = 4): Promise<Related> {
     groq`*[_type == "asset" && slug.current == $slug][0] {
       "drop": *[_type == "asset" && slug.current != $slug && drop._ref == ^.drop._ref]
         | order(publishedAt desc) [0...$limit] ${ASSET_CARD},
-      "tag": *[_type == "asset" && slug.current != $slug && count(tags[@ in ^.^.tags]) > 0]
+      "tag": *[_type == "asset" && slug.current != $slug && count(tags[@._ref in ^.^.tags[]._ref]) > 0]
         | order(publishedAt desc) [0...$limit] ${ASSET_CARD},
       "newest": *[_type == "asset" && slug.current != $slug]
         | order(publishedAt desc) [0...$limit] ${ASSET_CARD}
@@ -170,7 +172,7 @@ export async function getCollections(): Promise<Collection[]> {
     [],
     groq`*[_type == "collection"] | order(name asc) {
       "slug": slug.current, name, blurb,
-      "tags": coalesce(tags, []),
+      "tags": coalesce(tags[defined(@->title)]->title, []),
       ${COLLECTION_COVER},
       "items": count(assets),
       "free": count(assets[]->[select(defined(tier) => tier == "Free", coalesce(free, false)) == true])
@@ -185,7 +187,7 @@ export async function getCollection(slug: string): Promise<(Collection & { asset
     null,
     groq`*[_type == "collection" && slug.current == $slug][0] {
       "slug": slug.current, name, blurb,
-      "tags": coalesce(tags, []),
+      "tags": coalesce(tags[defined(@->title)]->title, []),
       ${COLLECTION_COVER},
       "items": count(assets),
       "free": count(assets[]->[select(defined(tier) => tier == "Free", coalesce(free, false)) == true]),
@@ -259,7 +261,7 @@ export async function searchAssets(q: string, limit = 8): Promise<Asset[]> {
   if (!q.trim()) return [];
   return ask<Asset[]>(
     [],
-    groq`*[_type == "asset" && (name match $m || type match $m || stack match $m || mood match $m)]
+    groq`*[_type == "asset" && (name match $m || type match $m || tagline match $m || count(tags[@->title match $m]) > 0)]
       | order(publishedAt desc) [0...$limit] ${ASSET_CARD}`,
     { m: `${q.trim()}*`, limit },
     { next: { revalidate: 60 } }
@@ -288,4 +290,22 @@ export async function getAssetFiles(
     { next: { tags: [`asset:${slug}`] } }
   );
   return r?.files ?? [];
+}
+
+/**
+ * The tag vocabulary the library offers as filters.
+ *
+ * Only `featured` ones. Every tag is still available for tagging an asset — the
+ * chip row had grown to ~35 because it listed whatever the catalogue contained,
+ * which is a vocabulary nobody chose. This is the curated subset, ordered by
+ * `order` then alphabetically.
+ */
+export async function getFilterTags(): Promise<string[]> {
+  const rows = await ask<Array<{ title: string }>>(
+    [],
+    groq`*[_type == "tag" && featured == true] | order(order asc, title asc) { title }`,
+    {},
+    opts(["tags"])
+  );
+  return rows.map((r) => r.title).filter(Boolean);
 }
