@@ -31,8 +31,7 @@ export default async function Changelog() {
               Every drop, newest first.
             </h1>
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)" }}>
-              New work lands on Thursdays. Each drop is a batch of assets built
-              for a real brief, then cleaned up and filed.
+              New work appears when it is ready. This log records what has been added.
             </p>
           </div>
         </section>

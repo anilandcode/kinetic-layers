@@ -1,28 +1,14 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 
-/**
- * The item overlay.
- *
- * The design opens an asset in a popup, not a page — `onClick` sets `itemOpen`
- * and a fixed veil covers the screen. Doing that literally would have cost the
- * real route, and /item/[slug] is load-bearing outside the app: the sitemap,
- * the MCP tool's output, the OG image and every ?next= redirect point at it
- * (HANDOFF.md, trap 3).
- *
- * An intercepting route gives both. Clicking a card from inside the app renders
- * this overlay over the grid; a direct visit, a refresh, a shared link or a
- * crawler gets the full page. Same URL either way, so nothing external breaks,
- * and the cards stay ordinary <Link>s — no click handler to intercept.
- *
- * `data-kl` rather than <Shell> on purpose: the shell also mounts the motion
- * layer, and a second copy would rebind. The layer re-sweeps on pathname change
- * and the interception does change the pathname, so this content gets picked up
- * without one.
- */
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+/** The intercept keeps ItemView and its gate; a direct visit keeps the full page. */
 export default function ItemModal({
   shelf,
   name,
@@ -33,51 +19,125 @@ export default function ItemModal({
   children: ReactNode;
 }) {
   const router = useRouter();
-  const close = useCallback(() => router.back(), [router]);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const closingRef = useRef(false);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [closing, setClosing] = useState(false);
+
+  const close = useCallback(() => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    setClosing(true);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    closeTimerRef.current = setTimeout(() => router.back(), reducedMotion ? 0 : 220);
+  }, [router]);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
-    document.addEventListener("keydown", onKey);
-
-    /* The design locks the page behind the veil. Restore whatever was there
-       rather than clearing it, so a route that sets its own overflow is not
-       quietly reset on close. */
-    const previous = document.body.style.overflow;
+    // Next may move focus to its route wrapper before the dialog mounts.
+    // Retain the originating gallery link when that happens.
+    const active = document.activeElement;
+    const itemPath = window.location.pathname;
+    const opener = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[href]"))
+      .find(link => link.pathname === itemPath && !dialogRef.current?.contains(link));
+    const previousFocus = opener ?? (active instanceof HTMLElement && active.matches(FOCUSABLE) && !dialogRef.current?.contains(active)
+      ? active
+      : null);
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
 
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        close();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const candidates = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE))
+        .filter((element) => element.getClientRects().length > 0);
+      if (!candidates.length) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = candidates[0];
+      const last = candidates[candidates.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || !dialog.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || !dialog.contains(active))) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    const onFocusIn = (event: FocusEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        closeButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+    document.addEventListener("focusin", onFocusIn);
     return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previous;
+      document.removeEventListener("keydown", onKeyDown, true);
+      document.removeEventListener("focusin", onFocusIn);
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+      document.body.style.overflow = previousOverflow;
+      let attempts = 0;
+      const restoreFocus = () => {
+        const returnedCard = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[href]"))
+          .find(link => link.pathname === itemPath && !dialogRef.current?.contains(link));
+        const target = returnedCard ?? (previousFocus?.isConnected ? previousFocus : null);
+        if (target && window.location.pathname !== itemPath) {
+          target.focus({ preventScroll: true });
+        } else if (++attempts < 20) {
+          requestAnimationFrame(restoreFocus);
+        }
+      };
+      requestAnimationFrame(restoreFocus);
     };
   }, [close]);
 
   return (
-    <div data-kl>
-      <div
+    <div data-kl className="bench-item-overlay" data-closing={closing}>
+      <motion.div
         className="kl-modal-veil"
-        onClick={close}
-        role="dialog"
-        aria-modal="true"
-        aria-label={name}
-      >
-        {/* The veil closes on click; the panel must not, or every click inside
-            the asset would dismiss it. */}
-        <div className="kl-modal-panel" onClick={(e) => e.stopPropagation()}>
-          <div className="kl-crumbs">
-            <span>{shelf.toUpperCase()}</span>
-            <span>/</span>
-            <span style={{ color: "var(--ink)" }}>{name.toUpperCase()}</span>
-            <span className="kl-spacer" />
-            <button type="button" className="kl-close" onClick={close}>
-              CLOSE ✕
+        initial={{ opacity: 0 }}
+        animate={{ opacity: closing ? 0 : 1 }}
+        transition={{ duration: closing ? 0.16 : 0.22, ease: "easeOut" }}
+        onClick={(event) => {
+        if (event.target === event.currentTarget) close();
+      }}>
+        <motion.div
+          ref={dialogRef}
+          className="kl-modal-panel"
+          role="dialog"
+          aria-modal="true"
+          aria-label={name}
+          tabIndex={-1}
+          initial={{ opacity: 0, y: 24, scale: 0.985 }}
+          animate={closing ? { opacity: 0, y: 16, scale: 0.985 } : { opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 330, damping: 30, mass: 0.72 }}
+        >
+          {children}
+          <div className="bench-item-head">
+            <span className="bench-item-shelf">{shelf}</span>
+            <button
+              ref={closeButtonRef}
+              type="button"
+              className="kl-close bench-item-close"
+              onClick={close}
+              aria-label={`Close ${name}`}
+            >
+              <span aria-hidden="true">×</span>
             </button>
           </div>
-
-          {children}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

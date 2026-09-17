@@ -1,7 +1,46 @@
 # Kinetic Layers — handoff
 
-State as of commit `2f93f45` on `main`. Read this before changing anything; it
-records the decisions and the traps, not the code.
+This document records operational decisions and known traps. Verify material
+implementation details in the current source before acting.
+
+## Current public-site refinement — 2026-09-17
+
+Work is present locally and has **not** been deployed. The local preview runs at
+`http://127.0.0.1:3003`.
+
+- The public navigation is Library, Pricing, and Contact. `/how` is archived and
+  returns a true 404.
+- Collections remain intact for local development, but `/collections` and
+  `/collections/[slug]` return a true 404 in production. Saved records remain;
+  production account UI no longer links to those routes.
+- The homepage wall contains 20 attributed MotionSites visual references beside
+  the two Kinetic Layers items with real previews. References have a source link
+  and an unavailable state, but never participate in catalogue search, filters,
+  counts, downloads, entitlements, or Premium actions.
+- Both reference and real-item popups use the same compact two-panel composition.
+  Portrait media stays in its stage and can scroll within it; Escape, Back,
+  direct item routes, and focus return remain supported.
+- Maison Neue is the public UI family outside intentional display headings. The
+  layered mark uses the neutral supplied gradient; orange UI and legacy theme
+  effects have been removed.
+- Framer Motion provides restrained entry, hover, modal, and viewport reveals.
+  `prefers-reduced-motion` renders content immediately. The old GSAP visual
+  runner is disconnected from redesigned public routes.
+- Early access remains free. Founding Membership is a future, non-binding
+  $24/month proposal with a confirmation-based interest list; checkout and
+  billing remain inactive.
+
+Latest local checks: TypeScript, formatting whitespace, and optimized build
+passed. The build still warns that `NEXT_PUBLIC_SITE_URL` falls back to
+`http://localhost:3000`; set the production value before a release.
+
+## Planning documents — 2026-09-11
+
+- [Kinetic Layers master plan](docs/KINETIC-LAYERS-MASTER-PLAN.md): the proposed design-kit system, free-adoption strategy, catalogue roadmap, and later paid offers.
+- [Live UI review](docs/KINETIC-LAYERS-UI-REVIEW.md): visual findings from the homepage, library, and item experience, including reproduced mobile header overflow.
+
+These are saved plans and review findings. The 2026-09-17 refinement above
+records the local implementation that supersedes them where they conflict.
 
 ## Where things stand — 2026-09-10
 
@@ -52,8 +91,8 @@ Dashboard, Downloads, Profile, Billing — and the header carries an avatar menu
 when someone is signed in. `profiles.display_name` is settable for the first
 time since the column was created.
 
-**Tooling.** `graphify-out/` holds the code graph: 1141 nodes, 2323 edges, 84
-communities over 186 files. Rebuild with `graphify update .`.
+**Tooling.** `graphify-out/` holds the code graph: 1228 nodes, 2442 edges, 91
+communities over 216 files. Rebuild with `graphify update .`.
 
 ## What it is
 
@@ -84,13 +123,13 @@ Resend                        transactional mail, and Supabase's SMTP.
 
 Do not write a second copy of any of these.
 
-| Rule | Where |
-| --- | --- |
-| May they have it | `lib/kl/gate.ts` — `canDownload`, `canReadPrompt` |
-| How often | `lib/kl/quota.ts` + `lib/kl/limits.ts` |
-| Who are they | `lib/kl/viewer.ts` (cookies), `lib/kl/apikey.ts` (MCP) |
-| Where media lives | `lib/kl/media.ts` — one env var swaps the host |
-| Which providers exist | `lib/supabase/providers.ts` — read, never hardcoded |
+| Rule                  | Where                                                  |
+| --------------------- | ------------------------------------------------------ |
+| May they have it      | `lib/kl/gate.ts` — `canDownload`, `canReadPrompt`      |
+| How often             | `lib/kl/quota.ts` + `lib/kl/limits.ts`                 |
+| Who are they          | `lib/kl/viewer.ts` (cookies), `lib/kl/apikey.ts` (MCP) |
+| Where media lives     | `lib/kl/media.ts` — one env var swaps the host         |
+| Which providers exist | `lib/supabase/providers.ts` — read, never hardcoded    |
 
 **Prompts and files are different resources.** `canReadPrompt` lets an anonymous
 visitor read a free asset's prompt; `canDownload` does not let them take a file.
@@ -108,7 +147,7 @@ premium           50             30
 ```
 
 Rolling 24h, not calendar day. `LIMITS` in `lib/kl/limits.ts` is read by the
-routes that enforce it *and* the pricing page that promises it, so the printed
+routes that enforce it _and_ the pricing page that promises it, so the printed
 number and the enforced number cannot drift.
 
 ## Traps
@@ -135,7 +174,7 @@ Each of these cost real time. They are not hypothetical.
 8. **`usage` is a reserved-ish table name** but works through PostgREST. The
    Supabase pooler can take ~7s cold; `/account` looks hung and is not.
 9. **A limit read in one statement and written in another is not a limit.** Ten
-   concurrent requests on an allowance of one were granted three *in production*.
+   concurrent requests on an allowance of one were granted three _in production_.
    Everything that spends an allowance goes through `consume_quota()`.
 10. **A limiter must fail closed.** The old code granted access when the count
     query errored.
@@ -177,7 +216,7 @@ The rest were learned on 2026-09-09/10.
     middleware forwards a stray code to `/auth/callback`, but the allowlist is
     the real fix.
 23. **In GROQ, an array of nulls is not null.** `tags[]->title` over legacy
-    *string* tags yields `[null, null, …]`, which `coalesce` passes straight
+    _string_ tags yields `[null, null, …]`, which `coalesce` passes straight
     through — `list_categories` returned `"null (78)"`. Filter on
     `defined(@->title)`.
 24. **An inline `height` silently overrides `aspect-ratio`.** Both the card and
@@ -218,7 +257,7 @@ restores the paywall exactly as it was.
    `https://kineticlayers.com` and allowlist `/auth/callback` and `/auth/confirm`
    on both that origin and localhost.
 2. **Tag the assets.** Every Category count reads 0. The 15 dummy assets carry
-   old *string* tags that no longer resolve, so they show none; delete them and
+   old _string_ tags that no longer resolve, so they show none; delete them and
    tag the real ones in the Studio.
 3. **Confirm a real signup end to end.** Resend is verified and SMTP is
    configured, but nobody has watched a confirmation mail arrive and complete.
@@ -265,6 +304,6 @@ rather than optional.
 
 - Verification means driving the running app or calling the route and asserting
   on what comes back. Reading the code is not verification.
-- Comments explain *why*, especially where the obvious approach was wrong.
+- Comments explain _why_, especially where the obvious approach was wrong.
 - URL is the filter state, so a filtered view is shareable and back works.
 - The catalogue's counts are counted, never stored.

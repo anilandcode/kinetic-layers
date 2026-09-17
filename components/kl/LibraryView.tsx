@@ -1,11 +1,12 @@
+
+import { hasRealPreview } from "@/lib/kl/preview-ready";
 import Link from "next/link";
 import SiteHeader from "./SiteHeader";
 import Shell from "./Shell";
 import Footer from "./Footer";
 import GlassButton from "./GlassButton";
 import AssetCard from "./AssetCard";
-import DotFieldCta from "./DotFieldCta";
-import { UpgradeCard, HireCard, NewsCard } from "./PromoCards";
+import { UpgradeCard, NewsCard } from "./PromoCards";
 import { getAssets, getFilterTags, getSettings } from "@/lib/sanity/queries";
 import { getPopularity } from "@/lib/kl/popularity";
 import { getViewer } from "@/lib/kl/viewer";
@@ -19,8 +20,8 @@ import {
   SORT_LABEL,
   type Filters,
 } from "@/lib/kl/facets";
-import { EARLY_ACCESS } from "@/lib/kl/access";
 import type { Asset } from "@/lib/kl/types";
+import { MotionGrid } from "./BenchMotion";
 
 /**
  * The library, in the Kinetic Layers treatment.
@@ -57,9 +58,10 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
   /* The catalogue is in Sanity and the counts are in Supabase, so the two meet
      here rather than inside either query. Skipped entirely when there is no
      signal, which keeps every asset's shape identical to what it was. */
+  const media = raw.filter(hasRealPreview);
   const all: Asset[] = popularity.size
-    ? raw.map((a) => ({ ...a, popularity: popularity.get(a.slug) ?? 0 }))
-    : raw;
+    ? media.map((a) => ({ ...a, popularity: popularity.get(a.slug) ?? 0 }))
+    : media;
 
   /* Favourites are the viewer's own rows, so this reads through the
      RLS-scoped client rather than the service role. Signed out, no query. */
@@ -150,7 +152,7 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
         {label}
         {value ? <span className="kl-drop-value">{value}</span> : null}
         <span className="kl-drop-caret" aria-hidden="true">
-          ▾
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
         </span>
       </summary>
       <div className="kl-drop-menu" role="menu">
@@ -239,29 +241,14 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
       <SiteHeader />
 
       <main data-view>
-        <div
-          className="kl-pad"
-          style={{ paddingTop: 76, paddingBottom: 34, display: "flex", flexDirection: "column", gap: 16 }}
-        >
-          <span className="kl-kicker">THE LIBRARY</span>
-          {/* data-mask rebuilds this into per-word spans, so it stays plain text. */}
-          <h1 className="kl-h1 kl-h1--library" data-mask data-h1>
-            {`${settings.totalAssets} assets, filed by shelf.`}
-          </h1>
-          <p className="kl-lede" data-rise>
-            {settings.freeThisMonth} are free to download now. Filter by type or tag —
-            every card opens on its source files.
-          </p>
-        </div>
-
         {/* ---------- Rail ---------- */}
         <div className="kl-rail" id="library" data-rail>
           <div className="kl-pad kl-rail-inner">
-            <Pill label="ALL" active={!filters.type} to={href({ type: undefined })} count={all.length} />
+            <Pill label="All" active={!filters.type} to={href({ type: undefined })} count={all.length} />
             {types.map(([t, n]) => (
               <Pill
                 key={t}
-                label={t.toUpperCase()}
+                label={t.toLowerCase().replace(/^\w/, c => c.toUpperCase()).replace(/^3d/, "3D")}
                 count={n}
                 active={filters.type === t}
                 to={href({ type: filters.type === t ? undefined : t })}
@@ -274,13 +261,13 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
 
             {viewer ? (
               <Pill
-                label="SAVED"
+                label="Saved"
                 active={Boolean(filters.saved)}
                 to={href({ saved: filters.saved ? undefined : "1" })}
               />
             ) : null}
 
-            <Drop label="CATEGORY" value={categoryValue}>
+            <Drop label="Category" value={categoryValue}>
               <DropItem label="All" active={selectedTags.length === 0} to={href({ tag: undefined })} />
               {categories.map((t) => {
                 const on = selectedTags.includes(t);
@@ -300,14 +287,14 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
               })}
             </Drop>
 
-            <Drop label="SORT" value={SORT_LABEL[sort]}>
+            <Drop label="Sort" value={SORT_LABEL[sort]}>
               {SORTS.map((s) => (
                 <DropItem key={s} label={SORT_LABEL[s]} active={sort === s} to={href({ sort: s })} />
               ))}
             </Drop>
 
             <Drop
-              label="PRICING"
+              label="Pricing"
               value={filters.price ? (filters.price === "free" ? "Free" : "Premium") : undefined}
             >
               <DropItem label="All" active={!filters.price} to={href({ price: undefined })} />
@@ -332,7 +319,7 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
         </div>
 
         {/* ---------- Grid ---------- */}
-        <div className="kl-pad" style={{ paddingTop: 30 }}>
+        <div className="kl-pad" style={{ paddingTop: 24 }}>
           {isEmpty ? (
             <div className="kl-empty">
               <svg
@@ -358,7 +345,7 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
               </GlassButton>
             </div>
           ) : (
-            <div className="kl-masonry" data-masonry>
+            <MotionGrid className="kl-masonry">
               {items.flatMap((asset: Asset, i: number) => {
                 const card = (
                   <AssetCard key={asset.slug} asset={asset} />
@@ -369,26 +356,13 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
                 if (filtering) return [card];
                 if (i === PROMO_AT.upgrade && !subscribed)
                   return [card, <UpgradeCard key="promo-upgrade" price={settings.monthlyPrice} />];
-                if (i === PROMO_AT.hire) return [card, <HireCard key="promo-hire" />];
                 if (i === PROMO_AT.news) return [card, <NewsCard key="promo-news" />];
                 return [card];
               })}
-            </div>
+            </MotionGrid>
           )}
         </div>
 
-        <DotFieldCta
-          heading={`Start with the ${settings.freeThisMonth} free ones.`}
-          body={
-            EARLY_ACCESS
-              ? "No card, no trial timer. Everything is open while the library is in early access."
-              : `No card, no trial timer. If the source files are what you hoped, the rest is $${settings.monthlyPrice} a month.`
-          }
-          secondaryHref="/library"
-          secondaryLabel={`Browse ${settings.freeThisMonth} free`}
-          primaryHref="/pricing"
-          primaryLabel={EARLY_ACCESS ? "See what's included" : "Go Premium"}
-        />
       </main>
 
       <Footer />

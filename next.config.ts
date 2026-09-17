@@ -21,6 +21,9 @@ const media = origin(process.env.NEXT_PUBLIC_MEDIA_BASE);
 const sanityCdn = "https://cdn.sanity.io";
 const supabase = origin(process.env.NEXT_PUBLIC_SUPABASE_URL);
 const list = (...parts: (string | null)[]) => parts.filter(Boolean).join(" ");
+/* Publicly attributed reference previews on the library wall. These are image
+   sources only; the reference cards never receive catalogue actions. */
+const benchReferenceImages = ["https://motionsites.ai", "https://image.mux.com"];
 
 /**
  * Content-Security-Policy.
@@ -42,7 +45,7 @@ const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  `img-src ${list("'self'", "data:", "blob:", media, sanityCdn, supabase)}`,
+  `img-src ${list("'self'", "data:", "blob:", media, sanityCdn, supabase, ...benchReferenceImages)}`,
   `media-src ${list("'self'", "blob:", media, sanityCdn)}`,
   "font-src 'self' data:",
   `connect-src ${list("'self'", supabase, supabase && supabase.replace("https://", "wss://"))}`,

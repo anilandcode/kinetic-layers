@@ -1,11 +1,24 @@
 # Kinetic Layers
 
-A marketplace for AI design assets: prompts, templates, scenes and workflows,
-built in one studio and shipped weekly. Twelve are free; the rest are behind a
-subscription.
+A marketplace for original AI design assets: prompts, templates, scenes and
+workflows, with credited visual references for exploration. Early access is
+currently free. Founding Membership is a proposed future $24/month offer, not
+an active subscription.
 
 Next.js App Router · TypeScript · Sanity for content · Supabase for identity,
 entitlement and files.
+
+## Current public experience
+
+- `/` presents 20 attributed MotionSites reference cards with two real Kinetic
+  Layers preview items. Reference cards open an attributed visual popup with a
+  source link; they never expose downloads, entitlements, or Premium actions.
+- `/library`, `/pricing`, and `/contact` are public. `/how` is archived.
+- Collections are retained for local development but intentionally return HTTP
+  404 in production, including collection detail routes.
+- Maison Neue is used for supporting UI and the neutral layered mark is shared
+  across the site icons. Public motion uses Framer Motion and respects
+  `prefers-reduced-motion`.
 
 ## Who owns what
 
@@ -81,7 +94,7 @@ cookies; only the SHA-256 hash is stored, and the plaintext is shown once.
 One function decides, in `lib/kl/viewer.ts`, and **both** halves of the gate
 ask it — `/api/download` for the files and `/api/prompt` for the text. There is
 deliberately no second copy of the rule, because for a while there was no
-second *caller*: the gate refused correctly and granted nothing, so a paying
+second _caller_: the gate refused correctly and granted nothing, so a paying
 subscriber saw the same two-line preview as a stranger.
 
 ```
@@ -106,22 +119,22 @@ cp .env.example .env.local   # then fill in the values below
 npm run dev
 ```
 
-| Script | What it does |
-| --- | --- |
-| `npm run dev` | The site |
-| `npm run build` | Production build |
-| `npm run studio` | Sanity Studio, locally |
-| `npm run studio:deploy` | Publish the Studio to `<project>.sanity.studio` |
-| `npm run seed` | Re-seed the catalogue from `tools/seed-sanity.mjs` |
-| `npm run media` | Generate dummy posters + clips into `public/preview/` |
-| `npm run media:upload` | Mirror `public/preview/` into the R2 preview bucket |
-| `node --env-file=.env.local tools/seed-tags.mjs` | Plant the tag vocabulary (idempotent) |
-| `node tools/optimize-clip.mjs <file>` | Trim a video to a web-sized loop + poster |
-| `npx wrangler deploy --config workers/media/wrangler.jsonc` | Deploy the media Worker |
-| `graphify update .` | Refresh the code graph in `graphify-out/` |
-| `node --env-file=.env.local tools/qa-personas.mjs --create` | Free + premium test accounts |
-| `node tools/seed-storage.mjs` | Put placeholder files in the private bucket |
-| `node tools/apply-migration.mjs <file.sql>` | Apply a migration directly over Postgres |
+| Script                                                      | What it does                                          |
+| ----------------------------------------------------------- | ----------------------------------------------------- |
+| `npm run dev`                                               | The site                                              |
+| `npm run build`                                             | Production build                                      |
+| `npm run studio`                                            | Sanity Studio, locally                                |
+| `npm run studio:deploy`                                     | Publish the Studio to `<project>.sanity.studio`       |
+| `npm run seed`                                              | Re-seed the catalogue from `tools/seed-sanity.mjs`    |
+| `npm run media`                                             | Generate dummy posters + clips into `public/preview/` |
+| `npm run media:upload`                                      | Mirror `public/preview/` into the R2 preview bucket   |
+| `node --env-file=.env.local tools/seed-tags.mjs`            | Plant the tag vocabulary (idempotent)                 |
+| `node tools/optimize-clip.mjs <file>`                       | Trim a video to a web-sized loop + poster             |
+| `npx wrangler deploy --config workers/media/wrangler.jsonc` | Deploy the media Worker                               |
+| `graphify update .`                                         | Refresh the code graph in `graphify-out/`             |
+| `node --env-file=.env.local tools/qa-personas.mjs --create` | Free + premium test accounts                          |
+| `node tools/seed-storage.mjs`                               | Put placeholder files in the private bucket           |
+| `node tools/apply-migration.mjs <file.sql>`                 | Apply a migration directly over Postgres              |
 
 The Studio is a **dev dependency**, not part of the app bundle. It used to be
 mounted at `/studio`, which pulled ~800 MB of Sanity into the build and clashed
@@ -130,39 +143,39 @@ problems and the app keeps only the read client.
 
 ## Environment
 
-| Variable | Notes |
-| --- | --- |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | `8vxxthrc` |
-| `NEXT_PUBLIC_SANITY_DATASET` | `production` |
-| `SANITY_REVALIDATE_SECRET` | Shared with the Sanity webhook |
-| `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | **Safe to ship** — RLS protects the data, not the key |
-| `SUPABASE_SECRET_KEY` | Server only. Bypasses RLS. Used for grants, signing and the legacy routes |
-| `SUPABASE_DB_PASSWORD` | Only for `tools/apply-migration.mjs` |
-| `ADMIN_TOKEN` | Guards `/api/admin/grant` |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | Offered when a form fails to send |
-| `SANITY_API_READ_TOKEN` | **Required.** Viewer role. Without it `tag` documents are invisible to the app — see HANDOFF trap 20 |
-| `NEXT_PUBLIC_SITE_URL` | `https://kineticlayers.com`. Every auth email link, canonical URL and OG image is built from it |
-| `NEXT_PUBLIC_MEDIA_BASE` | `https://media.kineticlayers.com`. Use `/preview` to serve the local folder instead |
-| `NEXT_PUBLIC_MEDIA_MIRROR` | `1` routes media through the Worker and `/cdn-cgi/`. `0` behaves as before |
-| `NEXT_PUBLIC_EARLY_ACCESS` | `1` makes an account the entitlement. Turning it off restores the paywall untouched |
-| `RESEND_API_KEY` / `EMAIL_FROM` | Both needed, or `EMAIL_READY` is false and nothing sends |
-| `STORAGE_DRIVER` | `supabase` (default) or `r2` — which bucket holds gated files |
-| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | Server and scripts |
-| `R2_BUCKET` / `R2_ASSETS_BUCKET` | Public previews / private downloads. Deliberately separate — see HANDOFF trap 19 |
+| Variable                                                    | Notes                                                                                                |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID`                             | `8vxxthrc`                                                                                           |
+| `NEXT_PUBLIC_SANITY_DATASET`                                | `production`                                                                                         |
+| `SANITY_REVALIDATE_SECRET`                                  | Shared with the Sanity webhook                                                                       |
+| `NEXT_PUBLIC_SUPABASE_URL`                                  | Project URL                                                                                          |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`                      | **Safe to ship** — RLS protects the data, not the key                                                |
+| `SUPABASE_SECRET_KEY`                                       | Server only. Bypasses RLS. Used for grants, signing and the legacy routes                            |
+| `SUPABASE_DB_PASSWORD`                                      | Only for `tools/apply-migration.mjs`                                                                 |
+| `ADMIN_TOKEN`                                               | Guards `/api/admin/grant`                                                                            |
+| `NEXT_PUBLIC_CONTACT_EMAIL`                                 | Offered when a form fails to send                                                                    |
+| `SANITY_API_READ_TOKEN`                                     | **Required.** Viewer role. Without it `tag` documents are invisible to the app — see HANDOFF trap 20 |
+| `NEXT_PUBLIC_SITE_URL`                                      | `https://kineticlayers.com`. Every auth email link, canonical URL and OG image is built from it      |
+| `NEXT_PUBLIC_MEDIA_BASE`                                    | `https://media.kineticlayers.com`. Use `/preview` to serve the local folder instead                  |
+| `NEXT_PUBLIC_MEDIA_MIRROR`                                  | `1` routes media through the Worker and `/cdn-cgi/`. `0` behaves as before                           |
+| `NEXT_PUBLIC_EARLY_ACCESS`                                  | `1` makes an account the entitlement. Turning it off restores the paywall untouched                  |
+| `RESEND_API_KEY` / `EMAIL_FROM`                             | Both needed, or `EMAIL_READY` is false and nothing sends                                             |
+| `STORAGE_DRIVER`                                            | `supabase` (default) or `r2` — which bucket holds gated files                                        |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | Server and scripts                                                                                   |
+| `R2_BUCKET` / `R2_ASSETS_BUCKET`                            | Public previews / private downloads. Deliberately separate — see HANDOFF trap 19                     |
 
 Without the Supabase keys the site still renders: the catalogue is public, and
 every auth path reports that accounts are not connected rather than throwing.
 That is deliberate — a missing key should not take down a page that had no need
 of a user.
 
-## Known placeholder
+## Catalogue status
 
-The catalogue is 15 invented assets with fabricated specs, and the files in
-Storage are text placeholders that say so when you open them. Every seam around
-them is real — swapping in genuine prompts, files and renders is a content job
-with no code changes. `/license` is a plain-English draft that has **not** been
-through legal review, and says so on the page.
+Only two current catalogue records have real uploaded previews. Older seeded
+records and their placeholder files are retained for development and migration
+work; they are not presented as the public reference wall. Replacing those with
+genuine prompts, files, and renders is a content task with no gate rewrite.
+`/license` is a plain-English draft that has **not** been through legal review.
 
 ## Still to wire
 
@@ -172,24 +185,20 @@ through legal review, and says so on the page.
    in Supabase → Authentication → Providers (callback
    `https://<project>.supabase.co/auth/v1/callback`) and its button reappears
    within five minutes. No redeploy.
-2. **Checkout.** No Stripe yet. Entitlement, the gate and the plan states are
-   all real; `/api/admin/grant` changes a plan until a webhook can.
+2. **Membership launch.** Checkout remains unavailable during early access.
+   The $24/month Founding Membership card is a future offer and its interest
+   list is non-binding. Before enabling billing, apply and test the interest
+   migration, confirm email delivery, and connect a payment provider.
 3. **Real files.** `tools/seed-storage.mjs` writes honest placeholders so the
    download path runs end to end. Replace the object at the same path in the
    `assets` bucket and the site serves the real thing with no code change.
 
 ## How previews load
 
-Grid cards paint a gradient immediately, a poster on top, and a `<video>` with
-**no `src` at all** until the card scrolls into view. Then the source attaches,
-it plays muted and looping, and on the way out the source is removed and the
-element reloaded — which frees the decoded buffer instead of leaving every clip
-you scrolled past resident in memory. Reduced motion opts out entirely.
-
-Autoplay replaced hover because the reference sites do it, checked rather than
-assumed: getlayers.ai ships 51 `<video>` tags, every one `autoplay` and
-`preload="none"`, and not one with a `src` attribute. A code comment here
-claimed the opposite for months.
+Grid cards paint their poster first. A clip attaches when a visitor hovers or
+focuses a card, plays muted and looping, then detaches when it is no longer
+needed. Standalone item media can attach while visible. Reduced-motion and
+coarse-pointer visitors retain the poster without motion.
 
 The poster is not necessarily uploaded. A video-only asset gets one cut from the
 clip by Cloudflare — a 16 MB source produced a 9.4 KB JPEG.
@@ -204,12 +213,11 @@ range request  bytes=0-99 → 206 with a correct Content-Range; HEAD → 200
 gated key      /placeholder/maps.zip → 404, and path traversal → 404
 ```
 
-## Verified
+## Historical verification
 
-Build clean, 50 routes. Across `/`, `/docs`, `/mcp`, `/privacy`, `/terms`,
-`/license`, `/changelog`, `/collections`, `/pricing` and `/item/[slug]`, at 375
-and 1600 **on production**: zero contrast failures, no horizontal overflow, no
-image missing an `alt`, exactly one `h1` per page and no heading skipped.
+The following is a historical verification snapshot from before the current
+Collections release gate. It does not describe the current production UI or a
+new deployment. Current local refinement checks are recorded in `HANDOFF.md`.
 
 The gate is tested by calling both routes as each persona, on the website and
 over MCP, and by checking what comes **back** rather than only what is refused:
@@ -235,7 +243,6 @@ than a link, so nothing offers a click that can only land on the empty state.
 
 The ⌘K palette traps Tab in both directions, restores focus to the trigger on
 close, and announces its result count.
-
 
 ## Archive
 

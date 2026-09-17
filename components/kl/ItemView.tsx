@@ -1,3 +1,4 @@
+import { hasRealPreview } from "@/lib/kl/preview-ready";
 import Link from "next/link";
 import SiteHeader from "./SiteHeader";
 import Shell from "./Shell";
@@ -7,6 +8,7 @@ import { img, clip as clipUrl, frame, ITEM_W, CARD_W } from "@/lib/kl/media";
 import PreviewMedia from "@/components/legacy/PreviewMedia";
 import { groundFor } from "@/lib/kl/ground";
 import { EARLY_ACCESS } from "@/lib/kl/access";
+import { MotionSection } from "./BenchMotion";
 import type { Asset, Viewer } from "@/lib/kl/types";
 
 /**
@@ -41,13 +43,13 @@ const STACK = [
   {
     tag: "02",
     name: "The source",
-    meta: "PROJECT FILES",
+    meta: "Project files",
     copy: "The scene, repo, prompt chain or weights that produced it — editable, documented, no stripped layers.",
   },
   {
     tag: "03",
     name: "The receipt",
-    meta: "WHERE IT SHIPPED",
+    meta: "Where it shipped",
     copy: "A link to the live page it was built for, the brief behind it, and the license covering your use.",
   },
 ];
@@ -104,10 +106,10 @@ export default function ItemView({
 
   const relatedHeading =
     relatedReason === "drop"
-      ? "FROM THE SAME DROP"
+      ? "From the same drop"
       : relatedReason === "tag"
-        ? "RELATED"
-        : "NEWEST IN THE LIBRARY";
+        ? "Related"
+        : "Newest in the library";
 
   const cta = locked
     ? { label: "Unlock with Premium", href: "/pricing" }
@@ -125,6 +127,70 @@ export default function ItemView({
 
   const isModal = variant === "modal";
 
+  if (isModal) {
+    return (
+      <main className="bench-item-layout" data-view>
+        <section className="bench-item-stage" aria-label={`${asset.name} preview`}>
+          <div
+            className={`bench-item-media${asset.aspect && asset.aspect < 1 ? " is-tall" : ""}`}
+            tabIndex={0}
+            aria-label={`${asset.name} preview. ${asset.aspect && asset.aspect < 1 ? "Scroll to view the full image." : ""}`}
+            style={{ background: `var(${ground})` }}
+          >
+            {poster || clip ? (
+              <PreviewMedia
+                gradient={`var(${ground})`}
+                poster={poster ?? undefined}
+                clip={clip ?? undefined}
+                alt={asset.name}
+                play="auto"
+                priority
+                className="bench-item-media-preview"
+              />
+            ) : (
+              <div className="kl-preview-pattern" aria-label="Preview unavailable" />
+            )}
+          </div>
+          <div className="bench-item-media-caption">
+            <span>{asset.type}</span>
+            <span>{asset.tags?.[0] ?? "Preview"}</span>
+          </div>
+        </section>
+
+        <aside className="bench-item-details" aria-label={`${asset.name} details`}>
+          <div className="bench-item-details-copy">
+            <span className="bench-item-eyebrow">{asset.type} · {asset.free ? "Free early access" : "Premium"}</span>
+            <h1 className="bench-item-title">{asset.name}</h1>
+            {asset.tagline ? <p className="bench-item-tagline">{asset.tagline}</p> : null}
+            <div className="bench-item-facts">
+              {facts.map((fact) => (
+                <div key={fact.k} className="bench-item-fact">
+                  <span>{fact.k}</span><strong>{fact.v}</strong>
+                </div>
+              ))}
+            </div>
+            {asset.files?.length ? (
+              <div className="bench-item-files">
+                <h2>Included files</h2>
+                <ul>{asset.files.map((file, index) => (
+                  <li key={`${file.name}-${index}`}>
+                    <span>{file.name}</span>
+                    <small>{file.meta ?? file.tag ?? ""}</small>
+                  </li>
+                ))}</ul>
+              </div>
+            ) : null}
+          </div>
+          <div className="bench-item-actions">
+            <span className="bench-item-action-note">{ctaNote}</span>
+            <Link href={cta.href} className="bench-item-primary-action">{cta.label}</Link>
+            <a href={`/item/${asset.slug}`} className="bench-item-secondary-action">Open full item page</a>
+          </div>
+        </aside>
+      </main>
+    );
+  }
+
   const content = (
     <main
       data-view
@@ -135,16 +201,17 @@ export default function ItemView({
           overlay rather than navigate to the library. */}
       {isModal ? null : (
         <div className="kl-crumbs">
-          <span>{(asset.tags?.[0] ?? asset.type).toUpperCase()}</span>
+          <span>{asset.tags?.[0] ?? asset.type}</span>
           <span>/</span>
-          <span style={{ color: "var(--ink)" }}>{asset.name.toUpperCase()}</span>
+          <span style={{ color: "var(--ink)" }}>{asset.name}</span>
           <span className="kl-spacer" />
           <Link href="/library" className="kl-close">
-            CLOSE ✕
+            Close ×
           </Link>
         </div>
       )}
 
+        <MotionSection className="kl-item-motion">
         <div className="kl-item" data-item-split>
           {/* ---------- Left: the goods ---------- */}
           <div className="kl-item-main">
@@ -183,16 +250,15 @@ export default function ItemView({
                       alt={asset.name}
                       play="auto"
                       priority
-                      style={{ position: "absolute", inset: 0 }}
                     />
                   ) : (
                     <div className="kl-preview-pattern" aria-hidden="true" />
                   )}
                 </div>
                 <div className="kl-item-preview-foot">
-                  <span>PREVIEW</span>
+                  <span>Preview</span>
                   <span className="kl-spacer" />
-                  <span>{asset.type.toUpperCase()}</span>
+                  <span>{asset.type.toLowerCase()}</span>
                   <span>{asset.tags?.[0] ?? ""}</span>
                 </div>
               </div>
@@ -227,7 +293,7 @@ export default function ItemView({
                 fixed 430px went with it, so the panel no longer reserves height
                 it may not fill. */}
             <div className="kl-item-download">
-              <span className="kl-kicker">WHAT&rsquo;S IN THE DOWNLOAD</span>
+              <span className="kl-kicker">What&rsquo;s in the download</span>
               <ol className="kl-stack-rows">
                 {STACK.map((s) => (
                   <li key={s.tag} className="kl-stack-row">
@@ -251,7 +317,7 @@ export default function ItemView({
                 <span className={`kl-badge${asset.free ? " kl-badge--amber" : ""}`}>
                   {asset.free ? "Free" : "Premium"}
                 </span>
-                <span className="kl-badge kl-badge--moss">SHIPPED</span>
+                <span className="kl-badge kl-badge--moss">Shipped</span>
               </div>
 
               <GlassButton href={cta.href} premium={!asset.free} pull={5}>
@@ -273,7 +339,7 @@ export default function ItemView({
             {related.length ? (
               <div className="kl-item-card">
                 <span className="kl-item-related-head">{relatedHeading}</span>
-                {related.slice(0, 3).map((r, i) => {
+                {related.filter(hasRealPreview).slice(0, 3).map((r, i) => {
                   const thumb = r.poster ? img(r.poster, CARD_W) : r.clip ? frame(r.clip, CARD_W) : null;
                   return (
                     <Link key={r.slug} href={`/item/${r.slug}`} className="kl-related">
@@ -294,6 +360,7 @@ export default function ItemView({
             ) : null}
           </aside>
         </div>
+        </MotionSection>
     </main>
   );
 

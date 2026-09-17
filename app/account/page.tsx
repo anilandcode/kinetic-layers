@@ -56,11 +56,11 @@ export default async function AccountDashboard() {
     <>
       <section
         className="kl-pad"
-        style={{ paddingBottom: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 20 }}
+        style={{ paddingBottom: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 12 }}
       >
         <AccountStat label="Downloaded" value={String(unique)} note={`of ${settings.totalAssets} assets`} big />
         <AccountStat label="This month" value={String(thisMonth)} note={thisMonth === 1 ? "1 file" : `${thisMonth} files`} big />
-        <AccountStat label="Saved" value={String(savedTotal)} note="assets and collections" big />
+        <AccountStat label="Saved" value={String(savedTotal)} note="saved items" big />
         <AccountStat
           label="Plan"
           value={viewer.premium ? "Premium" : "Free"}
@@ -75,13 +75,13 @@ export default async function AccountDashboard() {
 
       <section
         className="kl-pad"
-        style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(360px,100%),1fr))", gap: 24, alignItems: "start" }}
+        style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(360px,100%),1fr))", gap: 12, alignItems: "start" }}
       >
-        <div data-reveal style={{ borderRadius: 18, border: "1px solid var(--line)", background: "var(--inset)", padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+        <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", background: "var(--board)", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 500 }}>Saved</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 600 }}>Saved</h2>
             <div style={{ flex: 1 }} />
-            <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
+            <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
               {savedTotal}
             </span>
           </div>
@@ -93,7 +93,7 @@ export default async function AccountDashboard() {
           ) : (
             <>
               {(savedCollections ?? []).slice(0, 5).map((s) => (
-                <Row key={s.collection_slug} label={s.collection_slug} kind="Collection" href={`/collections/${s.collection_slug}`} />
+                <Row key={s.collection_slug} label={s.collection_slug} kind="Saved collection" />
               ))}
               {(savedAssets ?? []).slice(0, 5).map((s) => (
                 <Row key={s.asset_slug} label={s.asset_slug} kind="Asset" href={`/item/${s.asset_slug}`} />
@@ -102,8 +102,8 @@ export default async function AccountDashboard() {
           )}
         </div>
 
-        <div data-reveal style={{ borderRadius: 18, border: "1px solid var(--line)", background: "var(--inset)", padding: 24, display: "flex", flexDirection: "column", gap: 14, alignItems: "flex-start" }}>
-          <h2 style={{ fontSize: 16, fontWeight: 500 }}>Downloads</h2>
+        <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", background: "var(--board)", padding: 24, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600 }}>Downloads</h2>
           <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
             {rows.length === 0
               ? settings.freeThisMonth > 0
@@ -120,20 +120,18 @@ export default async function AccountDashboard() {
   );
 }
 
-function Row({ label, kind, href }: { label: string; kind: string; href: string }) {
+function Row({ label, kind, href }: { label: string; kind: string; href?: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
       <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
         <span style={{ fontSize: 14, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {label}
         </span>
-        <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
+        <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
           {kind}
         </span>
       </div>
-      <Link href={href} style={{ fontSize: 13, color: "var(--muted)" }}>
-        Open
-      </Link>
+      {href ? <Link href={href} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link> : <span style={{ fontSize: 12, color: "var(--muted)" }}>Coming back soon</span>}
     </div>
   );
 }

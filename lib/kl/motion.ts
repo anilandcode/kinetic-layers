@@ -732,34 +732,6 @@ export function animateEnter() {
   g.fromTo(view, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" });
 }
 
-/** A soft amber wipe when the theme flips. */
-export function themeFlash() {
-  const g = gsap;
-  if (reduced()) return;
-  const veil = document.createElement("div");
-  veil.style.cssText =
-    "position:fixed; inset:0; z-index:90; pointer-events:none; " +
-    "background:radial-gradient(closest-side,rgba(232,133,58,0.22),transparent 72%);";
-  document.body.appendChild(veil);
-  g.fromTo(
-    veil,
-    { opacity: 0, scale: 0.7 },
-    {
-      opacity: 1,
-      scale: 1.25,
-      duration: 0.32,
-      ease: "power2.out",
-      onComplete: () =>
-        g.to(veil, {
-          opacity: 0,
-          duration: 0.4,
-          ease: "power2.in",
-          onComplete: () => veil.remove(),
-        }),
-    }
-  );
-}
-
 const TARGETS = [
   "[data-progress]", "[data-mask]", "[data-letters]", "[data-rise]", "[data-lamp]",
   "[data-rule]", "[data-nav-link]", "[data-glass-btn]", "[data-auto-glass]", "[data-glow2]",

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Sora, Source_Serif_4, Geist_Mono, Figtree, Cormorant } from "next/font/google";
+import { Source_Serif_4 } from "next/font/google";
 import Analytics from "@/components/legacy/Analytics";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kl/site";
 import "./globals.css";
@@ -9,13 +9,6 @@ import "./globals.css";
  * them at build time and serves them from our own origin instead, so the
  * typography is identical and the page still makes no third-party request.
  */
-const sora = Sora({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-sora",
-  display: "swap",
-});
-
 const serif = Source_Serif_4({
   subsets: ["latin"],
   weight: ["400", "600"],
@@ -23,36 +16,6 @@ const serif = Source_Serif_4({
   display: "swap",
 });
 
-const mono = Geist_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-mono",
-  display: "swap",
-});
-
-/**
- * Kinetic Layers typography.
- *
- * Figtree carries everything, Cormorant italic is reserved for the single pull
- * line on each screen, and Geist Mono (above) is shared with the old palette
- * for labels. Sora and Source Serif stay until the last unmigrated route is
- * moved across — both sets are live at once, which is why these get their own
- * variable names rather than reusing --font-sora.
- */
-const figtree = Figtree({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--kl-sans",
-  display: "swap",
-});
-
-const cormorant = Cormorant({
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["italic"],
-  variable: "--kl-serif",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   /* Without this, every relative image and canonical in the tree resolves
@@ -100,7 +63,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`no-js ${sora.variable} ${serif.variable} ${mono.variable} ${figtree.variable} ${cormorant.variable}`}
+      data-theme="dark"
+      suppressHydrationWarning
+      className={`no-js ${serif.variable}`}
     >
       <body>
         {/* Drops the no-js class before paint, so the reveal starting states
@@ -114,7 +79,7 @@ export default function RootLayout({
                  first. Wrapped because storage throws outright in some
                  privacy modes, and a theme is not worth a blank page. */
               "try{var t=localStorage.getItem('kl-theme');" +
-              "if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}",
+              "document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){}",
           }}
         />
         <Analytics />

@@ -20,34 +20,17 @@ import { LoadingAnnouncement, Shimmer } from "@/components/legacy/Skeleton";
  */
 export default function Loading() {
   return (
-    <div data-kl>
+    <div data-kl className="bench-item-overlay">
       <div className="kl-modal-veil">
         <div className="kl-modal-panel">
           <LoadingAnnouncement what="the asset" />
 
-          <div className="kl-crumbs" aria-hidden="true">
-            <Shimmer h={11} w={128} r={99} />
-            <span className="kl-spacer" />
-            <Shimmer h={30} w={84} r={99} />
-          </div>
-
-          <div
-            aria-hidden="true"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "minmax(0, 1.2fr) minmax(280px, .62fr)",
-              gap: 28,
-              marginTop: 24,
-            }}
-          >
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <Shimmer h={430} r={20} />
-              <Shimmer h={34} w="42%" r={10} />
-              <Shimmer h={15} w="68%" />
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <Shimmer h={220} r={18} />
-              <Shimmer h={180} r={18} />
+          <div className="bench-item-layout" aria-hidden="true">
+            <div className="bench-item-stage"><Shimmer h={330} w="65%" r={18} /></div>
+            <div className="bench-item-details" style={{ gap: 16 }}>
+              <Shimmer h={40} w="70%" r={10} />
+              <Shimmer h={80} r={10} />
+              <Shimmer h={48} r={99} />
             </div>
           </div>
         </div>

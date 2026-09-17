@@ -1,29 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { themeFlash } from "@/lib/kl/motion";
-
-/**
- * Light / dark toggle.
- *
- * Light is the ground state for Kinetic Layers, so "off" is light and the knob
- * slides right for dark. The attribute goes on <html> rather than the shell,
- * because the tokens accept it in either place and the pre-paint script in the
- * root layout can only reach <html>.
- *
- * The stored value is read before paint by that script; this component only
- * mirrors what is already on the document, which is why the initial state is
- * read in an effect rather than during render — the server has no way to know
- * which theme this visitor chose, and guessing produces a hydration mismatch.
- */
 
 const KEY = "kl-theme";
+const EVENT = "kl-theme-change";
 
+/** A compact, icon-only theme control shared by the desktop bar and mobile menu. */
 export default function ThemeToggle() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(true);
 
   useEffect(() => {
-    setDark(document.documentElement.getAttribute("data-theme") === "dark");
+    const sync = () => setDark(document.documentElement.getAttribute("data-theme") !== "light");
+    sync();
+    window.addEventListener(EVENT, sync);
+    return () => window.removeEventListener(EVENT, sync);
   }, []);
 
   function toggle() {
@@ -33,45 +23,20 @@ export default function ThemeToggle() {
     try {
       localStorage.setItem(KEY, next ? "dark" : "light");
     } catch {
-      /* Private mode, or storage disabled. The toggle still works for this
-         visit; it just will not be remembered. */
+      // Storage can be disabled; the current visit still receives the change.
     }
-    themeFlash();
+    window.dispatchEvent(new Event(EVENT));
   }
 
   return (
-    <button
-      type="button"
-      className="kl-theme"
-      onClick={toggle}
-      aria-pressed={dark}
-      title={dark ? "Switch to light" : "Switch to dark"}
-    >
-      <span className="kl-vh">{dark ? "Switch to light" : "Switch to dark"}</span>
-      <span className="kl-theme-knob" aria-hidden="true" />
-      <span className="kl-theme-icons" aria-hidden="true">
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={dark ? "var(--muted)" : "var(--amber)"}
-          strokeWidth="1.6"
-        >
-          <circle cx="12" cy="12" r="4.2" />
-          <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6" />
-        </svg>
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={dark ? "var(--amber)" : "var(--muted)"}
-          strokeWidth="1.6"
-        >
-          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" />
-        </svg>
-      </span>
+    <button type="button" className="kl-bench-theme" onClick={toggle} aria-pressed={dark}
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      title={dark ? "Switch to light" : "Switch to dark"}>
+      {dark ? (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36A5.4 5.4 0 0 1 12 3Z" /></svg>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor" stroke="none" /><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" /></svg>
+      )}
     </button>
   );
 }

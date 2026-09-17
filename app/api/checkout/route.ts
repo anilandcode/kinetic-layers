@@ -4,6 +4,7 @@ import { admin } from "@/lib/supabase/admin";
 import { getSettings } from "@/lib/sanity/queries";
 import { priceAmount, priceIdFor, stripe, type Interval } from "@/lib/kl/stripe";
 import { SITE_URL } from "@/lib/kl/site";
+import { EARLY_ACCESS } from "@/lib/kl/access";
 
 /**
  * Starts a subscription checkout.
@@ -21,6 +22,13 @@ const json = (status: number, body: Record<string, unknown>) =>
   NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 
 export async function POST(request: NextRequest) {
+  /* Early access deliberately has no payment path. Keeping this guard at the
+     route prevents a stale UI, bookmark, or scripted request from creating a
+     checkout session while the product says accounts have free access. */
+  if (EARLY_ACCESS) {
+    return json(404, { ok: false, message: "Checkout is not available during early access." });
+  }
+
   const client = stripe();
   if (!client) {
     return json(503, { ok: false, message: "Checkout is not connected yet." });

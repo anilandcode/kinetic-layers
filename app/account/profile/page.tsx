@@ -38,16 +38,16 @@ export default async function AccountProfile({
   return (
     <section
       className="kl-pad"
-      style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(380px,100%),1fr))", gap: 24, alignItems: "start" }}
+      style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(380px,100%),1fr))", gap: 12, alignItems: "start" }}
     >
-      <div data-reveal style={{ borderRadius: 18, border: "1px solid var(--line)", background: "var(--inset)", padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
+      <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", background: "var(--board)", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
           <Avatar email={viewer.name || viewer.email} size={40} />
           <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
             <span style={{ fontSize: 14, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis" }}>
               {viewer.email}
             </span>
-            <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
+            <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
               Signed in
             </span>
           </div>

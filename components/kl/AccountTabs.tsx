@@ -21,7 +21,7 @@ export default function AccountTabs() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Account" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+    <nav aria-label="Account" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
       {TABS.map((t) => {
         /* Exact match for the index, prefix for the rest — otherwise /account
            would light up on every sub-page as well as its own. */

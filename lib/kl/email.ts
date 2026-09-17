@@ -75,6 +75,10 @@ export async function sendMail(mail: Mail): Promise<{ ok: boolean; error?: strin
 
 export const confirmUrl = (token: string) => `${SITE_URL}/newsletter/confirm?token=${token}`;
 
+/** A distinct confirmation target for the non-binding Founding Membership list. */
+export const membershipInterestConfirmUrl = (token: string) =>
+  `${SITE_URL}/membership-interest/confirm?token=${token}`;
+
 /** The link a person clicks. Lands on a page that says what happened. */
 export const unsubscribeUrl = (token: string) => `${SITE_URL}/newsletter/unsubscribe?token=${token}`;
 
@@ -99,6 +103,31 @@ export function confirmationMail(email: string, token: string): Mail {
       "",
       "If you did not ask for this, ignore this message. You are not subscribed",
       "until you use the link above.",
+      "",
+      "— Kinetic Layers",
+      SITE_URL,
+    ].join("\n"),
+  };
+}
+
+/**
+ * This mail confirms interest only. Its language must stay separate from the
+ * newsletter confirmation above: confirming must never be mistaken for a
+ * purchase, a subscription, or permission for the regular digest.
+ */
+export function membershipInterestConfirmationMail(email: string, token: string): Mail {
+  const confirm = membershipInterestConfirmUrl(token);
+  return {
+    to: email,
+    subject: "Confirm your Founding Membership interest",
+    text: [
+      "Confirm that you want to hear when Kinetic Layers Founding Membership opens.",
+      "",
+      confirm,
+      "",
+      "This is only an interest list. It does not create a subscription, collect payment details, or charge you.",
+      "",
+      "If you did not ask for this, ignore this email. You will not receive launch updates unless you confirm.",
       "",
       "— Kinetic Layers",
       SITE_URL,

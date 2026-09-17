@@ -36,7 +36,7 @@ export default async function TermsPage() {
     },
     {
       h: "It is free right now",
-      p: "Kinetic Layers is in early access. An account opens the whole catalogue and every source file at no cost, and there is no checkout to go through. This is not a promotion with a countdown — it is simply where the product is.",
+      p: "Kinetic Layers is in early access. An account opens the catalogue and the available files at no cost, and there is no checkout to go through. This is not a promotion with a countdown — it is simply where the product is.",
     },
     {
       h: "It will not be free forever",
@@ -44,7 +44,7 @@ export default async function TermsPage() {
     },
     {
       h: "What we owe you",
-      p: "A working site and the assets your account covers. We aim to ship new work weekly and to fix anything broken in what is already there. We do not promise uninterrupted availability, and we will say so plainly when something is down rather than quietly.",
+      p: "A working site and the assets your account covers. We release new work when it is ready and fix anything broken in what is already there. We do not promise uninterrupted availability, and we will say so plainly when something is down rather than quietly.",
     },
     {
       h: "Daily allowances",

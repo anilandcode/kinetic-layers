@@ -7,7 +7,7 @@ anyone asks for a file, then never asks again.
 
 Uploading previews through the Studio put every one of them on Sanity's asset
 CDN, which is metered. Previews are the marketing — they are served on every
-visit, and a grid of autoplaying video is the heaviest thing you can put on
+visit, and video previews are among the heaviest assets a library can put on
 metered bandwidth. R2 charges nothing for egress at any volume, so the bytes
 belong here and the CMS keeps the upload box.
 

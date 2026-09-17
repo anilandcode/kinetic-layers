@@ -25,8 +25,8 @@ export default function NotFound() {
           <GlassButton href="/library" pull={5}>
             Browse the library
           </GlassButton>
-          <GlassButton href="/collections" ghost>
-            See the collections
+          <GlassButton href="/pricing" ghost>
+            See pricing
           </GlassButton>
         </div>
       </div>

@@ -57,7 +57,7 @@
 }
 [data-kl] .kl-progress {
   height: 100%;
-  background: linear-gradient(90deg, rgba(232, 133, 58, 0.2), #E8853A);
+  background: linear-gradient(90deg, rgba(115, 115, 113, 0.2), #737371);
   /* No transform here: the motion layer sets scaleX, and a CSS default of 0
      would leave the bar invisible if that layer never ran. */
 }
@@ -240,9 +240,9 @@
 
 [data-kl] .kl-btn--premium {
   border-color: var(--amber-line);
-  background: linear-gradient(140deg, rgba(232, 133, 58, 0.46), rgba(232, 133, 58, 0.16));
+  background: linear-gradient(140deg, rgba(115, 115, 113, 0.46), rgba(115, 115, 113, 0.16));
   box-shadow:
-    0 24px 54px -24px rgba(232, 133, 58, 0.85),
+    0 24px 54px -24px rgba(115, 115, 113, 0.85),
     inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 [data-kl] .kl-btn--premium .kl-btn-label {
@@ -259,7 +259,7 @@
 }
 [data-kl] .kl-btn--sm.kl-btn--premium {
   box-shadow:
-    0 16px 34px -20px rgba(232, 133, 58, 0.8),
+    0 16px 34px -20px rgba(115, 115, 113, 0.8),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
@@ -451,7 +451,7 @@
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 [data-kl] .kl-pill:hover {
-  border-color: rgba(232, 133, 58, 0.55);
+  border-color: rgba(115, 115, 113, 0.55);
   color: var(--ink);
 }
 [data-kl] .kl-pill:active {
@@ -743,9 +743,9 @@
   filter: blur(20px);
   background: radial-gradient(
     60% 60% at 50% 50%,
-    rgba(232, 133, 58, 0.5),
-    rgba(232, 133, 58, 0.14) 52%,
-    rgba(232, 133, 58, 0) 78%
+    rgba(115, 115, 113, 0.5),
+    rgba(115, 115, 113, 0.14) 52%,
+    rgba(115, 115, 113, 0) 78%
   );
 }
 /* The rim is a 1.5px ring: a conic fill masked to its own padding box. */
@@ -759,7 +759,7 @@
     from 0deg,
     rgba(255, 255, 255, 0.05),
     rgba(255, 236, 214, 0.95) 18%,
-    rgba(232, 133, 58, 0.85) 34%,
+    rgba(115, 115, 113, 0.85) 34%,
     rgba(255, 255, 255, 0.06) 52%,
     rgba(255, 214, 160, 0.75) 74%,
     rgba(255, 255, 255, 0.05)
@@ -879,7 +879,7 @@
 [data-kl] .kl-preview-pattern[data-pattern="arcs"] {
   background-image: repeating-radial-gradient(
     circle at 85% 115%,
-    rgba(232, 133, 58, 0.22) 0 1px,
+    rgba(115, 115, 113, 0.22) 0 1px,
     transparent 1px 22px
   );
 }
@@ -976,10 +976,10 @@
   padding: 5px 12px;
   flex-shrink: 0;
   border: 1px solid var(--amber-line);
-  background: linear-gradient(140deg, rgba(232, 133, 58, 0.44), rgba(232, 133, 58, 0.14));
+  background: linear-gradient(140deg, rgba(115, 115, 113, 0.44), rgba(115, 115, 113, 0.14));
   backdrop-filter: blur(10px);
   box-shadow:
-    0 10px 22px -14px rgba(232, 133, 58, 0.9),
+    0 10px 22px -14px rgba(115, 115, 113, 0.9),
     inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 [data-kl] .kl-chip-premium .kl-btn-label {
@@ -999,7 +999,7 @@
     from 0deg,
     rgba(255, 255, 255, 0) 0deg,
     rgba(255, 236, 214, 0.6) 46deg,
-    rgba(232, 133, 58, 0.55) 96deg,
+    rgba(115, 115, 113, 0.55) 96deg,
     rgba(255, 255, 255, 0) 160deg,
     rgba(255, 214, 160, 0.5) 250deg,
     rgba(255, 255, 255, 0) 330deg
@@ -1155,7 +1155,7 @@
   height: 420px;
   margin-left: -410px;
   pointer-events: none;
-  background: radial-gradient(closest-side, rgba(232, 133, 58, 0.45), rgba(0, 0, 0, 0) 74%);
+  background: radial-gradient(closest-side, rgba(115, 115, 113, 0.45), rgba(0, 0, 0, 0) 74%);
   filter: blur(26px);
 }
 [data-kl] .kl-cta-body {
@@ -1332,7 +1332,7 @@
   background: var(--dot);
 }
 [data-kl] .kl-bar-fill--hot {
-  background: rgba(232, 133, 58, 0.75);
+  background: rgba(115, 115, 113, 0.75);
 }
 [data-kl] .kl-bar-n {
   font-family: var(--font-mono, ui-monospace, monospace);
@@ -1588,7 +1588,7 @@
   height: 270px;
   margin-left: -260px;
   pointer-events: none;
-  background: radial-gradient(closest-side, rgba(232, 133, 58, 0.42), rgba(0, 0, 0, 0) 72%);
+  background: radial-gradient(closest-side, rgba(115, 115, 113, 0.42), rgba(0, 0, 0, 0) 72%);
   filter: blur(26px);
 }
 [data-kl] .kl-plan-head {
@@ -1667,7 +1667,7 @@
   width: 5px;
   height: 5px;
   border-radius: 99px;
-  background: rgba(232, 133, 58, 0.85);
+  background: rgba(115, 115, 113, 0.85);
   margin-top: 7px;
   flex-shrink: 0;
 }
@@ -2000,7 +2000,7 @@
   height: 300px;
   margin-left: -410px;
   pointer-events: none;
-  background: radial-gradient(closest-side, rgba(232, 133, 58, 0.44), rgba(0, 0, 0, 0) 72%);
+  background: radial-gradient(closest-side, rgba(115, 115, 113, 0.44), rgba(0, 0, 0, 0) 72%);
   filter: blur(30px);
 }
 /* The preview inside takes its height from the media's own ratio. This is the

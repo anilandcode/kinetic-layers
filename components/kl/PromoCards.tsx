@@ -1,7 +1,7 @@
+import Link from "next/link";
 import GlassButton from "./GlassButton";
 import NewsletterForm from "./NewsletterForm";
 import { EARLY_ACCESS } from "@/lib/kl/access";
-import { CONTACT_EMAIL } from "@/lib/kl/site";
 
 /**
  * The three cards seeded into the masonry.
@@ -34,7 +34,7 @@ export function UpgradeCard({ price }: { price: number }) {
               <linearGradient id="klLit" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0" stopColor="#8C6A46" />
                 <stop offset="0.55" stopColor="#C97A32" />
-                <stop offset="1" stopColor="#F0A45E" />
+                <stop offset="1" stopColor="#B8B7B1" />
               </linearGradient>
             </defs>
             <path d="M0 0H40V40H10C4.5 40 0 35.5 0 30V0Z" fill="url(#klLit)" />
@@ -62,13 +62,12 @@ export function HireCard() {
           <span className="kl-promo-eyebrow">Hire the studio</span>
           <h3>Want something built only for you?</h3>
           <p>Commissioned work never enters the library.</p>
-          {/* A mailto, not a /contact route that does not exist. */}
-          <a
-            href={`mailto:${CONTACT_EMAIL}?subject=Commission`}
+          <Link
+            href="/contact"
             style={{ fontSize: 15, color: "var(--amber)", marginTop: 4 }}
           >
             Start a project →
-          </a>
+          </Link>
         </div>
       </div>
     </Glow>
@@ -81,13 +80,13 @@ export function NewsCard() {
       <div className="kl-promo kl-promo--news">
         <div className="kl-promo-graph" aria-hidden="true" />
         <div className="kl-promo-body">
-          <h3>Fresh drops, every Thursday.</h3>
+          <h3>New work, when it is ready.</h3>
           <p style={{ marginBottom: 4 }}>
-            Nine new assets and what they were built for, once a week.
+            Get updates on the designs and kits added to the library.
           </p>
           <NewsletterForm />
           <span style={{ fontSize: 12, lineHeight: 1.5, color: "var(--muted)" }}>
-            One email a week. Unsubscribe whenever.
+            Occasional emails. Unsubscribe whenever.
           </span>
         </div>
       </div>

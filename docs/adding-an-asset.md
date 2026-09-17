@@ -1,9 +1,13 @@
 # Adding a real asset
 
-The catalogue shipped as fifteen invented assets whose files are text
-placeholders saying so. Everything around them is real — the gate, the daily
-quota, signed downloads, the MCP tool — so replacing the content is a content
-job, not a code change.
+Only two current catalogue records have real uploaded previews. Older seeded
+records and their placeholder files remain for development. Everything around
+an actual asset — the gate, quota, signed downloads, and MCP tool — is real, so
+replacing content is a content job, not a code change.
+
+MotionSites references are a separate, attributed visual-reference set used on
+the homepage. Do not import them through this workflow: they are not catalogue
+assets and never receive download, entitlement, or Premium behavior.
 
 Two ways in. Use the script for anything with files; use the Studio for a copy
 fix.
@@ -50,21 +54,22 @@ Tags are **documents** now, not strings. `tools/seed-tags.mjs` plants the
 vocabulary (33 tags, 12 marked `featured`, which is what the library offers as
 filters) and is safe to re-run — it never overwrites an edit you made.
 
-| Field | Notes |
-|---|---|
-| `type` | The tab on /library. Template, 3D Scene, Prompt, Background, Image Pack, LoRA, Video, MCP / Agent. |
-| `tier` | `Free` or `Premium`. **Defaults to Premium** — forgetting it should never give an asset away. |
-| `tags` | Titles of existing `tag` documents. **Unknown ones are refused, not created** — silently minting tags is how the rail grew to ~35 chips nobody chose. Add it in the Studio, or run `tools/seed-tags.mjs`. |
-| `files[].tag` | Code, Source, Assets, Config, Prompts. |
+| Field         | Notes                                                                                                                                                                                                     |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`        | The tab on /library. Template, 3D Scene, Prompt, Background, Image Pack, LoRA, Video, MCP / Agent.                                                                                                        |
+| `tier`        | `Free` or `Premium`. **Defaults to Premium** — forgetting it should never give an asset away.                                                                                                             |
+| `tags`        | Titles of existing `tag` documents. **Unknown ones are refused, not created** — silently minting tags is how the rail grew to ~35 chips nobody chose. Add it in the Studio, or run `tools/seed-tags.mjs`. |
+| `files[].tag` | Code, Source, Assets, Config, Prompts.                                                                                                                                                                    |
 
 `meta` and `bytes` are read from the real files when you leave them out, so the
 size a visitor is shown is the size they get.
 
 ### Video
 
-A card attaches its clip when it scrolls into view and plays it muted, so size
-is paid by everyone who scrolls past — not just by whoever hovers. That makes it
-matter more than it used to, not less.
+A grid card attaches its clip on hover or keyboard focus and plays it muted.
+Standalone item media can attach while visible. Keep the clip compact because
+the visitor should reach the first useful frame quickly; reduced-motion and
+coarse-pointer visitors keep the poster.
 
 ```bash
 node tools/optimize-clip.mjs clip.mp4                  # 6s, 1280px, ~2 MB
@@ -134,10 +139,10 @@ and letting `app/api/download/route.ts` sign it on request.
 
 Which bucket depends on `STORAGE_DRIVER`:
 
-| | |
-|---|---|
+|                      |                                                                     |
+| -------------------- | ------------------------------------------------------------------- |
 | `supabase` (default) | the private `assets` bucket — Supabase dashboard → Storage → assets |
-| `r2` | the private R2 bucket named by `R2_ASSETS_BUCKET` |
+| `r2`                 | the private R2 bucket named by `R2_ASSETS_BUCKET`                   |
 
 The key is the same either way — `storagePath` is a plain `<slug>/<name>` — so
 moving between them is a config change, not a re-import. Run
@@ -148,6 +153,8 @@ free; Supabase and Pages do not.
 
 ## What to check afterwards
 
-- `/library` — it appears, and its type tab and industry pill count it.
-- `/item/<slug>` — the prompt reveals, and each file downloads.
+- `/library` — it appears and the type, category, and pricing controls count it.
+- `/item/<slug>` — media, prompt access, and each file download behave as expected.
+- `/` — a real-preview item may appear in the Kinetic Layers portion of the wall;
+  it remains distinct from MotionSites reference cards.
 - Signed out on a paid asset, the gate still refuses.

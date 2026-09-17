@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
 import PricingView from "@/components/kl/PricingView";
-import { getSettings } from "@/lib/sanity/queries";
 import { EARLY_ACCESS } from "@/lib/kl/access";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const s = await getSettings();
+export function generateMetadata(): Metadata {
   return {
     alternates: { canonical: "/pricing" },
     title: "Pricing",
     description: EARLY_ACCESS
-      ? `All ${s.totalAssets} assets are free while the library is in early access.`
-      : `${s.freeThisMonth} free forever. The whole library for $${s.monthlyPrice} a month.`,
+      ? "All available assets are free while Kinetic Layers is in early access. Founding Membership is a proposed future offer."
+      : "Founding Membership will open after verified kits are ready. Join the non-binding interest list for launch updates.",
   };
 }
 

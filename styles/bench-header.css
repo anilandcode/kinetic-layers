@@ -1,0 +1,56 @@
+/* Benchmark header and footer. Every selector stays inside [data-kl]. */
+[data-kl] .kl-bench-header { position: sticky; top: 0; z-index: 60; height: 72px; background: var(--bg, var(--ground)); }
+[data-kl] .kl-bench-header-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; height: 100%; padding: 0 20px; }
+[data-kl] .kl-bench-nav, [data-kl] .kl-bench-actions, [data-kl] .kl-bench-mobile-actions, [data-kl] .kl-bench-footer nav { display: flex; align-items: center; }
+[data-kl] .kl-bench-nav { gap: 20px; min-width: 0; }
+[data-kl] .kl-bench-nav a, [data-kl] .kl-bench-footer, [data-kl] .kl-bench-footer a { color: var(--ink-3, var(--muted)); font-family: var(--font-ui, var(--kl-sans, ui-sans-serif, system-ui, sans-serif)); font-size: 13px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+[data-kl] .kl-bench-nav a[aria-current="page"], [data-kl] .kl-bench-nav a:hover, [data-kl] .kl-bench-footer a:hover { color: var(--ink); }
+[data-kl] .kl-bench-wordmark { display: flex; align-items: center; gap: 9px; justify-self: center; color: var(--ink); font-family: var(--font-ui, var(--kl-sans, ui-sans-serif, system-ui, sans-serif)); font-size: 15px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
+[data-theme="light"] [data-kl] .kl-bench-wordmark,[data-theme="light"] [data-kl] .kl-bench-wordmark:hover{color:#17181a}
+[data-kl] .kl-bench-actions { justify-self: end; gap: 10px; }
+[data-kl] .kl-bench-search { display: inline-flex; align-items: center; gap: 8px; width: 178px; height: 38px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--pane, rgba(var(--ink-rgb, 20, 22, 26), .06)); color: var(--ink-3, var(--muted)); cursor: pointer; font: 400 13px/1 var(--font-ui, var(--kl-sans, ui-sans-serif, system-ui, sans-serif)); text-align: left; }
+[data-kl] .kl-bench-search:hover, [data-kl] .kl-bench-theme:hover, [data-kl] .kl-bench-mobile-search:hover, [data-kl] .kl-bench-mobile-menu > summary:hover, [data-kl] .kl-bench-account-trigger:hover { background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink); }
+[data-kl] .kl-bench-theme, [data-kl] .kl-bench-mobile-search, [data-kl] .kl-bench-mobile-menu > summary { display: grid; width: 36px; height: 36px; padding: 0; place-items: center; border: 0; border-radius: 999px; background: var(--pane, rgba(var(--ink-rgb, 20, 22, 26), .06)); color: var(--ink-3, var(--muted)); cursor: pointer; }
+[data-kl] .kl-bench-upgrade, [data-kl] .kl-bench-mobile-upgrade { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; border-radius: 999px; background: var(--ink); color: var(--on-ink, var(--ground)); font-family: var(--font-ui, var(--kl-sans, ui-sans-serif, system-ui, sans-serif)); font-size: 13px; font-weight: 600; white-space: nowrap; }
+[data-kl] .kl-bench-upgrade:hover, [data-kl] .kl-bench-mobile-upgrade:hover { background: var(--ink); color: var(--on-ink, var(--ground)); opacity: .82; }
+[data-kl] .kl-bench-account, [data-kl] .kl-bench-mobile-menu { position: relative; }
+[data-kl] .kl-bench-account > summary, [data-kl] .kl-bench-mobile-menu > summary { list-style: none; }
+[data-kl] .kl-bench-account > summary::-webkit-details-marker, [data-kl] .kl-bench-mobile-menu > summary::-webkit-details-marker { display: none; }
+[data-kl] .kl-bench-account-trigger { display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 7px 0 5px; border-radius: 999px; color: var(--ink-3, var(--muted)); cursor: pointer; }
+/* Keep the existing account identity but use the dark ink control treatment. */
+[data-kl] .kl-bench-account-trigger > span:first-child { background: var(--ink) !important; color: var(--on-ink, var(--ground)) !important; font-weight: 600 !important; }
+[data-kl] .kl-bench-account-caret { display: grid; place-items: center; transition: transform .2s ease; }
+[data-kl] .kl-bench-account[open] .kl-bench-account-caret { transform: rotate(180deg); }
+[data-kl] .kl-bench-account-menu { position: absolute; top: calc(100% + 8px); right: 0; z-index: 70; display: grid; min-width: 180px; padding: 8px; border-radius: 10px; background: var(--board, var(--card)); box-shadow: 0 12px 32px rgba(0, 0, 0, .28); }
+[data-kl] .kl-bench-account-who { overflow: hidden; padding: 9px 10px; color: var(--ink-4, var(--muted)); font: 400 11px/1.3 var(--font-ui, var(--kl-sans, ui-sans-serif, system-ui, sans-serif)); text-overflow: ellipsis; white-space: nowrap; }
+[data-kl] .kl-bench-account-menu a, [data-kl] .kl-bench-account-menu button, [data-kl] .kl-bench-mobile-account a, [data-kl] .kl-bench-mobile-account button { display: block; width: 100%; padding: 9px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--ink); cursor: pointer; font: 400 13px/1.3 var(--font-ui, var(--kl-sans, ui-sans-serif, system-ui, sans-serif)); text-align: left; }
+[data-kl] .kl-bench-account-menu a:hover, [data-kl] .kl-bench-account-menu button:hover, [data-kl] .kl-bench-mobile-account a:hover, [data-kl] .kl-bench-mobile-account button:hover { background: var(--pane, rgba(var(--ink-rgb, 20, 22, 26), .06)); color: var(--ink); }
+[data-kl] .kl-bench-account-pending { width: 36px; height: 36px; border-radius: 999px; background: var(--pane, rgba(var(--ink-rgb, 20, 22, 26), .06)); }
+[data-kl] .kl-bench-mobile-actions, [data-kl] .kl-bench-mobile-menu-panel { display: none; }
+
+[data-kl] .kl-bench-footer { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; margin-top: 24px; padding: 28px 20px; }
+[data-kl] .kl-bench-footer-copyright { justify-self: center; color: var(--ink-4, var(--muted)); white-space: nowrap; }
+[data-kl] .kl-bench-footer nav { justify-content: flex-end; gap: 16px; flex-wrap: wrap; }
+
+@media (max-width: 760px) {
+  [data-kl] .kl-bench-header-row { grid-template-columns: 1fr auto; }
+  [data-kl] .kl-bench-nav, [data-kl] .kl-bench-actions { display: none; }
+  [data-kl] .kl-bench-wordmark { justify-self: start; }
+  [data-kl] .kl-bench-wordmark span { display: none; }
+  [data-kl] .kl-bench-mobile-actions { display: flex; justify-self: end; gap: 8px; }
+  [data-kl] .kl-bench-mobile-menu[open] > summary { background: var(--ink); color: var(--on-ink, var(--ground)); }
+  [data-kl] .kl-bench-mobile-menu[open] .kl-bench-mobile-menu-panel { position: absolute; top: calc(100% + 12px); right: 0; z-index: 70; display: grid; width: min(300px, calc(100vw - 40px)); gap: 14px; padding: 12px; border-radius: 10px; background: var(--board, var(--card)); box-shadow: 0 16px 36px rgba(0, 0, 0, .3); }
+  [data-kl] .kl-bench-mobile-menu-panel nav { display: grid; }
+  [data-kl] .kl-bench-mobile-menu-panel nav a { padding: 10px 8px; color: var(--ink-2, var(--body)); font: 400 15px/1.3 var(--font-ui, var(--kl-sans, ui-sans-serif, system-ui, sans-serif)); }
+  [data-kl] .kl-bench-mobile-menu-panel nav a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+  [data-kl] .kl-bench-mobile-menu-tools, [data-kl] .kl-bench-mobile-account { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 8px; border-top: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); color: var(--ink-3, var(--muted)); font: 400 13px/1.3 var(--font-ui, var(--kl-sans, ui-sans-serif, system-ui, sans-serif)); }
+  [data-kl] .kl-bench-mobile-account { display: grid; grid-template-columns: 1fr 1fr; }
+  [data-kl] .kl-bench-mobile-account > span { grid-column: 1 / -1; overflow: hidden; padding: 0 2px 6px; color: var(--ink-4, var(--muted)); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+  [data-kl] .kl-bench-mobile-upgrade { width: 100%; }
+  [data-kl] .kl-bench-mobile-menu-pending { display: block; height: 36px; border-radius: 999px; background: var(--pane, rgba(var(--ink-rgb, 20, 22, 26), .06)); }
+  [data-kl] .kl-bench-footer { grid-template-columns: 1fr; gap: 14px; padding-top: 24px; padding-bottom: 32px; }
+  [data-kl] .kl-bench-footer-copyright, [data-kl] .kl-bench-footer nav { justify-self: start; }
+}
+
+[data-kl] .kl-bench-nav a{font-weight:600}
+@media(min-width:761px) and (max-width:1050px){[data-kl] .kl-bench-search{width:36px;padding:0;justify-content:center}[data-kl] .kl-bench-search span{display:none}[data-kl] .kl-bench-nav{gap:12px}}

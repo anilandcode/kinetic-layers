@@ -16,8 +16,8 @@ export const metadata: Metadata = {
 };
 
 const perks = (s: { totalAssets: number; collectionCount: number }) => [
-  `All ${s.totalAssets} assets and every source file`,
-  "New assets every Thursday",
+  `Explore ${s.totalAssets} catalogue items`,
+  "New work when it is ready",
   `All ${s.collectionCount} collections`,
   "Commercial use in unlimited client projects",
 ];
@@ -44,10 +44,10 @@ export default async function Join({
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <a className="skip-link" href="#join">Skip to the form</a>
       <header style={{ borderBottom: "1px solid var(--line)" }}>
-        <div className="kl-pad" style={{ height: 66, display: "flex", alignItems: "center", gap: 20 }}>
+        <div className="kl-pad" style={{ height: 72, display: "flex", alignItems: "center", gap: 20 }}>
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 9, color: "var(--ink)" }}>
             <Mark />
-            <span style={{ fontSize: 16, fontWeight: 500, letterSpacing: "-0.01em" }}>Kinetic Layers</span>
+            <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em" }}>Kinetic Layers</span>
           </Link>
           <div style={{ flex: 1 }} />
           {!EARLY_ACCESS && (
@@ -58,7 +58,7 @@ export default async function Join({
       </header>
 
       <main id="join" style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(440px,100%),1fr))", minHeight: 0 }}>
-        <section style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "70px 32px" }}>
+        <section style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 20px" }}>
           <JoinForm next={next} initialError={error} initialMode={mode === "signin" ? "signin" : "signup"} providers={providers} />
         </section>
 
@@ -69,52 +69,12 @@ export default async function Join({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "70px 32px",
+            padding: "48px 20px",
           }}
         >
           <div data-reveal style={{ width: "100%", maxWidth: 460, display: "flex", flexDirection: "column", gap: 20 }}>
-            <div data-card style={{ borderRadius: "18px", padding: 5 }}>
-              <div style={{ height: 240, borderRadius: "12px", overflow: "hidden", position: "relative" }}>
-                <div data-preview-inner style={{ width: "100%", height: "100%", background: "var(--t4)" }} />
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "color-mix(in srgb, var(--ground) 55%, transparent)",
-                    backdropFilter: "blur(3px)",
-                  }}
-                >
-                  <span
-                    className="kl-mono"
-                    style={{
-                      fontSize: 10,
-                      letterSpacing: "0.16em",
-                      color: "var(--amber)",
-                      border: "1px solid var(--amber-line)",
-                      background: "var(--amber-bg)",
-                      borderRadius: "99px",
-                      padding: "9px 18px",
-                    }}
-                  >
-                    Unlimited only
-                  </span>
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "16px 4px 0" }}>
-                <span style={{ fontSize: 17, fontWeight: 500, letterSpacing: "-0.01em" }}>Volumetric Drift</span>
-                <span className="kl-tag" style={{ padding: "5px 13px" }}>Unlimited</span>
-              </div>
-              <div style={{ display: "flex", gap: 8, padding: "11px 4px 2px" }}>
-                <span className="kl-tag">3d scene</span>
-                <span className="kl-tag">three.js</span>
-              </div>
-            </div>
-
-            <div style={{ borderRadius: "18px", border: "1px solid var(--line2)", background: "var(--card)", padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
-              <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--amber)" }}>What Premium opens</span>
+            <div style={{ borderRadius: "10px", border: "1px solid var(--line2)", background: "var(--board)", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
+              <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--amber)" }}>What Premium opens</span>
               <ul style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {perks(settings).map((p) => (
                   <li key={p} style={{ display: "flex", gap: 11, alignItems: "flex-start" }}>

@@ -151,6 +151,31 @@ export type Database = {
         Update: Record<string, never>;
         Relationships: [];
       };
+      /* Separate from the newsletter. This records opt-in interest in a future
+         membership and never grants a plan or stores payment information. */
+      membership_interest: {
+        Row: {
+          id: string;
+          email: string;
+          created_at: Timestamp;
+          confirmed_at: Timestamp | null;
+          token: string;
+          source: string;
+        };
+        Insert: {
+          email: string;
+          created_at?: Timestamp;
+          confirmed_at?: Timestamp | null;
+          token?: string;
+          source?: string;
+        };
+        Update: {
+          confirmed_at?: Timestamp | null;
+          token?: string;
+          source?: string;
+        };
+        Relationships: [];
+      };
       events: {
         Row: {
           id: number;

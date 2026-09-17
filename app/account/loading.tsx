@@ -14,10 +14,10 @@ export default function Loading() {
       <LoadingAnnouncement what="your account" />
       <div
         aria-hidden="true"
-        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 20 }}
+        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 12 }}
       >
         {[0, 1, 2, 3].map((i) => (
-          <Shimmer key={i} h={132} r={18} />
+          <Shimmer key={i} h={132} r={10} />
         ))}
       </div>
     </section>

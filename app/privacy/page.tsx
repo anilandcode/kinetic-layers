@@ -45,8 +45,12 @@ export default async function Privacy() {
       p: "Supabase hosts the database and files. Sanity hosts the catalogue text. Cloudflare serves the preview media. Vercel serves the site. Resend delivers email. Each sees what it needs to do its job, and nothing is sold or shared beyond that.",
     },
     {
-      h: "The weekly email",
+      h: "The newsletter",
       p: "The list lives in our own database, not a marketing platform. You are not on it until you click the link in the confirmation email — signing up alone does not subscribe you. Every message carries a one-click unsubscribe, and using it sets you as unsubscribed immediately and permanently: a later click on an old confirmation link will not put you back.",
+    },
+    {
+      h: "Founding Membership interest",
+      p: "If you ask to hear when the future membership opens, we store your email and the date you asked in a separate interest list. A confirmation link records your consent before launch updates are sent. This does not join the newsletter, create an account, or start a subscription. Ask us to remove your interest at any time.",
     },
     {
       h: "If you answered the questions",

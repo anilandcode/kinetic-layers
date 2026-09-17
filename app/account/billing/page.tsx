@@ -20,25 +20,25 @@ export default async function AccountBilling() {
   return (
     <section
       className="kl-pad"
-      style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(380px,100%),1fr))", gap: 24, alignItems: "start" }}
+      style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(380px,100%),1fr))", gap: 12, alignItems: "start" }}
     >
       <div
         data-reveal
         style={{
-          borderRadius: 18,
+          borderRadius: 10,
           border: "1px solid var(--amber-line)",
-          background: "radial-gradient(120% 90% at 85% 0%, var(--amber-bg), transparent 62%), var(--card)",
+          background: "radial-gradient(120% 90% at 85% 0%, var(--amber-bg), transparent 62%), var(--board)",
           padding: 26,
           display: "flex",
           flexDirection: "column",
           gap: 14,
         }}
       >
-        <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--amber)" }}>
+        <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--amber)" }}>
           Subscription
         </span>
         <div style={{ display: "flex", alignItems: "baseline", gap: 9, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 34, fontWeight: 500, letterSpacing: "-0.03em" }}>
+          <span style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-0.03em" }}>
             {EARLY_ACCESS ? "Early access" : viewer.premium ? "Premium" : "Free"}
           </span>
           <span style={{ fontSize: 15, color: "var(--muted)" }}>
@@ -61,8 +61,8 @@ export default async function AccountBilling() {
         ) : null}
       </div>
 
-      <div data-reveal style={{ borderRadius: 18, border: "1px solid var(--line)", background: "var(--inset)", padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 500 }}>Invoices</h2>
+      <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", background: "var(--pane)", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
+        <h2 style={{ fontSize: 16, fontWeight: 600 }}>Invoices</h2>
         {/* Honest: there is no billing yet, so there is nothing to list. */}
         <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
           No invoices yet. Receipts appear here automatically once a subscription is charged.

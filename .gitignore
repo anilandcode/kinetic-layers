@@ -23,6 +23,7 @@ next-env.d.ts
 
 # vercel
 .vercel
+.pnpm-store/
 
 # local data from the old PHP build
 site/.data/

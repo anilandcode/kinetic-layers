@@ -15,19 +15,19 @@ export default function AccountStat({
     <div
       data-reveal
       style={{
-        borderRadius: "18px",
+        borderRadius: "10px",
         border: "1px solid var(--line)",
-        background: "var(--inset)",
+        background: "var(--pane)",
         padding: 22,
         display: "flex",
         flexDirection: "column",
         gap: 9,
       }}
     >
-      <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--muted)" }}>
+      <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
         {label}
       </span>
-      <span style={{ fontWeight: 500, letterSpacing: "-0.03em", fontSize: big ? 34 : 26 }}>{value}</span>
+      <span style={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: big ? 34 : 26 }}>{value}</span>
       <span style={{ fontSize: 13, color: "var(--muted)" }}>{note}</span>
     </div>
   );

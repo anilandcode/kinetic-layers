@@ -1,5 +1,13 @@
 # CODING AGENTS: READ THIS FIRST
 
+## Current implementation note — 2026-09-17
+
+This bundle is historical design evidence. The current implementation lives in
+`/Users/apple/Projects/direction-kit`; its active visual authority is the newer
+`Kinetic Layers Bench.dc.html` supplied alongside this bundle. The older
+Platform prototype below is useful for context only and must not override the
+current Bench direction or `HANDOFF.md`.
+
 This is a **handoff bundle** from Claude Design (claude.ai/design).
 
 A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.

@@ -32,7 +32,7 @@ const PALETTE: Array<[string, string, string]> = [
   ["Ink", "--ink", "Headings and anything that must be read first."],
   ["Body", "--body", "Running text."],
   ["Muted", "--muted", "Labels and secondary text."],
-  ["Amber", "--amber", "The one lamp. Text-safe; the glow uses #E8853A raw."],
+  ["Amber", "--amber", "The one lamp. Text-safe; the glow uses #737371 raw."],
   ["Amber bg", "--amber-bg", "Behind a Premium chip."],
   ["Amber line", "--amber-line", "The border that goes with it."],
   ["Moss", "--moss", "Status, never a call to action."],

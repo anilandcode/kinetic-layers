@@ -46,19 +46,19 @@ export default async function AccountDownloads({
 
   return (
     <section className="kl-pad" style={{ paddingBlock: 20 }}>
-      <div data-reveal style={{ borderRadius: 18, border: "1px solid var(--line)", overflow: "hidden" }}>
+      <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", overflow: "hidden" }}>
         <div
           style={{
             display: "flex",
             alignItems: "center",
             gap: 12,
             padding: "18px 22px",
-            background: "var(--inset)",
+            background: "var(--pane)",
             borderBottom: "1px solid var(--line2)",
             flexWrap: "wrap",
           }}
         >
-          <h2 style={{ fontSize: 17, fontWeight: 500 }}>Downloads</h2>
+          <h2 style={{ fontSize: 17, fontWeight: 600 }}>Downloads</h2>
           <div style={{ flex: 1 }} />
           <DownloadFilter active={kind ?? ""} kinds={kinds} />
         </div>
@@ -95,12 +95,12 @@ export default async function AccountDownloads({
                   >
                     {d.asset_name ?? d.asset_slug}
                   </Link>
-                  <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
+                  <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
                     {d.file_name}
                     {d.bytes ? ` · ${(d.bytes / 1_048_576).toFixed(1)} MB` : ""}
                   </span>
                 </div>
-                <span className="kl-mono" style={{ fontSize: 10, letterSpacing: "0.1em", color: "var(--muted)" }}>
+                <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
                   {new Date(d.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase()}
                 </span>
                 <DownloadAgain slug={d.asset_slug} file={d.file_name} />

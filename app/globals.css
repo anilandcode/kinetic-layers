@@ -9,3 +9,10 @@
 
 /* Kinetic Layers component styles — also scoped to [data-kl]. */
 @import "../styles/kl.css";
+
+@import "../styles/bench.css";
+
+@import "../styles/bench-item.css";
+@import "../styles/bench-header.css";
+
+@import "../styles/bench-pages.css";

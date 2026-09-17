@@ -22,6 +22,27 @@ export async function middleware(request: NextRequest) {
    * other query parameter is dropped rather than carried into the exchange.
    */
   const { searchParams, pathname } = request.nextUrl;
+  if (pathname === "/how") {
+    return new NextResponse("Not Found", {
+      status: 404,
+      headers: { "Cache-Control": "no-store", "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+  // The page-level notFound() can become a streamed "soft 404" with HTTP 200.
+  // Reject the private media inventory before rendering or session work.
+  if (pathname === "/bench-preview" && process.env.NODE_ENV !== "development") {
+    return new NextResponse("Not Found", {
+      status: 404,
+      headers: { "Cache-Control": "no-store", "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+  // Collections remain available locally while their public release is paused.
+  if ((pathname === "/collections" || pathname.startsWith("/collections/")) && process.env.NODE_ENV !== "development") {
+    return new NextResponse("Not Found", {
+      status: 404,
+      headers: { "Cache-Control": "no-store", "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
   const code = searchParams.get("code");
 
   if (code && pathname !== "/auth/callback") {

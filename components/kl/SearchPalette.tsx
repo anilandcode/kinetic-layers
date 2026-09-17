@@ -1,5 +1,7 @@
 "use client";
 
+import { hasRealPreview } from "@/lib/kl/preview-ready";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Asset } from "@/lib/kl/types";
@@ -54,7 +56,7 @@ export default function SearchPalette({
         const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
         const body = (await res.json()) as { hits?: Asset[] };
         if (!cancelled) {
-          setHits(body.hits ?? []);
+          setHits((body.hits ?? []).filter(hasRealPreview));
           setActive(0);
         }
       } catch {

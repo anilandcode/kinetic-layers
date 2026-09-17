@@ -1,131 +1,52 @@
+
+import { hasRealPreview } from "@/lib/kl/preview-ready";
 import Link from "next/link";
 import SiteHeader from "./SiteHeader";
 import Shell from "./Shell";
 import Footer from "./Footer";
-import GlassButton from "./GlassButton";
 import AssetCard from "./AssetCard";
-import DotFieldCta from "./DotFieldCta";
 import { UpgradeCard, NewsCard } from "./PromoCards";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
-import { EARLY_ACCESS } from "@/lib/kl/access";
+import { MOTIONSITES_REFERENCES } from "@/lib/kl/motionsites";
 import type { Asset } from "@/lib/kl/types";
+import MotionSitesReferenceCard from "./MotionSitesReferenceCard";
+import { MotionGrid, MotionSection } from "./BenchMotion";
 
-/**
- * The landing page.
- *
- * The design draws the full library here — hero, filter rail and the whole
- * masonry. This does not, deliberately: the filters moved to /library in
- * 17db6c3 because a first visitor was meeting a browse UI before being told
- * what the place was, and duplicating the rail would put two libraries in the
- * product. What stays is the pitch and enough of the goods to prove it.
- *
- * Every number is counted from Sanity. The prototype's "two hundred and forty"
- * and "twelve free" were placeholders; a stored count was wrong the day after
- * it was written.
- */
-
-/* Enough to fill the masonry and show range, few enough that the page ends. */
-const STRIP = 8;
-
+/** Bench layout, backed by the real catalogue rather than the export's demo rows. */
 export default async function HomeView() {
-  const [all, settings, viewer] = await Promise.all([getAssets(), getSettings(), getViewer()]);
-
-  const newest = all.slice(0, STRIP);
-
-  /* Early access hands the whole vault to anyone with an account, so nothing
-     is locked and no card should claim otherwise. */
-  /* The upgrade promo hides only from someone who already subscribes. It used
-     to hide from anyone `unlocked`, which early access makes everyone, so the
-     design's "Take the whole library." card never appeared at all. */
-  const subscribed = Boolean(viewer?.premium);
-
+  const [assets, settings, viewer] = await Promise.all([getAssets(), getSettings(), getViewer()]);
+  const visible = assets.filter(hasRealPreview);
+  const mixedWall = MOTIONSITES_REFERENCES.reduce<Array<{ kind: "asset"; asset: Asset } | { kind: "reference"; reference: typeof MOTIONSITES_REFERENCES[number] }>>((wall, reference, index) => {
+    const asset = index === 0 ? visible[0] : index === 10 ? visible[1] : undefined;
+    if (asset) wall.push({ kind: "asset", asset });
+    wall.push({ kind: "reference", reference });
+    return wall;
+  }, []);
   return (
     <Shell>
       <SiteHeader />
-
-      <main data-view>
-        {/* ---------- Hero ---------- */}
-        <div className="kl-hero-wrap">
-          <div className="kl-grid-pattern" aria-hidden="true" />
-          <div className="kl-rings" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
-
-          <div className="kl-pad kl-hero" data-hero>
-            <div className="kl-eyebrow">
-              {settings.currentDrop ? (
-                <span className="kl-drop-tag">{settings.currentDrop}</span>
-              ) : null}
-              <span className="kl-eyebrow-text" data-letters>
-                One studio · shipped Thursday
-              </span>
-            </div>
-
-            {/* data-mask rebuilds this into per-word spans, so it must stay
-                plain text — no markup inside. */}
-            <h1 className="kl-h1" data-mask data-h1>
-              {`${settings.totalAssets} things worth stealing.`}
-            </h1>
-
-            <p className="kl-pull" data-rise data-pull>
-              Prompts, templates, scenes and workflows built in one studio and shipped every
-              Thursday.
-            </p>
-
-            <div className="kl-cta-row" data-rise>
-              <GlassButton href="/pricing" premium size="lg" pull={7}>
-                {EARLY_ACCESS
-                  ? "Free while in early access"
-                  : `Premium — $${settings.monthlyPrice}/mo`}
-              </GlassButton>
-              <GlassButton href="/library" size="lg" pull={5}>
-                {`Browse ${settings.freeThisMonth} free`}
-              </GlassButton>
-            </div>
-          </div>
-        </div>
-
-        {/* ---------- The newest, as proof ---------- */}
-        <div className="kl-pad" style={{ paddingTop: 10 }}>
-          <div className="kl-rule-row" style={{ marginTop: 0 }}>
-            <span className="kl-rule-label">THE LATEST DROP</span>
-            <span className="kl-rule" data-rule aria-hidden="true" />
-            <Link href="/library" className="kl-strip-link">
-              See all {all.length} →
-            </Link>
-          </div>
-
-          <div className="kl-masonry" data-masonry style={{ marginTop: 22 }}>
-            {newest.flatMap((asset: Asset, i: number) => {
-              const card = (
-                <AssetCard key={asset.slug} asset={asset} />
-              );
-              if (i === 3 && !subscribed)
-                return [card, <UpgradeCard key="promo-upgrade" price={settings.monthlyPrice} />];
-              if (i === 6) return [card, <NewsCard key="promo-news" />];
-              return [card];
-            })}
-          </div>
-        </div>
-
-        {/* ---------- Closing CTA ---------- */}
-        <DotFieldCta
-          heading={`Start with the ${settings.freeThisMonth} free ones.`}
-          body={
-            EARLY_ACCESS
-              ? "No card, no trial timer. Everything is open while the library is in early access."
-              : `No card, no trial timer. If the source files are what you hoped, the rest is $${settings.monthlyPrice} a month.`
-          }
-          secondaryHref="/library"
-          secondaryLabel={`Browse ${settings.freeThisMonth} free`}
-          primaryHref="/pricing"
-          primaryLabel={EARLY_ACCESS ? "See what's included" : "Go Premium"}
-        />
+      <main className="bench-home">
+        <MotionSection as="section" className="bench-intro">
+          <h1>{visible.length + MOTIONSITES_REFERENCES.length} things worth stealing.</h1>
+          <p>Original kits and credited visual references selected for their interaction, craft and direction.</p>
+        </MotionSection>
+        <MotionSection className="bench-wall-label" delay={0.05}>
+          <span>The latest drop</span>
+          <Link href="/library">Browse the {visible.length} Kinetic Layers items →</Link>
+        </MotionSection>
+        <MotionGrid className="bench-wall">
+          {mixedWall.flatMap((entry, index) => {
+            const card = entry.kind === "asset"
+              ? <AssetCard key={entry.asset.slug} asset={entry.asset} />
+              : <MotionSitesReferenceCard key={entry.reference.name} reference={entry.reference} />;
+            if (index === 5 && !viewer?.premium) return [card, <UpgradeCard key="upgrade" price={settings.monthlyPrice} />];
+            if (index === 14) return [card, <NewsCard key="newsletter" />];
+            return [card];
+          })}
+        </MotionGrid>
+        {!visible.length && <p className="bench-empty">New work is on its way. Check back for the next drop.</p>}
       </main>
-
       <Footer />
     </Shell>
   );
