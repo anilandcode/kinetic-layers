@@ -65,6 +65,13 @@ if (!sanityConfigured && typeof window === "undefined") {
 const readToken =
   typeof window === "undefined" ? process.env.SANITY_API_READ_TOKEN : undefined;
 
+if (sanityConfigured && !readToken && typeof window === "undefined") {
+  console.warn(
+    "[kinetic-layers] SANITY_API_READ_TOKEN is not set — catalogue documents may load, " +
+      "but tag and uploaded-media references can resolve empty on this dataset."
+  );
+}
+
 export const sanity = sanityConfigured
   ? createClient({
       projectId,
