@@ -13,7 +13,7 @@ import { MotionSection } from "./BenchMotion";
 
 type Comparison = Array<[string, Array<[string, string, string]>]>;
 
-function comparison(currentLabel: string): Comparison {
+function comparison(): Comparison {
   return [
     ["Library", [
       ["Browse real-preview items", "When published", "Yes"],
@@ -50,7 +50,7 @@ export default async function PricingView() {
   const currentAction = EARLY_ACCESS
     ? viewer ? "Browse the library" : "Create a free account"
     : visible > 0 ? "Browse published previews" : "Ask about the first drop";
-  const rows = comparison(currentLabel);
+  const rows = comparison();
 
   return <Shell>
     <SiteHeader />
