@@ -28,24 +28,26 @@ export default async function HomeView() {
       <SiteHeader />
       <main className="bench-home">
         <MotionSection as="section" className="bench-intro">
-          <h1>{visible.length + MOTIONSITES_REFERENCES.length} things worth stealing.</h1>
-          <p>Original kits and credited visual references selected for their interaction, craft and direction.</p>
+          <h1>Design kits you can adapt and ship.</h1>
+          <p>Explore original Kinetic Layers kits and credited visual references selected for interaction, craft and direction.</p>
         </MotionSection>
         <MotionSection className="bench-wall-label" delay={0.05}>
-          <span>The latest drop</span>
-          <Link href="/library">Browse the {visible.length} Kinetic Layers items →</Link>
+          <span>{visible.length ? "Original kits and visual references" : "Visual references while the first kits are reviewed"}</span>
+          <Link href={visible.length ? "/library" : "/contact"}>
+            {visible.length ? `Browse ${visible.length} original kits →` : "Tell us what you need →"}
+          </Link>
         </MotionSection>
         <MotionGrid className="bench-wall">
           {mixedWall.flatMap((entry, index) => {
             const card = entry.kind === "asset"
               ? <AssetCard key={entry.asset.slug} asset={entry.asset} />
               : <MotionSitesReferenceCard key={entry.reference.name} reference={entry.reference} />;
-            if (index === 5 && !viewer?.premium) return [card, <UpgradeCard key="upgrade" price={settings.monthlyPrice} />];
+            if (visible.length > 0 && index === 5 && !viewer?.premium) return [card, <UpgradeCard key="upgrade" price={settings.monthlyPrice} />];
             if (index === 14) return [card, <NewsCard key="newsletter" />];
             return [card];
           })}
         </MotionGrid>
-        {!visible.length && <p className="bench-empty">New work is on its way. Check back for the next drop.</p>}
+        {!visible.length && <p className="bench-empty">The first original Kinetic Layers kits are in review. The credited reference wall remains available for research.</p>}
       </main>
       <Footer />
     </Shell>
