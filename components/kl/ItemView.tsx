@@ -8,7 +8,9 @@ import { img, clip as clipUrl, frame, ITEM_W, CARD_W } from "@/lib/kl/media";
 import PreviewMedia from "@/components/legacy/PreviewMedia";
 import { groundFor } from "@/lib/kl/ground";
 import { EARLY_ACCESS } from "@/lib/kl/access";
+import { canDownload } from "@/lib/kl/gate";
 import { MotionSection } from "./BenchMotion";
+import ItemDownloadAction from "./ItemDownloadAction";
 import type { Asset, Viewer } from "@/lib/kl/types";
 
 /**
@@ -31,45 +33,26 @@ import type { Asset, Viewer } from "@/lib/kl/types";
  * so none of it has to be rewritten to come back.
  */
 
-/* What lands in the download. Three fixed layers, the same on every asset —
-   the design's copy, and true of every item in the library. */
-const STACK = [
-  {
-    tag: "01",
-    name: "The output",
-    meta: "PNG · MP4 · FRAME",
-    copy: "What you saw in the preview, at full resolution, exactly as it shipped.",
-  },
-  {
-    tag: "02",
-    name: "The source",
-    meta: "Project files",
-    copy: "The scene, repo, prompt chain or weights that produced it — editable, documented, no stripped layers.",
-  },
-  {
-    tag: "03",
-    name: "The receipt",
-    meta: "Where it shipped",
-    copy: "A link to the live page it was built for, the brief behind it, and the license covering your use.",
-  },
-];
+function fileMeta(file: NonNullable<Asset["files"]>[number]) {
+  const size = file.bytes
+    ? file.bytes >= 1048576
+      ? `${(file.bytes / 1048576).toFixed(file.bytes >= 10485760 ? 0 : 1)} MB`
+      : `${Math.max(1, Math.round(file.bytes / 1024))} KB`
+    : null;
+  return [file.tag, file.meta, size].filter(Boolean).join(" · ");
+}
 
 export default function ItemView({
   asset,
   related,
   relatedReason = "newest",
   viewer,
-  locked,
-  monthlyPrice,
   variant = "page",
 }: {
   asset: Asset;
   related: Asset[];
   relatedReason?: "drop" | "tag" | "newest";
   viewer: Viewer | null;
-  /** Whether the files are behind the paywall for this viewer. */
-  locked: boolean;
-  monthlyPrice: number;
   /**
    * "page" is the real route at /item/[slug] — the one the sitemap, the MCP
    * tool, the OG image and every ?next= redirect point at (HANDOFF.md, trap 3).
@@ -87,6 +70,24 @@ export default function ItemView({
       ? frame(asset.clip, ITEM_W)
       : null;
   const clip = asset.clip ? clipUrl(asset.clip, ITEM_W) : null;
+  const files = asset.files ?? [];
+  const downloadable = canDownload(viewer, asset) && files.length > 0;
+  const access = downloadable
+    ? {
+        label: "Available",
+        note: "Your account can access the files listed on this page.",
+      }
+    : EARLY_ACCESS
+      ? {
+          label: "Account required",
+          note: "Create a free account to access this early-release item.",
+        }
+      : {
+          label: "Preview only",
+          note: files.length
+            ? "The preview is published. New account access and checkout are not open today."
+            : "The preview is published. Downloadable files have not been listed for this item yet.",
+        };
 
   /* Facts come from the asset's own specs first, then the fields every item
      has — deduped by key, because specs already carry TYPE, SHELF and STACK
@@ -95,10 +96,11 @@ export default function ItemView({
   const facts = (() => {
     const seen = new Map<string, string>();
     const fallbacks: Array<[string, string | undefined]> = [
-      ["TYPE", asset.type],
+      ["FORMAT", asset.type],
       /* Was five named columns. One tag list reads better here anyway — the
          table was mostly repeating the same word under different headings. */
       ["TAGS", asset.tags?.length ? asset.tags.join(", ") : undefined],
+      ["ACCESS", access.label],
     ];
     for (const [k, v] of fallbacks) if (v && !seen.has(k)) seen.set(k, v);
     return [...seen].map(([k, v]) => ({ k, v }));
@@ -111,19 +113,7 @@ export default function ItemView({
         ? "Related"
         : "Newest in the library";
 
-  const cta = locked
-    ? { label: "Unlock with Premium", href: "/pricing" }
-    : viewer
-      ? { label: asset.free ? "Download — free" : "Download the files", href: `/api/download?slug=${asset.slug}` }
-      : { label: "Create a free account", href: `/join?next=/item/${asset.slug}` };
-
-  const ctaNote = locked
-    ? `Included in the $${monthlyPrice} subscription, with every other premium asset.`
-    : viewer
-      ? "Output, source and the receipt, in one archive."
-      : EARLY_ACCESS
-        ? "Free while the library is in early access — it just needs an account."
-        : "An account is the only thing between you and the source files.";
+  const accountHref = `/join?next=/item/${asset.slug}`;
 
   const isModal = variant === "modal";
 
@@ -159,7 +149,7 @@ export default function ItemView({
 
         <aside className="bench-item-details" aria-label={`${asset.name} details`}>
           <div className="bench-item-details-copy">
-            <span className="bench-item-eyebrow">{asset.type} · {asset.free ? "Free early access" : "Premium"}</span>
+            <span className="bench-item-eyebrow">Original kit · {access.label}</span>
             <h1 className="bench-item-title">{asset.name}</h1>
             {asset.tagline ? <p className="bench-item-tagline">{asset.tagline}</p> : null}
             <div className="bench-item-facts">
@@ -175,15 +165,21 @@ export default function ItemView({
                 <ul>{asset.files.map((file, index) => (
                   <li key={`${file.name}-${index}`}>
                     <span>{file.name}</span>
-                    <small>{file.meta ?? file.tag ?? ""}</small>
+                    <small>{fileMeta(file)}</small>
                   </li>
                 ))}</ul>
               </div>
             ) : null}
           </div>
           <div className="bench-item-actions">
-            <span className="bench-item-action-note">{ctaNote}</span>
-            <Link href={cta.href} className="bench-item-primary-action">{cta.label}</Link>
+            <span className="bench-item-action-note">{access.note}</span>
+            {downloadable ? (
+              <ItemDownloadAction slug={asset.slug} label={files.length === 1 ? "Download file" : "Download first file"} />
+            ) : EARLY_ACCESS ? (
+              <Link href={accountHref} className="bench-item-primary-action">Create a free account</Link>
+            ) : (
+              <Link href="/library" className="bench-item-primary-action">Explore the library</Link>
+            )}
             <a href={`/item/${asset.slug}`} className="bench-item-secondary-action">Open full item page</a>
           </div>
         </aside>
@@ -265,6 +261,12 @@ export default function ItemView({
             </div>
 
             <div className="kl-item-copy">
+              <div className="kl-item-badges" aria-label="Item status">
+                <span className="kl-badge">Original kit</span>
+                <span className={`kl-badge${downloadable ? " kl-badge--moss" : " kl-badge--amber"}`}>
+                  {access.label}
+                </span>
+              </div>
               {/* data-mask rebuilds this into per-word spans, so plain text only. */}
               <h1 className="kl-item-title" data-mask>
                 {asset.name}
@@ -276,36 +278,42 @@ export default function ItemView({
               ) : null}
             </div>
 
-            {/* Three rows in normal flow, not a deck.
+            {asset.notes ? (
+              <section className="kl-item-about" aria-labelledby="item-about-heading">
+                <span className="kl-kicker">About this item</span>
+                <h2 id="item-about-heading">About {asset.name}</h2>
+                <div className="kl-item-notes">
+                  {asset.notes.split(/\n{2,}/).filter(Boolean).map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
-                This was `data-layer-deck`: the rows sat absolutely at
-                left: i*22 / right: i*22+34, each 44px narrower than the last,
-                inside a fixed 430px box, and a scroll-scrubbed GSAP timeline
-                (layerDeck, lib/kl/motion.ts) unstacked them as the page moved.
-
-                In the overlay it never could. The scrolling element there is
-                .kl-modal-veil rather than the window, so the scrub never
-                advanced and the three rows sat frozen mid-skew — which read as
-                a broken layout rather than an effect, because that is what it
-                was: a scroll animation with no scroll.
-
-                Flat here fixes the overlay and the full page together, and the
-                fixed 430px went with it, so the panel no longer reserves height
-                it may not fill. */}
             <div className="kl-item-download">
-              <span className="kl-kicker">What&rsquo;s in the download</span>
+              <span className="kl-kicker">{files.length ? "Included files" : "Release status"}</span>
               <ol className="kl-stack-rows">
-                {STACK.map((s) => (
-                  <li key={s.tag} className="kl-stack-row">
+                {files.length ? files.map((file, index) => (
+                  <li key={`${file.name}-${index}`} className="kl-stack-row">
                     <div className="kl-layer-head">
-                      <span className="kl-kicker">{s.tag}</span>
-                      <span className="kl-layer-name">{s.name}</span>
+                      <span className="kl-kicker">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="kl-layer-name">{file.name}</span>
                       <span className="kl-spacer" />
-                      <span className="kl-layer-meta">{s.meta}</span>
+                      <span className="kl-layer-meta">{fileMeta(file) || "File"}</span>
                     </div>
-                    <p>{s.copy}</p>
+                    {downloadable ? (
+                      <ItemDownloadAction slug={asset.slug} file={file.name} label="Download" compact />
+                    ) : null}
                   </li>
-                ))}
+                )) : (
+                  <li className="kl-stack-row">
+                    <div className="kl-layer-head">
+                      <span className="kl-kicker">Preview</span>
+                      <span className="kl-layer-name">Files are not listed yet</span>
+                    </div>
+                    <p>This page shows the published preview only. It does not promise a download that is not ready.</p>
+                  </li>
+                )}
               </ol>
             </div>
           </div>
@@ -313,18 +321,15 @@ export default function ItemView({
           {/* ---------- Right: the ask ---------- */}
           <aside className="kl-item-side" data-item-sticky>
             <div className="kl-item-card">
-              <div className="kl-item-badges">
-                <span className={`kl-badge${asset.free ? " kl-badge--amber" : ""}`}>
-                  {asset.free ? "Free" : "Premium"}
-                </span>
-                <span className="kl-badge kl-badge--moss">Shipped</span>
-              </div>
+              {downloadable ? (
+                <ItemDownloadAction slug={asset.slug} label={files.length === 1 ? "Download file" : "Download first file"} />
+              ) : EARLY_ACCESS ? (
+                <GlassButton href={accountHref} premium={false} pull={5}>Create a free account</GlassButton>
+              ) : (
+                <GlassButton href="/library" premium={false} ghost pull={5}>Explore the library</GlassButton>
+              )}
 
-              <GlassButton href={cta.href} premium={!asset.free} pull={5}>
-                {cta.label}
-              </GlassButton>
-
-              <span className="kl-item-note">{ctaNote}</span>
+              <span className="kl-item-note">{access.note}</span>
 
               <div className="kl-hairline" />
 
@@ -334,12 +339,14 @@ export default function ItemView({
                   <span className="kl-fact-v">{f.v}</span>
                 </div>
               ))}
+
+              <Link href="/license" className="kl-item-license">Review the licence terms →</Link>
             </div>
 
             {related.length ? (
               <div className="kl-item-card">
                 <span className="kl-item-related-head">{relatedHeading}</span>
-                {related.filter(hasRealPreview).slice(0, 3).map((r, i) => {
+                {related.filter(hasRealPreview).slice(0, 3).map((r) => {
                   const thumb = r.poster ? img(r.poster, CARD_W) : r.clip ? frame(r.clip, CARD_W) : null;
                   return (
                     <Link key={r.slug} href={`/item/${r.slug}`} className="kl-related">
@@ -351,7 +358,7 @@ export default function ItemView({
                       </span>
                       <span className="kl-related-meta">
                         <span className="kl-related-name">{r.name}</span>
-                        <span className="kl-related-type">{r.type}</span>
+                        <span className="kl-related-type">Original kit · {r.type}</span>
                       </span>
                     </Link>
                   );
