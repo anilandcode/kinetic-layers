@@ -41,11 +41,15 @@ export function UpgradeCard({ price }: { price: number }) {
             <path d="M10 10H40V40H15C12.2 40 10 37.8 10 35V10Z" fill="#FFFFFF" fillOpacity="0.32" />
             <path d="M20 20H40V40H22C20.9 40 20 39.1 20 38V20Z" fill="#FFFFFF" fillOpacity="0.5" />
           </svg>
-          <h3>Take the whole library.</h3>
-          <p>Every prompt, template and scene — plus the source files and all future drops.</p>
+          <h3>{EARLY_ACCESS ? "Explore every available kit." : "Founding Membership is being prepared."}</h3>
+          <p>
+            {EARLY_ACCESS
+              ? "Every published prompt, template and scene is free to explore while early access is open."
+              : "Verified kits, available source files and future releases will be included when membership opens."}
+          </p>
           <div className="kl-promo-grow" />
           <GlassButton href="/pricing" premium autoGlass pull={6} className="kl-btn--lg">
-            {EARLY_ACCESS ? "Free while in early access" : `Premium — $${price}/mo`}
+            {EARLY_ACCESS ? "Browse free early access" : `See the future ${price}/mo offer`}
           </GlassButton>
         </div>
       </div>
