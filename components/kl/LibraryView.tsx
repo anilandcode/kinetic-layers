@@ -8,6 +8,7 @@ import GlassButton from "./GlassButton";
 import AssetCard from "./AssetCard";
 import { UpgradeCard, NewsCard } from "./PromoCards";
 import { getAssets, getFilterTags, getSettings } from "@/lib/sanity/queries";
+import { sanityConfigured } from "@/lib/sanity/client";
 import { getPopularity } from "@/lib/kl/popularity";
 import { getViewer } from "@/lib/kl/viewer";
 import { createClient } from "@/lib/supabase/server";
@@ -235,6 +236,33 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
   const filtering = Boolean(
     filters.type || filters.tags?.length || filters.saved || filters.price
   );
+  const emptyState = filtering
+    ? {
+        title: "No kits match those filters.",
+        body: "Try clearing the filters or choose a broader category.",
+        href: "/library",
+        action: "Clear filters",
+      }
+    : !sanityConfigured
+      ? {
+          title: "The library is temporarily unavailable.",
+          body: "The catalogue connection is unavailable on this deployment. Please check back shortly.",
+          href: "/contact",
+          action: "Contact the studio",
+        }
+      : raw.length > 0
+        ? {
+            title: "The first kits are in review.",
+            body: "Catalogue entries exist, but none has a complete public preview yet. Only release-ready kits appear here.",
+            href: "/contact",
+            action: "Request a kit",
+          }
+        : {
+            title: "The first drop is being prepared.",
+            body: "No release-ready Kinetic Layers kits are published yet. Tell the studio what would help your next project.",
+            href: "/contact",
+            action: "Tell us what you need",
+          };
 
   return (
     <Shell>
@@ -335,13 +363,10 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
                 <path d="M12.5 39.5V12.5H39.5" strokeOpacity="0.45" />
                 <path d="M24.5 39.5V24.5H39.5" strokeOpacity="0.25" />
               </svg>
-              <h2>Nothing on that shelf yet.</h2>
-              <p>
-                That combination is empty for now. Drop a filter, or tell the studio what you were
-                looking for — requests jump the drop queue.
-              </p>
-              <GlassButton href="/library" ghost>
-                Clear filters
+              <h2>{emptyState.title}</h2>
+              <p>{emptyState.body}</p>
+              <GlassButton href={emptyState.href} ghost>
+                {emptyState.action}
               </GlassButton>
             </div>
           ) : (
