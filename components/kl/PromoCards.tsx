@@ -49,7 +49,7 @@ export function UpgradeCard({ price }: { price: number }) {
           </p>
           <div className="kl-promo-grow" />
           <GlassButton href="/pricing" premium autoGlass pull={6} className="kl-btn--lg">
-            {EARLY_ACCESS ? "Browse free early access" : `See the future ${price}/mo offer`}
+            {EARLY_ACCESS ? "Browse free early access" : `See the future $${price}/mo offer`}
           </GlassButton>
         </div>
       </div>
