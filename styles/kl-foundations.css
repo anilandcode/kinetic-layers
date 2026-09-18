@@ -23,9 +23,10 @@
   --focus-ring: #55b6ff;
   --overlay: rgba(0, 0, 0, 0.72);
 
-  /* Maison Neue is excluded from new work until its web licence is recorded. */
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  /* Production and review surfaces use one UI face. Record the Maison Neue
+     web licence before a commercial launch; the fallbacks remain explicit. */
+  --font-sans: "Maison Neue", Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-code: "Maison Neue Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
     monospace;
   --type-display: clamp(2.375rem, 5vw, 4.5rem);
@@ -56,9 +57,9 @@
   --layout-gutter: 1.25rem;
   --layout-columns: 4;
 
-  --radius-control: 0.5rem;
-  --radius-card: 0.75rem;
-  --radius-media: 1rem;
+  --radius-control: 0.625rem;
+  --radius-card: 1rem;
+  --radius-media: 1.5rem;
   --radius-pill: 999px;
   --elevation-card: 0 1px 2px rgba(0, 0, 0, 0.28);
   --elevation-dialog: 0 24px 72px rgba(0, 0, 0, 0.48);
