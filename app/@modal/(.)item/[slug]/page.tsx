@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
-import { getAsset, getRelated, getSettings } from "@/lib/sanity/queries";
+import { getAsset, getRelated } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
-import { canDownload } from "@/lib/kl/gate";
-import { EARLY_ACCESS } from "@/lib/kl/access";
 import ItemModal from "@/components/kl/ItemModal";
 import ItemView from "@/components/kl/ItemView";
 
@@ -17,12 +15,10 @@ import ItemView from "@/components/kl/ItemView";
  */
 export default async function ItemModalPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [asset, viewer, settings] = await Promise.all([getAsset(slug), getViewer(), getSettings()]);
+  const [asset, viewer] = await Promise.all([getAsset(slug), getViewer()]);
   if (!asset) notFound();
 
   const related = await getRelated(slug);
-  const locked = !EARLY_ACCESS && !canDownload(viewer, asset);
-
   return (
     <ItemModal shelf={asset.tags?.[0] ?? asset.type} name={asset.name}>
       <ItemView
@@ -30,8 +26,6 @@ export default async function ItemModalPage({ params }: { params: Promise<{ slug
         related={related.assets}
         relatedReason={related.reason}
         viewer={viewer}
-        locked={locked}
-        monthlyPrice={settings.monthlyPrice}
         variant="modal"
       />
     </ItemModal>
