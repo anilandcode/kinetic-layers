@@ -24,6 +24,7 @@ export default function MotionSitesReferenceCard({ reference }: { reference: Mot
   return <div className="bench-wall-cell">
     <button ref={opener} type="button" className="bench-card bench-reference-card" onClick={() => setOpen(true)} aria-label={`Open ${reference.name}, MotionSites reference`}>
       {failed ? <span className="bench-reference-unavailable">Preview unavailable</span> : <motion.img src={reference.media} alt="" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: loaded ? 1 : 0 }} transition={{ duration: 0.2 }} onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />}
+      <span className="bench-card-kind">Reference</span>
       <span className="bench-card-scrim" />
       <span className="bench-card-caption"><strong>{reference.name}</strong><span>MotionSites reference</span></span>
     </button>
