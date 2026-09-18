@@ -9,7 +9,6 @@ import { UpgradeCard, NewsCard } from "./PromoCards";
 import { getAssets, getSettings } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
 import { MOTIONSITES_REFERENCES } from "@/lib/kl/motionsites";
-import type { Asset } from "@/lib/kl/types";
 import MotionSitesReferenceCard from "./MotionSitesReferenceCard";
 import { MotionGrid, MotionSection } from "./BenchMotion";
 
@@ -17,12 +16,6 @@ import { MotionGrid, MotionSection } from "./BenchMotion";
 export default async function HomeView() {
   const [assets, settings, viewer] = await Promise.all([getAssets(), getSettings(), getViewer()]);
   const visible = assets.filter(hasRealPreview);
-  const mixedWall = MOTIONSITES_REFERENCES.reduce<Array<{ kind: "asset"; asset: Asset } | { kind: "reference"; reference: typeof MOTIONSITES_REFERENCES[number] }>>((wall, reference, index) => {
-    const asset = index === 0 ? visible[0] : index === 10 ? visible[1] : undefined;
-    if (asset) wall.push({ kind: "asset", asset });
-    wall.push({ kind: "reference", reference });
-    return wall;
-  }, []);
   return (
     <Shell>
       <SiteHeader />
@@ -31,23 +24,36 @@ export default async function HomeView() {
           <h1>Design kits you can adapt and ship.</h1>
           <p>Explore original Kinetic Layers kits and credited visual references selected for interaction, craft and direction.</p>
         </MotionSection>
-        <MotionSection className="bench-wall-label" delay={0.05}>
-          <span>{visible.length ? "Original kits and visual references" : "Visual references while the first kits are reviewed"}</span>
-          <Link href={visible.length ? "/library" : "/contact"}>
-            {visible.length ? `Browse ${visible.length} original kits →` : "Tell us what you need →"}
-          </Link>
+        <MotionSection as="section" className="bench-home-section-head" delay={0.05} aria-labelledby="original-kits-title">
+          <div>
+            <span>Original catalogue</span>
+            <h2 id="original-kits-title">Built by Kinetic Layers.</h2>
+            <p>Production-ready design kits with clear access status, real previews and source files when available.</p>
+          </div>
+          <Link href={visible.length ? "/library" : "/contact"}>{visible.length ? `Browse all ${visible.length} kits →` : "Tell us what you need →"}</Link>
         </MotionSection>
-        <MotionGrid className="bench-wall">
-          {mixedWall.flatMap((entry, index) => {
-            const card = entry.kind === "asset"
-              ? <AssetCard key={entry.asset.slug} asset={entry.asset} />
-              : <MotionSitesReferenceCard key={entry.reference.name} reference={entry.reference} />;
-            if (visible.length > 0 && index === 5 && !viewer?.premium) return [card, <UpgradeCard key="upgrade" price={settings.monthlyPrice} />];
-            if (index === 14) return [card, <NewsCard key="newsletter" />];
+        {visible.length ? (
+          <MotionGrid className="bench-original-grid">
+            {visible.map((asset) => <AssetCard key={asset.slug} asset={asset} />)}
+          </MotionGrid>
+        ) : <p className="bench-empty">The first original Kinetic Layers kits are in review.</p>}
+
+        <MotionSection as="section" className="bench-home-section-head bench-reference-heading" delay={0.05} aria-labelledby="reference-library-title">
+          <div>
+            <span>Research library</span>
+            <h2 id="reference-library-title">Credited visual references.</h2>
+            <p>Inspiration selected for interaction and craft. References are clearly attributed and are never sold as Kinetic Layers products.</p>
+          </div>
+          <a href="https://motionsites.ai/" target="_blank" rel="noreferrer">Source: MotionSites ↗</a>
+        </MotionSection>
+        <MotionGrid className="bench-wall bench-reference-wall">
+          {MOTIONSITES_REFERENCES.flatMap((reference, index) => {
+            const card = <MotionSitesReferenceCard key={reference.name} reference={reference} />;
+            if (visible.length > 0 && index === 4 && !viewer?.premium) return [card, <UpgradeCard key="upgrade" price={settings.monthlyPrice} />];
+            if (index === 13) return [card, <NewsCard key="newsletter" />];
             return [card];
           })}
         </MotionGrid>
-        {!visible.length && <p className="bench-empty">The first original Kinetic Layers kits are in review. The credited reference wall remains available for research.</p>}
       </main>
       <Footer />
     </Shell>
