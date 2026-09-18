@@ -119,7 +119,11 @@ export default function ItemView({
 
   if (isModal) {
     return (
-      <main className="bench-item-layout bench-dialog" data-view>
+      <main
+        className="bench-item-layout bench-dialog"
+        data-view
+        style={{ "--bench-media-aspect": String(asset.aspect || 1.4) } as React.CSSProperties}
+      >
         <section className="bench-item-stage bench-dialog-stage" aria-label={`${asset.name} preview`}>
           <div
             className={`bench-item-media${asset.aspect && asset.aspect < 1 ? " is-tall" : ""}`}

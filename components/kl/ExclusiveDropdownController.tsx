@@ -19,7 +19,10 @@ export default function ExclusiveDropdownController() {
       return () => drop.removeEventListener("toggle", onToggle);
     });
     const onPointerDown = (event: PointerEvent) => {
-      if (!(event.target instanceof Node) || !rail.contains(event.target)) closeAll();
+      if (!(event.target instanceof Node)) return;
+      for (const drop of drops) {
+        if (drop.open && !drop.contains(event.target)) drop.open = false;
+      }
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
