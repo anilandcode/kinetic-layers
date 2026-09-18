@@ -23,6 +23,7 @@ import {
 } from "@/lib/kl/facets";
 import type { Asset } from "@/lib/kl/types";
 import { MotionGrid } from "./BenchMotion";
+import ExclusiveDropdownController from "./ExclusiveDropdownController";
 
 /**
  * The library, in the Kinetic Layers treatment.
@@ -131,13 +132,9 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
   );
 
   /**
-   * A disclosure, not a client component.
-   *
-   * This page has no client state at all — every control is a link and the
-   * filters live in the URL. `<details>` is the one native element that opens a
-   * menu without hydration, so the menus cost nothing and keep working before
-   * (and without) JavaScript. components/legacy/CollectionFilter.tsx is the
-   * client-state counterpart; deliberately not copied here.
+   * Filters remain real links and the URL remains the source of truth.
+   * ExclusiveDropdownController only coordinates native disclosure behaviour
+   * so menus cannot overlap or remain stranded open.
    */
   const Drop = ({
     label,
@@ -272,6 +269,7 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
         {/* ---------- Rail ---------- */}
         <div className="kl-rail" id="library" data-rail>
           <div className="kl-pad kl-rail-inner">
+            <ExclusiveDropdownController />
             <Pill label="All" active={!filters.type} to={href({ type: undefined })} count={all.length} />
             {types.map(([t, n]) => (
               <Pill

@@ -114,7 +114,7 @@ export default function ItemModal({
       }}>
         <motion.div
           ref={dialogRef}
-          className="kl-modal-panel"
+          className="kl-modal-panel bench-dialog-shell"
           role="dialog"
           aria-modal="true"
           aria-label={name}
@@ -129,7 +129,7 @@ export default function ItemModal({
             <button
               ref={closeButtonRef}
               type="button"
-              className="kl-close bench-item-close"
+              className="kl-close bench-item-close bench-dialog-close"
               onClick={close}
               aria-label={`Close ${name}`}
             >

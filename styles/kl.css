@@ -491,6 +491,9 @@
 [data-kl] .kl-drop {
   position: relative;
 }
+[data-kl] .kl-drop[open] {
+  z-index: 40;
+}
 [data-kl] .kl-drop > summary {
   display: inline-flex;
   align-items: center;

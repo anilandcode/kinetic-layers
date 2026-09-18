@@ -119,8 +119,8 @@ export default function ItemView({
 
   if (isModal) {
     return (
-      <main className="bench-item-layout" data-view>
-        <section className="bench-item-stage" aria-label={`${asset.name} preview`}>
+      <main className="bench-item-layout bench-dialog" data-view>
+        <section className="bench-item-stage bench-dialog-stage" aria-label={`${asset.name} preview`}>
           <div
             className={`bench-item-media${asset.aspect && asset.aspect < 1 ? " is-tall" : ""}`}
             tabIndex={0}
@@ -147,12 +147,12 @@ export default function ItemView({
           </div>
         </section>
 
-        <aside className="bench-item-details" aria-label={`${asset.name} details`}>
+        <aside className="bench-item-details bench-dialog-details" aria-label={`${asset.name} details`}>
           <div className="bench-item-details-copy">
-            <span className="bench-item-eyebrow">Original kit · {access.label}</span>
-            <h1 className="bench-item-title">{asset.name}</h1>
+            <span className="bench-item-eyebrow bench-dialog-eyebrow">Original kit · {access.label}</span>
+            <h1 className="bench-item-title bench-dialog-title">{asset.name}</h1>
             {asset.tagline ? <p className="bench-item-tagline">{asset.tagline}</p> : null}
-            <div className="bench-item-facts">
+            <div className="bench-item-facts bench-dialog-facts">
               {facts.map((fact) => (
                 <div key={fact.k} className="bench-item-fact">
                   <span>{fact.k}</span><strong>{fact.v}</strong>
@@ -171,16 +171,16 @@ export default function ItemView({
               </div>
             ) : null}
           </div>
-          <div className="bench-item-actions">
-            <span className="bench-item-action-note">{access.note}</span>
+          <div className="bench-item-actions bench-dialog-actions">
+            <span className="bench-item-action-note bench-dialog-note">{access.note}</span>
             {downloadable ? (
               <ItemDownloadAction slug={asset.slug} label={files.length === 1 ? "Download file" : "Download first file"} />
             ) : EARLY_ACCESS ? (
-              <Link href={accountHref} className="bench-item-primary-action">Create a free account</Link>
+              <Link href={accountHref} className="bench-item-primary-action bench-dialog-primary">Create a free account</Link>
             ) : (
-              <Link href="/library" className="bench-item-primary-action">Explore the library</Link>
+              <Link href="/library" className="bench-item-primary-action bench-dialog-primary">Explore the library</Link>
             )}
-            <a href={`/item/${asset.slug}`} className="bench-item-secondary-action">Open full item page</a>
+            <a href={`/item/${asset.slug}`} className="bench-item-secondary-action bench-dialog-secondary">Open full item page</a>
           </div>
         </aside>
       </main>
