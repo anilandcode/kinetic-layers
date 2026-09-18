@@ -14,8 +14,13 @@ import Footer from "./Footer";
 export default function PageShell({ children }: { children: ReactNode }) {
   return (
     <Shell>
+      <a className="ds-skip-link" href="#main-content">
+        Skip to content
+      </a>
       <SiteHeader />
-      <main data-view>{children}</main>
+      <main id="main-content" data-view tabIndex={-1}>
+        {children}
+      </main>
       <Footer />
     </Shell>
   );
