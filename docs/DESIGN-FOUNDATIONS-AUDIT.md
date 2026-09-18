@@ -82,8 +82,17 @@ DR-006 remains open until the owner records a web-embedding licence or approves
 removing the font files and `@font-face` declarations. No new component may add
 a Maison Neue dependency in the meantime.
 
-## Open gate
+## Preview gate evidence
 
-DR-004 remains blocking: Vercel Preview needs the same non-secret public Sanity
-project ID and dataset variables as Production. A preview must render both
-`/item/verdro` and `/item/Asset` before core reference screens are approved.
+DR-004 was completed on 18 September 2026. Both non-secret Sanity variables are
+scoped to Production and Preview in Vercel. Deployment `9pJxuTMMy` built commit
+`e1248ef` in the Preview environment and verified:
+
+- `/item/verdro`: title rendered, image decoded at 2,400px natural width;
+- `/item/Asset`: title rendered, video reached ready state 4 and played;
+- `/design-system`: semantic token sheet rendered in both themes with no
+  horizontal overflow at the inspected desktop viewport.
+
+The stable Preview domain is
+`kinetic-layers-git-main-anilandcodes-projects.vercel.app`. New branch previews
+inherit the same public catalogue variables.

@@ -125,16 +125,100 @@ export default function DesignSystem() {
           </div>
         </section>
 
+        <section className={`${styles.tonalSection} ds-section`}>
+          <div className="ds-container" data-size="content">
+            <SectionTitle eyebrow="06 · Forms and discovery" title="Labels stay attached to decisions" copy="Inputs reserve room for help and errors. Search and filters use the same control height, focus treatment and plain-language labels." />
+            <div className={styles.formGrid}>
+              <div className={styles.formSpecimen}>
+                <label htmlFor="ds-email">Email address</label>
+                <input id="ds-email" type="email" placeholder="you@example.com" aria-describedby="ds-email-help" />
+                <p id="ds-email-help">Used only for account access and requested updates.</p>
+              </div>
+              <div className={styles.formSpecimen} data-invalid="true">
+                <label htmlFor="ds-project">Project name</label>
+                <input id="ds-project" defaultValue="A" aria-invalid="true" aria-describedby="ds-project-error" />
+                <p id="ds-project-error" role="alert">Use at least three characters.</p>
+              </div>
+              <div className={styles.formSpecimen}>
+                <label htmlFor="ds-disabled">Workspace</label>
+                <input id="ds-disabled" value="Personal workspace" disabled readOnly />
+                <p>This value cannot be changed yet.</p>
+              </div>
+            </div>
+            <div className={styles.discoveryBar}>
+              <label className={styles.searchField}>
+                <span className="visually-hidden">Search the component example</span>
+                <input type="search" placeholder="Search original kits" />
+              </label>
+              <button className="ds-button" data-variant="secondary" type="button">Filters · 2</button>
+              <button className={styles.filterChip} type="button" aria-pressed="true">Templates <span aria-hidden="true">×</span></button>
+              <button className={styles.filterChip} type="button" aria-pressed="true">Free <span aria-hidden="true">×</span></button>
+              <span className={styles.resultCount}>2 results</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="ds-section">
+          <div className="ds-container" data-size="gallery">
+            <SectionTitle eyebrow="07 · Content cards" title="Original work and inspiration cannot be confused" copy="The product card owns an access state and product action. The reference card carries source attribution and never implies a download, prompt or inventory item." />
+            <div className={styles.cardGrid}>
+              <a className={styles.productCard} href="/item/verdro">
+                <span className={styles.productVisual} data-art="verdro" aria-hidden="true"><span /></span>
+                <span className={styles.cardBody}>
+                  <span className={styles.cardMeta}>Original kit · Template</span>
+                  <strong>verdro</strong>
+                  <span>Preview only · Inspect the real product page</span>
+                </span>
+              </a>
+              <a className={styles.productCard} href="/item/Asset">
+                <span className={styles.productVisual} data-art="motion" aria-hidden="true"><span /><span /><span /></span>
+                <span className={styles.cardBody}>
+                  <span className={styles.cardMeta}>Original kit · Motion</span>
+                  <strong>Asset</strong>
+                  <span>Preview only · Motion available</span>
+                </span>
+              </a>
+              <article className={styles.referenceCard}>
+                <span className={styles.referenceVisual} aria-hidden="true"><span>External reference</span></span>
+                <div className={styles.cardBody}>
+                  <span className={styles.cardMeta}>Inspiration · External</span>
+                  <strong>Editorial motion study</strong>
+                  <span>Source attribution required · No product action</span>
+                </div>
+              </article>
+              <article className={styles.missingCard}>
+                <span aria-hidden="true">Preview unavailable</span>
+                <div className={styles.cardBody}>
+                  <span className={styles.cardMeta}>Original kit · Missing media</span>
+                  <strong>A deliberately long product title that must wrap safely</strong>
+                  <span>Product information remains readable without artwork.</span>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className={`${styles.tonalSection} ds-section`}>
+          <div className="ds-container" data-size="gallery">
+            <SectionTitle eyebrow="08 · System states" title="Different problems receive different recovery" copy="Empty inventory, filtered-out results and service failure are not one generic empty state." />
+            <div className={styles.stateGrid}>
+              <article><span className={styles.stateIcon}>0</span><h3>No published kits</h3><p>The catalogue is connected, but nothing is ready to browse.</p><button className="ds-button" data-variant="secondary" type="button">Read what is coming</button></article>
+              <article><span className={styles.stateIcon}>↺</span><h3>No matching results</h3><p>Two active filters hide every available original kit.</p><button className="ds-button" data-variant="secondary" type="button">Clear filters</button></article>
+              <article data-state="error"><span className={styles.stateIcon}>!</span><h3>Catalogue unavailable</h3><p>The service did not respond. Your filters and place are preserved.</p><button className="ds-button" data-variant="secondary" type="button">Try again</button></article>
+            </div>
+          </div>
+        </section>
+
         <section id="motion" className={`${styles.tonalSection} ds-section`}>
           <div className="ds-container" data-size="content">
-            <SectionTitle eyebrow="06 · Motion" title="Motion explains state" copy="Interface motion uses the shared ease and short distances. Reduced-motion removes translation while keeping content complete." />
+            <SectionTitle eyebrow="09 · Motion" title="Motion explains state" copy="Interface motion uses the shared ease and short distances. Reduced-motion removes translation while keeping content complete." />
             <DesignSystemMotionPreview />
           </div>
         </section>
 
         <section className="ds-section">
           <div className="ds-container" data-size="reading">
-            <SectionTitle eyebrow="07 · Gate" title="What must happen next" copy="Confirm the font licence and enable real Sanity data in Vercel Preview. Then this foundation can be reviewed at 390, 768, 1024 and 1440 pixels in both themes before reference screens begin." />
+            <SectionTitle eyebrow="10 · Gate" title="What must happen next" copy="The real Sanity catalogue is verified in Vercel Preview. Confirm the font licence and complete the 390, 768, 1024 and 1440 light/dark review before the Homepage, Library and Product reference screens begin." />
           </div>
         </section>
       </div>
