@@ -78,9 +78,14 @@ export const clip = (src?: string | null, w = CARD_W, seconds = 6) =>
  * A poster generated from the video itself. This is what makes a video-only
  * asset behave like any other card: Sanity records no dimensions for a file, so
  * without a frame the tile is blank at a default height until the bytes land.
+ *
+ * A raw MP4 is not an image. When Media Transformations are disabled there is
+ * no service available to extract a frame, so returning the clip URL here
+ * creates a broken <img>. In that state the caller must use its painted ground
+ * until the real <video> attaches instead.
  */
 export const frame = (src?: string | null, w = CARD_W) =>
-  cdnCgi("media", `mode=frame,time=0s,width=${w}`, toMediaHost(src));
+  !MIRROR ? undefined : cdnCgi("media", `mode=frame,time=0s,width=${w}`, toMediaHost(src));
 
 /** The convention the dummy generator and the upload script both follow. */
 export const posterPath = (slug: string, shot = "card") => `${slug}/${shot}.webp`;
