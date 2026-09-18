@@ -1,4 +1,9 @@
-# Kinetic Layers: live UI review and proposed design direction
+# Kinetic Layers: historical live UI review
+
+> Superseded for implementation planning by the current
+> [design rebuild specification](DESIGN-REBUILD-SPEC.md) and
+> [design rebuild backlog](DESIGN-REBUILD-BACKLOG.md). Keep this document as
+> dated evidence of the earlier interface, not as the current visual authority.
 
 Reviewed: 2026-09-10/11. Saved: 2026-09-11.
 
