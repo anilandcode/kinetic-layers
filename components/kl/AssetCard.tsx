@@ -11,10 +11,10 @@ export default function AssetCard({ asset }: { asset: Asset }) {
   const category = asset.type.toLowerCase().replace(/^\w/, c => c.toUpperCase()).replace(/^3d/, "3D");
   return (
     <div className="bench-wall-cell">
-      <Link href={`/item/${asset.slug}`} className="bench-card" aria-label={`${asset.name}, ${category}${asset.free ? "" : ", Premium"}`}
-        style={{ aspectRatio: String(asset.aspect && asset.aspect > 0 ? asset.aspect : 1.35) }}>
+      <Link href={`/item/${asset.slug}`} className="bench-card bench-original-card" aria-label={`${asset.name}, original ${category}${asset.free ? "" : ", Premium"}`}>
         <PreviewMedia gradient="var(--canvas-bg)" poster={poster} clip={asset.clip ? clipUrl(asset.clip) : undefined}
           alt={asset.name} play="auto" style={{ position: "absolute", inset: 0 }} />
+        <span className="bench-card-kind">Original kit</span>
         {!asset.free && <span className="bench-premium" aria-hidden="true">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/premium.svg" width="9" height="9" alt="" /><span>Premium</span>
