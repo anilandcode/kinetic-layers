@@ -16,3 +16,7 @@
 @import "../styles/bench-header.css";
 
 @import "../styles/bench-pages.css";
+
+/* Semantic foundations for new components and the review route. Imported
+   last so they can map the current themes without changing legacy consumers. */
+@import "../styles/kl-foundations.css";
