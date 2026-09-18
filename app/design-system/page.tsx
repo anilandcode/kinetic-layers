@@ -45,12 +45,11 @@ export default function DesignSystem() {
       <div className="ds-review">
         <section className={`${styles.hero} ds-section`}>
           <div className="ds-container" data-size="gallery">
-            <p className={styles.eyebrow}>Foundation review · DR-1</p>
-            <h1>A quieter system for work that moves.</h1>
+            <p className={styles.eyebrow}>Kinetic Layers · System 01</p>
+            <h1>A precise workspace for creative assets.</h1>
             <p className={styles.lead}>
-              This isolated route is the approval surface for semantic color, type, spacing,
-              layout, focus and motion. Public pages stay unchanged until these foundations
-              and the reference screens are accepted.
+              The shared reference for typography, surfaces, controls, media, product states,
+              and motion. Every public page should feel like part of this same workspace.
             </p>
             <div className="ds-cluster">
               <a className="ds-button" href="#colors">Review tokens</a>
@@ -75,7 +74,7 @@ export default function DesignSystem() {
 
         <section className={`${styles.tonalSection} ds-section`}>
           <div className="ds-container" data-size="content">
-            <SectionTitle eyebrow="02 · Typography" title="A clear editorial hierarchy" copy="The new system uses a licence-safe system sans until Maison Neue deployment rights are confirmed. Meaningful text never falls below 11px." />
+            <SectionTitle eyebrow="02 · Typography" title="Compact, calm, and deliberate" copy="Maison Neue is the current product face, with explicit system fallbacks. Display type is reserved for page identity; workspace titles and controls stay compact. Record the web licence before commercial launch." />
             <div className={styles.typeSpecimens}>
               <p className={styles.display}>Original layers, ready to adapt.</p>
               <p className={styles.pageTitle}>Browse the library</p>
@@ -103,12 +102,12 @@ export default function DesignSystem() {
 
         <section className={`${styles.tonalSection} ds-section`}>
           <div className="ds-container" data-size="content">
-            <SectionTitle eyebrow="04 · Spacing and shape" title="A small, repeatable vocabulary" copy="Spacing follows a 4px base. Controls, cards and large media use 8, 12 and 16px radii; pills are reserved for compact filters and statuses." />
+            <SectionTitle eyebrow="04 · Spacing and shape" title="A small, repeatable vocabulary" copy="Spacing follows a 4px base. Controls, cards and large media use 10, 16 and 24px radii; pills are reserved for compact filters and statuses." />
             <div className={styles.spacingList}>
               {SPACING.map((space) => <div key={space}><code>{`space-${space}`}</code><span style={{ width: `var(--space-${space})` }} /></div>)}
             </div>
             <div className={styles.shapeGrid}>
-              <span data-shape="control">Control · 8</span><span data-shape="card">Card · 12</span><span data-shape="media">Media · 16</span>
+              <span data-shape="control">Control · 10</span><span data-shape="card">Card · 16</span><span data-shape="media">Media · 24</span>
             </div>
           </div>
         </section>
@@ -200,7 +199,40 @@ export default function DesignSystem() {
 
         <section className={`${styles.tonalSection} ds-section`}>
           <div className="ds-container" data-size="gallery">
-            <SectionTitle eyebrow="08 · System states" title="Different problems receive different recovery" copy="Empty inventory, filtered-out results and service failure are not one generic empty state." />
+            <SectionTitle eyebrow="08 · Detail workspace" title="The media defines the canvas" copy="The detail shell shares spacing, type, controls and behavior across every item. Each preview keeps its own aspect ratio; the information panel stays compact and useful." />
+            <div className={styles.dialogSpecimen}>
+              <div className={styles.dialogStage} aria-label="Media preview proportion example">
+                <div className={styles.orbitArt} aria-hidden="true"><span /><span /><span /><i /></div>
+                <span className={styles.previewControl}>Preview · 16:10</span>
+              </div>
+              <aside className={styles.dialogDetails}>
+                <button className={styles.dialogClose} type="button" aria-label="Close preview example">×</button>
+                <p className={styles.eyebrow}>Original kit · Preview only</p>
+                <h3>Magnetic field study</h3>
+                <p className={styles.dialogDescription}>A responsive motion composition with prompt notes and an implementation guide.</p>
+                <dl>
+                  <div><dt>Format</dt><dd>Motion</dd></div>
+                  <div><dt>Includes</dt><dd>Prompt + guide</dd></div>
+                  <div><dt>Access</dt><dd>Preview only</dd></div>
+                </dl>
+                <div className={styles.dialogActions}>
+                  <p>Download controls appear only when files are published and the viewer has access.</p>
+                  <button className="ds-button" type="button">View item details</button>
+                  <button className="ds-button" data-variant="secondary" type="button">Browse related kits</button>
+                </div>
+              </aside>
+            </div>
+            <div className={styles.dialogRules}>
+              <span><b>Intrinsic media</b> Landscape, square and portrait previews retain their proportions.</span>
+              <span><b>Shared behavior</b> Escape, backdrop, focus return and reduced motion follow one contract.</span>
+              <span><b>Truthful actions</b> Product, reference and locked states expose only valid next steps.</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="ds-section">
+          <div className="ds-container" data-size="gallery">
+            <SectionTitle eyebrow="09 · System states" title="Different problems receive different recovery" copy="Empty inventory, filtered-out results and service failure are not one generic empty state." />
             <div className={styles.stateGrid}>
               <article><span className={styles.stateIcon}>0</span><h3>No published kits</h3><p>The catalogue is connected, but nothing is ready to browse.</p><button className="ds-button" data-variant="secondary" type="button">Read what is coming</button></article>
               <article><span className={styles.stateIcon}>↺</span><h3>No matching results</h3><p>Two active filters hide every available original kit.</p><button className="ds-button" data-variant="secondary" type="button">Clear filters</button></article>
@@ -211,14 +243,14 @@ export default function DesignSystem() {
 
         <section id="motion" className={`${styles.tonalSection} ds-section`}>
           <div className="ds-container" data-size="content">
-            <SectionTitle eyebrow="09 · Motion" title="Motion explains state" copy="Interface motion uses the shared ease and short distances. Reduced-motion removes translation while keeping content complete." />
+            <SectionTitle eyebrow="10 · Motion" title="Motion explains state" copy="Interface motion uses the shared ease and short distances. Reduced-motion removes translation while keeping content complete." />
             <DesignSystemMotionPreview />
           </div>
         </section>
 
         <section className="ds-section">
           <div className="ds-container" data-size="reading">
-            <SectionTitle eyebrow="10 · Gate" title="What must happen next" copy="The real Sanity catalogue is verified in Vercel Preview. Confirm the font licence and complete the 390, 768, 1024 and 1440 light/dark review before the Homepage, Library and Product reference screens begin." />
+            <SectionTitle eyebrow="11 · Release gate" title="What must be true before migration" copy="Verify the real catalogue at 390, 768, 1024 and 1440 pixels in both themes. Confirm the Maison Neue web licence, then migrate Homepage, Library and Product surfaces through shared components." />
           </div>
         </section>
       </div>
