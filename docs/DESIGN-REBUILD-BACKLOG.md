@@ -2,6 +2,12 @@
 
 Version 1.0 · 18 September 2026 · Status: implementation-ready plan
 
+Implementation update: DR-001 is complete. DR-002, DR-003 and DR-005 are
+captured in [DESIGN-FOUNDATIONS-AUDIT.md](DESIGN-FOUNDATIONS-AUDIT.md) and
+[VISUAL-REGRESSION-CHECKLIST.md](VISUAL-REGRESSION-CHECKLIST.md). DR-004
+(Vercel Preview data) and DR-006 (Maison Neue licence/removal) remain open.
+The isolated DR-1 review route is in progress; no broad migration has started.
+
 This backlog executes [DESIGN-REBUILD-SPEC.md](DESIGN-REBUILD-SPEC.md). It is
 ordered by dependency and risk. “Done” means the acceptance evidence exists;
 it does not mean a component merely renders.
