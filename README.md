@@ -20,6 +20,17 @@ entitlement and files.
   across the site icons. Public motion uses Framer Motion and respects
   `prefers-reduced-motion`.
 
+## Current design planning
+
+- [Design rebuild specification](docs/DESIGN-REBUILD-SPEC.md) is the current
+  visual authority: information architecture, foundations, components, page
+  requirements, motion, responsive behavior and release quality.
+- [Design rebuild backlog](docs/DESIGN-REBUILD-BACKLOG.md) defines the ordered
+  milestones, dependencies and acceptance evidence.
+- [Master plan](docs/KINETIC-LAYERS-MASTER-PLAN.md) remains the product and
+  business authority. The [older UI review](docs/KINETIC-LAYERS-UI-REVIEW.md)
+  is retained as historical evidence.
+
 ## Who owns what
 
 The split matters, and it is not arbitrary:
