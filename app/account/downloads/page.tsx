@@ -45,27 +45,17 @@ export default async function AccountDownloads({
   const filtered = kind ? rows.filter((d) => typeOf.get(d.asset_slug) === kind) : rows;
 
   return (
-    <section className="kl-pad" style={{ paddingBlock: 20 }}>
-      <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", overflow: "hidden" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "18px 22px",
-            background: "var(--pane)",
-            borderBottom: "1px solid var(--line2)",
-            flexWrap: "wrap",
-          }}
-        >
-          <h2 style={{ fontSize: 17, fontWeight: 600 }}>Downloads</h2>
-          <div style={{ flex: 1 }} />
+    <section className="kl-pad kl-account-section">
+      <div data-reveal className="kl-account-downloads">
+        <div className="kl-account-downloads-head">
+          <h2>Downloads</h2>
+          <div className="kl-spacer" />
           <DownloadFilter active={kind ?? ""} kinds={kinds} />
         </div>
 
         {filtered.length === 0 ? (
-          <div style={{ padding: "40px 22px", display: "flex", flexDirection: "column", gap: 14, alignItems: "flex-start" }}>
-            <p style={{ fontSize: 15, color: "var(--muted)" }}>
+          <div className="kl-account-empty">
+            <p>
               {rows.length === 0 ? (
                 <>
                   Nothing downloaded yet.{" "}
@@ -82,25 +72,22 @@ export default async function AccountDownloads({
             </GlassButton>
           </div>
         ) : (
-          <ul>
+          <ul className="kl-account-download-list">
             {filtered.map((d) => (
-              <li
-                key={d.id}
-                style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 22px", borderBottom: "1px solid var(--line2)", flexWrap: "wrap" }}
-              >
-                <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: 1 }}>
+              <li key={d.id} className="kl-account-download-row">
+                <div className="kl-account-download-item">
                   <Link
                     href={`/item/${d.asset_slug}`}
-                    style={{ fontSize: 15, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                    className="kl-account-download-name"
                   >
                     {d.asset_name ?? d.asset_slug}
                   </Link>
-                  <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
+                  <span className="kl-mono kl-account-download-meta">
                     {d.file_name}
                     {d.bytes ? ` · ${(d.bytes / 1_048_576).toFixed(1)} MB` : ""}
                   </span>
                 </div>
-                <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
+                <span className="kl-mono kl-account-download-date">
                   {new Date(d.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase()}
                 </span>
                 <DownloadAgain slug={d.asset_slug} file={d.file_name} />

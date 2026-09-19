@@ -178,7 +178,7 @@ export default function ItemView({
           <div className="bench-item-actions bench-dialog-actions">
             <span className="bench-item-action-note bench-dialog-note">{access.note}</span>
             {downloadable ? (
-              <ItemDownloadAction slug={asset.slug} label={files.length === 1 ? "Download file" : "Download first file"} />
+              <ItemDownloadAction slug={asset.slug} label={files.length === 1 ? "Download bundle file" : "Download first bundle file"} />
             ) : EARLY_ACCESS ? (
               <Link href={accountHref} className="bench-item-primary-action bench-dialog-primary">Create a free account</Link>
             ) : (
@@ -206,7 +206,7 @@ export default function ItemView({
           <span style={{ color: "var(--ink)" }}>{asset.name}</span>
           <span className="kl-spacer" />
           <Link href="/library" className="kl-close">
-            Close ×
+            Back to library
           </Link>
         </div>
       )}
@@ -295,7 +295,7 @@ export default function ItemView({
             ) : null}
 
             <div className="kl-item-download">
-              <span className="kl-kicker">{files.length ? "Included files" : "Release status"}</span>
+              <span className="kl-kicker">{files.length ? "Bundle files" : "Bundle publishing status"}</span>
               <ol className="kl-stack-rows">
                 {files.length ? files.map((file, index) => (
                   <li key={`${file.name}-${index}`} className="kl-stack-row">
@@ -313,7 +313,7 @@ export default function ItemView({
                   <li className="kl-stack-row">
                     <div className="kl-layer-head">
                       <span className="kl-kicker">Preview</span>
-                      <span className="kl-layer-name">Files are not listed yet</span>
+                      <span className="kl-layer-name">Bundle files are not listed yet</span>
                     </div>
                     <p>This page shows the published preview only. It does not promise a download that is not ready.</p>
                   </li>
@@ -326,7 +326,7 @@ export default function ItemView({
           <aside className="kl-item-side" data-item-sticky>
             <div className="kl-item-card">
               {downloadable ? (
-                <ItemDownloadAction slug={asset.slug} label={files.length === 1 ? "Download file" : "Download first file"} />
+                <ItemDownloadAction slug={asset.slug} label={files.length === 1 ? "Download bundle file" : "Download first bundle file"} />
               ) : EARLY_ACCESS ? (
                 <GlassButton href={accountHref} premium={false} pull={5}>Create a free account</GlassButton>
               ) : (

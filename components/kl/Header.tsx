@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Mark from "./Mark";
 import SearchPalette from "./SearchPalette";
-import ThemeToggle from "./ThemeToggle";
 import { Avatar } from "@/components/legacy/Chrome";
 import type { Viewer } from "@/lib/kl/types";
 
@@ -59,13 +58,13 @@ function AccountMenu({ viewer }: { viewer: Viewer }) {
   );
 }
 
-function MobileAccountLinks({ viewer }: { viewer: Viewer }) {
+function MobileAccountLinks({ viewer, onNavigate }: { viewer: Viewer; onNavigate: () => void }) {
   return (
     <div className="kl-bench-mobile-account">
       <span>{viewer.name || viewer.email}</span>
-      <Link href="/account">Account</Link>
-      <Link href="/account/downloads">Downloads</Link>
-      <Link href="/account/profile">Profile</Link>
+      <Link href="/account" onClick={onNavigate}>Account</Link>
+      <Link href="/account/downloads" onClick={onNavigate}>Downloads</Link>
+      <Link href="/account/profile" onClick={onNavigate}>Profile</Link>
       <form action="/auth/signout" method="post">
         <button type="submit">Sign out</button>
       </form>
@@ -83,6 +82,8 @@ export default function Header({
 } = {}) {
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDetailsElement>(null);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -92,10 +93,21 @@ export default function Header({
         setSearchOpen(true);
       } else if (event.key === "Escape") {
         setSearchOpen(false);
+        setMobileMenuOpen(false);
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    const closeFromOutside = (event: PointerEvent) => {
+      if (event.target instanceof Node && !mobileMenuRef.current?.contains(event.target)) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", closeFromOutside);
+    return () => document.removeEventListener("pointerdown", closeFromOutside);
   }, []);
 
   return (
@@ -118,7 +130,6 @@ export default function Header({
             <SearchIcon />
             <span>Search the library</span>
           </button>
-          <ThemeToggle />
           {pending ? <span className="kl-bench-account-pending" aria-hidden="true" /> : viewer ? <AccountMenu viewer={viewer} /> : (
             <Link href="/pricing" className="kl-bench-upgrade">See pricing</Link>
           )}
@@ -126,18 +137,22 @@ export default function Header({
 
         <div className="kl-bench-mobile-actions">
           <button type="button" className="kl-bench-mobile-search" onClick={() => setSearchOpen(true)} aria-label="Search the library"><SearchIcon /></button>
-          <details className="kl-bench-mobile-menu">
+          <details
+            ref={mobileMenuRef}
+            className="kl-bench-mobile-menu"
+            open={mobileMenuOpen}
+            onToggle={(event) => setMobileMenuOpen(event.currentTarget.open)}
+          >
             <summary aria-label="Open navigation menu"><MenuIcon /></summary>
             <div className="kl-bench-mobile-menu-panel">
               <nav aria-label="Mobile primary">
                 {NAV.map((item) => {
                   const current = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                  return <Link key={item.href} href={item.href} aria-current={current ? "page" : undefined}>{item.label}</Link>;
+                  return <Link key={item.href} href={item.href} aria-current={current ? "page" : undefined} onClick={() => setMobileMenuOpen(false)}>{item.label}</Link>;
                 })}
               </nav>
-              <div className="kl-bench-mobile-menu-tools"><span>Theme</span><ThemeToggle /></div>
               {pending ? <span className="kl-bench-mobile-menu-pending" aria-hidden="true" /> : null}
-              {viewer ? <MobileAccountLinks viewer={viewer} /> : <Link href="/pricing" className="kl-bench-mobile-upgrade">See pricing</Link>}
+              {viewer ? <MobileAccountLinks viewer={viewer} onNavigate={() => setMobileMenuOpen(false)} /> : <Link href="/pricing" className="kl-bench-mobile-upgrade" onClick={() => setMobileMenuOpen(false)}>See pricing</Link>}
             </div>
           </details>
         </div>

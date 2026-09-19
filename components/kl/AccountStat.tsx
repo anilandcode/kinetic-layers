@@ -12,23 +12,10 @@ export default function AccountStat({
   big?: boolean;
 }) {
   return (
-    <div
-      data-reveal
-      style={{
-        borderRadius: "10px",
-        border: "1px solid var(--line)",
-        background: "var(--pane)",
-        padding: 22,
-        display: "flex",
-        flexDirection: "column",
-        gap: 9,
-      }}
-    >
-      <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
-        {label}
-      </span>
-      <span style={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: big ? 34 : 26 }}>{value}</span>
-      <span style={{ fontSize: 13, color: "var(--muted)" }}>{note}</span>
+    <div data-reveal className="kl-account-stat">
+      <span className="kl-mono kl-account-stat-label">{label}</span>
+      <span className={`kl-account-stat-value${big ? " kl-account-stat-value--big" : ""}`}>{value}</span>
+      <span className="kl-account-stat-note">{note}</span>
     </div>
   );
 }

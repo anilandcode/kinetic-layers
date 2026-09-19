@@ -2,10 +2,10 @@
 
 Version 1.0 · 18 September 2026 · Status: approved planning baseline
 
-This document is the current visual and experience authority for the Kinetic
-Layers platform rebuild. It translates the product plan, competitor research,
-live review, and repository audit into one design contract. It does not claim
-that the screens described here are already implemented.
+This is the historical rebuild baseline. The current visual and experience
+authority is [`design.md`](design.md). This document remains useful for its
+route inventory and migration context, but where its theme, font, component or
+token rules conflict with `design.md`, `design.md` wins.
 
 The execution order and acceptance checklist live in
 [DESIGN-REBUILD-BACKLOG.md](DESIGN-REBUILD-BACKLOG.md).

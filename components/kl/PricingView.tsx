@@ -16,9 +16,9 @@ type Comparison = Array<[string, Array<[string, string, string]>]>;
 function comparison(): Comparison {
   return [
     ["Library", [
-      ["Browse real-preview items", "When published", "Yes"],
-      ["Open kits with an account", EARLY_ACCESS ? "Yes" : "Not open", "Yes"],
-      ["Verified source files", "When available", "When available"],
+      ["Browse real-preview bundles", "When published", "Yes"],
+      ["Open bundles with an account", EARLY_ACCESS ? "Yes" : "Not open", "Yes"],
+      ["Published bundle contents", "Listed on each item", "Listed on each item"],
     ]],
     ["Membership", [
       ["Commercial use", "Under each listed license", "Under each reviewed license"],
@@ -35,7 +35,7 @@ function comparison(): Comparison {
 
 const FAQS = [
   ["Do I pay today?", "No. Joining the Founding Membership interest list does not create a subscription, collect payment details, or bill you."],
-  ["What will Founding Membership include?", "Verified kits, their available source files and instructions, commercial use under each reviewed license, and future verified releases when they are ready."],
+  ["What will Founding Membership include?", "Verified full bundles with their published files, prompts, guides and instructions, commercial use under each reviewed license, and future verified releases when they are ready."],
   ["Is this the newsletter?", "No. Membership interest is a separate, confirmation-based list used only for the future membership launch."],
   ["When will it open?", "There is no release date yet. Membership opens only after the kits and their accompanying files have been reviewed."],
 ];
@@ -60,8 +60,8 @@ export default async function PricingView() {
         <h1>{EARLY_ACCESS ? "Use the library freely while it grows." : "Founding Membership is being prepared."}</h1>
         <p>
           {EARLY_ACCESS
-            ? "Early access is open today. Founding Membership is a future $24/month offer for verified kits and releases that follow."
-            : "There is no subscription or checkout today. Browse published previews and join the interest list for the future $24/month offer."}
+            ? "Early access is open today. Founding Membership is a future $24/month offer for verified full bundles and the releases that follow."
+            : "There is no subscription or checkout today. Browse published bundle previews and join the interest list for the future $24/month offer."}
         </p>
       </MotionSection>
 
@@ -72,13 +72,13 @@ export default async function PricingView() {
           <p className="pricing-plan-unit">{EARLY_ACCESS ? "While early access is open" : "No purchase today"}</p>
           <p>
             {EARLY_ACCESS
-              ? "Explore every published kit with an account."
-              : "Browse release-ready previews while the first membership library is prepared."}
+              ? "Explore every published full bundle with an account."
+              : "Browse release-ready bundle previews while the first membership library is prepared."}
           </p>
           <GlassButton href={currentHref} pull={5}>{currentAction}</GlassButton>
           <ul>
             <li>{visible > 0 ? `${visible} items with real previews today` : "The first release-ready kits are being prepared"}</li>
-            <li>Use each published item under its listed license</li>
+            <li>Review each published bundle’s contents and listed licence</li>
             {EARLY_ACCESS
               ? <li>{LIMITS.free.prompt} prompt reads and {LIMITS.free.download} downloads a day</li>
               : <li>Account access and checkout are not open today</li>}
@@ -92,11 +92,11 @@ export default async function PricingView() {
           </div>
           <h2>$24</h2>
           <p className="pricing-plan-unit">/ month when it opens</p>
-          <p>For verified kits and the releases that follow.</p>
+          <p>For verified full bundles and the releases that follow.</p>
           <MembershipInterestForm />
           <ul>
-            <li>Verified kits as they become available</li>
-            <li>Available source files and setup instructions</li>
+            <li>Verified full bundles as they become available</li>
+            <li>Published files, prompts, guides and setup instructions</li>
             <li>Commercial use under each reviewed license</li>
             <li>No subscription or charge today</li>
           </ul>
