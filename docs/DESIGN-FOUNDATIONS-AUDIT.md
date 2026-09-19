@@ -2,9 +2,10 @@
 
 Version 1.0 · 18 September 2026 · DR-002, DR-003 and DR-006 working record
 
-This audit supports [DESIGN-REBUILD-SPEC.md](DESIGN-REBUILD-SPEC.md) and the
-[implementation backlog](DESIGN-REBUILD-BACKLOG.md). It records what exists;
-it does not treat an implemented route as an approved design.
+This audit supports the canonical [design system](design.md), the historical
+[rebuild specification](DESIGN-REBUILD-SPEC.md), and the [implementation
+backlog](DESIGN-REBUILD-BACKLOG.md). It records what exists; it does not treat
+an implemented route as an approved design.
 
 ## Route and state inventory
 

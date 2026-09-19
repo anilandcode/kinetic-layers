@@ -145,15 +145,15 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
     value?: string;
     children: React.ReactNode;
   }) => (
-    <details className="kl-drop">
-      <summary className="kl-pill" aria-haspopup="menu">
+    <details className="kl-drop" name="library-filter">
+      <summary className="kl-pill">
         {label}
         {value ? <span className="kl-drop-value">{value}</span> : null}
         <span className="kl-drop-caret" aria-hidden="true">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6" /></svg>
         </span>
       </summary>
-      <div className="kl-drop-menu" role="menu">
+      <div className="kl-drop-menu">
         {children}
       </div>
     </details>
@@ -189,7 +189,6 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
     return (
       <Link
         href={to}
-        role="menuitem"
         className="kl-drop-item"
         aria-current={active ? "true" : undefined}
         scroll={false}
@@ -267,7 +266,7 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
 
       <main data-view>
         {/* ---------- Rail ---------- */}
-        <div className="kl-rail" id="library" data-rail>
+        <search className="kl-rail" id="library" data-rail aria-label="Filter the Kinetic Layers library">
           <div className="kl-pad kl-rail-inner">
             <ExclusiveDropdownController />
             <Pill label="All" active={!filters.type} to={href({ type: undefined })} count={all.length} />
@@ -342,10 +341,10 @@ export default async function LibraryView({ searchParams }: { searchParams?: Pro
               {facets.matching} of {all.length}
             </span>
           </div>
-        </div>
+        </search>
 
         {/* ---------- Grid ---------- */}
-        <div className="kl-pad" style={{ paddingTop: 24 }}>
+        <div className="kl-pad kl-library-results">
           {isEmpty ? (
             <div className="kl-empty">
               <svg
