@@ -2,11 +2,9 @@
   --g1: var(--v-silver-1);
   --g2: var(--v-silver-2);
   --g3: var(--v-silver-3);
-  --gd1: var(--v-silver-1);
-  --gd2: var(--v-silver-2);
-  --gd3: var(--v-silver-3);
-  --mx: 72;
-  --my: 18;
+  --l1: hsl(220 14% 62%);
+  --l2: hsl(222 12% 34%);
+  --l3: hsl(226 14% 10%);
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -16,16 +14,17 @@
 .mesh,
 .smoke,
 .glow,
+.halftone,
 .grain {
   position: absolute;
   pointer-events: none;
 }
 
-/* ---------- Light: pastel mesh ---------- */
+/* ---------- Soft: pastel mesh ---------- */
 
 .mesh {
   inset: -30%;
-  z-index: -4;
+  z-index: -5;
   background:
     radial-gradient(38% 46% at 24% 30%, var(--g1) 0%, transparent 72%),
     radial-gradient(44% 52% at 78% 24%, var(--g2) 0%, transparent 74%),
@@ -35,13 +34,13 @@
 }
 
 .smoke { display: none; }
+.halftone { display: none; }
 
 .glow {
   inset: 0;
   z-index: -2;
-  background: radial-gradient(34% 44% at calc(var(--mx) * 1%) calc(var(--my) * 1%), rgba(255, 255, 255, 0.55), transparent 70%);
+  background: radial-gradient(34% 44% at calc(var(--mx, 72) * 1%) calc(var(--my, 18) * 1%), rgba(255, 255, 255, 0.55), transparent 70%);
   mix-blend-mode: soft-light;
-  opacity: 0.9;
 }
 
 .grain {
@@ -52,45 +51,54 @@
   mix-blend-mode: overlay;
 }
 
-/* ---------- Dark: smoke over a luminous mesh ---------- */
+/* ---------- Cinematic: luminous, dithered ---------- */
 
-:global([data-look="cinematic"]) .gradient { background: #0d0d0f; }
+:global([data-look="cinematic"]) .gradient { background: var(--l3); }
 
+/* The kit's hue lit from within: a hot core high on one side, the body of
+   the colour, and a fall into near-black — the dark dashboard's cards. */
 :global([data-look="cinematic"]) .mesh {
+  inset: -20%;
   background:
-    radial-gradient(40% 48% at 22% 26%, var(--gd1) 0%, transparent 72%),
-    radial-gradient(46% 52% at 80% 22%, var(--gd2) 0%, transparent 74%),
-    radial-gradient(56% 60% at 58% 92%, var(--gd3) 0%, transparent 78%);
-  opacity: 0.62;
-  filter: blur(40px) saturate(1.15);
+    radial-gradient(42% 48% at 26% 18%, var(--l1) 0%, transparent 70%),
+    radial-gradient(60% 60% at 82% 40%, var(--l2) 0%, transparent 72%),
+    radial-gradient(70% 60% at 40% 110%, var(--l3) 20%, transparent 80%),
+    linear-gradient(165deg, var(--l2) 0%, var(--l3) 75%);
+  filter: blur(26px) saturate(1.2);
 }
 
 :global([data-look="cinematic"]) .smoke {
   display: block;
-  inset: -12%;
-  z-index: -3;
-  width: 124%;
-  height: 124%;
+  inset: -10%;
+  z-index: -4;
+  width: 120%;
+  height: 120%;
   max-width: none;
   object-fit: cover;
-  filter: blur(34px) saturate(1.25) brightness(0.62);
-  opacity: 0.9;
-  transform: scale(1.06);
+  filter: blur(18px) grayscale(0.4);
+  opacity: 0.28;
+  mix-blend-mode: luminosity;
 }
 
 :global([data-look="cinematic"]) .glow {
-  background: radial-gradient(36% 46% at calc(var(--mx) * 1%) calc(var(--my) * 1%), rgba(255, 255, 255, 0.16), transparent 72%);
+  background: radial-gradient(40% 50% at calc(var(--mx, 70) * 1%) calc(var(--my, 16) * 1%), rgba(255, 255, 255, 0.3), transparent 70%);
   mix-blend-mode: screen;
 }
 
-:global([data-look="cinematic"]) .gradient::after {
-  content: "";
-  position: absolute;
+/* The dither: a fine dot screen that shows in the shadow and melts into the
+   light, so the gradient reads as printed dots toward its dark edge. */
+:global([data-look="cinematic"]) .halftone {
+  display: block;
   inset: 0;
-  z-index: -1;
-  background: radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(5, 5, 6, 0.55) 100%);
-  pointer-events: none;
+  z-index: -3;
+  background:
+    radial-gradient(circle, rgba(0, 0, 0, 0.62) 0.95px, transparent 1.35px) 0 0 / 4px 4px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.22) 0.7px, transparent 1.1px) 2px 2px / 4px 4px;
+  -webkit-mask-image: linear-gradient(170deg, transparent 18%, #000 78%);
+  mask-image: linear-gradient(170deg, transparent 18%, #000 78%);
 }
+
+:global([data-look="cinematic"]) .grain { opacity: 0.09; }
 
 @media (prefers-reduced-transparency: reduce) {
   .smoke { display: none !important; }

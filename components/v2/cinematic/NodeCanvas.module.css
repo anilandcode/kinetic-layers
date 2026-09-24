@@ -5,9 +5,22 @@
   border-radius: 28px;
   background:
     radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1.4px) 0 0 / 22px 22px,
-    radial-gradient(80% 60% at 70% 0%, rgba(232, 131, 74, 0.08), transparent 70%),
+    radial-gradient(80% 60% at 70% 0%, rgba(232, 131, 74, 0.1), transparent 70%),
     #0e0e10;
   overflow: hidden;
+  isolation: isolate;
+}
+
+/* A halftone haze in the corners: the dither, quietly. */
+.canvas::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle, rgba(255, 190, 150, 0.16) 0.9px, transparent 1.3px) 0 0 / 5px 5px;
+  -webkit-mask-image: radial-gradient(60% 70% at 100% 100%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(60% 70% at 100% 100%, #000 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .wires {
@@ -46,6 +59,30 @@
   backdrop-filter: blur(20px) saturate(140%);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 24px 50px -24px rgba(0, 0, 0, 0.9);
 }
+
+/* The node editor's aurora: the working node glows from behind, the way the
+   image generator does in the reference. */
+.node[data-node="rebuild"]::before {
+  content: "";
+  position: absolute;
+  inset: -30% -20%;
+  z-index: -1;
+  background:
+    radial-gradient(40% 40% at 70% 20%, rgba(255, 120, 160, 0.55), transparent 70%),
+    radial-gradient(45% 45% at 30% 80%, rgba(90, 140, 255, 0.45), transparent 70%),
+    radial-gradient(35% 35% at 80% 80%, rgba(232, 131, 74, 0.5), transparent 70%);
+  filter: blur(28px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.node[data-node="rebuild"] { border-color: rgba(255, 255, 255, 0.2); background: linear-gradient(180deg, rgba(40, 40, 46, 0.72), rgba(20, 20, 24, 0.66)); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .node[data-node="rebuild"]::before { animation: breathe 6s ease-in-out infinite alternate; }
+}
+
+@keyframes breathe { from { opacity: 0.6; transform: scale(0.96); } to { opacity: 0.95; transform: scale(1.04); } }
 
 .nodeHead { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 500; }
 .nodeHead svg { color: var(--v-text-2); }

@@ -1,46 +1,45 @@
 import { EARLY_ACCESS } from "@/lib/kl/access";
 import { getViewer } from "@/lib/kl/viewer";
-import { clip as clipUrl, ITEM_W } from "@/lib/kl/media";
 import { getKitsForDisplay } from "@/lib/v2/data";
-import { kitGraph, stillFor, tierLabel, typeLabel } from "@/lib/v2/kit";
-import Gradient from "../Gradient";
-import Media from "../Media";
+import { ditherColors, HUES, kitHue } from "@/lib/v2/gradient";
+import { stillFor } from "@/lib/v2/kit";
 import Library from "../Library";
 import Shell from "../Shell";
-import Icon from "../Icon";
 import { DotNumber } from "../DotMatrix";
 import { ButtonLink } from "../Button";
+import DitherField from "../fx/DitherField";
+import Magnetic from "../fx/Magnetic";
+import Spotlight from "../fx/Spotlight";
+import HeroDeck from "./HeroDeck";
 import NodeCanvas from "./NodeCanvas";
 import l from "../layout.module.css";
 import s from "./CinematicHome.module.css";
 
 /**
- * Direction B — the cinematic workbench (docs/directions/cinematic/DESIGN.md).
+ * The cinematic workbench (docs/directions/cinematic/DESIGN.md) — the chosen
+ * direction.
  *
  * References: Reticla, the two node editors, the dark gradient dashboard.
- * Near-black, the featured kit's own picture blurred into smoke, frosted
- * glass floating over it, white pills and one small ember accent. A short
- * centred hero with the product in a glass window, the library straight
- * after, then how a kit works as a node canvas.
+ * Near-black under a dotted canvas that brightens around the pointer; a
+ * living, dithered field of the featured kit's colour behind a short hero;
+ * the four glowing cards of the dashboard reference; then the library, how a
+ * kit works as a node editor, and a dithered call to action.
  */
 export default async function CinematicHome() {
   const [{ real, shown }, viewer] = await Promise.all([getKitsForDisplay(), getViewer()]);
   const feature =
     real.find((k) => k.featured && (k.poster || k.clip)) ?? real.find((k) => k.poster) ?? real[0] ?? shown[0];
-  const still = feature ? stillFor(feature, ITEM_W) : undefined;
-  const clip = feature?.clip && !feature.sample ? clipUrl(feature.clip, ITEM_W) : undefined;
-  const graph = feature ? kitGraph(feature) : null;
-  const parts = graph ? [...graph.main, ...graph.branch] : [];
+  const hue = kitHue(feature?.palette, HUES.ember);
+  const free = real.filter((k) => k.free).length;
 
   return (
     <Shell look="cinematic">
+      <Spotlight />
       <main className={s.home}>
-        {/* ---------- Hero: smoke, a centred line, the product under glass ---------- */}
+        {/* ---------- Hero ---------- */}
         <section className={s.hero} aria-labelledby="home-title">
-          <div className={s.backdrop} aria-hidden="true">
-            <Gradient palette={feature?.palette} image={still} className={s.smoke} />
-            <span className={s.rockLeft} />
-            <span className={s.rockRight} />
+          <div className={s.field} aria-hidden="true">
+            <DitherField colors={ditherColors(hue)} cell={5} gain={1.1} />
           </div>
 
           <div className={`${l.container} ${s.heroWords}`}>
@@ -53,7 +52,7 @@ export default async function CinematicHome() {
               <span className={s.line}>
                 <span>Original website and motion kits</span>
               </span>{" "}
-              <span className={s.line}>
+              <span className={`${s.line} ${s.dim}`}>
                 <span>your AI can rebuild.</span>
               </span>
             </h1>
@@ -61,62 +60,28 @@ export default async function CinematicHome() {
               Each kit is a finished design with its spec and the prompts that recreate it in your stack.
             </p>
             <div className={s.actions}>
-              <ButtonLink href="#how-a-kit-works" size="md" variant="secondary">
+              <Magnetic>
+                <ButtonLink href="#library" size="lg" icon="arrowDown">
+                  Browse kits
+                </ButtonLink>
+              </Magnetic>
+              <ButtonLink href="#how-a-kit-works" size="lg" variant="secondary">
                 How a kit works
-              </ButtonLink>
-              <ButtonLink href="#library" size="md">
-                Browse kits
               </ButtonLink>
             </div>
           </div>
 
-          {feature ? (
-            <div className={`${l.container} ${s.panelWrap}`}>
-              <div className={s.panel}>
-                <aside className={s.panelRail} aria-hidden="true">
-                  <span className={s.railLogo} />
-                  <Icon name="image" size={16} />
-                  <Icon name="spec" size={16} />
-                  <Icon name="prompt" size={16} />
-                  <Icon name="output" size={16} />
-                </aside>
-                <div className={s.panelMain}>
-                  <div className={s.panelBar}>
-                    <span className={s.panelSearch} aria-hidden="true">
-                      <Icon name="search" size={14} /> Search kits
-                      <kbd>⌘K</kbd>
-                    </span>
-                    <a href={`/item/${feature.slug}`} className={s.panelOpen}>
-                      {feature.name}
-                      <span>{typeLabel(feature.type)} · {tierLabel(feature)}</span>
-                      <Icon name="arrowUpRight" size={14} />
-                    </a>
-                  </div>
-                  <div className={s.panelStage}>
-                    <Media still={still} clip={clip} alt={`${feature.name}, the finished design`} play="auto" priority />
-                    {parts.length ? (
-                      <div className={s.panelNodes} aria-hidden="true">
-                        <p>Kit anatomy</p>
-                        {parts.map((n) => (
-                          <span key={n.id}>
-                            <i />
-                            {n.title}
-                          </span>
-                        ))}
-                        {graph && !graph.verified ? <span className={s.panelMuted}>Not yet verified</span> : null}
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : null}
+          <div className={`${l.container} ${s.deckWrap}`}>
+            <HeroDeck real={real} feature={feature} />
+          </div>
         </section>
 
         {/* ---------- The library ---------- */}
         <section id="library" className={`${l.container} ${s.library}`} aria-labelledby="library-title">
           <div className={s.sectionHead}>
-            <p className={s.kicker}>The library</p>
+            <p className={s.kicker}>
+              <span className={s.kickerDot} aria-hidden="true" /> The library
+            </p>
             <h2 id="library-title" className={s.sectionTitle}>
               Kits, shown running.
             </h2>
@@ -124,10 +89,12 @@ export default async function CinematicHome() {
           <Library kits={shown} headingId="library-title" limit={12} />
         </section>
 
-        {/* ---------- How a kit works, as a node canvas ---------- */}
+        {/* ---------- How a kit works ---------- */}
         <section id="how-a-kit-works" className={`${l.container} ${s.section}`} aria-labelledby="how-title">
           <div className={s.sectionHead}>
-            <p className={s.kicker}>How a kit works</p>
+            <p className={s.kicker}>
+              <span className={s.kickerDot} aria-hidden="true" /> How a kit works
+            </p>
             <h2 id="how-title" className={s.sectionTitle}>
               One design, the prompts that rebuild it, and the proof that they do.
             </h2>
@@ -135,9 +102,12 @@ export default async function CinematicHome() {
           <NodeCanvas thumb={feature ? stillFor(feature, 700) : undefined} />
         </section>
 
-        {/* ---------- Early access, glass over smoke ---------- */}
+        {/* ---------- Early access ---------- */}
         <section className={`${l.container} ${s.section}`} aria-labelledby="access-title">
-          <Gradient palette={feature?.palette} image={still} className={s.cta}>
+          <div className={s.cta}>
+            <div className={s.ctaField} aria-hidden="true">
+              <DitherField colors={ditherColors(HUES.ember, HUES.rose)} cell={6} gain={1.1} />
+            </div>
             <div className={s.ctaWords}>
               <h2 id="access-title" className={s.ctaTitle}>
                 {EARLY_ACCESS ? "Free while the library is young." : "Start with a free kit."}
@@ -146,11 +116,13 @@ export default async function CinematicHome() {
                 An account unlocks free kits and their prompts. Premium is a plan we are shaping with early members — it
                 is not on sale.
               </p>
-              <div className={s.actions}>
-                <ButtonLink href={viewer ? "/account" : "/join"} icon="arrowUpRight">
-                  {viewer ? "Your dashboard" : "Join free"}
-                </ButtonLink>
-                <ButtonLink href="/pricing" variant="secondary">
+              <div className={s.ctaActions}>
+                <Magnetic>
+                  <ButtonLink href={viewer ? "/account" : "/join"} size="lg" icon="arrowUpRight">
+                    {viewer ? "Your dashboard" : "Join free"}
+                  </ButtonLink>
+                </Magnetic>
+                <ButtonLink href="/pricing" size="lg" variant="secondary">
                   See pricing
                 </ButtonLink>
               </div>
@@ -159,21 +131,17 @@ export default async function CinematicHome() {
               <div>
                 <dt>Published kits</dt>
                 <dd>
-                  <DotNumber value={String(real.length).padStart(2, "0")} label={`${real.length} published kits`} dot={9} tone="accent" />
+                  <DotNumber value={String(real.length).padStart(2, "0")} label={`${real.length} published kits`} dot={9} />
                 </dd>
               </div>
               <div>
                 <dt>Free today</dt>
                 <dd>
-                  <DotNumber
-                    value={String(real.filter((k) => k.free).length).padStart(2, "0")}
-                    label={`${real.filter((k) => k.free).length} free`}
-                    dot={9}
-                  />
+                  <DotNumber value={String(free).padStart(2, "0")} label={`${free} free`} dot={9} />
                 </dd>
               </div>
             </dl>
-          </Gradient>
+          </div>
         </section>
       </main>
     </Shell>

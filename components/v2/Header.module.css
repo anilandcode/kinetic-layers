@@ -317,18 +317,12 @@
 }
 
 .bar[data-look="cinematic"] .nav {
-  position: static;
-  margin-left: 1.5rem;
-  padding: 0;
-  border: 0;
-  background: none;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
   box-shadow: none;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  transform: none;
 }
 
-.bar[data-look="cinematic"] .nav a { height: 34px; padding: 0 0.75rem; font-size: 0.875rem; }
-.bar[data-look="cinematic"] .nav a[aria-current="page"] { background: rgba(255, 255, 255, 0.08); color: var(--v-text); }
+.bar[data-look="cinematic"] .nav a { height: 34px; padding: 0 1rem; font-size: 0.875rem; }
+
 .bar[data-look="cinematic"] .search,
 .bar[data-look="cinematic"] .round { background: rgba(255, 255, 255, 0.04); }

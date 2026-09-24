@@ -1,7 +1,7 @@
-# Direction B — Cinematic workbench
+# Direction B — Cinematic workbench (chosen)
 
-**Preview:** `/direction/cinematic` (local dev and Vercel previews only; 404 in
-production).
+**Status:** chosen by the owner on 2026-09-24. It is Home (`/`); the comparison
+copy stays at `/direction/cinematic` on previews.
 
 Kinetic Layers as a dark, atmospheric workbench. It is near-black, and the
 featured kit's own picture is blurred into smoke behind everything. Frosted
@@ -64,19 +64,46 @@ copy uses blur 34px, saturation 1.25 and brightness 0.62, with a vignette.
 - Nodes are radius 18. The canvas and the call-to-action are radius 28–32.
 - Cards are radius 26 with a 1px inner hairline instead of a shadow edge.
 
+## Signature effects
+
+| Effect | Where | How |
+|---|---|---|
+| **Dither field** | Behind the hero deck; the call to action | `components/v2/fx/DitherField.tsx` — a WebGL shader: domain-warped noise in three colours, cut by an 8×8 Bayer matrix into round dots. The dots follow the pointer, pause off-screen, and draw one still frame under reduced motion. |
+| **Luminous dithered wells** | Every kit card; the deck's rose and cobalt cards | `Gradient` in the cinematic look: the kit's hue lit from within (`luminousVars`), its picture faint underneath, and a halftone dot screen that shows in the shadow. |
+| **Fluted glass** | The featured-kit deck card | `components/v2/fx/Fluted.tsx` — the image in vertical ribs, each one magnified about its centre with a lit and a shaded edge. |
+| **Dotted canvas and spotlight** | Behind the whole page | `components/v2/fx/Spotlight.tsx` — a 22px dot grid; dots within 260px of the pointer warm up. |
+| **Dot data** | Deck and cards | `DotGrid` (one dot per published kit), `DotNumber` (5×7 dot figures), and six anatomy dots on every card (one per part the kit really has). |
+| **Light-catching edges** | Kit cards and deck cards | A 1px masked border whose highlight follows the pointer. |
+| **Magnetic actions** | The primary pills | `components/v2/fx/Magnetic.tsx` — GSAP `quickTo`, with an elastic release. |
+
+## The hero deck (from the dark dashboard reference)
+
+Four cards, each saying something true:
+
+1. **The library.** Rose, luminous. One dot per published kit: free kits are
+   solid, premium kits are ringed. Shows free out of total.
+2. **The featured kit, behind fluted glass.** A glass name plate, and the
+   parts the kit really has ("Published" / "Not yet").
+3. **In your editor.** A smoky card with the MCP orbit: Claude Code, Cursor,
+   any MCP client (the clients the MCP page names).
+4. **Early access.** Cobalt, with concentric rings. Price today: $0.
+
 ## Components
 
 - **Header:** a floating glass capsule inset from the viewport. Plain nav
   links; the active link gets a faint glass ground. Search, "Sign in", and a
   white pill "Join free".
 - **Hero:**
-  - a smoke backdrop from the featured kit, with two dark masses at the edges;
-  - a centred headline and a glass badge with the ember dot;
-  - a glass product window: an icon rail, a search bar, the kit running, and
-    a floating glass "Kit anatomy" panel listing the parts the kit really has
-    ("Not yet verified" when it is not).
-- **Kit card:** the same card as Direction A. The well is the kit's picture
-  as smoke over a luminous mesh, and the window floats on it.
+  - the dither field (the featured kit's hue) glowing behind the deck and
+    faded out under the words;
+  - a centred headline with a dimmed second clause;
+  - a glass badge with the ember dot;
+  - a magnetic white pill and a glass pill;
+  - the four-card deck (above).
+- **Kit card:** the same card as Direction A. In this look:
+  - the well is the kit's hue lit from within, with a halftone dither;
+  - the edge catches the light under the pointer;
+  - six ember anatomy dots show which parts the kit has.
 - **Node canvas:**
   - a dotted dark canvas with six glass nodes (Reference → Design spec →
     Reconstruction prompt → Verified output; Design spec → Adaptation prompt
@@ -107,7 +134,8 @@ copy uses blur 34px, saturation 1.25 and brightness 0.62, with a vignette.
   - keep glass over imagery;
   - use the ember as a single dot or line.
 - **Don't:**
-  - use purple or blue glow gradients;
+  - put colour on the page chrome (rose and cobalt live only inside cards;
+    the dither field takes the kit's own hue);
   - use orbs;
   - use ember fills or ember buttons;
   - use glass on flat black;

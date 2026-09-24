@@ -25,7 +25,7 @@ export type Look = "soft" | "cinematic";
 export function ShellFrame({
   viewer = null,
   pending = false,
-  look = "soft",
+  look = "cinematic",
   children,
 }: {
   viewer?: Viewer | null;
@@ -51,7 +51,7 @@ export function ShellFrame({
  * The frame, with whoever is looking already resolved. getViewer is wrapped
  * in React `cache`, so a page that also asks for it costs no second round trip.
  */
-export default async function Shell({ children, look = "soft" }: { children: ReactNode; look?: Look }) {
+export default async function Shell({ children, look = "cinematic" }: { children: ReactNode; look?: Look }) {
   const viewer = await getViewer();
   return (
     <ShellFrame viewer={viewer} look={look}>

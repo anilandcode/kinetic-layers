@@ -1,7 +1,7 @@
-import SoftHome from "@/components/v2/soft/SoftHome";
+import CinematicHome from "@/components/v2/cinematic/CinematicHome";
 
-/* Until the owner picks between /direction/soft and /direction/cinematic,
-   Home shows the soft studio. */
+/* The owner chose the cinematic direction (2026-09-24). The soft studio stays
+   at /direction/soft on previews for reference. */
 export default function Home() {
-  return <SoftHome />;
+  return <CinematicHome />;
 }

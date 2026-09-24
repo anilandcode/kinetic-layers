@@ -3,6 +3,22 @@
 This document records operational decisions and known traps. Verify material
 implementation details in the current source before acting.
 
+## v2: the owner chose the cinematic direction — 2026-09-24 (branch `redesign/v2`)
+
+`/` now renders the cinematic home, built out to the references with:
+
+- a WebGL dither field;
+- luminous, dithered kit wells;
+- fluted glass;
+- a page-wide dotted spotlight;
+- dot-matrix data;
+- magnetic actions;
+- the four-card hero deck from the dark dashboard reference.
+
+It is documented in
+[docs/directions/cinematic/DESIGN.md](docs/directions/cinematic/DESIGN.md).
+The shell's default look is `cinematic`. The rest of the platform follows next.
+
 ## v2 directions, side by side — 2026-09-24 (branch `redesign/v2`)
 
 The owner rejected the first v2 pass. It was a generic dark landing page with

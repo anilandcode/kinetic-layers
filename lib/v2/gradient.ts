@@ -89,3 +89,52 @@ export function gradientVars(palette?: Palette | null): CSSProperties | undefine
     "--gd3": css(norm(dark[2])),
   } as CSSProperties;
 }
+
+/* ---------------------------------------------------------------------------
+   Luminous colour for the cinematic look: the dark dashboard's glowing cards
+   and the dithered fields. Same rule as above — hue from the kit, light and
+   saturation set here — but pitched to glow on near-black.
+   ------------------------------------------------------------------------- */
+
+type RGB = [number, number, number];
+
+function hslToRgb([h, s, l]: HSL): RGB {
+  const hh = (((h % 360) + 360) % 360) / 360;
+  if (s === 0) return [l, l, l];
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  const t = (x: number) => {
+    let v = x;
+    if (v < 0) v += 1;
+    if (v > 1) v -= 1;
+    if (v < 1 / 6) return p + (q - p) * 6 * v;
+    if (v < 1 / 2) return q;
+    if (v < 2 / 3) return p + (q - p) * (2 / 3 - v) * 6;
+    return p;
+  };
+  return [t(hh + 1 / 3), t(hh), t(hh - 1 / 3)];
+}
+
+/** Named hues for surfaces that belong to no kit: ember (warm) and cobalt (cool). */
+export const HUES = { ember: 18, rose: 342, cobalt: 226, violet: 262 } as const;
+
+/** Three dither colours (0–1 RGB): highlight, glow, shadow. */
+export function ditherColors(hue: number, second?: number): [RGB, RGB, RGB] {
+  const b = second ?? hue + 38;
+  return [hslToRgb([hue, 0.9, 0.58]), hslToRgb([b, 0.95, 0.74]), hslToRgb([hue - 24, 0.75, 0.16])];
+}
+
+/** The first chromatic hue of a kit, or a fallback. */
+export function kitHue(palette: Palette | null | undefined, fallback: number = HUES.ember): number {
+  return kitHues(palette)[0] ?? fallback;
+}
+
+/** CSS stops for a luminous card: --l1 bright, --l2 mid, --l3 deep. */
+export function luminousVars(hue: number, second?: number): CSSProperties {
+  const b = second ?? hue + 30;
+  return {
+    "--l1": css([b, 0.92, 0.66]),
+    "--l2": css([hue, 0.82, 0.46]),
+    "--l3": css([hue - 18, 0.7, 0.12]),
+  } as CSSProperties;
+}
