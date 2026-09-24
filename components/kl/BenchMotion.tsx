@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Children } from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { Children, isValidElement } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 
 type MotionSectionProps = {
   children: ReactNode;
@@ -28,31 +28,27 @@ export function MotionSection({ children, className, as = "div", delay = 0, ...r
   return <motion.div className={className} {...props} {...rest}>{children}</motion.div>;
 }
 
+/**
+ * A grid with no entrance, on purpose.
+ *
+ * This used to stagger every card 35ms apart from `initial: "hidden"`. Framer
+ * Motion server-renders that initial state as inline `opacity: 0`, so the whole
+ * catalogue arrived invisible and stayed invisible until JavaScript hydrated —
+ * permanently, if it never did. That is HANDOFF.md trap 1, and
+ * DESIGN-REBUILD-SPEC.md §10 forbids both halves of it: staggering dozens of
+ * cards, and hiding content until hydration.
+ *
+ * The wrapper stays because bench.css lays the masonry out through
+ * `.bench-motion-grid-item`. The name stays so its two callers need no change.
+ */
 export function MotionGrid({ children, className }: { children: ReactNode; className: string }) {
-  const reduced = useReducedMotion();
-  const gridVariants: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.035, delayChildren: 0.05 } } };
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 12 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.36, ease: [0.22, 1, 0.36, 1] } },
-  };
-  const grid = reduced
-    ? {}
-    : {
-        initial: "hidden",
-        animate: "show",
-        variants: gridVariants,
-      };
-  const item = reduced
-    ? {}
-    : {
-        variants: itemVariants,
-      };
-
   return (
-    <motion.div className={className} {...grid}>
+    <div className={className}>
       {Children.toArray(children).map((child, index) => (
-        <motion.div className="bench-motion-grid-item" key={index} {...item}>{child}</motion.div>
+        <div className="bench-motion-grid-item" key={isValidElement(child) && child.key != null ? child.key : index}>
+          {child}
+        </div>
       ))}
-    </motion.div>
+    </div>
   );
 }

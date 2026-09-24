@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Source_Serif_4 } from "next/font/google";
+import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
 import Analytics from "@/components/legacy/Analytics";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kl/site";
 import "./globals.css";
@@ -16,6 +16,27 @@ const serif = Source_Serif_4({
   display: "swap",
 });
 
+/**
+ * The interface face, standing in until the v2 canvas settles it.
+ *
+ * Maison Neue shipped here as four TTFs in public/fonts with no web licence on
+ * record — DR-006 in the rebuild backlog, open since the day they were added.
+ * Anything in public/ is served to every visitor, so an unlicensed font there is
+ * distribution rather than use. Geist is open-licensed (OFL) and is one of the
+ * three candidates in docs/DESIGN-DIRECTION-V2.md; if the canvas picks General
+ * Sans or Satoshi instead, only these two declarations change.
+ */
+const sans = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+  display: "swap",
+});
+
+const mono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   /* Without this, every relative image and canonical in the tree resolves
@@ -65,7 +86,7 @@ export default function RootLayout({
       lang="en"
       data-theme="dark"
       suppressHydrationWarning
-      className={`no-js ${serif.variable}`}
+      className={`no-js ${serif.variable} ${sans.variable} ${mono.variable}`}
     >
       <body>
         {/* Drops the no-js class before paint, so the reveal starting states

@@ -74,7 +74,7 @@ export default function DesignSystem() {
 
         <section className={`${styles.tonalSection} ds-section`}>
           <div className="ds-container" data-size="content">
-            <SectionTitle eyebrow="02 · Typography" title="Compact, calm, and deliberate" copy="Maison Neue is the current product face, with explicit system fallbacks. Display type is reserved for page identity; workspace titles and controls stay compact. Record the web licence before commercial launch." />
+            <SectionTitle eyebrow="02 · Typography" title="Compact, calm, and deliberate" copy="Geist is the interim product face while the v2 canvas chooses between it, General Sans and Satoshi. Every family keeps explicit system fallbacks. Display type is reserved for page identity; workspace titles and controls stay compact." />
             <div className={styles.typeSpecimens}>
               <p className={styles.display}>Original layers, ready to adapt.</p>
               <p className={styles.pageTitle}>Browse the library</p>
@@ -250,7 +250,7 @@ export default function DesignSystem() {
 
         <section className="ds-section">
           <div className="ds-container" data-size="reading">
-            <SectionTitle eyebrow="11 · Release gate" title="What must be true before migration" copy="Verify the real catalogue at 390, 768, 1024 and 1440 pixels in both themes. Confirm the Maison Neue web licence, then migrate Homepage, Library and Product surfaces through shared components." />
+            <SectionTitle eyebrow="11 · Release gate" title="What must be true before migration" copy="Verify the real catalogue at 390, 768, 1024 and 1440 pixels in both themes. Confirm the typeface chosen on the v2 canvas, then migrate Homepage, Library and Product surfaces through shared components." />
           </div>
         </section>
       </div>

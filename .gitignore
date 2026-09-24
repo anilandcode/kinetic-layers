@@ -65,3 +65,6 @@ graphify-out/
 # Sanity Studio build output — `sanity deploy` regenerates both
 dist/
 .sanity/
+
+# Node compile cache — machine-local build artefact
+node-compile-cache/

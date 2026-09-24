@@ -821,9 +821,9 @@
   background: var(--card);
   box-shadow: var(--shadow);
 }
-/* motion.ts checks reduced() before it binds any of the GSAP hover work, so the
-   card is inert under reduce — but that guard cannot know about a CSS
-   transition. The frame still appears; it just arrives instantly. */
+/* Under reduced motion the frame still appears; it just arrives instantly.
+   A CSS transition needs its own guard — nothing in JavaScript can switch it
+   off. */
 @media (prefers-reduced-motion: reduce) {
   [data-kl] .kl-card {
     transition: none;

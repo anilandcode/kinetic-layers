@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+
+/* The spec's one shared curve (DESIGN-REBUILD-SPEC.md §10). */
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -24,6 +27,12 @@ export default function ItemModal({
   const closingRef = useRef(false);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [closing, setClosing] = useState(false);
+  /* The entrance used to be a spring from 24px below at 98.5% scale for
+     everyone. Under reduced motion it still slid and scaled — only the exit
+     timer checked the preference. The spec caps dialog travel at 8px on the
+     shared curve; with reduced motion there is no travel at all, only the fade. */
+  const reduced = useReducedMotion();
+  const offset = reduced ? {} : { y: 8 };
 
   const close = useCallback(() => {
     if (closingRef.current) return;
@@ -108,7 +117,7 @@ export default function ItemModal({
         className="kl-modal-veil"
         initial={{ opacity: 0 }}
         animate={{ opacity: closing ? 0 : 1 }}
-        transition={{ duration: closing ? 0.16 : 0.22, ease: "easeOut" }}
+        transition={{ duration: closing ? 0.16 : 0.22, ease: EASE }}
         onClick={(event) => {
         if (event.target === event.currentTarget) close();
       }}>
@@ -119,9 +128,9 @@ export default function ItemModal({
           aria-modal="true"
           aria-label={name}
           tabIndex={-1}
-          initial={{ opacity: 0, y: 24, scale: 0.985 }}
-          animate={closing ? { opacity: 0, y: 16, scale: 0.985 } : { opacity: 1, y: 0, scale: 1 }}
-          transition={{ type: "spring", stiffness: 330, damping: 30, mass: 0.72 }}
+          initial={{ opacity: 0, ...offset }}
+          animate={closing ? { opacity: 0, ...offset } : { opacity: 1, y: 0 }}
+          transition={{ duration: closing ? 0.16 : 0.22, ease: EASE }}
         >
           {children}
           <div className="bench-item-head">

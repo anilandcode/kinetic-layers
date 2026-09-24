@@ -1,17 +1,10 @@
 /* Approved Bench tokens. Historical styles remain as compatibility rules for secondary screens. */
-@font-face{font-family:'Maison Neue';src:url('/fonts/maison-neue-light.ttf') format('truetype');font-weight:300;font-display:swap}
-@font-face{font-family:'Maison Neue';src:url('/fonts/maison-neue-book.ttf') format('truetype');font-weight:400;font-display:swap}
-@font-face{font-family:'Maison Neue';src:url('/fonts/maison-neue-bold.ttf') format('truetype');font-weight:600;font-display:swap}
-@font-face{font-family:'Maison Neue';src:url('/fonts/maison-neue-bold.ttf') format('truetype');font-weight:700;font-display:swap}
-@font-face{font-family:'Maison Neue Mono';src:url('/fonts/maison-neue-mono.ttf') format('truetype');font-weight:400;font-display:swap}
-@font-face{font-family:'Maison Neue Mono';src:url('/fonts/maison-neue-mono.ttf') format('truetype');font-weight:600;font-display:swap}
-@font-face{font-family:'Maison Neue Mono';src:url('/fonts/maison-neue-mono.ttf') format('truetype');font-weight:700;font-display:swap}
-:root{--font-sora:'Maison Neue',system-ui,sans-serif;--font-mono:'Maison Neue Mono',ui-monospace,monospace;--bench-num:'Maison Neue Mono',ui-monospace,monospace}
+:root{--font-sora:var(--font-geist),system-ui,sans-serif;--font-mono:var(--font-geist-mono),ui-monospace,monospace;--bench-num:var(--font-geist-mono),ui-monospace,monospace}
 [data-kl],[data-theme='dark'] [data-kl]{
  --bg:#101114;--surface:#191b1e;--surface-2:#222428;--surface-3:#2a2c31;--board:#212429;--canvas-bg:#0c0d0f;--card:#14161a;
  --ink:#eceae5;--ink-2:#b8b7b1;--ink-3:#9d9c96;--ink-4:#86857f;--ink-5:#6f6e69;--ink-rgb:236,235,231;
  --on-ink:#101114;--solid:#000;--solid-ink:#f4f3f1;--lock:#55544f;--ember:#737371;--pick:#3aa9ff;--ok:#34d17a;--pane:rgba(236,235,231,.06);
- --font-ui:'Maison Neue',Inter,system-ui,sans-serif;--font-mono:'Maison Neue Mono',ui-monospace,monospace;--font-num:var(--bench-num,monospace);
+ --font-ui:var(--font-geist),system-ui,sans-serif;--font-mono:var(--font-geist-mono),ui-monospace,monospace;--font-num:var(--bench-num,monospace);
  --kl-sans:var(--font-ui);--kl-serif:var(--font-ui);--ease-house:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.24,1.34,.38,1);
  --ground:var(--bg);--body:var(--ink-2);--muted:var(--ink-3);--inset:var(--canvas-bg);--line:rgba(var(--ink-rgb),.12);--line2:rgba(var(--ink-rgb),.08);--line3:rgba(var(--ink-rgb),.06);
  --amber:var(--ember);--amber-bg:var(--pane);--amber-line:var(--line);--moss:var(--ok);--glass:var(--ink);--glass-fg:var(--on-ink);--glass-line:transparent;--ghost:var(--pane);--ghost-line:var(--line);--pat:var(--ink-rgb);--veil:rgba(0,0,0,.45);--gutter:20px;
