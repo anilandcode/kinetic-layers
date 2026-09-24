@@ -68,3 +68,7 @@ dist/
 
 # Node compile cache — machine-local build artefact
 node-compile-cache/
+
+# General Sans is licensed for self-hosting, not for redistribution through a
+# public repository. Fetched at build time by tools/fetch-fonts.mjs; see docs/FONTS.md.
+public/fonts/general-sans/

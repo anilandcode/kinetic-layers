@@ -47,8 +47,8 @@
 .node:hover { border-color: var(--v-line-strong); transform: translateY(-1px); }
 
 .node[data-active] {
-  border-color: var(--v-accent-ink);
-  box-shadow: 0 0 0 3px var(--v-accent-soft), var(--v-shade);
+  border-color: var(--v-text);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--v-text) 10%, transparent), var(--v-shade);
 }
 
 .node:focus-visible { outline-offset: 4px; border-radius: var(--v-r-panel); }
@@ -68,8 +68,8 @@
 
 .node[data-active] .glyph {
   border-color: transparent;
-  background: var(--v-accent);
-  color: var(--v-on-accent);
+  background: var(--v-primary);
+  color: var(--v-on-primary);
 }
 
 .words { display: grid; gap: 0.15rem; min-width: 0; }
@@ -117,7 +117,7 @@
 .pulse {
   position: absolute;
   inset: -3px 6px;
-  background: radial-gradient(circle, var(--v-accent) 2.4px, transparent 3px) no-repeat;
+  background: radial-gradient(circle, var(--v-primary) 2.4px, transparent 3px) no-repeat;
   background-size: 7px 7px;
   background-position: 0% 50%;
   opacity: 0;
@@ -125,8 +125,8 @@
   animation-delay: var(--delay, 0ms);
 }
 
-:global(:root[data-theme="light"]) .pulse {
-  background-image: radial-gradient(circle, var(--v-accent-ink) 2.4px, transparent 3px);
+:global([data-look="soft"]) .pulse {
+  background-image: radial-gradient(circle, var(--v-text) 2.4px, transparent 3px);
 }
 
 @keyframes travel {

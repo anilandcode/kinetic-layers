@@ -1,59 +1,65 @@
+"use client";
+
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import type { Asset } from "@/lib/kl/types";
 import { clip as clipUrl, CARD_W } from "@/lib/kl/media";
 import { kitGraph, stillFor, tierLabel, typeLabel } from "@/lib/v2/kit";
-import Aura from "./Aura";
+import Gradient from "./Gradient";
 import Media from "./Media";
-import { Signal, Tag } from "./Button";
+import { Arrow, Signal, Tag } from "./Button";
+import { usePointerGlow } from "./motion";
 import s from "./KitCard.module.css";
 
 /**
- * A kit in a grid.
+ * A kit in the library, built like the references' cards.
  *
- * At rest it is only the media — no frame, no padding, no border (the owner's
- * call on the old card, and still right). On hover or focus the media draws
- * in and the kit's own aura shows around it: the card gets its identity from
- * its content, not from a treatment every card shares. Transform and opacity
- * only, so nothing reflows.
+ * A rounded card holding a gradient well — the kit's own colours, pastel on
+ * light and smoke-over-glow on dark — with the kit's page rising out of it
+ * like a browser window, then the name and the round ↗. On hover the glow
+ * follows the pointer, the window lifts and the arrow turns. No tilt.
+ *
+ * `data-flip-id` lets the library animate filtering with GSAP Flip, and lets
+ * the quick view morph out of this card.
  */
-export default function KitCard({
-  kit,
-  ratio = "4 / 3",
-  priority = false,
-  sizes = "card",
-}: {
-  kit: Asset;
-  /** A fixed frame keeps a grid's rhythm; "natural" uses the media's own shape. */
-  ratio?: string | "natural";
-  priority?: boolean;
-  sizes?: "card" | "wide";
-}) {
-  const width = sizes === "wide" ? CARD_W * 1.5 : CARD_W;
-  const still = stillFor(kit, width);
-  const clip = kit.clip && !kit.sample ? clipUrl(kit.clip, width) : undefined;
+export default function KitCard({ kit, priority = false }: { kit: Asset; priority?: boolean }) {
+  const ref = usePointerGlow<HTMLAnchorElement>();
+  const still = stillFor(kit, CARD_W);
+  const clip = kit.clip && !kit.sample ? clipUrl(kit.clip, CARD_W) : undefined;
   const verified = kitGraph(kit).verified;
-  const aspect = ratio === "natural" ? String(kit.aspect || 4 / 3) : ratio;
 
   return (
-    <Link href={`/item/${kit.slug}`} className={s.card} data-sample={kit.sample ? "" : undefined}>
-      <Aura palette={kit.palette} className={s.frame} style={{ aspectRatio: aspect } as CSSProperties}>
-        <Media still={still} clip={clip} alt="" className={s.media} priority={priority} />
+    <Link ref={ref} href={`/item/${kit.slug}`} className={s.card} data-flip-id={`kit-${kit.slug}`} data-sample={kit.sample ? "" : undefined}>
+      <Gradient palette={kit.palette} image={still} className={s.well}>
+        <span className={s.window} data-kit-media={kit.slug}>
+          <span className={s.windowBar} aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className={s.windowMedia}>
+            <Media still={still} clip={clip} alt="" priority={priority} />
+          </span>
+        </span>
         {kit.sample ? (
           <Tag tone="sample" className={s.flag}>
             Sample
           </Tag>
         ) : null}
-      </Aura>
-      <span className={s.meta}>
-        <span className={s.name}>{kit.name}</span>
-        <span className={s.line}>
-          {verified ? <Signal /> : null}
-          <span>{typeLabel(kit.type)}</span>
-          <span aria-hidden="true" className={s.sep}>·</span>
-          <span>{tierLabel(kit)}</span>
-          {verified ? <span className="v-sr">, verified rebuild</span> : null}
+      </Gradient>
+      <span className={s.foot}>
+        <span className={s.words}>
+          <span className={s.name}>{kit.name}</span>
+          <span className={s.meta}>
+            {verified ? <Signal /> : null}
+            {typeLabel(kit.type)}
+            <span aria-hidden="true" className={s.dot}>
+              ·
+            </span>
+            {tierLabel(kit)}
+            {verified ? <span className="v-sr">, rebuild verified</span> : null}
+          </span>
         </span>
+        <Arrow className={s.arrow} />
       </span>
     </Link>
   );

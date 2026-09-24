@@ -212,7 +212,7 @@ export function kitPanels(kit: Asset): Partial<Record<NodeId, ReactNode>> {
                 <td>{r.model ?? "—"}</td>
                 <td>{formatDate(r.date) ?? "—"}</td>
                 <td>
-                  <Tag tone={r.result === "Pass" ? "accent" : r.result === "Fail" ? "warn" : "neutral"} signal={r.result === "Pass"}>
+                  <Tag tone={r.result === "Pass" ? "solid" : "neutral"} signal={r.result === "Pass"}>
                     {r.result}
                   </Tag>
                   {r.note ? <span className={s.recordNote}>{r.note}</span> : null}

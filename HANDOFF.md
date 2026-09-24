@@ -3,7 +3,37 @@
 This document records operational decisions and known traps. Verify material
 implementation details in the current source before acting.
 
-## v2 redesign, Stage A — 2026-09-24 (branch `redesign/v2`)
+## v2 directions, side by side — 2026-09-24 (branch `redesign/v2`)
+
+The owner rejected the first v2 pass. It was a generic dark landing page with
+a neon chartreuse accent. It is replaced by **two complete design directions**
+built from their references, to be compared and one chosen.
+
+**The two directions:**
+
+| Direction | Route | Design system | References |
+|---|---|---|---|
+| A — Soft gradient studio | `/direction/soft` | [docs/directions/soft/DESIGN.md](docs/directions/soft/DESIGN.md) | Synthex, Credit Karma, Superpower, Neka |
+| B — Cinematic workbench | `/direction/cinematic` | [docs/directions/cinematic/DESIGN.md](docs/directions/cinematic/DESIGN.md) | Reticla, the node editors, the dark gradient dashboard |
+
+**How they are built:**
+- Each is a Home only: a short hero, the library at once (12 kits with a
+  "Show all"), and a few sections.
+- `/` shows Direction A for now.
+- `middleware.ts` answers 404 for `/direction/*` when
+  `VERCEL_ENV === "production"`.
+- Each look is set by `data-look` on the shell, not by the theme toggle.
+  Look-specific CSS is prefixed `:global([data-look="…"])`.
+- Kit colour comes from `lib/v2/gradient.ts`: the hue from the kit, and
+  lightness and saturation fixed per look.
+- GSAP 3.15 is back, used for the pointer glow, Flip filtering, and
+  ScrollTrigger reveals and wire draw-in.
+
+**Fonts:** General Sans is fetched at build time and never committed. The
+repository is public, and its licence forbids redistribution; see
+[docs/FONTS.md](docs/FONTS.md).
+
+## v2 redesign, Stage A — 2026-09-24 (branch `redesign/v2`), superseded above
 
 The whole platform is being rebuilt to [the v2 direction](docs/DESIGN-DIRECTION-V2.md)
 on `redesign/v2`, cut from `chore/cleanup-dead-code-and-fonts`. Nothing reaches

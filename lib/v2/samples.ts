@@ -9,9 +9,11 @@ import type { Asset } from "@/lib/kl/types";
  * dev and on Vercel preview deployments — never on production, never in a
  * count, a search result, a filter or a download.
  *
- * The media stays hotlinked (the owner's decision). Width, height and the three
- * swatches were read once from those files on 2026-09-24, so each sample gets
- * an aura from its own pixels rather than from a guess.
+ * The media stays hotlinked (the owner's decision). Width, height and up to
+ * three hues were measured once from those files on 2026-09-24 (saturated
+ * pixels only, binned by hue), so each sample's gradient comes from its own
+ * pixels rather than from a guess. Greyscale ones get no hues, and so the
+ * neutral silver gradient.
  *
  * `KL_SAMPLES=1` turns them on for a local production build, which is how
  * they are checked before a push.
@@ -21,29 +23,29 @@ export const SAMPLES_ENABLED =
   process.env.NODE_ENV === "development" ||
   process.env.KL_SAMPLES === "1";
 
-type Row = [name: string, media: string, w: number, h: number, dominant: string, vibrant: string, darkMuted: string];
+type Row = [name: string, media: string, w: number, h: number, hues: string[]];
 
 const ROWS: Row[] = [
-  ["EMBER.dsgn", "https://image.mux.com/iK2ACd5wEwi7ORN8i16kl59Cck01IREnB3hX6EnnqiUk/animated.webp?fps=15&width=640", 640, 464, "#b3b1b3", "#131213", "#131213"],
-  ["Digital Epoch", "https://motionsites.ai/assets/hero-digital-epoch-preview-B85ezqXO.gif", 800, 589, "#f2f2f4", "#2f6ac9", "#2f6ac9"],
-  ["RIVR DeFi", "https://motionsites.ai/assets/landing-rivr-defi-preview-BPVSgEtB.gif", 444, 800, "#f3f3f3", "#515589", "#353265"],
-  ["Vize Footer", "https://motionsites.ai/assets/footer-vize-poster-BRRRDP-A.png", 1838, 1350, "#f3f4f5", "#d9dce1", "#d1d4d7"],
-  ["Kresna Footer", "https://motionsites.ai/assets/footer-kresna-preview-BrIYYd2q.gif", 800, 586, "#f6f6f8", "#040d2c", "#02040d"],
-  ["NOVA Space Systems", "https://motionsites.ai/assets/hero-nova-space-preview-ej0OOJ0M.gif", 389, 800, "#060607", "#021330", "#060607"],
-  ["Orbit Engineers", "https://motionsites.ai/assets/hero-orbit-engineers-poster-BT1ffUzn.png", 992, 1726, "#040e18", "#040e18", "#040e18"],
-  ["Aetheris Voyage", "https://motionsites.ai/assets/hero-aetheris-voyage-preview-BGJn1z4t.gif", 800, 570, "#111012", "#4b2d13", "#111012"],
-  ["Digital Reality", "https://motionsites.ai/assets/hero-digital-reality-preview-BogjTXUi.gif", 800, 584, "#0a0f14", "#0a0f14", "#0a0f14"],
-  ["Zenith Realty", "https://motionsites.ai/assets/landing-zenith-realty-preview-Y1uTjYYl.gif", 454, 800, "#f8f8f8", "#4c4537", "#161615"],
-  ["Glow Features", "https://motionsites.ai/assets/features-glow-poster-CmUBaPAq.png", 1834, 1362, "#0e0e0f", "#1b282c", "#0e0e0f"],
-  ["AKOR Security", "https://motionsites.ai/assets/hero-akor-security-preview-hRrwsPNf.gif", 396, 800, "#080908", "#162718", "#080908"],
-  ["Finlytic AI Agent", "https://motionsites.ai/assets/hero-finlytic-preview-CV9g0FHP.gif", 800, 601, "#0c0918", "#37276c", "#0c0918"],
-  ["RIVR", "https://motionsites.ai/assets/hero-rivr-preview-DcS3pjx4.gif", 800, 599, "#cdd0d5", "#9dafc5", "#3c4651"],
-  ["Lumina", "https://motionsites.ai/assets/footer-lumina-preview-CYkr-ACN.gif", 800, 585, "#313431", "#253a51", "#1c314a"],
-  ["Zenith Footer", "https://motionsites.ai/assets/footer-zenith-preview-CYxIE6aF.gif", 800, 588, "#f7f7e8", "#7db9e3", "#15100d"],
-  ["Impressive Hero", "https://motionsites.ai/assets/hero-impressive-preview-BCJtlSs2.gif", 800, 592, "#060607", "#191b23", "#060607"],
-  ["Nexus IT Solutions", "https://motionsites.ai/assets/hero-nexus-preview-74RfhYpA.gif", 800, 627, "#fbfcfc", "#0d2d53", "#040617"],
-  ["What Package Fits You", "https://motionsites.ai/assets/hero-package-fits-pricing-preview-Bglk5DXD.gif", 800, 586, "#f5f4f3", "#ead6d5", "#0c0c0c"],
-  ["Shamoni", "https://motionsites.ai/assets/hero-shamoni-preview-DfbPWZl9.gif", 800, 591, "#91b0cd", "#6c4e30", "#352e0f"],
+  ["EMBER.dsgn", "https://image.mux.com/iK2ACd5wEwi7ORN8i16kl59Cck01IREnB3hX6EnnqiUk/animated.webp?fps=15&width=640", 640, 464, []],
+  ["Digital Epoch", "https://motionsites.ai/assets/hero-digital-epoch-preview-B85ezqXO.gif", 800, 589, ["#4d7ac4", "#79e5a1", "#f6b28e"]],
+  ["RIVR DeFi", "https://motionsites.ai/assets/landing-rivr-defi-preview-BPVSgEtB.gif", 444, 800, ["#51578c", "#eb9965", "#aa636c"]],
+  ["Vize Footer", "https://motionsites.ai/assets/footer-vize-poster-BRRRDP-A.png", 1838, 1350, []],
+  ["Kresna Footer", "https://motionsites.ai/assets/footer-kresna-preview-BrIYYd2q.gif", 800, 586, ["#2e5da9"]],
+  ["NOVA Space Systems", "https://motionsites.ai/assets/hero-nova-space-preview-ej0OOJ0M.gif", 389, 800, ["#4d80aa", "#cbcfe0"]],
+  ["Orbit Engineers", "https://motionsites.ai/assets/hero-orbit-engineers-poster-BT1ffUzn.png", 992, 1726, ["#b3724b", "#506c83", "#4d451f"]],
+  ["Aetheris Voyage", "https://motionsites.ai/assets/hero-aetheris-voyage-preview-BGJn1z4t.gif", 800, 570, ["#705227", "#143461", "#252144"]],
+  ["Digital Reality", "https://motionsites.ai/assets/hero-digital-reality-preview-BogjTXUi.gif", 800, 584, ["#ddc09c", "#324e5b"]],
+  ["Zenith Realty", "https://motionsites.ai/assets/landing-zenith-realty-preview-Y1uTjYYl.gif", 454, 800, ["#826f4f", "#aecadf"]],
+  ["Glow Features", "https://motionsites.ai/assets/features-glow-poster-CmUBaPAq.png", 1834, 1362, ["#38657c", "#6f3448", "#7a533a"]],
+  ["AKOR Security", "https://motionsites.ai/assets/hero-akor-security-preview-hRrwsPNf.gif", 396, 800, ["#2aa926", "#23472e"]],
+  ["Finlytic AI Agent", "https://motionsites.ai/assets/hero-finlytic-preview-CV9g0FHP.gif", 800, 601, ["#7453b3"]],
+  ["RIVR", "https://motionsites.ai/assets/hero-rivr-preview-DcS3pjx4.gif", 800, 599, ["#95a6bc", "#957b58"]],
+  ["Lumina", "https://motionsites.ai/assets/footer-lumina-preview-CYkr-ACN.gif", 800, 585, ["#2b3f55", "#d7bfb1"]],
+  ["Zenith Footer", "https://motionsites.ai/assets/footer-zenith-preview-CYxIE6aF.gif", 800, 588, ["#99c9eb", "#717947", "#cad1e9"]],
+  ["Impressive Hero", "https://motionsites.ai/assets/hero-impressive-preview-BCJtlSs2.gif", 800, 592, []],
+  ["Nexus IT Solutions", "https://motionsites.ai/assets/hero-nexus-preview-74RfhYpA.gif", 800, 627, ["#76b3db"]],
+  ["What Package Fits You", "https://motionsites.ai/assets/hero-package-fits-pricing-preview-Bglk5DXD.gif", 800, 586, ["#ebbb57", "#e6b8c2"]],
+  ["Shamoni", "https://motionsites.ai/assets/hero-shamoni-preview-DfbPWZl9.gif", 800, 591, ["#a1793c", "#84a9ca", "#7f8746"]],
 ];
 
 /** The section type is in the file name the references were published under. */
@@ -60,7 +62,7 @@ const slugOf = (name: string) =>
 /** The one sample that carries a full, made-up release so the whole graph can be judged. */
 const ILLUSTRATIVE = "Aetheris Voyage";
 
-const ALL: Asset[] = ROWS.map(([name, media, w, h, dominant, vibrant, darkMuted], index) => {
+const ALL: Asset[] = ROWS.map(([name, media, w, h, hues], index) => {
   const base: Asset = {
     slug: slugOf(name),
     name,
@@ -72,7 +74,7 @@ const ALL: Asset[] = ROWS.map(([name, media, w, h, dominant, vibrant, darkMuted]
     aspect: w / h,
     width: w,
     height: h,
-    palette: { dominant, vibrant, darkMuted },
+    palette: hues.length ? { hues } : null,
     sample: true,
   };
   if (name !== ILLUSTRATIVE) return base;

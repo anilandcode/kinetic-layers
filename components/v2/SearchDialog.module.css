@@ -76,12 +76,12 @@
   cursor: pointer;
 }
 
-.hit[aria-selected="true"] { background: var(--v-accent-soft); }
+.hit[aria-selected="true"] { background: color-mix(in oklab, var(--v-text) 10%, transparent); }
 
 .hitName { overflow: hidden; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
 .hitMeta { color: var(--v-text-2); font-size: var(--v-label); }
 .hitArrow { color: var(--v-text-3); }
-.hit[aria-selected="true"] .hitArrow { color: var(--v-accent-ink); }
+.hit[aria-selected="true"] .hitArrow { color: var(--v-text); }
 
 .empty { margin: 0; padding: 1.5rem 1.25rem 1.75rem; color: var(--v-text-2); }
 

@@ -7,7 +7,6 @@ import { createPortal } from "react-dom";
 import type { Viewer } from "@/lib/kl/types";
 import Icon from "./Icon";
 import Mark from "./Mark";
-import ThemeToggle from "./ThemeToggle";
 import SearchDialog from "./SearchDialog";
 import { ButtonLink } from "./Button";
 import { useDialog } from "./useDialog";
@@ -18,14 +17,22 @@ import s from "./Header.module.css";
 const NAV = [
   { href: "/library", label: "Library" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/docs", label: "Docs" },
 ];
 
 const MORE = [
-  { href: "/docs", label: "Docs" },
   { href: "/mcp", label: "MCP" },
   { href: "/changelog", label: "Changelog" },
   { href: "/contact", label: "Contact" },
+  { href: "/license", label: "License" },
 ];
+
+/* Home is the library with a short hero on top, so Library reads as current
+   on both. */
+const isCurrent = (pathname: string, href: string) =>
+  pathname === href ||
+  pathname.startsWith(`${href}/`) ||
+  (href === "/library" && (pathname === "/" || pathname.startsWith("/direction/")));
 
 function initial(viewer: Viewer) {
   return (viewer.name || viewer.email || "?").trim().charAt(0).toUpperCase() || "?";
@@ -66,7 +73,8 @@ function AccountMenu({ viewer }: { viewer: Viewer }) {
         aria-label={`Account menu for ${viewer.name || viewer.email || "your account"}`}
         onClick={() => setOpen((v) => !v)}
       >
-        <span aria-hidden="true">{initial(viewer)}</span>
+        <span className={s.avatarDisc} aria-hidden="true">{initial(viewer)}</span>
+        <span className={s.avatarName} aria-hidden="true">{viewer.name || viewer.email?.split("@")[0] || "Account"}</span>
       </button>
       {open ? (
         <div id="v2-account-menu" className={s.menu}>
@@ -108,9 +116,9 @@ function Drawer({
       <div ref={panel} className={s.drawer} role="dialog" aria-modal="true" aria-label="Menu">
         <div className={s.drawerHead}>
           <span className={s.brandSmall}>
-            <Mark size={20} /> Kinetic Layers
+            <Mark size={22} /> Kinetic Layers
           </span>
-          <button ref={closeRef} type="button" className={s.iconButton} onClick={onClose} aria-label="Close menu">
+          <button ref={closeRef} type="button" className={s.round} onClick={onClose} aria-label="Close menu">
             <Icon name="close" size={20} />
           </button>
         </div>
@@ -121,7 +129,7 @@ function Drawer({
             <Link
               key={item.href}
               href={item.href}
-              aria-current={pathname.startsWith(item.href) ? "page" : undefined}
+              aria-current={pathname !== "/" && isCurrent(pathname, item.href) ? "page" : undefined}
               onClick={onClose}
             >
               {item.label}
@@ -138,7 +146,6 @@ function Drawer({
         </nav>
 
         <div className={s.drawerFoot}>
-          <ThemeToggle className={s.drawerTheme} withLabel />
           {viewer ? (
             <div className={s.drawerAccount}>
               <span className={s.who}>
@@ -167,7 +174,16 @@ function Drawer({
   );
 }
 
-export default function Header({ viewer = null, pending = false }: { viewer?: Viewer | null; pending?: boolean }) {
+export default function Header({
+  viewer = null,
+  pending = false,
+  look = "soft",
+}: {
+  viewer?: Viewer | null;
+  pending?: boolean;
+  /** Each direction is a whole look, so the theme toggle stays out while they are compared. */
+  look?: "soft" | "cinematic";
+}) {
   const pathname = usePathname() ?? "/";
   const barRef = useRef<HTMLElement | null>(null);
   /* The bar's backdrop-filter makes it the containing block for anything
@@ -175,6 +191,7 @@ export default function Header({ viewer = null, pending = false }: { viewer?: Vi
      to the 68px bar. They render into the shell root instead — still inside
      [data-v2], so the tokens apply. */
   const [layerRoot, setLayerRoot] = useState<HTMLElement | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const closeSearch = useCallback(() => setSearchOpen(false), []);
@@ -194,6 +211,12 @@ export default function Header({ viewer = null, pending = false }: { viewer?: Vi
 
   useEffect(() => {
     setLayerRoot(barRef.current?.closest<HTMLElement>("[data-v2]") ?? document.body);
+    /* The bar sits on the canvas at the top and frosts once content passes
+       under it, as the references' floating headers do. */
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   /* A navigation from inside the drawer or search closes it. */
@@ -203,31 +226,27 @@ export default function Header({ viewer = null, pending = false }: { viewer?: Vi
   }, [pathname]);
 
   return (
-    <header ref={barRef} className={s.bar}>
+    <header ref={barRef} className={s.bar} data-scrolled={scrolled ? "" : undefined} data-look={look}>
       <div className={s.row}>
         <Link href="/" className={s.brand} aria-label="Kinetic Layers, home">
-          <Mark size={24} />
+          <Mark size={26} />
           <span>Kinetic Layers</span>
         </Link>
 
         <nav aria-label="Primary" className={s.nav}>
-          {NAV.map((item) => {
-            const current = pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <Link key={item.href} href={item.href} aria-current={current ? "page" : undefined}>
-                {item.label}
-              </Link>
-            );
-          })}
+          {NAV.map((item) => (
+            <Link key={item.href} href={item.href} aria-current={isCurrent(pathname, item.href) ? "page" : undefined}>
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <div className={s.tools}>
           <button type="button" className={s.search} onClick={() => setSearchOpen(true)} aria-label="Search the library">
             <Icon name="search" size={17} />
-            <span className={s.searchText}>Search kits</span>
+            <span className={s.searchText}>Search</span>
             <kbd className={s.kbd} aria-hidden="true">⌘K</kbd>
           </button>
-          <ThemeToggle className={`${s.iconButton} ${s.desktopOnly}`} />
           <span className={s.desktopOnly}>
             {pending ? (
               <span className={s.pending} aria-hidden="true" />
@@ -242,12 +261,12 @@ export default function Header({ viewer = null, pending = false }: { viewer?: Vi
           </span>
           <button
             type="button"
-            className={`${s.iconButton} ${s.mobileOnly}`}
+            className={`${s.round} ${s.mobileOnly}`}
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
             aria-haspopup="dialog"
           >
-            <Icon name="menu" size={20} />
+            <Icon name="menu" size={19} />
           </button>
         </div>
       </div>

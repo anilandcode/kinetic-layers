@@ -12,7 +12,7 @@
 
 .text { color: var(--v-text); }
 .muted { color: var(--v-text-3); }
-.accent { color: var(--v-accent-ink); }
+.accent { color: var(--v-text); }
 
-/* In dark mode the lit accent dots are the chartreuse itself. */
-:global(:root:not([data-theme="light"])) .accent { color: var(--v-accent); }
+/* The cinematic look's one warm accent: the ember dot of the Reticla reference. */
+:global([data-look="cinematic"]) .accent { color: var(--v-ember); }

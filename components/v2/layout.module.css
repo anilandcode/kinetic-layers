@@ -17,8 +17,8 @@
   left: 0.75rem;
   padding: 0.75rem 1rem;
   border-radius: var(--v-r-control);
-  background: var(--v-accent);
-  color: var(--v-on-accent) !important;
+  background: var(--v-primary);
+  color: var(--v-on-primary) !important;
   font-weight: 600;
   transform: translateY(calc(-100% - 1.5rem));
   transition: transform var(--v-fast) var(--v-ease);

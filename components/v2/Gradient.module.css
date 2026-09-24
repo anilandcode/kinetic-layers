@@ -1,0 +1,97 @@
+.gradient {
+  --g1: var(--v-silver-1);
+  --g2: var(--v-silver-2);
+  --g3: var(--v-silver-3);
+  --gd1: var(--v-silver-1);
+  --gd2: var(--v-silver-2);
+  --gd3: var(--v-silver-3);
+  --mx: 72;
+  --my: 18;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--v-surface-2);
+}
+
+.mesh,
+.smoke,
+.glow,
+.grain {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ---------- Light: pastel mesh ---------- */
+
+.mesh {
+  inset: -30%;
+  z-index: -4;
+  background:
+    radial-gradient(38% 46% at 24% 30%, var(--g1) 0%, transparent 72%),
+    radial-gradient(44% 52% at 78% 24%, var(--g2) 0%, transparent 74%),
+    radial-gradient(52% 56% at 60% 86%, var(--g3) 0%, transparent 76%),
+    linear-gradient(160deg, var(--g2), var(--g3));
+  filter: blur(34px) saturate(1.05);
+}
+
+.smoke { display: none; }
+
+.glow {
+  inset: 0;
+  z-index: -2;
+  background: radial-gradient(34% 44% at calc(var(--mx) * 1%) calc(var(--my) * 1%), rgba(255, 255, 255, 0.55), transparent 70%);
+  mix-blend-mode: soft-light;
+  opacity: 0.9;
+}
+
+.grain {
+  inset: 0;
+  z-index: -1;
+  opacity: var(--v-grain);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+
+/* ---------- Dark: smoke over a luminous mesh ---------- */
+
+:global([data-look="cinematic"]) .gradient { background: #0d0d0f; }
+
+:global([data-look="cinematic"]) .mesh {
+  background:
+    radial-gradient(40% 48% at 22% 26%, var(--gd1) 0%, transparent 72%),
+    radial-gradient(46% 52% at 80% 22%, var(--gd2) 0%, transparent 74%),
+    radial-gradient(56% 60% at 58% 92%, var(--gd3) 0%, transparent 78%);
+  opacity: 0.62;
+  filter: blur(40px) saturate(1.15);
+}
+
+:global([data-look="cinematic"]) .smoke {
+  display: block;
+  inset: -12%;
+  z-index: -3;
+  width: 124%;
+  height: 124%;
+  max-width: none;
+  object-fit: cover;
+  filter: blur(34px) saturate(1.25) brightness(0.62);
+  opacity: 0.9;
+  transform: scale(1.06);
+}
+
+:global([data-look="cinematic"]) .glow {
+  background: radial-gradient(36% 46% at calc(var(--mx) * 1%) calc(var(--my) * 1%), rgba(255, 255, 255, 0.16), transparent 72%);
+  mix-blend-mode: screen;
+}
+
+:global([data-look="cinematic"]) .gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(5, 5, 6, 0.55) 100%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .smoke { display: none !important; }
+}

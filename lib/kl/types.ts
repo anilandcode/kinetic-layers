@@ -89,6 +89,8 @@ export type Asset = {
 };
 
 export type Palette = {
+  /** Hues measured by hand for preview samples; Sanity never supplies this. */
+  hues?: string[];
   dominant?: string;
   vibrant?: string;
   muted?: string;

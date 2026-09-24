@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import type { Asset, Viewer } from "@/lib/kl/types";
 import { clip as clipUrl, ITEM_W } from "@/lib/kl/media";
 import { kitGraph, stillFor, tierLabel, typeLabel } from "@/lib/v2/kit";
-import Aura from "./Aura";
+import Gradient from "./Gradient";
 import Media from "./Media";
 import { Signal, Tag } from "./Button";
 import Icon from "./Icon";
@@ -23,11 +23,11 @@ export default function KitQuickView({ kit, viewer }: { kit: Asset; viewer: View
 
   return (
     <div className={s.layout}>
-      <Aura palette={kit.palette} className={s.stage}>
+      <Gradient palette={kit.palette} image={still} className={s.stage}>
         <div className={s.frame} style={{ "--ratio": String(aspect) } as CSSProperties}>
           <Media still={still} clip={clip} alt={`${kit.name} — the finished design`} play="auto" priority />
         </div>
-      </Aura>
+      </Gradient>
 
       <div className={s.details}>
         <div className={s.words}>

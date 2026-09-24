@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
+import { preload } from "react-dom";
 import Analytics from "@/components/legacy/Analytics";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kl/site";
 import "./globals.css";
@@ -73,6 +74,12 @@ export const viewport: Viewport = {
   ],
 };
 
+/* General Sans is declared with plain @font-face (styles/kl-foundations.css)
+   rather than next/font/local, whose subsetting its licence forbids — so it
+   does not get next/font's automatic preload. These two weights carry almost
+   every line of v2 text. */
+const GENERAL_SANS_PRELOAD = ["Regular", "Medium"].map((w) => `/fonts/general-sans/GeneralSans-${w}.woff2`);
+
 export default function RootLayout({
   children,
   modal,
@@ -81,6 +88,7 @@ export default function RootLayout({
   /** The @modal parallel route — filled only when an interception matched. */
   modal: React.ReactNode;
 }) {
+  for (const href of GENERAL_SANS_PRELOAD) preload(href, { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   return (
     <html
       lang="en"

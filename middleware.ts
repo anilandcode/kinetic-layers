@@ -36,6 +36,14 @@ export async function middleware(request: NextRequest) {
       headers: { "Cache-Control": "no-store", "Content-Type": "text/plain; charset=utf-8" },
     });
   }
+  // The two v2 design directions are compared on previews only; production
+  // never serves them.
+  if (pathname.startsWith("/direction/") && process.env.VERCEL_ENV === "production") {
+    return new NextResponse("Not Found", {
+      status: 404,
+      headers: { "Cache-Control": "no-store", "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
   // Collections remain available locally while their public release is paused.
   if ((pathname === "/collections" || pathname.startsWith("/collections/")) && process.env.NODE_ENV !== "development") {
     return new NextResponse("Not Found", {

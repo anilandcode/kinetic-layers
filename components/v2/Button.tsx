@@ -4,25 +4,22 @@ import Icon, { type IconName } from "./Icon";
 import s from "./Controls.module.css";
 
 type Variant = "primary" | "secondary" | "quiet";
-type Size = "md" | "sm" | "lg";
+type Size = "sm" | "md" | "lg";
 
-function classes(variant: Variant, size: Size, className?: string) {
-  return `${s.button} ${s[variant]} ${s[size]} ${className ?? ""}`;
-}
+const classes = (variant: Variant, size: Size, className?: string) =>
+  `${s.pill} ${s[variant]} ${s[size]} ${className ?? ""}`;
 
 /**
- * The one button, as a link or a button.
- *
- * Primary is the chartreuse fill — the page's single most important action,
- * and there is at most one per view. Secondary is a lined control; quiet is
- * text with a hover ground.
+ * Pills, as in every reference: black on the soft studio, white on the
+ * cinematic dark. Secondary is a glass pill; quiet is text with a hover
+ * ground. An icon sits in its own round well at the end, like the
+ * references' ↗ buttons.
  */
 export function ButtonLink({
   href,
   variant = "primary",
   size = "md",
   icon,
-  external = false,
   className,
   children,
   ...rest
@@ -31,25 +28,28 @@ export function ButtonLink({
   variant?: Variant;
   size?: Size;
   icon?: IconName;
-  external?: boolean;
   className?: string;
   children: ReactNode;
 } & Record<string, unknown>) {
   const inner = (
     <>
       <span>{children}</span>
-      {icon ? <Icon name={icon} size={size === "sm" ? 15 : 17} /> : null}
+      {icon ? (
+        <span className={s.pillIcon}>
+          <Icon name={icon} size={size === "sm" ? 14 : 16} />
+        </span>
+      ) : null}
     </>
   );
-  if (external || href.startsWith("http") || href.startsWith("mailto:")) {
+  if (/^(https?:|mailto:)/.test(href)) {
     return (
-      <a href={href} className={classes(variant, size, className)} {...rest}>
+      <a href={href} className={classes(variant, size, className)} data-icon={icon ? "" : undefined} {...rest}>
         {inner}
       </a>
     );
   }
   return (
-    <Link href={href} className={classes(variant, size, className)} {...rest}>
+    <Link href={href} className={classes(variant, size, className)} data-icon={icon ? "" : undefined} {...rest}>
       {inner}
     </Link>
   );
@@ -71,22 +71,48 @@ export function Button({
   children: ReactNode;
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button type={type} className={classes(variant, size, className)} {...rest}>
+    <button type={type} className={classes(variant, size, className)} data-icon={icon ? "" : undefined} {...rest}>
       <span>{children}</span>
-      {icon ? <Icon name={icon} size={size === "sm" ? 15 : 17} /> : null}
+      {icon ? (
+        <span className={s.pillIcon}>
+          <Icon name={icon} size={size === "sm" ? 14 : 16} />
+        </span>
+      ) : null}
     </button>
   );
 }
 
-/** A small label for a state: Free, Premium, Sample, Not yet verified. */
+/** A round icon control — search, theme, menu, close. */
+export function RoundButton({
+  label,
+  icon,
+  className,
+  ...rest
+}: { label: string; icon: IconName; className?: string } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button type="button" className={`${s.round} ${className ?? ""}`} aria-label={label} title={label} {...rest}>
+      <Icon name={icon} size={18} />
+    </button>
+  );
+}
+
+/** The references' round ↗: decorative inside a card that is itself the link. */
+export function Arrow({ className }: { className?: string }) {
+  return (
+    <span className={`${s.arrow} ${className ?? ""}`} aria-hidden="true">
+      <Icon name="arrowUpRight" size={16} />
+    </span>
+  );
+}
+
+/** A small label: Free, Premium, Sample, Not yet verified, counts. */
 export function Tag({
   tone = "neutral",
   signal = false,
   className,
   children,
 }: {
-  tone?: "neutral" | "accent" | "warn" | "sample";
-  /** Prefix the chartreuse dot: something real and current. */
+  tone?: "neutral" | "solid" | "glass" | "sample";
   signal?: boolean;
   className?: string;
   children: ReactNode;
@@ -99,7 +125,7 @@ export function Tag({
   );
 }
 
-/** The chartreuse dot on its own. */
+/** The signal dot on its own: something real and current (a passed test, a live kit). */
 export function Signal({ className }: { className?: string }) {
   return <span className={`${s.signal} ${className ?? ""}`} aria-hidden="true" />;
 }

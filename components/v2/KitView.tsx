@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import type { Asset, Viewer } from "@/lib/kl/types";
 import { clip as clipUrl, ITEM_W } from "@/lib/kl/media";
 import { kitGraph, stillFor, tierLabel, typeLabel } from "@/lib/v2/kit";
-import Aura from "./Aura";
+import Gradient from "./Gradient";
 import Media from "./Media";
 import NodeGraph from "./NodeGraph";
 import KitCard from "./KitCard";
@@ -68,14 +68,14 @@ export default function KitView({
         </div>
 
         <div className={l.container}>
-          <Aura as="section" palette={kit.palette} className={s.stage} aria-label={`${kit.name}, preview`}>
+          <Gradient as="section" palette={kit.palette} image={still} className={s.stage} aria-label={`${kit.name}, preview`}>
             <div
               className={s.stageFrame}
               style={{ "--ratio": String(aspect) } as CSSProperties}
             >
               <Media still={still} clip={clip} alt={`${kit.name} — the finished design`} play="auto" priority fit="cover" />
             </div>
-          </Aura>
+          </Gradient>
         </div>
 
         <section className={`${l.container} ${s.anatomy}`} aria-labelledby="anatomy-title">
