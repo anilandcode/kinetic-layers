@@ -8,9 +8,9 @@
   animation: breathe 1.4s var(--v-ease) infinite alternate;
 }
 
-.stage { height: clamp(16rem, 48vw, 34rem); margin-top: 1rem; border-radius: var(--v-r-stage); }
+.stage { height: clamp(16rem, 42vw, 34rem); margin-top: 1rem; border-radius: 30px; }
 
-.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem); gap: 2rem; margin-top: 2rem; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem); gap: 1.25rem; margin-top: 1rem; }
 
 .grid {
   display: grid;
@@ -23,5 +23,5 @@
 
 @keyframes breathe { from { opacity: 0.5; } to { opacity: 1; } }
 
-@media (max-width: 960px) { .split { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 1024px) { .split { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .block { animation: none; } }

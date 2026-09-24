@@ -9,7 +9,7 @@ import Icon from "./Icon";
 import { EASE, Flip, gsap, MOTION_OK, ScrollTrigger, useGSAP } from "./motion";
 import s from "./Library.module.css";
 
-export type LibraryInitial = { type?: string; price?: "free" | "premium"; sort?: string; q?: string };
+export type LibraryInitial = { type?: string; price?: "free" | "premium"; sort?: string; q?: string; saved?: boolean };
 
 /**
  * The library: type pills, price, sort and search over the kit grid.
@@ -29,6 +29,7 @@ export default function Library({
   syncUrl = false,
   headingId,
   limit,
+  saved: savedList,
 }: {
   kits: Asset[];
   initial?: LibraryInitial;
@@ -36,8 +37,15 @@ export default function Library({
   headingId?: string;
   /** Home shows this many first, so the sections after the grid stay close. */
   limit?: number;
+  /** The viewer's saved kits, by slug. Given only when someone is signed in. */
+  saved?: string[];
 }) {
-  const [filters, setFilters] = useState<Filters>({ type: initial.type, price: initial.price });
+  const saved = useMemo<ReadonlySet<string>>(() => new Set(savedList ?? []), [savedList]);
+  const [filters, setFilters] = useState<Filters>({
+    type: initial.type,
+    price: initial.price,
+    saved: (initial.saved && saved.size > 0) || undefined,
+  });
   const [sort, setSort] = useState<Sort>(asSort(initial.sort));
   const [q, setQ] = useState(initial.q ?? "");
   const [expanded, setExpanded] = useState(!limit);
@@ -45,13 +53,13 @@ export default function Library({
   const flipState = useRef<Flip.FlipState | null>(null);
 
   const real = useMemo(() => kits.filter((k) => !k.sample), [kits]);
-  const facets = useMemo(() => countFacets(real, filters), [real, filters]);
-  const typeCounts = useMemo(() => countFacets(kits, filters).type, [kits, filters]);
+  const facets = useMemo(() => countFacets(real, filters, saved), [real, filters, saved]);
+  const typeCounts = useMemo(() => countFacets(kits, filters, saved).type, [kits, filters, saved]);
   const types = useMemo(() => Object.keys(typeCounts).sort(), [typeCounts]);
 
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    const matched = applyFilters(kits, filters).filter(
+    const matched = applyFilters(kits, filters, saved).filter(
       (k) =>
         !needle ||
         k.name.toLowerCase().includes(needle) ||
@@ -60,7 +68,7 @@ export default function Library({
     );
     /* Samples always sort after real kits, whatever the order. */
     return [...sortAssets(matched.filter((k) => !k.sample), sort), ...matched.filter((k) => k.sample)];
-  }, [kits, filters, sort, q]);
+  }, [kits, filters, saved, sort, q]);
 
   const visible = expanded || !limit ? shown : shown.slice(0, limit);
 
@@ -91,6 +99,7 @@ export default function Library({
     const params = new URLSearchParams();
     if (filters.type) params.set("type", filters.type);
     if (filters.price) params.set("price", filters.price);
+    if (filters.saved) params.set("saved", "1");
     if (sort !== "featured") params.set("sort", sort);
     if (q.trim()) params.set("q", q.trim());
     const next = `${window.location.pathname}${params.size ? `?${params}` : ""}`;
@@ -119,6 +128,7 @@ export default function Library({
 
   const setType = (type?: string) => change(() => setFilters((f) => ({ ...f, type })));
   const setPrice = (price?: "free" | "premium") => change(() => setFilters((f) => ({ ...f, price })));
+  const toggleSaved = () => change(() => setFilters((f) => ({ ...f, saved: f.saved ? undefined : true })));
 
   return (
     <div className={s.library}>
@@ -140,6 +150,12 @@ export default function Library({
               <span className={s.count}>{typeCounts[type]}</span>
             </button>
           ))}
+          {saved.size ? (
+            <button type="button" aria-pressed={Boolean(filters.saved)} onClick={toggleSaved} className={s.type}>
+              Saved
+              <span className={s.count}>{saved.size}</span>
+            </button>
+          ) : null}
         </div>
 
         <div className={s.controls}>

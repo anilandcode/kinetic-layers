@@ -1,7 +1,9 @@
 import "server-only";
 import { getAsset, getAssets, getRelated } from "@/lib/sanity/queries";
 import { hasRealPreview } from "@/lib/kl/preview-ready";
-import type { Asset } from "@/lib/kl/types";
+import { getPopularity } from "@/lib/kl/popularity";
+import { createClient } from "@/lib/supabase/server";
+import type { Asset, Viewer } from "@/lib/kl/types";
 import { getSample, getSamples } from "./samples";
 
 /**
@@ -20,6 +22,26 @@ export async function getKits(): Promise<Asset[]> {
 export async function getKitsForDisplay(): Promise<{ real: Asset[]; shown: Asset[] }> {
   const real = await getKits();
   return { real, shown: [...real, ...getSamples()] };
+}
+
+/**
+ * The library page's reads: the display list with popularity folded in (so
+ * the "Popular" sort ranks by real downloads and saves), and the viewer's
+ * saved slugs. Saved rows are the viewer's own, so they are read through the
+ * RLS-scoped client; signed out, there is no query.
+ */
+export async function getLibrary(viewer: Viewer | null): Promise<{ real: Asset[]; shown: Asset[]; saved: string[] }> {
+  const [{ real, shown }, popularity] = await Promise.all([getKitsForDisplay(), getPopularity()]);
+  const rank = (list: Asset[]) =>
+    popularity.size ? list.map((a) => (a.sample ? a : { ...a, popularity: popularity.get(a.slug) ?? 0 })) : list;
+
+  let saved: string[] = [];
+  if (viewer) {
+    const supabase = await createClient();
+    const { data } = (await supabase?.from("saved_assets").select("asset_slug")) ?? { data: null };
+    saved = (data ?? []).map((r: { asset_slug: string }) => r.asset_slug);
+  }
+  return { real: rank(real), shown: rank(shown), saved };
 }
 
 export async function getKit(slug: string): Promise<Asset | null> {

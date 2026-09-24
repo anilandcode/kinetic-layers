@@ -657,3 +657,54 @@
   .pulse { display: none; }
   .world { transition: none; }
 }
+
+/* ---------- Single kit (the kit page) ---------- */
+
+.bench[data-single] .body { grid-template-columns: 250px minmax(0, 1fr); }
+
+/* One kit needs no picker, so the canvas can be shorter than its width asks
+   and still fit: the scale is the smaller of width and height. */
+.bench[data-single] .stage { aspect-ratio: auto; height: clamp(440px, 52vw, 660px); }
+
+.parts { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+
+.parts li {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--v-text-3);
+  font-size: 12.5px;
+}
+
+.parts li[data-on] { color: var(--v-text); background: rgba(255, 255, 255, 0.05); }
+.parts small { display: block; color: var(--v-text-3); font-size: 10.5px; }
+.parts li[data-on] small { color: #f0b48c; }
+
+.partIcon {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+}
+
+.parts li[data-on] .partIcon { border: 0; background: rgba(255, 255, 255, 0.1); color: var(--v-text); }
+
+/* Narrower, the parts sit above the canvas as a grid; on a phone, where the
+   canvas is not drawn, they are the anatomy. */
+@media (max-width: 1180px) {
+  .bench[data-single] .body { grid-template-columns: minmax(0, 1fr); }
+  .bench[data-single] .panel { flex-direction: column; contain: none; overflow: visible; }
+  .bench[data-single] .parts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .bench[data-single] .stage { height: auto; }
+  .bench[data-single] .parts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -20,12 +20,12 @@ export default function Skeleton({ what, shape }: { what: string; shape: "page" 
               <div className={s.row}>
                 <span className={s.block} style={{ width: 180, height: 14 }} />
               </div>
+              <span className={s.block} style={{ width: 160, height: 12 }} />
               <span className={s.block} style={{ width: "min(34rem, 80%)", height: 56 }} />
               <span className={s.block} style={{ width: "min(26rem, 60%)", height: 18 }} />
-              <span className={`${s.block} ${s.stage}`} />
               <div className={s.split}>
-                <span className={s.block} style={{ height: 120 }} />
-                <span className={s.block} style={{ height: 260 }} />
+                <span className={`${s.block} ${s.stage}`} />
+                <span className={s.block} style={{ height: 320, marginTop: "1rem" }} />
               </div>
             </>
           ) : shape === "grid" ? (

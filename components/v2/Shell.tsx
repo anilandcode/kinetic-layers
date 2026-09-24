@@ -3,6 +3,7 @@ import { getViewer } from "@/lib/kl/viewer";
 import type { Viewer } from "@/lib/kl/types";
 import Header from "./Header";
 import Footer from "./Footer";
+import Spotlight from "./fx/Spotlight";
 import s from "./layout.module.css";
 
 /**
@@ -38,6 +39,8 @@ export function ShellFrame({
       <a href="#main" className={s.skip}>
         Skip to content
       </a>
+      {/* The dotted canvas under every screen, brightening round the pointer. */}
+      {look === "cinematic" ? <Spotlight /> : null}
       <Header viewer={viewer} pending={pending} look={look} />
       <div id="main" className={s.main} tabIndex={-1}>
         {children}

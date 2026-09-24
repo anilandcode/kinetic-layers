@@ -63,11 +63,34 @@ const WIRES: Array<{ id: string; d: string; need: NodeId[] }> = [
 
 const place = (b: Box) => ({ left: b.x, top: b.y, width: b.w, height: b.h }) as CSSProperties;
 
+/* The six parts of a finished kit, for the single-kit panel. */
+const PARTS: Array<{ id: NodeId; title: string; icon: IconName }> = [
+  { id: "reference", title: "Reference", icon: "image" },
+  { id: "spec", title: "Design spec", icon: "spec" },
+  { id: "reconstruction", title: "Reconstruction prompt", icon: "prompt" },
+  { id: "output", title: "Tested rebuild", icon: "output" },
+  { id: "adaptation", title: "Adaptation prompt", icon: "branch" },
+  { id: "brand", title: "Your brand", icon: "brand" },
+];
+
 function Ghost({ what }: { what: string }) {
   return <span className={s.ghostNote}>{what} is not published for this kit yet.</span>;
 }
 
-export default function Workbench({ kits, initial }: { kits: Asset[]; initial?: string }) {
+/**
+ * `single` is the kit page's bench: one kit, so the kit picker becomes the
+ * list of its six parts, the preview column goes (the page's stage already
+ * plays the kit) and the canvas fits its height as well as its width.
+ */
+export default function Workbench({
+  kits,
+  initial,
+  single = false,
+}: {
+  kits: Asset[];
+  initial?: string;
+  single?: boolean;
+}) {
   const [slug, setSlug] = useState(initial ?? kits[0]?.slug);
   const [q, setQ] = useState("");
   const [zoom, setZoom] = useState(1);
@@ -93,7 +116,8 @@ export default function Workbench({ kits, initial }: { kits: Asset[]; initial?: 
   useLayoutEffect(() => {
     const el = stage.current;
     if (!el) return;
-    const fit = () => setScale(el.clientWidth / W);
+    /* The smaller of the two, so a canvas given a fixed height still fits. */
+    const fit = () => setScale(Math.min(el.clientWidth / W, el.clientHeight / H) || el.clientWidth / W);
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
@@ -163,7 +187,7 @@ export default function Workbench({ kits, initial }: { kits: Asset[]; initial?: 
   ];
 
   return (
-    <div className={s.bench}>
+    <div className={s.bench} data-single={single ? "" : undefined}>
       {/* ---------- Top bar ---------- */}
       <div className={s.top}>
         <span className={s.brand}>
@@ -174,90 +198,142 @@ export default function Workbench({ kits, initial }: { kits: Asset[]; initial?: 
           <span className={s.crumbDim}>Kit anatomy</span>
         </span>
         <span className={s.tabs}>
-          <button type="button" className={s.square} onClick={() => step(-1)} aria-label="Previous kit">
-            <Icon name="arrow" size={14} className={s.flip} />
-          </button>
+          {single ? null : (
+            <button type="button" className={s.square} onClick={() => step(-1)} aria-label="Previous kit">
+              <Icon name="arrow" size={14} className={s.flip} />
+            </button>
+          )}
           <span className={s.tab}>
             {kit.name}
             <span className={s.tabType}>{typeLabel(kit.type)}</span>
           </span>
-          <button type="button" className={s.square} onClick={() => step(1)} aria-label="Next kit">
-            <Icon name="arrow" size={14} />
-          </button>
+          {single ? null : (
+            <button type="button" className={s.square} onClick={() => step(1)} aria-label="Next kit">
+              <Icon name="arrow" size={14} />
+            </button>
+          )}
         </span>
-        <span className={s.actions}>
-          <Link href={`/item/${kit.slug}`} className={s.white}>
-            <Icon name="arrowUpRight" size={14} /> Open kit
-          </Link>
-          <Link href="/join" className={s.dark}>
-            Join free
-          </Link>
-        </span>
+        {single ? (
+          <span className={s.actions}>
+            <button type="button" className={s.dark} onClick={copyLink}>
+              <Icon name={copied ? "check" : "file"} size={14} /> {copied ? "Link copied" : "Copy link"}
+            </button>
+            <Link href="/mcp" className={s.white}>
+              <Icon name="prompt" size={14} /> Use over MCP
+            </Link>
+          </span>
+        ) : (
+          <span className={s.actions}>
+            <Link href={`/item/${kit.slug}`} className={s.white}>
+              <Icon name="arrowUpRight" size={14} /> Open kit
+            </Link>
+            <Link href="/join" className={s.dark}>
+              Join free
+            </Link>
+          </span>
+        )}
       </div>
 
       <div className={s.body}>
-        {/* ---------- Left: the kits ---------- */}
-        <aside className={s.panel} aria-label="Choose a kit">
-          <label className={s.search}>
-            <Icon name="search" size={14} />
-            <span className="v-sr">Filter kits</span>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter kits" autoComplete="off" />
-          </label>
+        {/* ---------- Left: the kit's parts, or the kits to choose from ---------- */}
+        {single ? (
+          <aside className={s.panel} aria-label={`What ${kit.name} is made of`}>
+            <p className={s.groupHead}>
+              <Icon name="spec" size={13} />
+              Parts
+              <span className={s.count}>{parts}/6</span>
+            </p>
+            <ul className={s.parts}>
+              {PARTS.map((p) => (
+                <li key={p.id} data-on={has.has(p.id) ? "" : undefined}>
+                  <span className={s.partIcon}>
+                    <Icon name={p.icon} size={14} />
+                  </span>
+                  <span>
+                    {p.title}
+                    <small>{has.has(p.id) ? "Published" : "Not yet"}</small>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className={s.connect}>
+              {["Claude Code", "Cursor"].map((tool) => (
+                <Link key={tool} href="/mcp" className={s.connectRow}>
+                  <span className={s.connectIcon} aria-hidden="true">
+                    <Icon name="prompt" size={14} />
+                  </span>
+                  <span>
+                    {tool}
+                    <small>over MCP</small>
+                  </span>
+                  <span className={s.connectBtn}>Connect</span>
+                </Link>
+              ))}
+            </div>
+          </aside>
+        ) : (
+          <aside className={s.panel} aria-label="Choose a kit">
+            <label className={s.search}>
+              <Icon name="search" size={14} />
+              <span className="v-sr">Filter kits</span>
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter kits" autoComplete="off" />
+            </label>
 
-          {[
-            { title: "Published kits", list: real.filter(match) },
-            { title: "Samples · previews only", list: samples.filter(match) },
-          ]
-            .filter((g) => g.list.length)
-            .map((group) => (
-              <div key={group.title} className={s.group}>
-                <p className={s.groupHead}>
-                  <Icon name="spec" size={13} />
-                  {group.title}
-                  <span className={s.count}>{group.list.length}</span>
-                </p>
-                <div className={s.tiles} role="listbox" aria-label={group.title}>
-                  {group.list.map((k) => (
-                    <button
-                      key={k.slug}
-                      type="button"
-                      role="option"
-                      aria-selected={k.slug === kit.slug}
-                      className={s.tile}
-                      onClick={() => setSlug(k.slug)}
-                    >
-                      <span className={s.tileName}>{k.name}</span>
-                      <span className={s.tileMeta}>{typeLabel(k.type)}</span>
-                      <span className={s.tileThumb}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        {stillFor(k, 300) ? <img src={stillFor(k, 300)} alt="" loading="lazy" decoding="async" /> : null}
-                      </span>
-                      {k.slug === kit.slug ? (
-                        <span className={s.tick} aria-hidden="true">
-                          <Icon name="check" size={11} />
+            {[
+              { title: "Published kits", list: real.filter(match) },
+              { title: "Samples · previews only", list: samples.filter(match) },
+            ]
+              .filter((g) => g.list.length)
+              .map((group) => (
+                <div key={group.title} className={s.group}>
+                  <p className={s.groupHead}>
+                    <Icon name="spec" size={13} />
+                    {group.title}
+                    <span className={s.count}>{group.list.length}</span>
+                  </p>
+                  <div className={s.tiles} role="listbox" aria-label={group.title}>
+                    {group.list.map((k) => (
+                      <button
+                        key={k.slug}
+                        type="button"
+                        role="option"
+                        aria-selected={k.slug === kit.slug}
+                        className={s.tile}
+                        onClick={() => setSlug(k.slug)}
+                      >
+                        <span className={s.tileName}>{k.name}</span>
+                        <span className={s.tileMeta}>{typeLabel(k.type)}</span>
+                        <span className={s.tileThumb}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          {stillFor(k, 300) ? <img src={stillFor(k, 300)} alt="" loading="lazy" decoding="async" /> : null}
                         </span>
-                      ) : null}
-                    </button>
-                  ))}
+                        {k.slug === kit.slug ? (
+                          <span className={s.tick} aria-hidden="true">
+                            <Icon name="check" size={11} />
+                          </span>
+                        ) : null}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-          <div className={s.connect}>
-            {["Claude Code", "Cursor"].map((tool) => (
-              <Link key={tool} href="/mcp" className={s.connectRow}>
-                <span className={s.connectIcon} aria-hidden="true">
-                  <Icon name="prompt" size={14} />
-                </span>
-                <span>
-                  {tool}
-                  <small>over MCP</small>
-                </span>
-                <span className={s.connectBtn}>Connect</span>
-              </Link>
-            ))}
-          </div>
-        </aside>
+            <div className={s.connect}>
+              {["Claude Code", "Cursor"].map((tool) => (
+                <Link key={tool} href="/mcp" className={s.connectRow}>
+                  <span className={s.connectIcon} aria-hidden="true">
+                    <Icon name="prompt" size={14} />
+                  </span>
+                  <span>
+                    {tool}
+                    <small>over MCP</small>
+                  </span>
+                  <span className={s.connectBtn}>Connect</span>
+                </Link>
+              ))}
+            </div>
+          </aside>
+        )}
 
         {/* ---------- Centre: the canvas ---------- */}
         <div ref={stage} className={s.stage} style={{ "--scale": scale * zoom } as CSSProperties}>
@@ -438,33 +514,35 @@ export default function Workbench({ kits, initial }: { kits: Asset[]; initial?: 
         </div>
 
         {/* ---------- Right: the preview ---------- */}
-        <aside className={s.previewCol} aria-label={`${kit.name} preview`}>
-          <span className={s.label}>
-            <i /> Preview
-          </span>
-          <div className={s.preview}>
-            <span className={s.previewHead}>
-              <i data-c="blue" /> {kit.clip ? "video" : "image"}
+        {single ? null : (
+          <aside className={s.previewCol} aria-label={`${kit.name} preview`}>
+            <span className={s.label}>
+              <i /> Preview
             </span>
-            <div className={s.previewMedia}>
-              <Media key={kit.slug} still={still} clip={clip} alt={`${kit.name}, the finished design`} play="auto" />
-              <span className={s.final}>
-                <strong>{kit.name}</strong>
-                <span>{kit.tagline ?? `${typeLabel(kit.type)} · ${tierLabel(kit)}${kit.sample ? " · sample" : ""}`}</span>
+            <div className={s.preview}>
+              <span className={s.previewHead}>
+                <i data-c="blue" /> {kit.clip ? "video" : "image"}
               </span>
+              <div className={s.previewMedia}>
+                <Media key={kit.slug} still={still} clip={clip} alt={`${kit.name}, the finished design`} play="auto" />
+                <span className={s.final}>
+                  <strong>{kit.name}</strong>
+                  <span>{kit.tagline ?? `${typeLabel(kit.type)} · ${tierLabel(kit)}${kit.sample ? " · sample" : ""}`}</span>
+                </span>
+              </div>
             </div>
-          </div>
-          <div className={s.previewTools}>
-            <Link href={`/item/${kit.slug}`} className={s.square} aria-label="Open the kit">
-              <Icon name="arrowUpRight" size={14} />
-            </Link>
-            <button type="button" className={s.square} onClick={copyLink} aria-label="Copy the kit's link">
-              <Icon name={copied ? "check" : "file"} size={14} />
-            </button>
-            <span className={s.chip}>{typeLabel(kit.type)}</span>
-            <span className={s.chip}>{tierLabel(kit)}</span>
-          </div>
-        </aside>
+            <div className={s.previewTools}>
+              <Link href={`/item/${kit.slug}`} className={s.square} aria-label="Open the kit">
+                <Icon name="arrowUpRight" size={14} />
+              </Link>
+              <button type="button" className={s.square} onClick={copyLink} aria-label="Copy the kit's link">
+                <Icon name={copied ? "check" : "file"} size={14} />
+              </button>
+              <span className={s.chip}>{typeLabel(kit.type)}</span>
+              <span className={s.chip}>{tierLabel(kit)}</span>
+            </div>
+          </aside>
+        )}
       </div>
     </div>
   );

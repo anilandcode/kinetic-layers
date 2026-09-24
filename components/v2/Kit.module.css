@@ -1,47 +1,21 @@
-/* ---------- Page ---------- */
-
-.page { padding-top: clamp(1.25rem, 3vw, 2rem); }
-
-.crumbs {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: clamp(1.5rem, 4vw, 2.75rem);
-  color: var(--v-text-3);
-  font-size: var(--v-label);
-}
-
-.crumbs a { color: var(--v-text-2); }
-.crumbs a:hover { color: var(--v-text); }
-.crumbs [aria-current] { color: var(--v-text); }
+/* ---------- Sample notice ---------- */
 
 .notice {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.625rem 0.875rem;
-  margin: 0 0 1.75rem;
+  margin: 0 0 1.25rem;
   padding: 0.875rem 1rem;
   border: 1px dashed var(--v-line-strong);
   border-radius: var(--v-r-panel);
+  background: rgba(10, 10, 11, 0.5);
   color: var(--v-text-2);
   font-size: var(--v-small);
   line-height: 1.5;
 }
 
 .notice span:last-child { flex: 1 1 18rem; }
-
-.head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem 3rem;
-  margin-bottom: clamp(1.75rem, 4vw, 3rem);
-}
-
-.headWords { display: grid; gap: 1rem; max-width: 46rem; }
 
 /* ---------- Figures (dot matrix) ---------- */
 
@@ -50,48 +24,96 @@
   flex-wrap: wrap;
   gap: 1.25rem 2.5rem;
   margin: 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--v-glass-edge);
+  border-radius: 20px;
+  background: rgba(14, 14, 16, 0.45);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
 }
 
 .figure { display: grid; gap: 0.625rem; }
-.figure dt { color: var(--v-text-3); font-size: var(--v-label); }
+.figure dt { color: var(--v-text-2); font-size: var(--v-label); }
 .figure dd { margin: 0; }
 
-/* ---------- The stage ---------- */
+/* ---------- The stage: the kit in a glass window over its well ---------- */
+
+.stageRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  align-items: start;
+  gap: clamp(0.75rem, 1.4vw, 1.25rem);
+}
 
 .stage {
   display: grid;
   place-items: center;
-  padding: clamp(1rem, 5vw, 4.5rem);
-  border-radius: var(--v-r-stage);
-}
-
-.stageFrame {
-  position: relative;
-  width: min(100%, calc(min(72vh, 52rem) * var(--ratio)));
-  aspect-ratio: var(--ratio);
-  overflow: hidden;
-  border-radius: calc(var(--v-r-stage) - 14px);
-  background: var(--v-surface-2);
+  min-height: 100%;
+  padding: clamp(1rem, 4vw, 3.5rem);
+  border-radius: 30px;
   box-shadow:
-    0 0 0 1px var(--v-line),
-    0 50px 100px -40px rgba(0, 0, 0, 0.6);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 40px 90px -30px rgba(0, 0, 0, 0.9);
 }
 
-/* ---------- Body: anatomy + access ---------- */
+.window {
+  position: relative;
+  display: grid;
+  width: min(100%, calc(min(66vh, 46rem) * var(--ratio)));
+  overflow: hidden;
+  border-radius: 18px;
+  background: rgba(12, 12, 14, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 50px 100px -30px rgba(0, 0, 0, 0.85);
+}
 
-.anatomy { display: grid; gap: 1.75rem; min-width: 0; padding-top: clamp(3rem, 6vw, 5rem); }
-.anatomyHead { display: grid; gap: 0.625rem; max-width: 36rem; }
+.windowBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(30, 30, 34, 0.72);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.windowBar i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); }
+
+.windowTitle {
+  flex: 1;
+  margin-right: 33px;
+  overflow: hidden;
+  color: var(--v-text-3);
+  font: 400 var(--v-meta)/1 var(--v-mono);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.windowMedia { position: relative; display: block; aspect-ratio: var(--ratio); background: var(--v-surface-2); }
+
+.side { position: sticky; top: 96px; }
+
+.proofRow { margin-top: 1rem; padding: 0 0.25rem; }
+
+/* ---------- Access ---------- */
 
 .access {
   display: grid;
   gap: 1rem;
-  padding: 1.5rem;
-  border: 1px solid var(--v-line);
+  padding: 1.375rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--v-r-card);
-  background: var(--v-glass);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
-  backdrop-filter: blur(24px) saturate(140%);
-  box-shadow: var(--v-shade);
+  background: linear-gradient(180deg, rgba(40, 40, 46, 0.55), rgba(18, 18, 21, 0.62));
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.07) inset,
+    0 40px 90px -40px rgba(0, 0, 0, 0.95);
 }
 
 .accessLabel {
@@ -275,7 +297,7 @@
 @media (max-width: 640px) {
   .panelSplit { grid-template-columns: minmax(0, 1fr); }
   .stage { padding: 0.75rem; border-radius: var(--v-r-card); }
-  .stageFrame { border-radius: calc(var(--v-r-card) - 8px); }
+  .window { border-radius: 14px; }
   .records thead { display: none; }
   .records tr {
     display: grid;
@@ -287,4 +309,9 @@
   .records td { padding: 0; border: 0; }
   .records td:nth-child(even) { text-align: right; }
   .records td:nth-child(3) { color: var(--v-text-2); }
+}
+
+@media (max-width: 1024px) {
+  .stageRow { grid-template-columns: minmax(0, 1fr); }
+  .side { position: static; }
 }

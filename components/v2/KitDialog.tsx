@@ -105,7 +105,7 @@ export default function KitDialog({ name, children }: { name: string; children: 
   }, [close]);
 
   return (
-    <div data-v2 className={s.layer}>
+    <div data-v2 data-look="cinematic" className={s.layer}>
       <motion.div
         className={s.veil}
         initial={{ opacity: 0 }}

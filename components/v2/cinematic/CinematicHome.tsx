@@ -4,11 +4,10 @@ import { getKitsForDisplay, getWorkbenchKits } from "@/lib/v2/data";
 import { ditherColors, HUES, kitHue } from "@/lib/v2/gradient";
 import Library from "../Library";
 import Shell from "../Shell";
-import { DotNumber } from "../DotMatrix";
+import AccessBand from "../AccessBand";
 import { ButtonLink } from "../Button";
 import DitherField from "../fx/DitherField";
 import Magnetic from "../fx/Magnetic";
-import Spotlight from "../fx/Spotlight";
 import HeroDeck from "./HeroDeck";
 import Workbench from "../workbench/Workbench";
 import l from "../layout.module.css";
@@ -36,7 +35,6 @@ export default async function CinematicHome() {
 
   return (
     <Shell look="cinematic">
-      <Spotlight />
       <main className={s.home}>
         {/* ---------- Hero ---------- */}
         <section className={s.hero} aria-labelledby="home-title">
@@ -107,44 +105,7 @@ export default async function CinematicHome() {
 
         {/* ---------- Early access ---------- */}
         <section className={`${l.container} ${s.section}`} aria-labelledby="access-title">
-          <div className={s.cta}>
-            <div className={s.ctaField} aria-hidden="true">
-              <DitherField colors={ditherColors(HUES.ember, HUES.rose)} cell={6} gain={1.1} />
-            </div>
-            <div className={s.ctaWords}>
-              <h2 id="access-title" className={s.ctaTitle}>
-                {EARLY_ACCESS ? "Free while the library is young." : "Start with a free kit."}
-              </h2>
-              <p>
-                An account unlocks free kits and their prompts. Premium is a plan we are shaping with early members — it
-                is not on sale.
-              </p>
-              <div className={s.ctaActions}>
-                <Magnetic>
-                  <ButtonLink href={viewer ? "/account" : "/join"} size="lg" icon="arrowUpRight">
-                    {viewer ? "Your dashboard" : "Join free"}
-                  </ButtonLink>
-                </Magnetic>
-                <ButtonLink href="/pricing" size="lg" variant="secondary">
-                  See pricing
-                </ButtonLink>
-              </div>
-            </div>
-            <dl className={s.ctaFigures}>
-              <div>
-                <dt>Published kits</dt>
-                <dd>
-                  <DotNumber value={String(real.length).padStart(2, "0")} label={`${real.length} published kits`} dot={9} />
-                </dd>
-              </div>
-              <div>
-                <dt>Free today</dt>
-                <dd>
-                  <DotNumber value={String(free).padStart(2, "0")} label={`${free} free`} dot={9} />
-                </dd>
-              </div>
-            </dl>
-          </div>
+          <AccessBand viewer={viewer} published={real.length} free={free} />
         </section>
       </main>
     </Shell>

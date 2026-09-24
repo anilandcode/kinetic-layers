@@ -12,17 +12,20 @@
   backdrop-filter: blur(14px) saturate(120%);
 }
 
+/* The workbench's panel glass, a size up. */
 .panel {
   position: relative;
   width: min(100%, 72rem);
   max-height: calc(100dvh - 2 * clamp(0.75rem, 3vw, 2.5rem));
   overflow: auto;
-  border: 1px solid var(--v-line-strong);
-  border-radius: var(--v-r-stage);
-  background: var(--v-glass-strong);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(34, 34, 40, 0.82), rgba(14, 14, 17, 0.9));
   -webkit-backdrop-filter: blur(30px) saturate(150%);
   backdrop-filter: blur(30px) saturate(150%);
-  box-shadow: var(--v-shade-lift);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 60px 140px -40px rgba(0, 0, 0, 0.95);
   outline: none;
 }
 
@@ -55,19 +58,38 @@
 .stage {
   display: grid;
   place-items: center;
+  margin: 10px;
   padding: clamp(1rem, 3vw, 2.5rem);
-  border-radius: var(--v-r-stage) 0 0 var(--v-r-stage);
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
+/* The kit in a glass window, as on the kit page and the cards. */
 .frame {
   position: relative;
-  width: min(100%, calc(min(62dvh, 40rem) * var(--ratio)));
-  aspect-ratio: var(--ratio);
+  display: grid;
+  width: min(100%, calc(min(58dvh, 38rem) * var(--ratio)));
   overflow: hidden;
-  border-radius: 18px;
-  background: var(--v-surface-2);
-  box-shadow: 0 0 0 1px var(--v-line), 0 40px 80px -36px rgba(0, 0, 0, 0.6);
+  border-radius: 16px;
+  background: rgba(12, 12, 14, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 40px 80px -30px rgba(0, 0, 0, 0.85);
 }
+
+.frameBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(30, 30, 34, 0.72);
+}
+
+.frameBar i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); }
+.frameMedia { position: relative; display: block; aspect-ratio: var(--ratio); background: var(--v-surface-2); }
 
 .details {
   display: flex;
@@ -86,9 +108,11 @@
   gap: 0.5rem;
   margin: 0;
   color: var(--v-text-2);
-  font-size: var(--v-label);
-  font-weight: 500;
+  font: 500 var(--v-meta)/1.3 var(--v-mono);
+  letter-spacing: 0.02em;
 }
+
+.kickerDot { width: 6px; height: 6px; border-radius: 50%; background: var(--v-ember); box-shadow: 0 0 10px rgba(232, 131, 74, 0.9); }
 
 .name {
   margin: 0;
@@ -100,9 +124,36 @@
 
 .tagline { margin: 0; color: var(--v-text-2); line-height: 1.55; }
 
-.contains { display: grid; gap: 0.75rem; }
-.containsLabel { margin: 0; color: var(--v-text-3); font-size: var(--v-label); }
-.proof { margin: 0; color: var(--v-text-2); font-size: var(--v-small); }
+.contains {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.containsLabel { display: flex; justify-content: space-between; margin: 0; color: var(--v-text-2); font-size: var(--v-label); }
+.containsLabel span { color: var(--v-text-3); font-family: var(--v-mono); }
+
+.parts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+
+.parts li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 34px;
+  padding: 0 0.625rem;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: var(--v-text-3);
+  font-size: var(--v-meta);
+}
+
+.parts li[data-on] { border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.06); color: var(--v-text); }
+.parts li[data-on] svg { color: #f0b48c; }
+
+.proof { display: flex; align-items: center; gap: 0.5rem; margin: 0; color: var(--v-text-2); font-size: var(--v-small); }
 
 .actions { display: grid; gap: 0.875rem; margin-top: auto; }
 
@@ -132,7 +183,8 @@
 
 @media (max-width: 860px) {
   .layout { grid-template-columns: minmax(0, 1fr); min-height: 0; }
-  .stage { border-radius: var(--v-r-stage) var(--v-r-stage) 0 0; padding: 0.75rem; padding-top: 4rem; }
+  .stage { padding: 0.75rem; padding-top: 4rem; }
+  .parts { grid-template-columns: minmax(0, 1fr); }
   .details { padding-top: 1.5rem; }
 }
 
