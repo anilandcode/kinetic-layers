@@ -38,6 +38,7 @@ passed. The build still warns that `NEXT_PUBLIC_SITE_URL` falls back to
 
 - [Kinetic Layers master plan](docs/KINETIC-LAYERS-MASTER-PLAN.md): the proposed design-kit system, free-adoption strategy, catalogue roadmap, and later paid offers.
 - [Live UI review](docs/KINETIC-LAYERS-UI-REVIEW.md): visual findings from the homepage, library, and item experience, including reproduced mobile header overflow.
+- [Competitor brief](docs/COMPETITORS.md) (2026-09-24): GetLayers, MotionSites and six adjacent products, with prices read from their live sites. It supersedes the master plan's 09-10 landscape table. It also flags that the unreleased homepage wall hotlinks all 20 references from MotionSites' own servers.
 
 These are saved plans and review findings. The 2026-09-17 refinement above
 records the local implementation that supersedes them where they conflict.
