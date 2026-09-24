@@ -1,7 +1,21 @@
 # Direction B — Cinematic workbench (chosen)
 
-**Status:** chosen by the owner on 2026-09-24. It is Home (`/`); the comparison
-copy stays at `/direction/cinematic` on previews.
+**Status:** chosen by the owner on 2026-09-24. There are two takes to compare:
+
+- **`/`, the deck take:** a short centred hero over the dither field, the
+  four-card deck, the library, the node canvas and the call to action.
+- **`/direction/cinematic`, the workbench take** (previews only): Home as a
+  working node editor, closest to the node-editor references.
+  - Pick a kit on the left, and the canvas draws its real anatomy, with
+    ghosts for the parts it lacks.
+  - The kit node shows its true settings; a warm "Tested rebuild" node
+    appears only when there is a passing record.
+  - The preview on the right plays the kit, and the floating bar at the
+    bottom shows the first lines of its reconstruction prompt.
+  - It has zoom, prev and next arrows, and a "you" cursor (the visitor's own
+    pointer).
+  - The deck and the library follow below.
+  - Code: `components/v2/workbench/`.
 
 Kinetic Layers as a dark, atmospheric workbench. It is near-black, and the
 featured kit's own picture is blurred into smoke behind everything. Frosted
