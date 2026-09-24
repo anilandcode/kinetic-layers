@@ -1,8 +1,7 @@
 import { EARLY_ACCESS } from "@/lib/kl/access";
 import { getViewer } from "@/lib/kl/viewer";
-import { getKitsForDisplay } from "@/lib/v2/data";
+import { getKitsForDisplay, getWorkbenchKits } from "@/lib/v2/data";
 import { ditherColors, HUES, kitHue } from "@/lib/v2/gradient";
-import { stillFor } from "@/lib/v2/kit";
 import Library from "../Library";
 import Shell from "../Shell";
 import { DotNumber } from "../DotMatrix";
@@ -11,7 +10,7 @@ import DitherField from "../fx/DitherField";
 import Magnetic from "../fx/Magnetic";
 import Spotlight from "../fx/Spotlight";
 import HeroDeck from "./HeroDeck";
-import NodeCanvas from "./NodeCanvas";
+import Workbench from "../workbench/Workbench";
 import l from "../layout.module.css";
 import s from "./CinematicHome.module.css";
 
@@ -23,7 +22,9 @@ import s from "./CinematicHome.module.css";
  * Near-black under a dotted canvas that brightens around the pointer; a
  * living, dithered field of the featured kit's colour behind a short hero;
  * the four glowing cards of the dashboard reference; then the library, how a
- * kit works as a node editor, and a dithered call to action.
+ * kit works as a working node editor of the kits (components/v2/workbench —
+ * the owner asked for it here, in place of the static node canvas), and a
+ * dithered call to action.
  */
 export default async function CinematicHome() {
   const [{ real, shown }, viewer] = await Promise.all([getKitsForDisplay(), getViewer()]);
@@ -31,6 +32,7 @@ export default async function CinematicHome() {
     real.find((k) => k.featured && (k.poster || k.clip)) ?? real.find((k) => k.poster) ?? real[0] ?? shown[0];
   const hue = kitHue(feature?.palette, HUES.ember);
   const free = real.filter((k) => k.free).length;
+  const bench = await getWorkbenchKits(real);
 
   return (
     <Shell look="cinematic">
@@ -98,8 +100,9 @@ export default async function CinematicHome() {
             <h2 id="how-title" className={s.sectionTitle}>
               One design, the prompts that rebuild it, and the proof that they do.
             </h2>
+            <p className={s.sectionLede}>Pick a kit and the canvas draws what it is made of — parts it does not have yet show as outlines.</p>
           </div>
-          <NodeCanvas thumb={feature ? stillFor(feature, 700) : undefined} />
+          <Workbench kits={bench.kits} initial={bench.initial} />
         </section>
 
         {/* ---------- Early access ---------- */}

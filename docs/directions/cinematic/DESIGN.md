@@ -2,20 +2,25 @@
 
 **Status:** chosen by the owner on 2026-09-24. There are two takes to compare:
 
-- **`/`, the deck take:** a short centred hero over the dither field, the
-  four-card deck, the library, the node canvas and the call to action.
-- **`/direction/cinematic`, the workbench take** (previews only): Home as a
-  working node editor, closest to the node-editor references.
-  - Pick a kit on the left, and the canvas draws its real anatomy, with
-    ghosts for the parts it lacks.
-  - The kit node shows its true settings; a warm "Tested rebuild" node
-    appears only when there is a passing record.
-  - The preview on the right plays the kit, and the floating bar at the
-    bottom shows the first lines of its reconstruction prompt.
-  - It has zoom, prev and next arrows, and a "you" cursor (the visitor's own
-    pointer).
-  - The deck and the library follow below.
-  - Code: `components/v2/workbench/`.
+- **`/`, the deck take:**
+  - a short centred hero over the dither field, and the four-card deck;
+  - the library;
+  - **the workbench** (`components/v2/workbench/`) in the "How a kit works"
+    slot — the owner placed it there;
+  - the dithered call to action.
+- **`/direction/cinematic`, the clean take** (previews only). This is the
+  first cinematic version the owner liked, refined:
+  - the kit's smoke with SVG-displaced stone at the edges and light from
+    above;
+  - a centred headline whose second clause fades into the smoke;
+  - the glass product window: a light-catching edge, one light sweep, a rail,
+    and working Preview · Anatomy · Prompt tabs;
+  - two glass cards drifting over its edges with the pointer (no tilt);
+  - a row of facts (real figures only);
+  - calm smoke wells on the cards (`data-cine="clean"`);
+  - the node canvas;
+  - glass over smoke to close.
+  - Code: `components/v2/cinematic/CleanHome.tsx`, `ProductWindow.tsx`.
 
 Kinetic Layers as a dark, atmospheric workbench. It is near-black, and the
 featured kit's own picture is blurred into smoke behind everything. Frosted

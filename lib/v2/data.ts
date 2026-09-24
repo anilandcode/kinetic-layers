@@ -30,6 +30,24 @@ export async function getKit(slug: string): Promise<Asset | null> {
   return { ...kit, files: kit.files ?? [], tags: kit.tags ?? [], verifications: kit.verifications ?? [] };
 }
 
+/**
+ * The kits the workbench draws, and which one it opens on.
+ *
+ * The card projection leaves out the spec and prompt previews the canvas
+ * shows, so real kits are read in full — there are few, and each read is
+ * cached. Samples follow on a preview. It opens on the illustrative sample
+ * where there is one (a preview), so every node is drawn, and on the first
+ * real kit with an image otherwise.
+ */
+export async function getWorkbenchKits(real: Asset[]): Promise<{ kits: Asset[]; initial?: string }> {
+  const full = (await Promise.all(real.slice(0, 16).map((k) => getKit(k.slug)))).filter(
+    (k): k is Asset => Boolean(k)
+  );
+  const kits = [...full, ...getSamples()];
+  const initial = kits.find((k) => k.illustrative)?.slug ?? (full.find((k) => k.poster) ?? full[0])?.slug;
+  return { kits, initial };
+}
+
 export async function getKitRelated(kit: Asset): Promise<{ assets: Asset[]; reason: "drop" | "tag" | "newest" }> {
   const samples = getSamples().filter((s) => s.slug !== kit.slug);
   if (kit.sample) return { assets: samples.slice(0, 3), reason: "newest" };

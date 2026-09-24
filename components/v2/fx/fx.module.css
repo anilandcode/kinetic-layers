@@ -95,3 +95,17 @@
 /* ---------- Magnetic ---------- */
 
 .magnetic { display: inline-flex; will-change: transform; }
+
+/* ---------- Dotted waveform ---------- */
+
+.wave { display: inline-flex; align-items: flex-end; gap: 3px; }
+.waveCol { display: grid; gap: 3px; }
+.waveCol i { width: 3px; height: 3px; border-radius: 50%; background: rgba(255, 255, 255, 0.12); }
+.waveCol i[data-on] { background: rgba(255, 255, 255, 0.5); }
+.waveCol[data-played] i[data-on] { background: var(--v-ember); box-shadow: 0 0 4px rgba(232, 131, 74, 0.8); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .waveCol[data-played] { animation: waveBeat 1.6s ease-in-out infinite alternate; }
+}
+
+@keyframes waveBeat { from { opacity: 0.55; } to { opacity: 1; } }

@@ -156,12 +156,15 @@
    only by being imported last. Written as `[data-v2] a` they outranked every
    single-class module rule (a primary link lost its colour, every <button>
    its padding). */
-body:has([data-v2]) { background: #0a0a0b; }
+/* `:root[data-theme] …` so it outranks bench.css's `:root[data-theme='dark']
+   body` (#101114), which otherwise left a lighter band under every hero that
+   fades into the canvas. */
+:root[data-theme] body:has([data-v2]) { background: #0a0a0b; }
 /* The cinematic shell is transparent so its fixed dotted canvas
    (components/v2/fx/Spotlight) can sit behind every section; the body carries
    the colour. */
 [data-v2][data-look="cinematic"] { background: transparent; }
-body:has([data-look="soft"]) { background: #ededeb; }
+:root[data-theme] body:has([data-look="soft"]) { background: #ededeb; }
 
 :where([data-v2]) a { color: inherit; text-decoration: none; }
 :where([data-v2]) a:hover { color: inherit; }

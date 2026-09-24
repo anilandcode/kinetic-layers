@@ -103,3 +103,36 @@
 @media (prefers-reduced-transparency: reduce) {
   .smoke { display: none !important; }
 }
+
+/* ---------- Cinematic, clean take: the first version's smoke wells ----------
+   /direction/cinematic sets data-cine="clean": the kit's picture as smoke over
+   a low luminous mesh, no halftone. Higher specificity than the rules above,
+   so `/` keeps its luminous, dithered wells. */
+
+:global([data-look="cinematic"] [data-cine="clean"]) .gradient { background: #0d0d0f; }
+
+:global([data-look="cinematic"] [data-cine="clean"]) .mesh {
+  opacity: 0.5;
+  filter: blur(40px) saturate(1.1);
+}
+
+:global([data-look="cinematic"] [data-cine="clean"]) .smoke {
+  inset: -12%;
+  width: 124%;
+  height: 124%;
+  filter: blur(34px) saturate(1.25) brightness(0.62);
+  opacity: 0.9;
+  mix-blend-mode: normal;
+  transform: scale(1.06);
+}
+
+:global([data-look="cinematic"] [data-cine="clean"]) .halftone { display: none; }
+
+:global([data-look="cinematic"] [data-cine="clean"]) .gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(5, 5, 6, 0.55) 100%);
+  pointer-events: none;
+}
