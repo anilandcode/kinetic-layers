@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAsset, getAssetSlugs, getRelated } from "@/lib/sanity/queries";
+import { getAssetSlugs } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
-import ItemView from "@/components/kl/ItemView";
+import { getKit, getKitRelated } from "@/lib/v2/data";
+import KitView from "@/components/v2/KitView";
 
 export async function generateStaticParams() {
   const slugs = await getAssetSlugs();
@@ -11,35 +12,29 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const asset = await getAsset(slug);
-  if (!asset) return { title: "Not found" };
+  const kit = await getKit(slug);
+  if (!kit) return { title: "Not found" };
   return {
-    title: asset.name,
-    description: asset.tagline,
+    title: kit.name,
+    description: kit.tagline,
     alternates: { canonical: `/item/${slug}` },
+    /* Samples exist only on preview deployments; keep them out of any index. */
+    robots: kit.sample ? { index: false, follow: false } : undefined,
     openGraph: {
       type: "article",
-      title: asset.name,
-      description: asset.tagline,
+      title: kit.name,
+      description: kit.tagline,
       url: `/item/${slug}`,
     },
-    twitter: { card: "summary_large_image", title: asset.name, description: asset.tagline },
+    twitter: { card: "summary_large_image", title: kit.name, description: kit.tagline },
   };
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [asset, viewer] = await Promise.all([getAsset(slug), getViewer()]);
-  if (!asset) notFound();
+  const [kit, viewer] = await Promise.all([getKit(slug), getViewer()]);
+  if (!kit) notFound();
 
-  const related = await getRelated(slug);
-
-  return (
-    <ItemView
-      asset={asset}
-      related={related.assets}
-      relatedReason={related.reason}
-      viewer={viewer}
-    />
-  );
+  const related = await getKitRelated(kit);
+  return <KitView kit={kit} related={related.assets} relatedReason={related.reason} viewer={viewer} />;
 }

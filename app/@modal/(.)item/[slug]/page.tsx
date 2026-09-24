@@ -1,33 +1,25 @@
 import { notFound } from "next/navigation";
-import { getAsset, getRelated } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
-import ItemModal from "@/components/kl/ItemModal";
-import ItemView from "@/components/kl/ItemView";
+import { getKit } from "@/lib/v2/data";
+import KitDialog from "@/components/v2/KitDialog";
+import KitQuickView from "@/components/v2/KitQuickView";
 
 /**
- * The asset popup the design specifies, as an interception of the real route.
+ * The quick view, as an interception of the real route.
  *
- * Deliberately the same reads as app/item/[slug]/page.tsx — one gate decides
- * both, so the overlay and the page can never disagree about what a viewer may
- * have. No generateStaticParams and no metadata: an interception is always a
- * client-side navigation, and the page it intercepts owns the canonical and the
- * OG card.
+ * Same reads and the same gate as app/item/[slug]/page.tsx, so the dialog and
+ * the page can never disagree about what a viewer may have. No
+ * generateStaticParams and no metadata: an interception is always a
+ * client-side navigation, and the page it intercepts owns the canonical.
  */
-export default async function ItemModalPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function KitModalPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [asset, viewer] = await Promise.all([getAsset(slug), getViewer()]);
-  if (!asset) notFound();
+  const [kit, viewer] = await Promise.all([getKit(slug), getViewer()]);
+  if (!kit) notFound();
 
-  const related = await getRelated(slug);
   return (
-    <ItemModal shelf={asset.tags?.[0] ?? asset.type} name={asset.name}>
-      <ItemView
-        asset={asset}
-        related={related.assets}
-        relatedReason={related.reason}
-        viewer={viewer}
-        variant="modal"
-      />
-    </ItemModal>
+    <KitDialog name={kit.name}>
+      <KitQuickView kit={kit} viewer={viewer} />
+    </KitDialog>
   );
 }

@@ -1,5 +1,190 @@
-/* Semantic foundations for all new Kinetic Layers components. Historical
-   tokens remain compatibility-only until their consumers are migrated. */
+/* =============================================================================
+   Kinetic Layers v2 — the one token source.
+
+   docs/DESIGN-DIRECTION-V2.md: light is the soft studio (pale cool grey,
+   frosted white, aura fields), dark is the cinematic workbench (near-black,
+   glass over imagery, node graphs). Both strands share every component; only
+   these values change between them.
+
+   Scoped to [data-v2], which only components/v2/Shell renders. None of the
+   [data-kl] rules in kl.css, bench*.css or kl-tokens.css can match inside it,
+   so v2 and the screens not yet rebuilt can coexist on one deployment.
+   Component styles are CSS Modules beside each component; nothing else in v2
+   is global.
+
+   Every text pairing below was measured, not assumed (WCAG 2.2 AA):
+     light  #111316 / #535861 / #62676F on canvas #E9EBEE — 15.6 / 6.0 / 4.8
+     dark   #ECEDEF / #9A9EA6 / #868A92 on canvas #0B0C0E — 16.7 / 7.3 / 5.5
+     ink #111316 on chartreuse #C9EE4F — 14.0
+   Chartreuse on the light canvas is 1.1:1, so light mode never uses it as a
+   line or as text: focus and accent ink deepen to olive #435A00 (6.5:1).
+   ========================================================================== */
+
+[data-v2] {
+  color-scheme: dark;
+
+  /* Ground and material */
+  --v-canvas: #0b0c0e;
+  --v-surface: #141518;
+  --v-surface-2: #1b1d21;
+  --v-surface-3: #24272c;
+  --v-glass: rgba(255, 255, 255, 0.06);
+  --v-glass-strong: rgba(20, 21, 24, 0.72);
+  --v-glass-blur: 24px;
+  --v-line: rgba(255, 255, 255, 0.1);
+  --v-line-strong: rgba(255, 255, 255, 0.18);
+  --v-shade: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 24px 60px -28px rgba(0, 0, 0, 0.7);
+  --v-shade-lift: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 40px 90px -36px rgba(0, 0, 0, 0.85);
+  --v-veil: rgba(6, 7, 8, 0.62);
+
+  /* Text */
+  --v-text: #ecedef;
+  --v-text-2: #9a9ea6;
+  --v-text-3: #868a92;
+  --v-text-inverse: #111316;
+
+  /* The one signal colour: focus, selection, the primary action, and the
+     dot that marks something real and current. */
+  --v-accent: #c9ee4f;
+  --v-accent-ink: #c9ee4f;
+  --v-accent-soft: rgba(201, 238, 79, 0.14);
+  --v-on-accent: #111316;
+  --v-accent-edge: transparent;
+  --v-focus: #c9ee4f;
+
+  /* Aura: the fallback field for a kit with no image palette (video-only
+     kits). Neutral on purpose — an invented hue would claim an identity the
+     kit does not have. Per-kit stops are set inline by components/v2/Aura. */
+  --v-aura-1: #2a2e35;
+  --v-aura-2: #1d2026;
+  --v-aura-3: #34383f;
+  --v-aura-strength: 0.9;
+
+  /* Status, in words first; colour only reinforces */
+  --v-ok: #c9ee4f;
+  --v-warn: #f2c14e;
+  --v-danger: #ff8a7a;
+
+  /* Type. The interface face comes from next/font in app/layout.tsx. */
+  --v-font: var(--font-ui-v2, var(--font-geist)), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --v-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --v-display: clamp(2.75rem, 1.6rem + 4.6vw, 5.75rem);
+  --v-title: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+  --v-heading: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem);
+  --v-subheading: clamp(1.1875rem, 1.05rem + 0.5vw, 1.4375rem);
+  --v-body-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  --v-body: 1rem;
+  --v-small: 0.875rem;
+  --v-label: 0.8125rem;
+  --v-meta: 0.75rem;
+
+  /* Space and layout */
+  --v-max: 84rem;
+  --v-gutter: clamp(1rem, 0.4rem + 3vw, 3rem);
+  --v-section: clamp(4.5rem, 3rem + 6vw, 9rem);
+
+  /* Shape: controls / panels / cards / stages and dialogs, and pills only for
+     navigation and filters. */
+  --v-r-control: 10px;
+  --v-r-panel: 16px;
+  --v-r-card: 24px;
+  --v-r-stage: 32px;
+  --v-r-pill: 999px;
+
+  /* Motion: DESIGN-REBUILD-SPEC §10 — one curve, 120–320ms */
+  --v-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --v-fast: 140ms;
+  --v-base: 200ms;
+  --v-slow: 320ms;
+
+  background: var(--v-canvas);
+  color: var(--v-text);
+  font-family: var(--v-font);
+  font-size: var(--v-body);
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+:root[data-theme="light"] [data-v2] {
+  color-scheme: light;
+
+  --v-canvas: #e9ebee;
+  --v-surface: #f6f7f8;
+  --v-surface-2: #ffffff;
+  --v-surface-3: #dfe2e6;
+  --v-glass: rgba(255, 255, 255, 0.64);
+  --v-glass-strong: rgba(246, 247, 248, 0.82);
+  --v-line: rgba(17, 19, 22, 0.08);
+  --v-line-strong: rgba(17, 19, 22, 0.16);
+  --v-shade: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 24px 60px -32px rgba(38, 44, 56, 0.28);
+  --v-shade-lift: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 40px 90px -40px rgba(38, 44, 56, 0.36);
+  --v-veil: rgba(214, 218, 224, 0.56);
+
+  --v-text: #111316;
+  --v-text-2: #535861;
+  --v-text-3: #62676f;
+  --v-text-inverse: #ffffff;
+
+  --v-accent-ink: #435a00;
+  --v-accent-soft: rgba(126, 160, 20, 0.14);
+  /* Chartreuse disappears against the pale canvas, so a filled accent gets a
+     hairline edge in light mode. */
+  --v-accent-edge: rgba(17, 19, 22, 0.14);
+  --v-focus: #435a00;
+
+  --v-aura-1: #d3d8df;
+  --v-aura-2: #f4f5f7;
+  --v-aura-3: #c6ccd4;
+  --v-aura-strength: 0.75;
+
+  --v-ok: #435a00;
+  --v-warn: #8a5b00;
+  --v-danger: #b42318;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-v2] { --v-fast: 1ms; --v-base: 1ms; --v-slow: 1ms; }
+}
+
+/* legacy.css still paints `body`, `a`, `::selection` and `:focus-visible`
+   globally for the screens that have not moved yet.
+
+   The resets below are wrapped in :where(), which keeps them at exactly the
+   specificity of the legacy rules they replace — they win only because this
+   file is imported last. Written as `[data-v2] a` they outranked every
+   single-class module rule, so a primary ButtonLink lost its ink colour and
+   every <button> lost its padding and background. */
+body:has([data-v2]) { background: #0b0c0e; }
+:root[data-theme="light"] body:has([data-v2]) { background: #e9ebee; }
+
+:where([data-v2]) a { color: inherit; text-decoration: none; }
+:where([data-v2]) a:hover { color: inherit; }
+:where([data-v2]) ::selection { background: var(--v-accent); color: var(--v-on-accent); }
+:where([data-v2]) :focus-visible {
+  outline: 2px solid var(--v-focus);
+  outline-offset: 3px;
+}
+:where([data-v2]) :focus:not(:focus-visible) { outline: none; }
+:where([data-v2]) button { cursor: pointer; background: none; border: 0; padding: 0; color: inherit; }
+:where([data-v2]) :is(h1, h2, h3, h4) { font-weight: 500; }
+
+/* Screen-reader-only text: the words behind every dot-matrix figure. */
+[data-v2] .v-sr {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+/* ==========================================================================
+   v1 compatibility — the [data-kl] foundations the screens that have not been
+   rebuilt still read (the design-system route, PageShell). Removed with v1.
+   ========================================================================== */
 [data-kl] {
   color-scheme: dark;
   --canvas: #101114;

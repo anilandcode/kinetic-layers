@@ -1,5 +1,5 @@
-import RouteSkeleton from "@/components/kl/RouteSkeleton";
+import Skeleton from "@/components/v2/Skeleton";
 
 export default function Loading() {
-  return <RouteSkeleton what="the library" shape="grid" />;
+  return <Skeleton what="the page" shape="page" />;
 }

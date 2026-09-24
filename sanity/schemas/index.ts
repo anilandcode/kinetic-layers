@@ -114,6 +114,7 @@ const asset = defineType({
   groups: [
     { name: "main", title: "Asset", default: true },
     { name: "words", title: "Words" },
+    { name: "release", title: "Release" },
     { name: "advanced", title: "Advanced" },
   ],
   fields: [
@@ -261,6 +262,74 @@ const asset = defineType({
       group: "words",
       description:
         "The full prompt. Only the first two lines are ever sent to an unentitled visitor; the rest is counted, not shipped.",
+    }),
+
+    /**
+     * The kit release fields, which draw the graph on the kit page.
+     *
+     * Every one is optional, and the page draws a node only for a part the kit
+     * really has: `notes` is the design spec, `prompt` the reconstruction
+     * prompt, `adaptationPrompt` the branch that re-skins the kit for someone
+     * else's brand, and each verification record is a rebuild somebody ran.
+     * An empty list reads "Not yet verified" in words — the page never infers
+     * a test from anything else.
+     */
+    defineField({
+      name: "version",
+      type: "string",
+      group: "release",
+      description: 'Optional. Shown as "v1.0" on the kit page. Change it when the prompts or files change.',
+      validation: (r) => r.regex(/^\d+(\.\d+){0,2}$/, { name: "version number" }).warning("Use a number like 1.0"),
+    }),
+    defineField({
+      name: "releaseStatus",
+      title: "Release status",
+      type: "string",
+      group: "release",
+      options: { list: ["In progress", "Released", "Deprecated"], layout: "radio", direction: "horizontal" },
+    }),
+    defineField({
+      name: "adaptationPrompt",
+      title: "Adaptation prompt (gated)",
+      type: "text",
+      rows: 6,
+      group: "release",
+      description:
+        "Optional. The prompt that adapts this kit to another brand. Gated exactly like the reconstruction prompt: only the first two lines are ever sent to a visitor.",
+    }),
+    defineField({
+      name: "verifications",
+      title: "Verification records",
+      type: "array",
+      group: "release",
+      description:
+        "One row per real rebuild: which tool and model ran the reconstruction prompt, when, and whether the output matched the reference. Add nothing you have not run.",
+      of: [
+        {
+          type: "object",
+          name: "verification",
+          fields: [
+            defineField({ name: "tool", type: "string", description: "e.g. Claude Code, Cursor, v0", validation: (r) => r.required() }),
+            defineField({ name: "model", type: "string", description: "e.g. Claude Sonnet 5" }),
+            defineField({ name: "date", type: "date", validation: (r) => r.required() }),
+            defineField({
+              name: "result",
+              type: "string",
+              options: { list: ["Pass", "Partial", "Fail"], layout: "radio", direction: "horizontal" },
+              validation: (r) => r.required(),
+            }),
+            defineField({ name: "note", type: "text", rows: 2, description: "Optional. What differed, if anything." }),
+            defineField({ name: "comparison", title: "Comparison screenshot", type: "image", description: "Optional. The rebuilt output, to show beside the reference." }),
+          ],
+          preview: {
+            select: { tool: "tool", model: "model", date: "date", result: "result" },
+            prepare: ({ tool, model, date, result }: Record<string, any>) => ({
+              title: [tool, model].filter(Boolean).join(" · "),
+              subtitle: [result, date].filter(Boolean).join(" · "),
+            }),
+          },
+        },
+      ],
     }),
 
     /**

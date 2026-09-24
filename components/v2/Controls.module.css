@@ -1,0 +1,101 @@
+/* ---------- Buttons ---------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1.125rem;
+  border: 1px solid transparent;
+  border-radius: var(--v-r-control);
+  font: 500 0.9375rem/1 var(--v-font);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background-color var(--v-fast) var(--v-ease),
+    border-color var(--v-fast) var(--v-ease),
+    color var(--v-fast) var(--v-ease),
+    transform var(--v-fast) var(--v-ease);
+}
+
+.button svg { flex: none; transition: transform var(--v-base) var(--v-ease); }
+.button:hover svg { transform: translateX(2px); }
+.button:active { transform: translateY(1px); }
+.button:disabled { cursor: not-allowed; opacity: 0.5; transform: none; }
+
+.sm { min-height: 36px; padding: 0 0.875rem; font-size: 0.875rem; border-radius: 9px; }
+.lg { min-height: 52px; padding: 0 1.5rem; font-size: 1rem; border-radius: 12px; }
+
+.primary {
+  background: var(--v-accent);
+  border-color: var(--v-accent-edge);
+  color: var(--v-on-accent);
+}
+.primary:hover,
+.primary:focus-visible {
+  background: color-mix(in oklab, var(--v-accent) 88%, #ffffff);
+  color: var(--v-on-accent);
+}
+:global(:root[data-theme="light"]) .primary:hover {
+  background: color-mix(in oklab, var(--v-accent) 90%, #000000);
+}
+
+.secondary {
+  background: var(--v-glass);
+  border-color: var(--v-line-strong);
+  color: var(--v-text);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.secondary:hover { border-color: var(--v-text-3); color: var(--v-text); }
+
+.quiet { background: transparent; color: var(--v-text); padding-inline: 0.75rem; }
+.quiet:hover { background: var(--v-glass); color: var(--v-text); }
+
+/* ---------- Tags ---------- */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 26px;
+  padding: 0 0.625rem;
+  border: 1px solid var(--v-line);
+  border-radius: 8px;
+  background: var(--v-glass);
+  color: var(--v-text-2);
+  font: 500 var(--v-meta)/1 var(--v-font);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.tag_neutral { color: var(--v-text-2); }
+.tag_accent { color: var(--v-accent-ink); border-color: color-mix(in oklab, var(--v-accent-ink) 32%, transparent); background: var(--v-accent-soft); }
+.tag_warn { color: var(--v-warn); border-color: color-mix(in oklab, var(--v-warn) 30%, transparent); }
+.tag_sample {
+  color: var(--v-text);
+  border-style: dashed;
+  border-color: var(--v-line-strong);
+  background: var(--v-glass-strong);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* ---------- The signal dot ---------- */
+
+.signal {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--v-accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--v-accent) 22%, transparent);
+}
+
+/* The chartreuse alone vanishes on the pale canvas; give it an olive edge. */
+:global(:root[data-theme="light"]) .signal {
+  box-shadow: 0 0 0 1px var(--v-accent-ink), 0 0 0 4px var(--v-accent-soft);
+}

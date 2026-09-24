@@ -62,6 +62,47 @@ export type Asset = {
   /** First two lines only. The design blurs the remainder. */
   promptPreview?: string;
   drop?: { title: string; slug: string; meta?: string; tag?: string };
+
+  /* ---- v2: the kit graph and the aura. All optional, all additive. ---- */
+
+  /** Sanity's extracted swatches for the uploaded image. Null for video-only kits. */
+  palette?: Palette | null;
+  /** Pixel size of the uploaded image, for the reference node. */
+  width?: number;
+  height?: number;
+  publishedAt?: string;
+  /** Kit release fields — see the "Release" group in sanity/schemas/index.ts. */
+  version?: string;
+  releaseStatus?: string;
+  /** Length and first two lines only, exactly like the reconstruction prompt. */
+  adaptationLength?: number;
+  adaptationPreview?: string;
+  /** Real test records. Never derived, never invented. */
+  verifications?: Verification[];
+  /**
+   * Preview-deployment sample content (lib/v2/samples.ts). Never set by a
+   * query, so nothing from Sanity can claim it.
+   */
+  sample?: boolean;
+  /** A sample carrying made-up release data, labelled as such wherever it shows. */
+  illustrative?: boolean;
+};
+
+export type Palette = {
+  dominant?: string;
+  vibrant?: string;
+  muted?: string;
+  darkMuted?: string;
+  lightVibrant?: string;
+};
+
+export type Verification = {
+  tool: string;
+  model?: string;
+  date?: string;
+  result: "Pass" | "Partial" | "Fail" | string;
+  note?: string;
+  comparison?: string;
 };
 
 export type Collection = {

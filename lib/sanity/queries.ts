@@ -54,7 +54,11 @@ const MEDIA = groq`
   ),
   "name": coalesce(name, string::split(media.asset->originalFilename, ".")[0], string::split(clip.asset->originalFilename, ".")[0], "Untitled"),
   "tags": coalesce(tags[defined(@->title)]->title, []),
-  "free": select(defined(tier) => tier == "Free", coalesce(free, false))
+  "free": select(defined(tier) => tier == "Free", coalesce(free, false)),
+  "palette": media.asset->metadata.palette{
+    "dominant": dominant.background, "vibrant": vibrant.background, "muted": muted.background,
+    "darkMuted": darkMuted.background, "lightVibrant": lightVibrant.background
+  }
 `;
 
 const ASSET_CARD = groq`{
@@ -74,7 +78,15 @@ const ASSET_FULL = groq`{
   "files": coalesce(files[]{ name, meta, tag, bytes }, []),
   "promptLength": length(coalesce(prompt, promptBody, "")),
   "promptPreview": array::join(string::split(coalesce(prompt, promptBody, ""), "\\n")[0..1], "\\n"),
-  "drop": drop->{ title, "slug": slug.current, meta, tag }
+  "drop": drop->{ title, "slug": slug.current, meta, tag },
+  "width": media.asset->metadata.dimensions.width,
+  "height": media.asset->metadata.dimensions.height,
+  publishedAt, version, releaseStatus,
+  "adaptationLength": length(coalesce(adaptationPrompt, "")),
+  "adaptationPreview": array::join(string::split(coalesce(adaptationPrompt, ""), "\\n")[0..1], "\\n"),
+  "verifications": verifications[defined(tool) && defined(result)]{
+    tool, model, date, result, note, "comparison": comparison.asset->url
+  }
 }`;
 
 const opts = (tags: string[]) => ({ next: { tags, revalidate: 3600 } });
@@ -261,7 +273,13 @@ export async function searchAssets(q: string, limit = 8): Promise<Asset[]> {
   if (!q.trim()) return [];
   return ask<Asset[]>(
     [],
-    groq`*[_type == "asset" && (name match $m || type match $m || tagline match $m || count(tags[@->title match $m]) > 0)]
+    /* The name is matched through the same fallback the cards display. An
+       asset published with `name` empty — verdro, today — is named after its
+       uploaded file, and matching the raw field made it unsearchable. */
+    groq`*[_type == "asset" && (
+        coalesce(name, media.asset->originalFilename, clip.asset->originalFilename, "") match $m ||
+        slug.current match $m || type match $m || tagline match $m || count(tags[@->title match $m]) > 0
+      )]
       | order(publishedAt desc) [0...$limit] ${ASSET_CARD}`,
     { m: `${q.trim()}*`, limit },
     { next: { revalidate: 60 } }

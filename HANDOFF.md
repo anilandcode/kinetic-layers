@@ -3,6 +3,50 @@
 This document records operational decisions and known traps. Verify material
 implementation details in the current source before acting.
 
+## v2 redesign, Stage A — 2026-09-24 (branch `redesign/v2`)
+
+The whole platform is being rebuilt to [the v2 direction](docs/DESIGN-DIRECTION-V2.md)
+on `redesign/v2`, cut from `chore/cleanup-dead-code-and-fonts`. Nothing reaches
+kineticlayers.com until the owner says "launch"; pushes create Vercel previews
+on the `kinetic-layers` project only.
+
+- **Built so far:**
+  - Home (`/`), the kit page (`/item/[slug]`) and its quick-view interception.
+  - The v2 shell: header, mobile drawer, search, footer.
+  - The primitives in `components/v2/`.
+- **Everything else is still v1** (Library, Pricing, Account, Join, content
+  pages) until Stage B.
+- **Scoping.** v2 renders inside `[data-v2]`, never `[data-kl]`. Its tokens are
+  the top block of `styles/kl-foundations.css`. Component styles are CSS Modules
+  beside each component.
+  - The global resets there are wrapped in `:where()`. Without it,
+    `[data-v2] a` outranked every single-class module rule.
+- **Kit graph data.** New optional Sanity fields sit in the asset's "Release"
+  group:
+  - `version`, `releaseStatus`;
+  - `adaptationPrompt` — gated like `prompt`: only its length and first two
+    lines are queried;
+  - `verifications[]`.
+
+  The Studio was redeployed with them. The graph draws only the parts a kit
+  has, and "Not yet verified" is said in words.
+- **Samples.**
+  - The 20 MotionSites references render as marked "Sample" kits on preview
+    deployments and local dev only (`lib/v2/samples.ts`).
+  - `KL_SAMPLES=1` enables them for a local production build.
+  - One of them, Aetheris Voyage, carries made-up release data under an
+    "Illustrative — not a real kit" banner.
+  - Production renders none of them. Verified by building without the flag.
+- **`?theme=light|dark`** shows a theme for one visit without storing it, for
+  review links.
+- **Fixed on the way:**
+  - Search matched the raw `name` field, so verdro (named after its file) was
+    unsearchable on the site and over MCP.
+  - The header's `backdrop-filter` trapped the fixed-position drawer and search
+    dialog. They now portal to the shell.
+- **Known, not new:** an unknown `/item/<slug>` streams a `noindex` not-found
+  page with HTTP 200, because the route has a loading boundary.
+
 ## Current public-site refinement — 2026-09-17
 
 Work is present locally and has **not** been deployed. The local preview runs at

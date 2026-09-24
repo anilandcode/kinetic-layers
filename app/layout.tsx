@@ -100,6 +100,9 @@ export default function RootLayout({
                  first. Wrapped because storage throws outright in some
                  privacy modes, and a theme is not worth a blank page. */
               "try{var t=localStorage.getItem('kl-theme');" +
+              /* ?theme=light|dark shows a theme for this visit only, without
+                 storing it — so a review link can open in either strand. */
+              "var q=/[?&]theme=(light|dark)\\b/.exec(location.search);if(q)t=q[1];" +
               "document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){}",
           }}
         />

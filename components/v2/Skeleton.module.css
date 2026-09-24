@@ -1,0 +1,27 @@
+.stack { display: grid; gap: 1.25rem; padding-top: clamp(2rem, 5vw, 4rem); }
+.row { display: flex; gap: 0.75rem; }
+
+.block {
+  display: block;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--v-text) 7%, transparent);
+  animation: breathe 1.4s var(--v-ease) infinite alternate;
+}
+
+.stage { height: clamp(16rem, 48vw, 34rem); margin-top: 1rem; border-radius: var(--v-r-stage); }
+
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem); gap: 2rem; margin-top: 2rem; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr));
+  gap: 2rem 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.card { aspect-ratio: 4 / 3; border-radius: var(--v-r-card); }
+
+@keyframes breathe { from { opacity: 0.5; } to { opacity: 1; } }
+
+@media (max-width: 960px) { .split { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .block { animation: none; } }

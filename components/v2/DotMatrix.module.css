@@ -1,0 +1,18 @@
+.figure {
+  display: inline-flex;
+  align-items: flex-end;
+  line-height: 0;
+  vertical-align: bottom;
+}
+
+.figure svg { display: block; width: auto; max-width: none; height: auto; }
+
+.on { fill: currentColor; }
+.off { fill: currentColor; opacity: 0.1; }
+
+.text { color: var(--v-text); }
+.muted { color: var(--v-text-3); }
+.accent { color: var(--v-accent-ink); }
+
+/* In dark mode the lit accent dots are the chartreuse itself. */
+:global(:root:not([data-theme="light"])) .accent { color: var(--v-accent); }
