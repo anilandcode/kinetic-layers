@@ -121,6 +121,8 @@ export type Collection = {
 };
 
 export type Drop = {
+  /** Sanity document id — carried only so hasRealId can tell a seed drop from a real one. */
+  _id: string;
   title: string;
   slug: string;
   meta?: string;

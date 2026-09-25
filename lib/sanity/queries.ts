@@ -222,7 +222,7 @@ export async function getCollectionSlugs(): Promise<string[]> {
 export async function getDrops(): Promise<Drop[]> {
   return ask<Drop[]>(
     [],
-    groq`*[_type == "drop"] | order(shippedAt desc) { title, "slug": slug.current, meta, tag }`,
+    groq`*[_type == "drop"] | order(shippedAt desc) { _id, title, "slug": slug.current, meta, tag }`,
     {},
     opts(["drop"])
   );

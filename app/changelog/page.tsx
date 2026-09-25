@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ContentPage, ProseHero, ProseSection } from "@/components/v2/Prose";
 import s from "@/components/v2/Prose.module.css";
+import { hasRealId } from "@/lib/kl/preview-ready";
 import { getDrops } from "@/lib/sanity/queries";
 
 export const metadata: Metadata = {
@@ -16,9 +17,13 @@ export const metadata: Metadata = {
  * is a changelog entry in everything but name. Reading them here means the page
  * maintains itself: publish a drop in the Studio and it appears, with no second
  * place to remember to update.
+ *
+ * `hasRealId` drops the four seed drops (same idea as hasRealPreview for
+ * assets) — otherwise this page reads as real shipping history when it is
+ * placeholder content nobody has published.
  */
 export default async function Changelog() {
-  const drops = await getDrops();
+  const drops = (await getDrops()).filter(hasRealId);
 
   return (
     <ContentPage>
