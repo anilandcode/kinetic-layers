@@ -45,9 +45,42 @@ was right. The real state:
   the Supabase dashboard. Everything not behind an account (browsing, kit
   pages, pricing, docs) works.
 - Left untouched on purpose: `EARLY_ACCESS`, Stripe (unconfigured, gated
-  off), the unrun `premium_contract.sql`, OAuth (disabled), catalogue
-  content (still the 2 real kits + excluded seed placeholders — same as
-  every preview this session).
+  off), the unrun `premium_contract.sql`, catalogue content (still the 2
+  real kits + excluded seed placeholders — same as every preview this
+  session).
+- **Correction to this file: Google OAuth is actually enabled**, not off.
+  `/join` renders a live Google button — checked directly against the
+  running site, not assumed. GitHub is still off. Outstanding item 5 and
+  the "OAuth is off" line further down are stale; nobody has signed in
+  with it end to end yet, so treat it as enabled-but-unverified rather
+  than working.
+
+## Post-launch: library Flip animation fix redeployed — 2026-09-25
+
+End-to-end testing right after launch reproduced the bug trap 24 was
+supposed to have closed: rapid filter/search changes on `/library` could
+still strand a card off-screen (`opacity: 1`, `transform: translate3d(5517px,
+6780px, 0)`), even with `Flip.killFlipsOf()` in place. Root cause:
+`killFlipsOf()` only freezes an interrupted tween at whatever position it
+was mid-transition through, not a settled rest state, so a capture right
+after could still read a bad position — cleanup after the fact can't fix
+it. [components/v2/Library.tsx](components/v2/Library.tsx) now guards with
+a boolean `animating` ref instead: no second `Flip.from()` can start while
+one is in flight, so a change that arrives mid-animation just snaps to the
+new layout with no transition rather than corrupting the one in progress.
+Verified with repeated randomized rapid-interaction stress tests (tight
+5–15ms gaps between clicks/keystrokes, well under the 550ms tween
+duration) both locally and directly against `kineticlayers.com` after
+redeploy — zero stuck/invisible cards. Same deploy recipe as launch: push
+to `main`, then `vercel deploy --prod` against `direction-kit` from a
+disposable worktree (git push alone does not deploy it).
+
+**Also found during this testing pass, not yet acted on:**
+- `/changelog` shows fictional seed "Drop" documents. `getDrops()` in
+  [lib/sanity/queries.ts](lib/sanity/queries.ts) has no equivalent of
+  `hasRealPreview()` — unlike assets, seed drops are never filtered out.
+  Needs either a `getDrops()` filter matching the asset pattern, deleting
+  the seed drops in Sanity, or both — owner's call before touching content.
 
 ## New logo, full width, prompts in the quick view — 2026-09-25 (branch `redesign/v2`)
 
@@ -358,9 +391,11 @@ feedback MX live in Cloudflare DNS), and Supabase points its SMTP at Resend. Tha
 was the launch blocker and it is cleared — though see Outstanding: nobody has
 watched a confirmation arrive end to end.
 
-**OAuth is off, and now says nothing rather than lying.** Google and GitHub are
-both disabled on the project. The join page reads Supabase's live settings and
-renders only providers that are actually on, so today it shows email alone.
+**OAuth reads Supabase's live settings, not a hardcoded list.** The join page
+renders only providers that are actually on. As of 2026-09-25, Google is
+enabled (confirmed live on `/join`) and GitHub is not — this section
+originally said both were off; see the post-launch entry above. Nobody has
+completed a Google sign-in end to end yet.
 
 **The account has a door.** `/account` is a layout with four sections —
 Dashboard, Downloads, Profile, Billing — and the header carries an avatar menu
@@ -540,9 +575,10 @@ restores the paywall exactly as it was.
 3. **Confirm a real signup end to end.** Resend is verified and SMTP is
    configured, but nobody has watched a confirmation mail arrive and complete.
 4. **DMARC** — one record, `TXT _dmarc` → `v=DMARC1; p=none;`.
-5. **Google / GitHub OAuth**, if wanted. Callback
-   `https://ubftlspopkfwwazwsinv.supabase.co/auth/v1/callback`. The buttons
-   reappear on their own within five minutes of enabling.
+5. **GitHub OAuth**, if wanted — Google is already enabled (confirmed live
+   on `/join` 2026-09-25), but nobody has completed a real sign-in with it
+   yet. Callback `https://ubftlspopkfwwazwsinv.supabase.co/auth/v1/callback`.
+   The buttons reappear on their own within five minutes of enabling.
 6. **The Sanity revalidation webhook.** `sanity hook list` returns nothing, so an
    edit appears when the fetch's own hour expires. See `docs/adding-an-asset.md`.
 7. **Production `ADMIN_TOKEN` is 11 characters**, and it guards
@@ -550,6 +586,9 @@ restores the paywall exactly as it was.
 8. **The R2 token is Admin Read & Write on all buckets.** Narrow it to Object
    Read & Write on the two it needs.
 9. **The legal pages are drafts** and say so on the page. Review before charging.
+10. **`/changelog` shows fictional seed Drop documents.** `getDrops()` has no
+    seed filter (unlike assets' `hasRealPreview()`) — decide whether to filter
+    in code, delete the seed drops in Sanity, or both.
 
 **Known hazard, not yet bitten:**
 `supabase/migrations/20260907130000_premium_contract.sql` is deliberately unrun —
