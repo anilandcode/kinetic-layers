@@ -69,6 +69,7 @@ const PATHS = {
   ),
   brand: <path d="M12 3.5 14.4 9l5.6.5-4.3 3.8 1.3 5.7L12 16l-5 3 1.3-5.7L4 9.5 9.6 9Z" />,
   play: <path d="M8 5v14l11-7z" />,
+  bookmark: <path d="M7 4h10v16l-5-4-5 4z" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;

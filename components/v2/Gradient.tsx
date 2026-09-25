@@ -19,6 +19,7 @@ import s from "./Gradient.module.css";
 export default function Gradient({
   palette,
   hue,
+  second,
   image,
   as: Tag = "div",
   className,
@@ -29,6 +30,8 @@ export default function Gradient({
   palette?: Palette | null;
   /** A named hue for surfaces that belong to no kit (lib/v2/gradient.ts HUES). */
   hue?: number;
+  /** A second named hue for the bright core, with `hue`. */
+  second?: number;
   /** The kit's still, drawn faintly under the glow. Decorative. */
   image?: string;
   as?: ElementType;
@@ -36,7 +39,7 @@ export default function Gradient({
   style?: CSSProperties;
   children?: ReactNode;
 } & Record<string, unknown>) {
-  const hues = hue !== undefined ? [hue] : kitHues(palette);
+  const hues = hue !== undefined ? (second !== undefined ? [hue, second] : [hue]) : kitHues(palette);
   const soft = hue !== undefined ? undefined : gradientVars(palette);
   const glow = hues.length ? luminousVars(hues[0], hues[1]) : undefined;
   return (

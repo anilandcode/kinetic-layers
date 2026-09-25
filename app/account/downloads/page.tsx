@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import GlassButton from "@/components/kl/GlassButton";
-import DownloadFilter from "@/components/legacy/DownloadFilter";
-import DownloadAgain from "@/components/legacy/DownloadAgain";
 import { createClient } from "@/lib/supabase/server";
-import { getAssets, getSettings } from "@/lib/sanity/queries";
+import { getAssets } from "@/lib/sanity/queries";
+import type { Asset } from "@/lib/kl/types";
+import { stillFor, typeLabel } from "@/lib/v2/kit";
+import DownloadFilter from "@/components/v2/account/DownloadFilter";
+import DownloadAgain from "@/components/v2/account/DownloadAgain";
+import { ButtonLink } from "@/components/v2/Button";
+import p from "@/components/v2/Page.module.css";
+import a from "@/components/v2/account/Account.module.css";
 
 export const metadata: Metadata = { title: "Downloads", robots: { index: false, follow: false } };
 
@@ -12,103 +16,76 @@ export const metadata: Metadata = { title: "Downloads", robots: { index: false, 
 export const dynamic = "force-dynamic";
 
 /**
- * Everything taken out of the library, newest first.
- *
- * Lifted whole from the old single-page account. The one thing worth repeating
- * from that move: a download row records the slug, not the type — type lives in
- * Sanity — so the filter chips resolve it at render rather than denormalising a
- * column. Rows written before today therefore filter correctly, not just new
- * ones.
+ * Everything taken out of the library, newest first. A download row records
+ * the slug, not the type — type lives in Sanity — so the filter resolves it
+ * at render, and rows written before any change still filter correctly.
  */
-export default async function AccountDownloads({
-  searchParams,
-}: {
-  searchParams: Promise<{ kind?: string }>;
-}) {
+export default async function AccountDownloads({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {
   const { kind } = await searchParams;
   const supabase = await createClient();
   if (!supabase) return null;
 
-  const [{ data: downloads }, settings, catalogue] = await Promise.all([
+  const [{ data: downloads }, catalogue] = await Promise.all([
     supabase.from("downloads").select("*").order("created_at", { ascending: false }).limit(200),
-    getSettings(),
     getAssets(),
   ]);
 
   const rows = downloads ?? [];
-  const typeOf = new Map(catalogue.map((a) => [a.slug, a.type]));
-
-  /* Derived from what this account actually has, so no chip is ever empty and
-     no type is ever missing — the hardcoded three it replaced matched none of
-     the eight the catalogue uses. */
-  const kinds = [...new Set(rows.map((d) => typeOf.get(d.asset_slug)).filter(Boolean))].sort() as string[];
-  const filtered = kind ? rows.filter((d) => typeOf.get(d.asset_slug) === kind) : rows;
+  const bySlug = new Map<string, Asset>(catalogue.map((k) => [k.slug, k]));
+  const typeOf = (slug: string) => bySlug.get(slug)?.type;
+  const kinds = [...new Set(rows.map((d) => typeOf(d.asset_slug)).filter(Boolean))].sort() as string[];
+  const filtered = kind ? rows.filter((d) => typeOf(d.asset_slug) === kind) : rows;
 
   return (
-    <section className="kl-pad" style={{ paddingBlock: 20 }}>
-      <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", overflow: "hidden" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "18px 22px",
-            background: "var(--pane)",
-            borderBottom: "1px solid var(--line2)",
-            flexWrap: "wrap",
-          }}
-        >
-          <h2 style={{ fontSize: 17, fontWeight: 600 }}>Downloads</h2>
-          <div style={{ flex: 1 }} />
-          <DownloadFilter active={kind ?? ""} kinds={kinds} />
-        </div>
+    <section className={`${p.panel} ${a.panelStack}`} aria-labelledby="downloads-title">
+      <div className={a.panelHead}>
+        <h2 id="downloads-title" className={p.panelTitle}>
+          Downloads <span className={a.panelCount}>{rows.length}</span>
+        </h2>
+        <DownloadFilter active={kind ?? ""} kinds={kinds} />
+      </div>
 
-        {filtered.length === 0 ? (
-          <div style={{ padding: "40px 22px", display: "flex", flexDirection: "column", gap: 14, alignItems: "flex-start" }}>
-            <p style={{ fontSize: 15, color: "var(--muted)" }}>
-              {rows.length === 0 ? (
-                <>
-                  Nothing downloaded yet.{" "}
-                  {settings.freeThisMonth > 0
-                    ? `The ${settings.freeThisMonth} free assets are a good place to start.`
-                    : "Free assets appear here as they are published."}
-                </>
-              ) : (
-                <>Nothing of that type yet.</>
-              )}
-            </p>
-            <GlassButton href="/library" ghost>
+      {filtered.length === 0 ? (
+        <>
+          <p className={a.muted}>
+            {rows.length === 0 ? "Nothing downloaded yet. The free kits are a good place to start." : "Nothing of that type yet."}
+          </p>
+          <div className={a.actions}>
+            <ButtonLink href="/library" variant="secondary" size="sm" icon="arrow">
               Browse the library
-            </GlassButton>
+            </ButtonLink>
           </div>
-        ) : (
-          <ul>
-            {filtered.map((d) => (
-              <li
-                key={d.id}
-                style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 22px", borderBottom: "1px solid var(--line2)", flexWrap: "wrap" }}
-              >
-                <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, flex: 1 }}>
-                  <Link
-                    href={`/item/${d.asset_slug}`}
-                    style={{ fontSize: 15, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-                  >
-                    {d.asset_name ?? d.asset_slug}
+        </>
+      ) : (
+        <ul className={a.rows}>
+          {filtered.map((d) => {
+            const kit = bySlug.get(d.asset_slug);
+            const still = kit ? stillFor(kit, 200) : undefined;
+            return (
+              <li key={d.id} className={a.row}>
+                <span className={a.rowThumb} aria-hidden="true">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {still ? <img src={still} alt="" loading="lazy" decoding="async" /> : null}
+                </span>
+                <span className={a.rowMain}>
+                  <Link href={`/item/${d.asset_slug}`} className={a.rowTitle}>
+                    {kit?.name ?? d.asset_name ?? d.asset_slug}
                   </Link>
-                  <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
-                    {d.file_name}
-                    {d.bytes ? ` · ${(d.bytes / 1_048_576).toFixed(1)} MB` : ""}
+                  <span className={a.rowMeta}>
+                    {[kit ? typeLabel(kit.type) : null, d.file_name, d.bytes ? `${(d.bytes / 1_048_576).toFixed(1)} MB` : null]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </span>
-                </div>
-                <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
-                  {new Date(d.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }).toUpperCase()}
+                </span>
+                <span className={a.rowDate}>
+                  {new Date(d.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
                 </span>
                 <DownloadAgain slug={d.asset_slug} file={d.file_name} />
               </li>
-            ))}
-          </ul>
-        )}
-      </div>
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 }

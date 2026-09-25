@@ -35,13 +35,15 @@ export async function getLibrary(viewer: Viewer | null): Promise<{ real: Asset[]
   const rank = (list: Asset[]) =>
     popularity.size ? list.map((a) => (a.sample ? a : { ...a, popularity: popularity.get(a.slug) ?? 0 })) : list;
 
-  let saved: string[] = [];
-  if (viewer) {
-    const supabase = await createClient();
-    const { data } = (await supabase?.from("saved_assets").select("asset_slug")) ?? { data: null };
-    saved = (data ?? []).map((r: { asset_slug: string }) => r.asset_slug);
-  }
-  return { real: rank(real), shown: rank(shown), saved };
+  return { real: rank(real), shown: rank(shown), saved: await getSavedSlugs(viewer) };
+}
+
+/** The viewer's saved kits, by slug — their own rows, through the RLS-scoped client. */
+export async function getSavedSlugs(viewer: Viewer | null): Promise<string[]> {
+  if (!viewer) return [];
+  const supabase = await createClient();
+  const { data } = (await supabase?.from("saved_assets").select("asset_slug")) ?? { data: null };
+  return (data ?? []).map((r: { asset_slug: string }) => r.asset_slug);
 }
 
 export async function getKit(slug: string): Promise<Asset | null> {

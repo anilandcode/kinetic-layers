@@ -7,6 +7,7 @@ import { formatBytes, formatDate, stillFor, tierLabel, typeLabel, type KitGraph,
 import { ButtonLink, Signal, Tag } from "./Button";
 import { DotNumber } from "./DotMatrix";
 import DownloadButton from "./DownloadButton";
+import SaveButton from "./SaveButton";
 import Icon from "./Icon";
 import s from "./Kit.module.css";
 
@@ -333,7 +334,7 @@ export function RelatedLink({ href, children }: { href: string; children: ReactN
 }
 
 /** The access panel beside the open graph node: the gate's answer, the files, the facts. */
-export function KitAccessPanel({ kit, viewer }: { kit: Asset; viewer: Viewer | null }) {
+export function KitAccessPanel({ kit, viewer, saved = false }: { kit: Asset; viewer: Viewer | null; saved?: boolean }) {
   const access = kitAccess(kit, viewer);
   const released = formatDate(kit.publishedAt);
   return (
@@ -344,6 +345,7 @@ export function KitAccessPanel({ kit, viewer }: { kit: Asset; viewer: Viewer | n
       </p>
       <p className={s.accessNote}>{access.note}</p>
       {access.action}
+      {kit.sample ? null : <SaveButton slug={kit.slug} saved={saved} signedIn={Boolean(viewer)} className={s.wide} />}
       <div className={s.divider} />
       <h2 className={s.sideTitle}>Files</h2>
       <FileManifest kit={kit} />

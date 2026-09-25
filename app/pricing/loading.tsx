@@ -1,5 +1,5 @@
-import RouteSkeleton from "@/components/kl/RouteSkeleton";
+import Skeleton from "@/components/v2/Skeleton";
 
 export default function Loading() {
-  return <RouteSkeleton what="the plans" shape="panel" />;
+  return <Skeleton what="the plans" shape="page" />;
 }

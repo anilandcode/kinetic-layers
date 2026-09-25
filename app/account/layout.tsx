@@ -1,19 +1,22 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
-import PageShell from "@/components/kl/PageShell";
-import AccountTabs from "@/components/kl/AccountTabs";
 import { getViewer } from "@/lib/kl/viewer";
+import { EARLY_ACCESS } from "@/lib/kl/access";
+import { HUES } from "@/lib/v2/gradient";
+import Shell from "@/components/v2/Shell";
+import PageHero from "@/components/v2/PageHero";
+import AccountTabs from "@/components/v2/account/AccountTabs";
+import l from "@/components/v2/layout.module.css";
+import p from "@/components/v2/Page.module.css";
+import a from "@/components/v2/account/Account.module.css";
 
 /**
  * Everything behind the account door.
  *
- * The guard lives here rather than in each page. It used to sit in
- * app/account/page.tsx, which was fine while there was one page; with four, a
- * per-page redirect is four chances to forget one, and forgetting one leaks a
- * signed-out visitor into somebody's downloads.
- *
- * The shell and the section header are here for the same reason: a tab row that
- * each page rendered for itself would drift.
+ * The guard lives here rather than in each page: with four pages, a per-page
+ * redirect is four chances to forget one, and forgetting one leaks a
+ * signed-out visitor into somebody's downloads. The hero and the tab row are
+ * here for the same reason — a tab row each page drew for itself would drift.
  */
 export default async function AccountLayout({ children }: { children: ReactNode }) {
   const viewer = await getViewer();
@@ -22,22 +25,29 @@ export default async function AccountLayout({ children }: { children: ReactNode 
   const renews = viewer.periodEnd
     ? new Date(viewer.periodEnd).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
     : null;
+  const plan = viewer.premium
+    ? `Premium${renews ? ` · renews ${renews}` : ""}`
+    : EARLY_ACCESS
+      ? "Free · early access"
+      : "Free plan";
 
   return (
-    <PageShell>
-      <section className="kl-pad" style={{ paddingBlock: "72px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-        <div data-hero style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <span className="kl-mono" style={{ fontSize: 11, letterSpacing: 0, color: "var(--amber)" }}>
-            {viewer.premium ? `Premium${renews ? ` · renews ${renews}` : ""}` : "Free plan"}
-          </span>
-          <h1 className="kl-prose-h1">
-            {viewer.name ? `Hello, ${viewer.name}.` : "Your account."}
-          </h1>
+    <Shell>
+      <main className={p.page}>
+        <PageHero
+          compact
+          id="account-title"
+          kicker={plan}
+          title={viewer.name ? `Hello, ${viewer.name}.` : "Your account."}
+          lede={viewer.email}
+          hue={HUES.violet}
+          second={HUES.cobalt}
+        />
+        <div className={l.container}>
+          <AccountTabs />
+          <div className={a.body}>{children}</div>
         </div>
-        <AccountTabs />
-      </section>
-
-      {children}
-    </PageShell>
+      </main>
+    </Shell>
   );
 }

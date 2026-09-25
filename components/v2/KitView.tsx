@@ -31,11 +31,14 @@ export default function KitView({
   related,
   relatedReason = "newest",
   viewer,
+  saved = false,
 }: {
   kit: Asset;
   related: Asset[];
   relatedReason?: "drop" | "tag" | "newest";
   viewer: Viewer | null;
+  /** Whether this viewer has saved the kit. */
+  saved?: boolean;
 }) {
   const graph = kitGraph(kit);
   const still = stillFor(kit, ITEM_W);
@@ -104,7 +107,7 @@ export default function KitView({
             </div>
           </Gradient>
           <div className={s.side}>
-            <KitAccessPanel kit={kit} viewer={viewer} />
+            <KitAccessPanel kit={kit} viewer={viewer} saved={saved} />
           </div>
         </div>
 

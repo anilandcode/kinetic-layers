@@ -1,41 +1,48 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import GlassButton from "@/components/kl/GlassButton";
-import AccountStat from "@/components/kl/AccountStat";
 import { getViewer } from "@/lib/kl/viewer";
 import { createClient } from "@/lib/supabase/server";
-import { getSettings } from "@/lib/sanity/queries";
+import { getAssets } from "@/lib/sanity/queries";
+import { hasRealPreview } from "@/lib/kl/preview-ready";
 import { LIMITS, WINDOW_MS, tierOf } from "@/lib/kl/limits";
+import type { Asset } from "@/lib/kl/types";
+import { HUES } from "@/lib/v2/gradient";
+import { stillFor, typeLabel } from "@/lib/v2/kit";
+import StatCard from "@/components/v2/account/StatCard";
+import { ButtonLink } from "@/components/v2/Button";
+import p from "@/components/v2/Page.module.css";
+import a from "@/components/v2/account/Account.module.css";
 
 export const metadata: Metadata = { title: "Account", robots: { index: false, follow: false } };
 
 /* Always fresh: a download made a second ago has to be in the count. */
 export const dynamic = "force-dynamic";
 
+const pad = (n: number) => String(n).padStart(2, "0");
+const day = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+
 /**
- * The dashboard: the numbers, and what is worth a second glance.
- *
- * The long list of downloads moved to /account/downloads and the plan card to
- * /account/billing. What stays is the summary — the thing you open the account
- * for when you are not looking for anything in particular.
+ * The dashboard: four figures as the deck's glowing cards, then what is worth
+ * a second glance — recent downloads and saved kits. Every number is a count
+ * of this account's own rows; today's meter is the rolling 24 hours the gate
+ * actually enforces, not "since midnight".
  */
 export default async function AccountDashboard() {
   const viewer = await getViewer();
   /* The layout already redirected anyone without one; this is for the type. */
   if (!viewer) return null;
-
   const supabase = await createClient();
   if (!supabase) return null;
 
-  const [{ data: downloads }, { data: savedCollections }, { data: savedAssets }, { data: recentUsage }, settings] =
-    await Promise.all([
-      supabase.from("downloads").select("asset_slug, created_at").order("created_at", { ascending: false }),
-      supabase.from("saved_collections").select("collection_slug").order("created_at", { ascending: false }),
-      supabase.from("saved_assets").select("asset_slug").order("created_at", { ascending: false }),
-      supabase.from("usage").select("kind").gte("created_at", new Date(Date.now() - WINDOW_MS).toISOString()),
-      getSettings(),
-    ]);
+  const [{ data: downloads }, { data: savedRows }, { data: recentUsage }, catalogue] = await Promise.all([
+    supabase.from("downloads").select("asset_slug, asset_name, file_name, created_at").order("created_at", { ascending: false }),
+    supabase.from("saved_assets").select("asset_slug").order("created_at", { ascending: false }),
+    supabase.from("usage").select("kind").gte("created_at", new Date(Date.now() - WINDOW_MS).toISOString()),
+    getAssets(),
+  ]);
 
+  const bySlug = new Map<string, Asset>(catalogue.map((k) => [k.slug, k]));
+  const published = catalogue.filter(hasRealPreview).length;
   const rows = downloads ?? [];
   const now = new Date();
   const thisMonth = rows.filter((d) => {
@@ -43,95 +50,153 @@ export default async function AccountDashboard() {
     return at.getMonth() === now.getMonth() && at.getFullYear() === now.getFullYear();
   }).length;
   const unique = new Set(rows.map((d) => d.asset_slug)).size;
-  const savedTotal = (savedCollections?.length ?? 0) + (savedAssets?.length ?? 0);
+  const saved = savedRows ?? [];
 
-  /* Today's meter, against this viewer's own tier. Rolling 24 hours, so this is
-     "in the last day" rather than "since midnight" — a tile that reset at a
-     fixed hour would disagree with the thing actually refusing requests. */
   const allowance = LIMITS[tierOf(viewer)];
   const usedPrompts = (recentUsage ?? []).filter((u) => u.kind === "prompt").length;
   const usedDownloads = (recentUsage ?? []).filter((u) => u.kind === "download").length;
 
   return (
     <>
-      <section
-        className="kl-pad"
-        style={{ paddingBottom: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 12 }}
-      >
-        <AccountStat label="Downloaded" value={String(unique)} note={`of ${settings.totalAssets} assets`} big />
-        <AccountStat label="This month" value={String(thisMonth)} note={thisMonth === 1 ? "1 file" : `${thisMonth} files`} big />
-        <AccountStat label="Saved" value={String(savedTotal)} note="saved items" big />
-        <AccountStat
-          label="Plan"
-          value={viewer.premium ? "Premium" : "Free"}
-          note={viewer.premium ? "full vault" : `${settings.freeThisMonth} free assets`}
+      <section className={a.stats} aria-label="Your figures">
+        <StatCard
+          label="Kits downloaded"
+          value={pad(unique)}
+          spoken={`${unique} kits downloaded`}
+          note={`of ${published} published`}
+          hue={HUES.ember}
+          second={HUES.rose}
         />
-        <AccountStat
-          label="Today"
+        <StatCard
+          label="This month"
+          value={pad(thisMonth)}
+          spoken={`${thisMonth} files this month`}
+          note={thisMonth === 1 ? "1 file" : `${thisMonth} files`}
+          hue={HUES.rose}
+          second={HUES.violet}
+        />
+        <StatCard
+          label="Saved"
+          value={pad(saved.length)}
+          spoken={`${saved.length} saved kits`}
+          note={saved.length === 1 ? "1 kit kept for later" : "kits kept for later"}
+          hue={HUES.violet}
+          second={HUES.cobalt}
+        />
+        <StatCard
+          label="Prompt reads today"
           value={`${usedPrompts}/${allowance.prompt}`}
-          note={`prompts · ${usedDownloads}/${allowance.download} downloads`}
+          spoken={`${usedPrompts} of ${allowance.prompt} prompt reads used in the last 24 hours`}
+          note={`and ${usedDownloads}/${allowance.download} downloads, rolling 24 hours`}
+          hue={HUES.cobalt}
+          second={196}
         />
       </section>
 
-      <section
-        className="kl-pad"
-        style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(360px,100%),1fr))", gap: 12, alignItems: "start" }}
-      >
-        <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", background: "var(--board)", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600 }}>Saved</h2>
-            <div style={{ flex: 1 }} />
-            <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
-              {savedTotal}
-            </span>
+      <div className={a.split}>
+        <section className={`${p.panel} ${a.panelStack}`} aria-labelledby="recent-title">
+          <div className={a.panelHead}>
+            <h2 id="recent-title" className={p.panelTitle}>
+              Recent downloads
+            </h2>
+            <span className={a.panelCount}>{rows.length}</span>
           </div>
-
-          {savedTotal === 0 ? (
-            <p style={{ fontSize: 14, color: "var(--muted)" }}>
-              Nothing saved. The bookmark on an item page keeps it here.
-            </p>
+          {rows.length === 0 ? (
+            <>
+              <p className={a.muted}>Nothing yet. The free kits are a good place to start.</p>
+              <div className={a.actions}>
+                <ButtonLink href="/library?price=free" variant="secondary" size="sm" icon="arrow">
+                  Free kits
+                </ButtonLink>
+              </div>
+            </>
           ) : (
             <>
-              {(savedCollections ?? []).slice(0, 5).map((s) => (
-                <Row key={s.collection_slug} label={s.collection_slug} kind="Saved collection" />
-              ))}
-              {(savedAssets ?? []).slice(0, 5).map((s) => (
-                <Row key={s.asset_slug} label={s.asset_slug} kind="Asset" href={`/item/${s.asset_slug}`} />
-              ))}
+              <ul className={a.rows}>
+                {rows.slice(0, 5).map((d, i) => (
+                  <KitRow
+                    key={`${d.asset_slug}-${d.created_at}-${i}`}
+                    kit={bySlug.get(d.asset_slug)}
+                    slug={d.asset_slug}
+                    name={d.asset_name}
+                    meta={d.file_name ?? undefined}
+                    date={day(d.created_at)}
+                  />
+                ))}
+              </ul>
+              <div className={a.actions}>
+                <ButtonLink href="/account/downloads" variant="secondary" size="sm" icon="arrow">
+                  All downloads
+                </ButtonLink>
+              </div>
             </>
           )}
-        </div>
+        </section>
 
-        <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", background: "var(--board)", padding: 24, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
-          <h2 style={{ fontSize: 16, fontWeight: 600 }}>Downloads</h2>
-          <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
-            {rows.length === 0
-              ? settings.freeThisMonth > 0
-                ? `Nothing yet. The ${settings.freeThisMonth} free assets are a good place to start.`
-                : "Nothing yet. Free assets appear in the library as they are published."
-              : `${rows.length} ${rows.length === 1 ? "file" : "files"} taken out, across ${unique} ${unique === 1 ? "asset" : "assets"}.`}
-          </p>
-          <GlassButton href={rows.length === 0 ? "/library" : "/account/downloads"} ghost>
-            {rows.length === 0 ? "Browse the library" : "See all downloads"}
-          </GlassButton>
-        </div>
-      </section>
+        <section className={`${p.panel} ${a.panelStack}`} aria-labelledby="saved-title">
+          <div className={a.panelHead}>
+            <h2 id="saved-title" className={p.panelTitle}>
+              Saved kits
+            </h2>
+            <span className={a.panelCount}>{saved.length}</span>
+          </div>
+          {saved.length === 0 ? (
+            <p className={a.muted}>Nothing saved. “Save for later” on a kit page keeps it here and under Saved in the library.</p>
+          ) : (
+            <>
+              <ul className={a.rows}>
+                {saved.slice(0, 6).map((r) => {
+                  const kit = bySlug.get(r.asset_slug);
+                  return (
+                    <KitRow
+                      key={r.asset_slug}
+                      kit={kit}
+                      slug={r.asset_slug}
+                      meta={kit ? typeLabel(kit.type) : undefined}
+                    />
+                  );
+                })}
+              </ul>
+              <div className={a.actions}>
+                <ButtonLink href="/library?saved=1" variant="secondary" size="sm" icon="arrow">
+                  Saved in the library
+                </ButtonLink>
+              </div>
+            </>
+          )}
+        </section>
+      </div>
     </>
   );
 }
 
-function Row({ label, kind, href }: { label: string; kind: string; href?: string }) {
+function KitRow({
+  kit,
+  slug,
+  name,
+  meta,
+  date,
+}: {
+  kit?: Asset;
+  slug: string;
+  name?: string | null;
+  meta?: string;
+  date?: string;
+}) {
+  const still = kit ? stillFor(kit, 200) : undefined;
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
-        <span style={{ fontSize: 14, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {label}
-        </span>
-        <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
-          {kind}
-        </span>
-      </div>
-      {href ? <Link href={href} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link> : <span style={{ fontSize: 12, color: "var(--muted)" }}>Coming back soon</span>}
-    </div>
+    <li className={a.row}>
+      <span className={a.rowThumb} aria-hidden="true">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {still ? <img src={still} alt="" loading="lazy" decoding="async" /> : null}
+      </span>
+      <span className={a.rowMain}>
+        <Link href={`/item/${slug}`} className={a.rowTitle}>
+          {kit?.name ?? name ?? slug}
+        </Link>
+        {meta ? <span className={a.rowMeta}>{meta}</span> : null}
+      </span>
+      {date ? <span className={a.rowDate}>{date}</span> : null}
+    </li>
   );
 }

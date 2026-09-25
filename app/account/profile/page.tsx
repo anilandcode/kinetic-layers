@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Avatar } from "@/components/legacy/Chrome";
-import ApiKeys from "@/components/legacy/ApiKeys";
 import { getViewer } from "@/lib/kl/viewer";
 import { createClient } from "@/lib/supabase/server";
+import ApiKeys from "@/components/v2/account/ApiKeys";
+import PasswordForm from "@/components/v2/PasswordForm";
+import { Button } from "@/components/v2/Button";
 import { updateDisplayName } from "../actions";
+import p from "@/components/v2/Page.module.css";
+import f from "@/components/v2/Form.module.css";
+import a from "@/components/v2/account/Account.module.css";
 
 export const metadata: Metadata = { title: "Profile", robots: { index: false, follow: false } };
 
 export const dynamic = "force-dynamic";
 
 /**
- * Who you are here, and the keys that act as you.
- *
- * The name is the new part. `profiles.display_name` has been in the schema
- * since the first migration, read in one place and shown on none; there was no
- * way to set it. The header greets people by it now, which is why it earns a
- * form rather than staying a column nobody fills.
+ * Who you are here, and the keys that act as you: the display name the
+ * header greets you by, a new password, and the MCP server's API keys.
  */
 export default async function AccountProfile({
   searchParams,
@@ -35,62 +35,71 @@ export default async function AccountProfile({
         .order("created_at", { ascending: false })
     : { data: [] };
 
+  const initial = (viewer.name || viewer.email || "?").trim().charAt(0).toUpperCase();
+
   return (
-    <section
-      className="kl-pad"
-      style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(380px,100%),1fr))", gap: 12, alignItems: "start" }}
-    >
-      <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", background: "var(--board)", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-          <Avatar email={viewer.name || viewer.email} size={40} />
-          <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
-            <span style={{ fontSize: 14, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {viewer.email}
+    <div className={a.split}>
+      <div className={a.panelStack}>
+        <section className={`${p.panel} ${a.panelStack}`} aria-labelledby="name-title">
+          <div className={a.who}>
+            <span className={a.avatar} aria-hidden="true">
+              {initial}
             </span>
-            <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
-              Signed in
+            <span className={a.whoWords}>
+              <strong>{viewer.email}</strong>
+              <span>Signed in</span>
             </span>
           </div>
-        </div>
-
-        <form action={updateDisplayName} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label htmlFor="display_name" style={{ fontSize: 13, color: "var(--muted)" }}>
+          <h2 id="name-title" className="v-sr">
             Display name
-          </label>
-          <input
-            id="display_name"
-            name="display_name"
-            type="text"
-            maxLength={60}
-            defaultValue={viewer.name ?? ""}
-            placeholder="How you want to be addressed"
-            className="kl-input"
-          />
-          <p style={{ fontSize: 12, color: "var(--muted)" }}>
-            Shown in the header. Leave it empty to go back to your email address.
-          </p>
-          <div>
-            <button type="submit" className="kl-btn kl-btn--ghost kl-btn--sm">
-              <span className="kl-btn-label" data-btn-label>
-                Save
-              </span>
-            </button>
-          </div>
+          </h2>
+          <form action={updateDisplayName} className={a.inlineForm}>
+            <div className={f.field}>
+              <label htmlFor="display_name" className={f.label}>
+                Display name
+              </label>
+              <input
+                id="display_name"
+                name="display_name"
+                type="text"
+                maxLength={60}
+                defaultValue={viewer.name ?? ""}
+                placeholder="How you want to be addressed"
+                className={f.input}
+                aria-describedby="display-name-hint"
+              />
+              <p id="display-name-hint" className={f.hint}>
+                Shown in the header. Leave it empty to go back to your email address.
+              </p>
+            </div>
+            <div className={a.actions}>
+              <Button type="submit" variant="secondary" size="sm">
+                Save name
+              </Button>
+            </div>
+            {saved ? (
+              <p role="status" className={f.notice}>
+                Saved.
+              </p>
+            ) : null}
+            {error ? (
+              <p role="alert" className={f.error}>
+                {error}
+              </p>
+            ) : null}
+          </form>
+        </section>
 
-          {saved ? (
-            <p role="status" style={{ fontSize: 13, color: "var(--moss)" }}>
-              Saved.
-            </p>
-          ) : null}
-          {error ? (
-            <p role="alert" style={{ fontSize: 13, color: "var(--amber)" }}>
-              {error}
-            </p>
-          ) : null}
-        </form>
+        <section className={`${p.panel} ${a.panelStack}`} aria-labelledby="password-title">
+          <h2 id="password-title" className={p.panelTitle}>
+            Password
+          </h2>
+          <p className={p.panelNote}>Set a new one here. You stay signed in on this device.</p>
+          <PasswordForm submitLabel="Save new password" />
+        </section>
       </div>
 
       <ApiKeys initial={apiKeys ?? []} />
-    </section>
+    </div>
   );
 }

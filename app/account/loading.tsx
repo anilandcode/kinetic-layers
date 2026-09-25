@@ -1,25 +1,26 @@
-import { Shimmer, LoadingAnnouncement } from "@/components/legacy/Skeleton";
+import s from "@/components/v2/Skeleton.module.css";
+import a from "@/components/v2/account/Account.module.css";
 
 /**
- * Panel-only, deliberately.
- *
- * The other routes use RouteSkeleton, which draws the whole page down to the
- * header. This one sits inside app/account/layout.tsx, which has already
- * rendered the shell, the header and the tab row — so a full-page skeleton here
- * would paint a second header underneath the real one.
+ * Panel-only, deliberately: this sits inside app/account/layout.tsx, which has
+ * already drawn the shell, the hero and the tabs — a full-page skeleton here
+ * would paint a second header under the real one.
  */
 export default function Loading() {
   return (
-    <section className="kl-pad" style={{ paddingBlock: 20 }}>
-      <LoadingAnnouncement what="your account" />
-      <div
-        aria-hidden="true"
-        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 12 }}
-      >
+    <div aria-busy="true">
+      <p className="v-sr" role="status">
+        Loading your account…
+      </p>
+      <div aria-hidden="true" className={a.stats}>
         {[0, 1, 2, 3].map((i) => (
-          <Shimmer key={i} h={132} r={10} />
+          <span key={i} className={s.block} style={{ height: 200, borderRadius: 26 }} />
         ))}
       </div>
-    </section>
+      <div aria-hidden="true" className={a.split} style={{ marginTop: "1.25rem" }}>
+        <span className={s.block} style={{ height: 260, borderRadius: 26 }} />
+        <span className={s.block} style={{ height: 260, borderRadius: 26 }} />
+      </div>
+    </div>
   );
 }

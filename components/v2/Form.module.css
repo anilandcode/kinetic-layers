@@ -1,0 +1,109 @@
+/* Fields in the workbench's material: dark wells with a lit edge on focus. */
+
+.form { display: grid; gap: 0.75rem; }
+
+/* The auth card's column: mode, words, providers, form, messages. */
+.auth { display: grid; gap: 1.125rem; }
+.head { display: grid; gap: 0.625rem; }
+.title { margin: 0; font-size: var(--v-heading); font-weight: 500; line-height: 1.08; letter-spacing: -0.03em; text-wrap: balance; }
+.lede { margin: 0; color: var(--v-text-2); line-height: 1.55; }
+.providers { display: grid; gap: 0.5rem; }
+
+.field { display: grid; gap: 0.4375rem; }
+
+.label { color: var(--v-text-2); font-size: var(--v-label); font-weight: 500; }
+
+.input {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.32);
+  color: var(--v-text);
+  font: inherit;
+  font-size: 0.9375rem;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  transition: border-color var(--v-fast) var(--v-ease), box-shadow var(--v-fast) var(--v-ease);
+}
+
+.input::placeholder { color: var(--v-text-3); }
+.input:hover { border-color: rgba(255, 255, 255, 0.24); }
+
+.input:focus-visible {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.input[aria-invalid="true"] { border-color: rgba(255, 120, 110, 0.7); }
+
+textarea.input { min-height: 7rem; padding: 0.875rem 1rem; resize: vertical; line-height: 1.5; }
+
+.hint { margin: 0; color: var(--v-text-3); font-size: var(--v-meta); line-height: 1.5; }
+
+.submit { width: 100%; }
+
+/* Messages: an error in warm red, a notice in ember, both in a glass slip. */
+.error,
+.notice {
+  margin: 0;
+  padding: 0.75rem 0.9375rem;
+  border-radius: 14px;
+  font-size: var(--v-small);
+  line-height: 1.55;
+}
+
+.error { border: 1px solid rgba(255, 120, 110, 0.4); background: rgba(255, 90, 80, 0.08); color: #ffb4ac; }
+.notice { border: 1px solid rgba(232, 131, 74, 0.4); background: rgba(232, 131, 74, 0.08); color: #f6c7a6; }
+
+/* ---------- Segmented (mode switch) ---------- */
+
+.segmented {
+  display: inline-flex;
+  justify-self: start;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--v-r-pill);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.segmented button {
+  min-height: 36px;
+  padding: 0 1rem;
+  border-radius: var(--v-r-pill);
+  color: var(--v-text-2);
+  font-size: var(--v-label);
+  font-weight: 500;
+  transition: background-color var(--v-fast) var(--v-ease), color var(--v-fast) var(--v-ease);
+}
+
+.segmented button:hover { color: var(--v-text); }
+.segmented button[aria-pressed="true"] { background: var(--v-primary); color: var(--v-on-primary); }
+
+/* ---------- Divider and quiet links ---------- */
+
+.or {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  color: var(--v-text-3);
+  font: 500 var(--v-meta)/1 var(--v-mono);
+}
+
+.or::before,
+.or::after { content: ""; flex: 1; height: 1px; background: var(--v-line); }
+
+.quiet { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; font-size: var(--v-label); }
+
+.quiet button,
+.quiet a {
+  color: var(--v-text-2);
+  text-decoration: underline;
+  text-decoration-color: var(--v-line-strong);
+  text-underline-offset: 4px;
+}
+
+.quiet button:hover,
+.quiet a:hover { color: var(--v-text); text-decoration-color: currentColor; }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAssetSlugs } from "@/lib/sanity/queries";
 import { getViewer } from "@/lib/kl/viewer";
-import { getKit, getKitRelated } from "@/lib/v2/data";
+import { getKit, getKitRelated, getSavedSlugs } from "@/lib/v2/data";
 import KitView from "@/components/v2/KitView";
 
 export async function generateStaticParams() {
@@ -35,6 +35,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const [kit, viewer] = await Promise.all([getKit(slug), getViewer()]);
   if (!kit) notFound();
 
-  const related = await getKitRelated(kit);
-  return <KitView kit={kit} related={related.assets} relatedReason={related.reason} viewer={viewer} />;
+  const [related, saved] = await Promise.all([getKitRelated(kit), getSavedSlugs(viewer)]);
+  return (
+    <KitView
+      kit={kit}
+      related={related.assets}
+      relatedReason={related.reason}
+      viewer={viewer}
+      saved={saved.includes(kit.slug)}
+    />
+  );
 }
