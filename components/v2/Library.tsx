@@ -72,10 +72,22 @@ export default function Library({
 
   const visible = expanded || !limit ? shown : shown.slice(0, limit);
 
-  /** Capture positions, then change state; the layout effect animates the move. */
+  /**
+   * Capture positions, then change state; the layout effect animates the move.
+   *
+   * Typing fast (or clicking filters in quick succession) can call this again
+   * before the previous Flip.from() finished — `absolute: true` leaves an
+   * in-flight card with an inline absolute position while it animates, and
+   * capturing a new state mid-tween read that transient position rather than
+   * a settled one, compounding into cards stuck far from their real slot.
+   * Killing any running Flip tweens on these targets first snaps them to
+   * their end state, so every capture starts from a clean layout.
+   */
   function change(update: () => void) {
     if (grid.current && window.matchMedia(MOTION_OK).matches) {
-      flipState.current = Flip.getState(grid.current.querySelectorAll("[data-flip-id]"));
+      const targets = grid.current.querySelectorAll("[data-flip-id]");
+      Flip.killFlipsOf(targets);
+      flipState.current = Flip.getState(targets);
     }
     update();
   }
