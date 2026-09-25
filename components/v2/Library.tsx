@@ -76,18 +76,25 @@ export default function Library({
    * Capture positions, then change state; the layout effect animates the move.
    *
    * Typing fast (or clicking filters in quick succession) can call this again
-   * before the previous Flip.from() finished — `absolute: true` leaves an
-   * in-flight card with an inline absolute position while it animates, and
-   * capturing a new state mid-tween read that transient position rather than
-   * a settled one, compounding into cards stuck far from their real slot.
-   * Killing any running Flip tweens on these targets first snaps them to
-   * their end state, so every capture starts from a clean layout.
+   * before the previous Flip.from() finished. `absolute: true` holds a card at
+   * an inline absolute position for the life of its tween; a second capture
+   * taken mid-tween read that transient position rather than a settled one,
+   * and killing the tween first only froze it at whatever midpoint it was
+   * interrupted at — still not a real rest position, so the error carried
+   * into the next transition instead of clearing. There is no way to make two
+   * overlapping Flip runs on the same targets both land correctly.
+   *
+   * So they never overlap: `animating` is true for exactly the span of one
+   * Flip.from(). A change that arrives while it is true skips the capture and
+   * just applies the update — the grid reflows to the new layout with no
+   * transition for that step, which is a plain, correct snap, never a stuck
+   * card. The next change after the run completes animates normally again.
    */
+  const animating = useRef(false);
+
   function change(update: () => void) {
-    if (grid.current && window.matchMedia(MOTION_OK).matches) {
-      const targets = grid.current.querySelectorAll("[data-flip-id]");
-      Flip.killFlipsOf(targets);
-      flipState.current = Flip.getState(targets);
+    if (!animating.current && grid.current && window.matchMedia(MOTION_OK).matches) {
+      flipState.current = Flip.getState(grid.current.querySelectorAll("[data-flip-id]"));
     }
     update();
   }
@@ -96,6 +103,7 @@ export default function Library({
     const state = flipState.current;
     flipState.current = null;
     if (!state || !grid.current) return;
+    animating.current = true;
     Flip.from(state, {
       targets: grid.current.querySelectorAll("[data-flip-id]"),
       duration: 0.55,
@@ -103,6 +111,12 @@ export default function Library({
       absolute: true,
       nested: true,
       onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.45, ease: EASE }),
+      onComplete: () => {
+        animating.current = false;
+      },
+      onInterrupt: () => {
+        animating.current = false;
+      },
     });
   }, [visible]);
 
