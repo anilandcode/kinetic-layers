@@ -39,11 +39,15 @@ was right. The real state:
   time) and verified on `/contact`, `/license`, `/privacy`. If any other
   `direction-kit`/`kiln`-domain value turns up anywhere, it's the same
   class of bug: fix the Vercel env var and redeploy, don't just edit code.
-- **Still open, unchanged from Outstanding item 1 below, now more urgent
-  since it's live:** Supabase's Auth Site URL is still `localhost`, so
-  sign-in/sign-up will fail on the real domain until the owner fixes it in
-  the Supabase dashboard. Everything not behind an account (browsing, kit
-  pages, pricing, docs) works.
+- **Resolved same day, closing Outstanding item 1 below:** Supabase's Auth
+  Site URL was `localhost` at launch, blocking sign-in/sign-up on the real
+  domain. The owner set it in the dashboard (Authentication → URL
+  Configuration) to Site URL `https://kineticlayers.com`, with
+  `https://kineticlayers.com/auth/callback` and `/auth/confirm` added to
+  the redirect allowlist alongside the existing `localhost` ones —
+  confirmed persisted server-side via a fresh, uncached page load (not
+  just typed into the field). Still outstanding: nobody has completed a
+  real sign-in end to end to confirm the flow works, not just the config.
 - Left untouched on purpose: `EARLY_ACCESS`, Stripe (unconfigured, gated
   off), the unrun `premium_contract.sql`, catalogue content (still the 2
   real kits + excluded seed placeholders — same as every preview this
@@ -565,10 +569,11 @@ restores the paywall exactly as it was.
 
 **Needs the account owner:**
 
-1. **Supabase → Authentication → URL Configuration.** Site URL is still
-   `http://localhost:3000`, which is what caused trap 22. Set it to
-   `https://kineticlayers.com` and allowlist `/auth/callback` and `/auth/confirm`
-   on both that origin and localhost.
+1. ~~**Supabase → Authentication → URL Configuration.**~~ **Done 2026-09-25** —
+   Site URL is `https://kineticlayers.com`, redirect allowlist has
+   `/auth/callback` and `/auth/confirm` on both that origin and localhost.
+   What's left: an actual end-to-end sign-in has still never been watched
+   to completion — do that before trusting the flow fully works.
 2. **Tag the assets.** Every Category count reads 0. The 15 dummy assets carry
    old _string_ tags that no longer resolve, so they show none; delete them and
    tag the real ones in the Studio.
