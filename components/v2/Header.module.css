@@ -50,8 +50,6 @@
   border: 1px solid var(--v-line);
   border-radius: var(--v-r-pill);
   background: var(--v-glass);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  backdrop-filter: blur(18px) saturate(150%);
   box-shadow: var(--v-shade);
   transform: translateX(-50%);
 }
@@ -91,8 +89,6 @@
   background: var(--v-glass);
   color: var(--v-text-2);
   font-size: 0.875rem;
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
   transition: border-color var(--v-fast) var(--v-ease), color var(--v-fast) var(--v-ease);
 }
 
@@ -120,8 +116,6 @@
   border-radius: 50%;
   background: var(--v-glass);
   color: var(--v-text);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
   transition: border-color var(--v-fast) var(--v-ease);
 }
 
@@ -304,13 +298,28 @@
   box-shadow: none;
 }
 
+/* A full pill. At the top of the page it has no ground at all — brand, nav
+   and actions sit straight on the canvas; once content scrolls under it the
+   glass fades in. The one blur on the header lives here. */
 .bar[data-look="cinematic"] .row {
   width: min(calc(100% - 2 * var(--v-gutter)), calc(var(--v-max) - 2 * var(--v-gutter)));
   height: 60px;
-  padding-inline: 0.625rem 0.5rem;
-  border: 1px solid var(--v-glass-edge);
-  border-radius: 20px;
-  background: rgba(20, 20, 22, 0.55);
+  padding-inline: 0.875rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  transition:
+    background-color var(--v-base) var(--v-ease),
+    border-color var(--v-base) var(--v-ease),
+    box-shadow var(--v-base) var(--v-ease),
+    -webkit-backdrop-filter var(--v-base) var(--v-ease),
+    backdrop-filter var(--v-base) var(--v-ease);
+}
+
+.bar[data-look="cinematic"][data-scrolled] .row {
+  border-color: var(--v-glass-edge);
+  background: rgba(20, 20, 22, 0.62);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
   backdrop-filter: blur(24px) saturate(150%);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 20px 50px -24px rgba(0, 0, 0, 0.8);

@@ -46,11 +46,9 @@
 .primary .pillIcon { background: var(--v-on-primary); color: var(--v-primary); }
 
 .secondary {
-  background: var(--v-glass);
+  background: rgb(25, 25, 27);
   border-color: var(--v-line-strong);
   color: var(--v-text);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  backdrop-filter: blur(16px) saturate(140%);
 }
 .secondary:hover { border-color: var(--v-text-3); color: var(--v-text); }
 .secondary .pillIcon { background: var(--v-primary); color: var(--v-on-primary); }
@@ -68,10 +66,8 @@
   place-items: center;
   border: 1px solid var(--v-line);
   border-radius: 50%;
-  background: var(--v-glass);
+  background: rgb(25, 25, 27);
   color: var(--v-text);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
   transition: border-color var(--v-fast) var(--v-ease), background-color var(--v-fast) var(--v-ease);
 }
 
@@ -107,10 +103,8 @@
 .tag_glass,
 .tag_sample {
   border: 1px solid var(--v-glass-edge);
-  background: var(--v-glass-strong);
+  background: rgba(22, 22, 24, 0.96);
   color: var(--v-text);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  backdrop-filter: blur(14px) saturate(140%);
 }
 
 /* ---------- The signal dot ---------- */

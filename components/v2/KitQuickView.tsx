@@ -4,7 +4,7 @@ import { clip as clipUrl, ITEM_W } from "@/lib/kl/media";
 import { kitGraph, stillFor, tierLabel, typeLabel, type NodeId } from "@/lib/v2/kit";
 import Gradient from "./Gradient";
 import Media from "./Media";
-import { Signal, Tag } from "./Button";
+import { Signal } from "./Button";
 import Icon, { type IconName } from "./Icon";
 import { kitAccess } from "./KitParts";
 import s from "./KitDialog.module.css";
@@ -20,13 +20,15 @@ const PARTS: Array<{ id: NodeId; title: string; icon: IconName }> = [
 
 /**
  * What the quick view shows: the kit running in a glass window over its
- * luminous well, its six parts lit or outlined, the one action, and the way
- * into the full page. Deliberately less than the page — the dialog is for
- * deciding whether to open it.
+ * luminous well; beside it, chips for type and access, the name, a six-part
+ * meter of what the kit contains, and — pinned to the bottom of the panel —
+ * the one action and the way into the full page. Deliberately less than the
+ * page: the dialog is for deciding whether to open it.
  */
 export default function KitQuickView({ kit, viewer }: { kit: Asset; viewer: Viewer | null }) {
   const graph = kitGraph(kit);
   const has = new Set<NodeId>([...graph.main, ...graph.branch].map((n) => n.id));
+  const count = PARTS.filter((p) => has.has(p.id)).length;
   const access = kitAccess(kit, viewer);
   const still = stillFor(kit, ITEM_W);
   const clip = kit.clip && !kit.sample ? clipUrl(kit.clip, ITEM_W) : undefined;
@@ -49,34 +51,48 @@ export default function KitQuickView({ kit, viewer }: { kit: Asset; viewer: View
 
       <div className={s.details}>
         <div className={s.words}>
-          <p className={s.kicker}>
-            <span className={s.kickerDot} aria-hidden="true" />
-            {typeLabel(kit.type)} · {tierLabel(kit)}
-            {kit.sample ? <Tag tone="sample">{kit.illustrative ? "Illustrative" : "Sample"}</Tag> : null}
+          <p className={s.chips}>
+            <span className={s.chip}>{typeLabel(kit.type)}</span>
+            <span className={s.chip}>{tierLabel(kit)}</span>
+            {kit.sample ? (
+              <span className={s.chip} data-tone="sample">
+                {kit.illustrative ? "Illustrative" : "Sample"}
+              </span>
+            ) : null}
           </p>
           <h2 className={s.name}>{kit.name}</h2>
           {kit.tagline ? <p className={s.tagline}>{kit.tagline}</p> : null}
         </div>
 
-        <div className={s.contains}>
-          <p className={s.containsLabel}>
-            What’s in this kit
-            <span>{PARTS.filter((p) => has.has(p.id)).length}/6</span>
-          </p>
+        <section className={s.contains} aria-label="What’s in this kit">
+          <div className={s.containsHead}>
+            <p>What’s in this kit</p>
+            <span>
+              {count} of {PARTS.length} parts
+            </span>
+          </div>
+          <span className={s.meter} aria-hidden="true">
+            {PARTS.map((p) => (
+              <i key={p.id} data-on={has.has(p.id) ? "" : undefined} />
+            ))}
+          </span>
           <ul className={s.parts}>
             {PARTS.map((p) => (
               <li key={p.id} data-on={has.has(p.id) ? "" : undefined}>
                 <Icon name={p.icon} size={14} />
-                {p.title}
+                <span>{p.title}</span>
+                {has.has(p.id) ? null : <small>Not yet</small>}
                 <span className="v-sr">{has.has(p.id) ? ", published" : ", not published yet"}</span>
               </li>
             ))}
           </ul>
-          <p className={s.proof}>
-            {graph.verified ? <Signal /> : null}
-            {graph.verified ? "Rebuild verified — the test records are on the kit page." : "Not yet verified."}
+          <p className={s.proof} data-ok={graph.verified ? "" : undefined}>
+            <span className={s.proofMark} aria-hidden="true">
+              {graph.verified ? <Icon name="check" size={12} /> : null}
+            </span>
+            {graph.verified ? "Rebuild verified — the test records are on the kit page." : "Not verified yet."}
           </p>
-        </div>
+        </section>
 
         <div className={s.actions}>
           <p className={s.access}>
@@ -88,7 +104,7 @@ export default function KitQuickView({ kit, viewer }: { kit: Asset; viewer: View
               Link would match (.)item again and re-open the dialog. */}
           <a href={`/item/${kit.slug}`} className={s.open}>
             Open the full kit
-            <Icon name="arrow" size={16} />
+            <Icon name="arrowUpRight" size={16} />
           </a>
         </div>
       </div>

@@ -63,29 +63,36 @@
 /* ---------- Spotlight dot canvas ---------- */
 
 .spotlight {
-  --sx: 50vw;
-  --sy: 30vh;
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
   pointer-events: none;
 }
 
-.dotsBase,
-.dotsLit {
+.dotsBase {
   position: absolute;
   inset: 0;
+  color: rgba(255, 255, 255, 0.055);
   background-image: radial-gradient(circle, currentColor 1px, transparent 1.4px);
   background-size: 22px 22px;
   background-position: 11px 11px;
 }
 
-.dotsBase { color: rgba(255, 255, 255, 0.055); }
-
+/* The lamp: a 520px square of brighter dots, masked to a soft circle and
+   moved by transform. Its background position is kept on the grid in JS. */
 .dotsLit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 520px;
+  height: 520px;
   color: rgba(255, 214, 180, 0.55);
-  -webkit-mask-image: radial-gradient(260px circle at var(--sx) var(--sy), #000 0%, transparent 70%);
-  mask-image: radial-gradient(260px circle at var(--sx) var(--sy), #000 0%, transparent 70%);
+  background-image: radial-gradient(circle, currentColor 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(closest-side, #000 0%, transparent 70%);
+  mask-image: radial-gradient(closest-side, #000 0%, transparent 70%);
+  will-change: transform;
 }
 
 @media (hover: none), (prefers-reduced-motion: reduce) {

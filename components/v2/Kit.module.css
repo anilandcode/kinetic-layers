@@ -76,9 +76,7 @@
   height: 34px;
   padding: 0 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  background: rgba(30, 30, 34, 0.72);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  background: rgba(30, 30, 34, 0.94);
 }
 
 .windowBar i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); }
@@ -88,7 +86,8 @@
   margin-right: 33px;
   overflow: hidden;
   color: var(--v-text-3);
-  font: 400 var(--v-meta)/1 var(--v-mono);
+  font-size: var(--v-meta);
+  font-weight: 500;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -108,9 +107,7 @@
   padding: 1.375rem;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--v-r-card);
-  background: linear-gradient(180deg, rgba(40, 40, 46, 0.55), rgba(18, 18, 21, 0.62));
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  backdrop-filter: blur(22px) saturate(140%);
+  background: linear-gradient(180deg, rgb(27, 27, 30), rgb(15, 15, 17));
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.07) inset,
     0 40px 90px -40px rgba(0, 0, 0, 0.95);

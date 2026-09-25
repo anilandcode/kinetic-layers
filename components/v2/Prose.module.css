@@ -23,12 +23,10 @@
   padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(40, 40, 46, 0.45), rgba(18, 18, 21, 0.5));
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  background: linear-gradient(180deg, rgb(24, 24, 26), rgb(14, 14, 16));
 }
 
-.tocHead { margin: 0; color: var(--v-text-3); font: 500 var(--v-meta)/1 var(--v-mono); }
+.tocHead { margin: 0; color: var(--v-text-3); font-size: var(--v-meta); font-weight: 500; }
 .toc ol { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
 
 .toc a {
@@ -46,7 +44,7 @@
 .toc a:hover { color: var(--v-text); background: rgba(255, 255, 255, 0.05); }
 
 .toc a[aria-current] { color: var(--v-text); background: rgba(255, 255, 255, 0.08); }
-.toc a[aria-current]::before { content: ""; width: 5px; height: 5px; flex: none; border-radius: 50%; background: var(--v-ember); box-shadow: 0 0 8px rgba(232, 131, 74, 0.9); }
+.toc a[aria-current]::before { content: ""; width: 5px; height: 5px; flex: none; border-radius: 50%; background: var(--v-text); box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); }
 
 @media (max-width: 1100px) {
   .toc { display: none; }
@@ -69,7 +67,7 @@
 .prose { display: grid; gap: 1rem; color: var(--v-text-2); font-size: 1rem; line-height: 1.75; }
 .prose p, .prose ul, .prose ol { margin: 0; }
 .prose ul, .prose ol { display: grid; gap: 0.5rem; padding-left: 1.25rem; }
-.prose li::marker { color: var(--v-ember); }
+.prose li::marker { color: var(--v-text-3); }
 .prose strong { color: var(--v-text); font-weight: 500; }
 .prose em { color: var(--v-text); }
 
@@ -98,7 +96,7 @@
   margin: 0;
   padding: 1rem 1.125rem;
   border: 1px dashed var(--v-line-strong);
-  border-left: 2px solid var(--v-ember);
+  border-left: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 14px;
   color: var(--v-text-2);
   font-size: var(--v-small);
@@ -114,9 +112,7 @@
   padding: 0.5rem clamp(1.125rem, 2.5vw, 1.75rem);
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--v-r-card);
-  background: linear-gradient(180deg, rgba(40, 40, 46, 0.5), rgba(18, 18, 21, 0.58));
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  backdrop-filter: blur(22px) saturate(140%);
+  background: linear-gradient(180deg, rgb(25, 25, 28), rgb(15, 15, 17));
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.07) inset,
     0 40px 90px -40px rgba(0, 0, 0, 0.95);
@@ -132,7 +128,7 @@
 
 .term:first-child { border-top: 0; }
 
-.termNo { grid-row: span 2; padding-top: 0.25rem; color: var(--v-ember); font: 500 var(--v-meta)/1 var(--v-mono); }
+.termNo { grid-row: span 2; padding-top: 0.3rem; color: var(--v-text-3); font-size: var(--v-meta); font-weight: 500; font-variant-numeric: tabular-nums; }
 .term dt { margin-bottom: 0.5rem; color: var(--v-text); font-size: 1.125rem; font-weight: 500; letter-spacing: -0.015em; }
 .term dd { margin: 0; color: var(--v-text-2); line-height: 1.7; }
 .term dd a { color: var(--v-text); text-decoration: underline; text-decoration-color: var(--v-line-strong); text-underline-offset: 4px; }
@@ -195,11 +191,15 @@
 }
 
 .logTag {
-  padding: 0.3125rem 0.6875rem;
-  border: 1px solid rgba(232, 131, 74, 0.45);
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--v-r-pill);
-  color: #f0b48c;
-  font: 500 var(--v-meta)/1 var(--v-mono);
+  color: var(--v-text);
+  font-size: var(--v-meta);
+  font-weight: 500;
   white-space: nowrap;
 }
 

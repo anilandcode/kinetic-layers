@@ -27,12 +27,9 @@ const MORE = [
   { href: "/license", label: "License" },
 ];
 
-/* Home is the library with a short hero on top, so Library reads as current
-   on both. */
-const isCurrent = (pathname: string, href: string) =>
-  pathname === href ||
-  pathname.startsWith(`${href}/`) ||
-  (href === "/library" && (pathname === "/" || pathname.startsWith("/direction/")));
+/* A link is current on its own page and below it — never on Home, which has
+   its own place (the brand) even though it shows the library. */
+const isCurrent = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
 function initial(viewer: Viewer) {
   return (viewer.name || viewer.email || "?").trim().charAt(0).toUpperCase() || "?";

@@ -36,7 +36,9 @@ export default function KitCard({ kit, priority = false }: { kit: Asset; priorit
 
   return (
     <Link ref={ref} href={`/item/${kit.slug}`} className={s.card} data-flip-id={`kit-${kit.slug}`} data-sample={kit.sample ? "" : undefined}>
-      <Gradient palette={kit.palette} image={still} className={s.well}>
+      {/* No blurred copy of the image in the well: the window already shows it,
+          and 22 blurred, blended copies were a real cost while scrolling. */}
+      <Gradient palette={kit.palette} className={s.well}>
         <span className={s.window} data-kit-media={kit.slug}>
           <span className={s.windowBar} aria-hidden="true">
             <i />

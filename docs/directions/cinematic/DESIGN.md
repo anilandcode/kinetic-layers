@@ -43,9 +43,9 @@ editor. It is moody, precise and tool-like.
    where there is something behind them to frost.
 3. **White is the action.** The primary action is a white pill; secondary
    actions are glass pills.
-4. **One ember.** A single warm accent (`#E8834A`) marks live and current
-   things: the badge dot, section kickers, node ports and the wire pulse.
-   Never a fill, never a button.
+4. **One ember, on data only.** A single warm accent (`#E8834A`) marks live
+   data: the anatomy dots, node ports and the wire pulse. Text labels are
+   white. Never a fill, never a button.
 5. **Short hero, then the product.** The hero is a centred line, two pills
    and the product under glass. The library follows immediately.
 
@@ -73,7 +73,8 @@ copy uses blur 34px, saturation 1.25 and brightness 0.62, with a vignette.
 - **General Sans**, self-hosted (docs/FONTS.md).
 - The headline is centred, weight 500, `clamp(38px → 64px)`, tracking −3.5%,
   balanced.
-- Section kickers are ember at 13px/500, above white titles.
+- Section subtitles are frosted pills: 28px tall, a 1px light edge, 13px General
+  Sans Medium in white, no dot. Body text is Medium (500).
 - Node fields use Geist Mono at 12px, in dark inset rows.
 
 ## Shape

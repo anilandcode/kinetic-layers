@@ -44,9 +44,7 @@ export default async function CinematicHome() {
 
           <div className={`${l.container} ${s.heroWords}`}>
             {EARLY_ACCESS ? (
-              <p className={s.badge}>
-                <span className={s.ember} aria-hidden="true" /> Early access · free with an account
-              </p>
+              <p className={s.badge}>Early access · free with an account</p>
             ) : null}
             <h1 id="home-title" className={s.headline}>
               <span className={s.line}>
@@ -79,9 +77,7 @@ export default async function CinematicHome() {
         {/* ---------- The library ---------- */}
         <section id="library" className={`${l.container} ${s.library}`} aria-labelledby="library-title">
           <div className={s.sectionHead}>
-            <p className={s.kicker}>
-              <span className={s.kickerDot} aria-hidden="true" /> The library
-            </p>
+            <p className={s.kicker}>The library</p>
             <h2 id="library-title" className={s.sectionTitle}>
               Kits, shown running.
             </h2>
@@ -92,9 +88,7 @@ export default async function CinematicHome() {
         {/* ---------- How a kit works ---------- */}
         <section id="how-a-kit-works" className={`${l.container} ${s.section}`} aria-labelledby="how-title">
           <div className={s.sectionHead}>
-            <p className={s.kicker}>
-              <span className={s.kickerDot} aria-hidden="true" /> How a kit works
-            </p>
+            <p className={s.kicker}>How a kit works</p>
             <h2 id="how-title" className={s.sectionTitle}>
               One design, the prompts that rebuild it, and the proof that they do.
             </h2>

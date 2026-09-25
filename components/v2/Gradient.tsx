@@ -1,6 +1,7 @@
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import type { Palette } from "@/lib/kl/types";
 import { kitHues, luminousVars } from "@/lib/v2/gradient";
+import { isAnimatedImage } from "@/lib/v2/kit";
 import s from "./Gradient.module.css";
 
 /**
@@ -45,7 +46,8 @@ export default function Gradient({
       {...rest}
     >
       <span className={s.mesh} aria-hidden="true" />
-      {image ? (
+      {/* Never an animated image: blurred and blended, it would repaint every frame. */}
+      {image && !isAnimatedImage(image) ? (
         // eslint-disable-next-line @next/next/no-img-element -- decorative, an image already on the page
         <img className={s.smoke} src={image} alt="" aria-hidden="true" loading="lazy" decoding="async" />
       ) : null}

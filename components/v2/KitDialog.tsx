@@ -127,7 +127,7 @@ export default function KitDialog({ name, children }: { name: string; children: 
           transition={{ duration: closing ? 0.16 : 0.22, ease: EASE }}
         >
           <button ref={closeButtonRef} type="button" className={s.close} onClick={close} aria-label={`Close ${name}`}>
-            <Icon name="close" size={20} />
+            <Icon name="close" size={16} />
           </button>
           {children}
         </motion.div>

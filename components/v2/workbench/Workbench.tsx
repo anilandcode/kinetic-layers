@@ -7,6 +7,7 @@ import { clip as clipUrl, ITEM_W } from "@/lib/kl/media";
 import { kitGraph, stillFor, tierLabel, typeLabel, type NodeId } from "@/lib/v2/kit";
 import Icon, { type IconName } from "../Icon";
 import Media from "../Media";
+import { StillImage } from "../FirstFrame";
 import Mark from "../Mark";
 import { EASE, gsap, MOTION_OK } from "../motion";
 import s from "./Workbench.module.css";
@@ -304,8 +305,7 @@ export default function Workbench({
                         <span className={s.tileName}>{k.name}</span>
                         <span className={s.tileMeta}>{typeLabel(k.type)}</span>
                         <span className={s.tileThumb}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          {stillFor(k, 300) ? <img src={stillFor(k, 300)} alt="" loading="lazy" decoding="async" /> : null}
+                          {stillFor(k, 300) ? <StillImage src={stillFor(k, 300)!} /> : null}
                         </span>
                         {k.slug === kit.slug ? (
                           <span className={s.tick} aria-hidden="true">
@@ -361,8 +361,7 @@ export default function Workbench({
             <div data-node="" className={`${s.node} ${s.selected}`} style={place(BOX.reference)}>
               <div className={s.inner}>
                 <span className={s.thumb}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  {still ? <img src={still} alt="" /> : null}
+                  {still ? <StillImage src={still} /> : null}
                 </span>
                 <span className={s.ports}>
                   <span>

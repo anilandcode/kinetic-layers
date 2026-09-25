@@ -47,10 +47,7 @@ export default function PageHero({
         <div className={s.heroGrid}>
           <div className={s.heroWords}>
             {kicker ? (
-              <p className={s.kicker}>
-                <span className={s.kickerDot} aria-hidden="true" />
-                {kicker}
-              </p>
+              <p className={s.kicker}>{kicker}</p>
             ) : null}
             <h1 id={id} className={s.title}>
               {title}
@@ -83,10 +80,7 @@ export function SectionHead({
     <div className={s.sectionHead}>
       <div className={s.sectionWords}>
         {kicker ? (
-          <p className={s.kicker}>
-            <span className={s.kickerDot} aria-hidden="true" />
-            {kicker}
-          </p>
+          <p className={s.kicker}>{kicker}</p>
         ) : null}
         <h2 id={id} className={s.sectionTitle}>
           {title}

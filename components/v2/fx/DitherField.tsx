@@ -132,7 +132,9 @@ export default function DitherField({
     gl.uniform3f(u("u_c3"), ...c3);
     gl.uniform1f(u("u_gain"), gain);
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    /* 1×, not the screen's ratio: the dots are 5px cells, so extra pixels
+       only multiply the shader's work. */
+    const dpr = 1;
     const resize = () => {
       const w = Math.max(1, Math.floor(el.clientWidth * dpr));
       const h = Math.max(1, Math.floor(el.clientHeight * dpr));
@@ -145,8 +147,6 @@ export default function DitherField({
       gl.uniform1f(u("u_cell"), cell * dpr);
     };
     resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(el);
 
     /* The pointer eases toward where it is, so the bloom drifts rather than jumps. */
     const mouse = { x: 0.62, y: 0.55, tx: 0.62, ty: 0.55 };
@@ -157,24 +157,63 @@ export default function DitherField({
     };
     window.addEventListener("pointermove", onMove, { passive: true });
 
+    /* Thirty frames a second is plenty for a field this slow, and while the
+       page scrolls it holds still: its GPU work then stops competing with the
+       scroll, and the glass above it stops being re-blurred. Time is
+       accumulated rather than read from the clock, so it resumes where it
+       paused instead of jumping. */
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let visible = true;
+    let scrolling = false;
     let raf = 0;
-    const start = performance.now();
-    const frame = (now: number) => {
-      mouse.x += (mouse.tx - mouse.x) * 0.05;
-      mouse.y += (mouse.ty - mouse.y) * 0.05;
+    let t = 12;
+    let last = 0;
+    const draw = () => {
       gl.uniform2f(u("u_mouse"), mouse.x, mouse.y);
-      gl.uniform1f(u("u_time"), still ? 12 : (now - start) / 1000 + 12);
+      gl.uniform1f(u("u_time"), t);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
-      if (!still && visible && !document.hidden) raf = requestAnimationFrame(frame);
+    };
+    const frame = (now: number) => {
+      raf = 0;
+      if (still) {
+        draw();
+        return;
+      }
+      if (scrolling || !visible || document.hidden) return;
+      if (now - last >= 32) {
+        const dt = last ? Math.min(now - last, 50) : 16;
+        last = now;
+        t += dt / 1000;
+        mouse.x += (mouse.tx - mouse.x) * 0.1;
+        mouse.y += (mouse.ty - mouse.y) * 0.1;
+        draw();
+      }
+      raf = requestAnimationFrame(frame);
     };
     const kick = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(frame);
     };
+    let settle = 0;
+    const onScroll = () => {
+      scrolling = true;
+      window.clearTimeout(settle);
+      settle = window.setTimeout(() => {
+        scrolling = false;
+        last = 0;
+        kick();
+      }, 150);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    /* Resizing a canvas clears it, so every resize also redraws — which a
+       still (reduced-motion) field would otherwise never do. */
+    const ro = new ResizeObserver(() => {
+      resize();
+      kick();
+    });
+    ro.observe(el);
     const io = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
       if (visible) kick();
@@ -187,6 +226,8 @@ export default function DitherField({
 
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(settle);
+      window.removeEventListener("scroll", onScroll);
       ro.disconnect();
       io.disconnect();
       window.removeEventListener("pointermove", onMove);

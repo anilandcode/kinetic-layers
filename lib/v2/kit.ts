@@ -24,6 +24,15 @@ export function tierLabel(kit: Pick<Asset, "free">): string {
  * flatten the animation. Real kits go through lib/kl/media.ts as before, with
  * a frame cut from the clip for video-only kits.
  */
+/**
+ * Whether an image URL animates (a GIF, or Mux's animated WebP). Several
+ * preview samples are hotlinked animated GIFs; left in an <img> they repaint
+ * on every frame, so components show their first frame and animate on intent.
+ */
+export function isAnimatedImage(url?: string | null): boolean {
+  return Boolean(url && (/\.gif(\?|#|$)/i.test(url) || /\/animated\.webp/i.test(url)));
+}
+
 export function stillFor(kit: Asset, width = CARD_W): string | undefined {
   if (kit.sample) return kit.poster;
   if (kit.poster) return img(kit.poster, width);

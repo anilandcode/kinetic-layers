@@ -122,35 +122,105 @@
   line-height: 1.55;
 }
 
-.notice svg { flex: none; margin-top: 2px; color: var(--v-ember); }
+.notice svg { flex: none; margin-top: 2px; color: var(--v-text-2); }
 .notice strong { color: var(--v-text); font-weight: 500; }
 
-/* ---------- Compare ---------- */
+/* ---------- Compare ----------
+   A plan table as the references draw them: two plan heads with their
+   prices, the proposed plan's column lit faintly in cobalt from top to
+   bottom, checks for yes and figures for allowances. */
 
-.compare { padding: 0.5rem clamp(1rem, 2.5vw, 1.75rem) 1rem; }
+.compare {
+  overflow: hidden;
+  padding: 0.5rem clamp(0.75rem, 2vw, 1.5rem) 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--v-r-card);
+  background: linear-gradient(180deg, rgb(24, 24, 27), rgb(13, 13, 15));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.07) inset,
+    0 40px 90px -40px rgba(0, 0, 0, 0.95);
+}
 
-.table { width: 100%; border-collapse: collapse; font-size: var(--v-small); }
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--v-small);
+  table-layout: fixed;
+}
 
-.table thead th {
-  padding: 1rem 1rem 0.75rem 0;
+.labelCol { width: 38%; }
+
+.table th,
+.table td { padding: 0.9375rem 1rem; text-align: left; vertical-align: middle; }
+
+/* Hairlines between rows, drawn on the cells so the lit column stays whole. */
+.table tbody tr:not(.group) > * { box-shadow: inset 0 1px 0 var(--v-line); }
+
+/* The proposed plan's column. */
+.table [data-featured] {
+  background: linear-gradient(180deg, rgba(76, 96, 255, 0.1), rgba(76, 96, 255, 0.06));
+}
+
+.table thead [data-featured] {
+  border-radius: 18px 18px 0 0;
+  background:
+    radial-gradient(120% 140% at 50% 0%, rgba(110, 120, 255, 0.35), transparent 70%),
+    linear-gradient(180deg, rgba(76, 96, 255, 0.16), rgba(76, 96, 255, 0.1));
+  box-shadow: inset 0 1px 0 rgba(160, 170, 255, 0.35);
+}
+
+.table tbody:last-child tr:last-child [data-featured] { border-radius: 0 0 18px 18px; }
+
+.table thead th { padding-top: 1.25rem; padding-bottom: 1.25rem; vertical-align: bottom; }
+
+.planName { display: block; color: var(--v-text); font-size: var(--v-body); font-weight: 500; }
+
+.planPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
   color: var(--v-text);
+  font-size: 1.75rem;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.planPrice small { color: var(--v-text-3); font-size: var(--v-meta); font-weight: 500; letter-spacing: 0; }
+
+.table th[scope="row"] { color: var(--v-text); font-weight: 500; }
+
+.group th { padding: 1.5rem 1rem 0.625rem; }
+
+.groupPill {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgb(25, 25, 27);
+  color: rgba(242, 242, 240, 0.9);
+  font-size: var(--v-meta);
   font-weight: 500;
-  text-align: left;
 }
 
-.table th[scope="row"] { padding: 0.875rem 1rem 0.875rem 0; color: var(--v-text-2); font-weight: 400; text-align: left; }
-.table td { padding: 0.875rem 1rem 0.875rem 0; color: var(--v-text); }
-.table tbody tr { border-top: 1px solid var(--v-line); }
-
-.group th {
-  padding: 1.5rem 0 0.5rem;
-  color: var(--v-text-3);
-  font: 500 var(--v-meta)/1 var(--v-mono);
-  letter-spacing: 0.02em;
-  text-align: left;
+.yes {
+  display: inline-grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--v-text);
+  color: var(--v-on-primary);
 }
 
-.table tbody tr.group { border-top: 0; }
+.text { color: var(--v-text-2); }
+
+.allowance { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; color: var(--v-text-2); }
+.allowance strong { margin-right: 0.25rem; color: var(--v-text); font-size: 1.125rem; font-weight: 500; }
 
 /* ---------- FAQ ---------- */
 
@@ -166,9 +236,7 @@
 .faq details {
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(40, 40, 46, 0.5), rgba(18, 18, 21, 0.55));
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  background: linear-gradient(180deg, rgb(25, 25, 28), rgb(14, 14, 16));
 }
 
 .faq summary {
@@ -217,9 +285,16 @@
   .faqGrid { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* On a phone: one card per group; each row shows both plans, labelled. */
 @media (max-width: 640px) {
+  .compare { padding: 0.5rem 1rem 1rem; }
+  .table, .table tbody, .table tr, .table th, .table td { display: block; width: auto; }
   .table thead { display: none; }
-  .table tbody tr:not(.group) { display: grid; gap: 0.375rem; padding: 0.875rem 0; }
-  .table th[scope="row"], .table td { padding: 0; }
-  .table td::before { content: attr(data-label) " · "; color: var(--v-text-3); }
+  .table [data-featured] { background: none; border-radius: 0; }
+  .group td { display: none; }
+  .table tbody tr:not(.group) { display: grid; gap: 0.5rem; padding: 0.875rem 0; box-shadow: inset 0 1px 0 var(--v-line); }
+  .table tbody tr:not(.group) > * { padding: 0; box-shadow: none; }
+  .table td { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .table td::before { content: attr(data-label); color: var(--v-text-3); font-size: var(--v-meta); }
+  .group th { padding: 1.25rem 0 0.25rem; }
 }

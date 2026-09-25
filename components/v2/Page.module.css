@@ -1,5 +1,5 @@
 /* Inner pages in Home's language (components/v2/cinematic/CinematicHome.module.css):
-   a short dithered hero, ember kickers, glass panels over the dotted canvas,
+   a short dithered hero, frosted subtitle pills, glass panels over the dotted canvas,
    and luminous cards where a figure deserves colour. */
 
 .page { position: relative; z-index: 1; padding-bottom: 1rem; }
@@ -57,25 +57,29 @@
 .crumbs a:hover { color: var(--v-text); }
 .crumbs [aria-current] { color: var(--v-text); }
 
+/* The subtitle: a small frosted pill, white words, no dot. The same pill
+   heads every section on every page. */
 .kicker {
   display: inline-flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
+  justify-self: start;
+  width: fit-content;
+  height: 28px;
   margin: 0;
-  color: var(--v-text-2);
-  font: 500 var(--v-meta)/1.3 var(--v-mono);
-  letter-spacing: 0.02em;
+  padding: 0 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgb(25, 25, 26);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: rgba(242, 242, 240, 0.9);
+  font: 500 0.8125rem/1 var(--v-font);
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 
-.kickerDot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--v-ember);
-  box-shadow: 0 0 10px rgba(232, 131, 74, 0.9);
-}
+/* A reference code under a notice (the error boundary's digest). */
+.reference { margin: 0; color: var(--v-text-3); font: 400 var(--v-meta)/1.4 var(--v-mono); }
 
 .title {
   margin: 0;
@@ -142,9 +146,7 @@
   padding: clamp(1.25rem, 2.5vw, 1.75rem);
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--v-r-card);
-  background: linear-gradient(180deg, rgba(40, 40, 46, 0.55), rgba(18, 18, 21, 0.62));
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  backdrop-filter: blur(22px) saturate(140%);
+  background: linear-gradient(180deg, rgb(27, 27, 30), rgb(15, 15, 17));
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.07) inset,
     0 40px 90px -40px rgba(0, 0, 0, 0.95);

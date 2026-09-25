@@ -13,10 +13,10 @@
 
 :global([data-look="cinematic"]) .card {
   position: relative;
-  background: linear-gradient(180deg, rgba(34, 34, 38, 0.72), rgba(16, 16, 18, 0.82));
+  /* Opaque enough to need no backdrop blur: a blur here re-rendered every
+     card on every scroll frame. */
+  background: linear-gradient(180deg, rgba(30, 30, 34, 0.94), rgba(15, 15, 17, 0.96));
   box-shadow: var(--v-shade);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
 }
 
 /* A hairline that catches the light under the pointer. */
@@ -44,9 +44,9 @@
 /* The kit's page, rising out of the well like a browser window. */
 .window {
   position: absolute;
-  left: 9%;
-  right: 9%;
-  top: 11%;
+  left: 4.5%;
+  right: 4.5%;
+  top: 6%;
   bottom: -2px;
   display: flex;
   flex-direction: column;
@@ -71,8 +71,8 @@
   flex: none;
   gap: 4px;
   align-items: center;
-  height: 16px;
-  padding: 0 8px;
+  height: 18px;
+  padding: 0 9px;
   background: color-mix(in oklab, var(--v-surface) 92%, var(--v-text));
 }
 
@@ -80,7 +80,7 @@
 
 .windowMedia { position: relative; flex: 1; min-height: 0; }
 
-.flag { position: absolute; top: 10px; left: 10px; z-index: 2; }
+.flag { position: absolute; top: 8px; left: 8px; z-index: 2; }
 
 .foot {
   display: flex;

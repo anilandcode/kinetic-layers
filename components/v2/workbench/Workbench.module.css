@@ -126,9 +126,7 @@
   padding: 10px;
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(46, 46, 52, 0.55), rgba(24, 24, 28, 0.55));
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  background: linear-gradient(180deg, rgb(31, 31, 34), rgb(19, 19, 21));
   scrollbar-width: none;
 }
 
@@ -201,7 +199,8 @@
   background: #e8e8e6;
 }
 
-.tileThumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.tileThumb img,
+.tileThumb canvas { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
 
 .tick {
   position: absolute;
@@ -316,9 +315,7 @@
   padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 16px;
-  background: linear-gradient(180deg, rgba(52, 52, 58, 0.62), rgba(30, 30, 34, 0.62));
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  backdrop-filter: blur(18px) saturate(140%);
+  background: linear-gradient(180deg, rgb(37, 37, 41), rgb(23, 23, 26));
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 24px 50px -24px rgba(0, 0, 0, 0.9);
 }
 
@@ -334,7 +331,8 @@
 .inner { position: relative; display: grid; gap: 8px; padding: 10px; border-radius: 11px; background: rgba(0, 0, 0, 0.32); }
 
 .thumb { display: block; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 8px; background: #1a1a1d; }
-.thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.thumb img,
+.thumb canvas { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
 
 .ports { display: grid; justify-items: end; gap: 4px; color: var(--v-text-2); }
 .ports span, .inputs span, .outLabel { display: inline-flex; align-items: center; gap: 0.4rem; }
@@ -505,11 +503,9 @@
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 10px;
-  background: rgba(40, 40, 44, 0.7);
+  background: rgb(32, 32, 35);
   color: var(--v-text-2);
   font-size: 16px;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
 }
 
 .zoom button:hover { color: var(--v-text); }
@@ -580,9 +576,7 @@
   padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(52, 52, 58, 0.55), rgba(26, 26, 30, 0.55));
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  background: linear-gradient(180deg, rgb(34, 34, 37), rgb(20, 20, 22));
   box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.9);
 }
 

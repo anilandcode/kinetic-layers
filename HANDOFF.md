@@ -3,6 +3,46 @@
 This document records operational decisions and known traps. Verify material
 implementation details in the current source before acting.
 
+## Tweaks and scroll performance — 2026-09-25 (branch `redesign/v2`)
+
+**Your requested changes:**
+- **Nav:**
+  - it is a full pill;
+  - it has no background at the top and frosts once content scrolls under
+    it;
+  - Library is lit only on `/library`, not on Home.
+- **Type:** body weight is 500.
+- **Subtitles:** a frosted white pill (`.kicker`) with no orange dot, on
+  every page.
+- **Pricing:** the comparison is a plan table with a tinted Founding column.
+- **Kit cards:** a bigger mockup.
+- **Quick view:** a new side panel, with a parts meter and pinned actions.
+
+**Why scrolling lagged, and the rules that now keep it smooth:**
+
+1. **Animated images.** 17 of the 20 preview samples are hotlinked animated
+   GIFs, and an animating `<img>` repaints every frame. Now:
+   - `Media` shows the first frame on a canvas (`components/v2/FirstFrame.tsx`)
+     and plays the GIF only on hover, or when in view on a kit page, just like
+     video clips;
+   - the workbench thumbnails use `StillImage`;
+   - `Gradient` never blurs an animated image.
+   - **Never put an animated image in a plain `<img>`.**
+2. **Backdrop blurs over a fixed layer.**
+   - The dotted `Spotlight` canvas scrolls with the page now: the lamp is a
+     520px square moved by transform. It used to be fixed, which made every
+     `backdrop-filter` element re-blur on every scroll frame.
+   - Blur is kept only where it frosts something: the scrolled header,
+     dialogs, and glass over the dither field or images.
+   - Flat panels use opaque fills that match their old look.
+3. **`DitherField`:** 1× pixels, 30fps, and paused while the page scrolls.
+
+**Measured** in the browser pane at 1440×900 with samples on, before → after:
+- idle at the top of Home: 135ms → 35ms per frame;
+- idle at the workbench: 185ms → 70ms;
+- scrolling: 177ms → 62ms on average, and 335ms → 148ms at the 95th
+  percentile.
+
 ## v2 complete: the whole platform in the `/` style — 2026-09-25 (branch `redesign/v2`)
 
 Every route now renders v2 in the style of `/`. v1 is gone. Nothing has

@@ -1,6 +1,9 @@
 /* Page structure and the type scale, shared by every v2 screen. */
 
+/* Relative, so the dotted canvas (fx/Spotlight) can cover the whole page
+   and scroll with it. */
 .shell {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;

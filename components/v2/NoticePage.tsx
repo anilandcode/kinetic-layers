@@ -31,10 +31,7 @@ export default function NoticePage({
             <span className={p.noticeIcon} data-tone={tone} aria-hidden="true">
               <Icon name={tone === "good" ? "check" : "arrow"} size={18} />
             </span>
-            <p className={p.kicker}>
-              <span className={p.kickerDot} aria-hidden="true" />
-              {eyebrow}
-            </p>
+            <p className={p.kicker}>{eyebrow}</p>
             <h1 id="notice-title" className={p.noticeTitle}>
               {title}
             </h1>

@@ -15,20 +15,22 @@ import l from "./layout.module.css";
 import p from "./Page.module.css";
 import s from "./Pricing.module.css";
 
-type Row = [label: string, current: string, founding: string];
+/* A cell is a yes (drawn as a check), a pair of daily allowances, or words. */
+type Cell = true | { reads: number; downloads: number } | string;
+type Row = [label: string, current: Cell, founding: Cell];
 
 function comparison(): Array<[group: string, rows: Row[]]> {
   return [
     [
       "Library",
       [
-        ["Browse kits with real previews", "Yes", "Yes"],
-        ["Open kits with an account", EARLY_ACCESS ? "Yes" : "Not open", "Yes"],
+        ["Browse kits with real previews", true, true],
+        ["Open kits with an account", EARLY_ACCESS ? true : "Not open", true],
         ["Verified source files", "When available", "When available"],
         [
-          "Prompt reads and downloads a day",
-          `${LIMITS.free.prompt} and ${LIMITS.free.download}`,
-          `${LIMITS.premium.prompt} and ${LIMITS.premium.download}`,
+          "Daily allowance",
+          { reads: LIMITS.free.prompt, downloads: LIMITS.free.download },
+          { reads: LIMITS.premium.prompt, downloads: LIMITS.premium.download },
         ],
       ],
     ],
@@ -39,7 +41,7 @@ function comparison(): Array<[group: string, rows: Row[]]> {
         [
           "Future verified releases",
           EARLY_ACCESS ? "While early access is open" : "Preview when published",
-          "Included when membership opens",
+          "Included when it opens",
         ],
         ["Price", "No charge today", "$24 a month when it opens"],
       ],
@@ -52,6 +54,30 @@ function comparison(): Array<[group: string, rows: Row[]]> {
       ],
     ],
   ];
+}
+
+function CompareCell({ value }: { value: Cell }) {
+  if (value === true) {
+    return (
+      <span className={s.yes}>
+        <Icon name="check" size={13} />
+        <span className="v-sr">Yes</span>
+      </span>
+    );
+  }
+  if (typeof value === "object") {
+    return (
+      <span className={s.allowance}>
+        <span>
+          <strong>{value.reads}</strong> prompt reads
+        </span>
+        <span>
+          <strong>{value.downloads}</strong> downloads
+        </span>
+      </span>
+    );
+  }
+  return <span className={s.text}>{value}</span>;
 }
 
 const FAQS: Array<[string, string]> = [
@@ -207,29 +233,44 @@ export default async function PricingView() {
 
         <section className={`${l.container} ${p.section}`} aria-labelledby="compare-title">
           <SectionHead id="compare-title" kicker="Compare" title="What is available now, and what is planned." />
-          <div className={`${p.panel} ${s.compare}`}>
+          <div className={s.compare}>
             <table className={s.table}>
               <thead>
                 <tr>
-                  <th scope="col">
-                    <span className="v-sr">Feature</span>
+                  <th scope="col" className={s.labelCol}>
+                    <span className="v-sr">What you get</span>
                   </th>
-                  <th scope="col">{EARLY_ACCESS ? "Early access" : "Free"}</th>
-                  <th scope="col">Founding Membership</th>
+                  <th scope="col">
+                    <span className={s.planName}>{EARLY_ACCESS ? "Early access" : "Free"}</span>
+                    <span className={s.planPrice}>
+                      $0 <small>today</small>
+                    </span>
+                  </th>
+                  <th scope="col" data-featured="">
+                    <span className={s.planName}>Founding Membership</span>
+                    <span className={s.planPrice}>
+                      $24 <small>a month, proposed</small>
+                    </span>
+                  </th>
                 </tr>
               </thead>
               {comparison().map(([group, rows]) => (
                 <tbody key={group}>
                   <tr className={s.group}>
-                    <th scope="colgroup" colSpan={3}>
-                      {group}
+                    <th scope="colgroup" colSpan={2}>
+                      <span className={s.groupPill}>{group}</span>
                     </th>
+                    <td data-featured="" aria-hidden="true" />
                   </tr>
                   {rows.map(([label, current, founding]) => (
                     <tr key={label}>
                       <th scope="row">{label}</th>
-                      <td data-label={EARLY_ACCESS ? "Early access" : "Free"}>{current}</td>
-                      <td data-label="Founding Membership">{founding}</td>
+                      <td data-label={EARLY_ACCESS ? "Early access" : "Free"}>
+                        <CompareCell value={current} />
+                      </td>
+                      <td data-label="Founding Membership" data-featured="">
+                        <CompareCell value={founding} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
