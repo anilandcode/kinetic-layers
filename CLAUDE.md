@@ -5,8 +5,16 @@ This is **Kinetic Layers**, live at https://kineticlayers.com on Vercel.
 The name is Kinetic Layers everywhere — in code, in copy, in identifiers. "Kiln"
 and "Direction Kit" are retired and should not appear in anything new. Where they
 survive it is deliberate and historical: the archived demand test at
-`app/_archive-direction-kit/`, applied Supabase migration filenames, the GitHub
-repo slug, and nothing else.
+`app/_archive-direction-kit/`, applied Supabase migration filenames, and
+nothing else. (The GitHub repo was itself renamed from `direction-kit` to
+`kinetic-layers` — `git remote -v` to confirm before assuming otherwise.)
+
+**Two Vercel projects exist; only one is live.** This checkout is linked to
+`kinetic-layers` (every push previews there) — but kineticlayers.com is
+served by the separate `direction-kit` project, which does not auto-deploy
+from git. Never assume `vercel --prod` or a push to `main` updates the live
+site. See HANDOFF.md's top entry for the real deploy steps before shipping
+anything.
 
 Before doing anything else, in this order:
 

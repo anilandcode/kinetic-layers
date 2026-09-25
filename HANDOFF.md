@@ -3,6 +3,52 @@
 This document records operational decisions and known traps. Verify material
 implementation details in the current source before acting.
 
+## Launched: kineticlayers.com now runs the v2 redesign — 2026-09-25
+
+The owner asked to go live. Investigation first, since HANDOFF and README
+disagreed with each other about whether the site was already live — neither
+was right. The real state:
+
+- **Two Vercel projects exist.** `kinetic-layers` is the one linked in this
+  checkout; it deploys a preview for every push and has almost no
+  environment configured (Sanity id/dataset and a site URL only — no
+  Supabase, no email, no storage). **`direction-kit` is the one that holds
+  `kineticlayers.com` and `www.kineticlayers.com`**, and carries the real
+  production environment: Sanity read token, full Supabase, Resend, R2,
+  the admin token, the contact email, the site URL, early access. This
+  repo's own `.vercel/project.json` names the wrong one — do not trust it
+  for "which project is live."
+- **`direction-kit`'s git integration does not auto-deploy.** Pushing to
+  `main` (fast-forwarded from `redesign/v2`, a clean 11-commit,
+  zero-behind fast-forward) deployed `kinetic-layers` immediately but never
+  triggered `direction-kit` — confirmed by watching both projects' deploy
+  lists after the same push. Going live took a direct
+  `vercel deploy --prod --project direction-kit` from a disposable git
+  worktree (never relink the main checkout — see Commands). If a git push
+  should trigger `direction-kit` too, that needs reconnecting in the Vercel
+  dashboard (Project → Settings → Git); until then, treat every future
+  release the same way: build and `vercel deploy --prod` explicitly against
+  `direction-kit`.
+- **DNS needed nothing.** The domain already resolved to Vercel (that's how
+  the old site was reachable at all); no registrar or nameserver was
+  touched.
+- **One real bug found on the live site, fixed:** `NEXT_PUBLIC_CONTACT_EMAIL`
+  on `direction-kit` was `hello@directionkit.com` — the retired name,
+  30+ days stale. Corrected to `hello@kineticlayers.com`
+  (`vercel env rm` / `env add`, then a redeploy — it's inlined at build
+  time) and verified on `/contact`, `/license`, `/privacy`. If any other
+  `direction-kit`/`kiln`-domain value turns up anywhere, it's the same
+  class of bug: fix the Vercel env var and redeploy, don't just edit code.
+- **Still open, unchanged from Outstanding item 1 below, now more urgent
+  since it's live:** Supabase's Auth Site URL is still `localhost`, so
+  sign-in/sign-up will fail on the real domain until the owner fixes it in
+  the Supabase dashboard. Everything not behind an account (browsing, kit
+  pages, pricing, docs) works.
+- Left untouched on purpose: `EARLY_ACCESS`, Stripe (unconfigured, gated
+  off), the unrun `premium_contract.sql`, OAuth (disabled), catalogue
+  content (still the 2 real kits + excluded seed placeholders — same as
+  every preview this session).
+
 ## New logo, full width, prompts in the quick view — 2026-09-25 (branch `redesign/v2`)
 
 - **Logo.** The owner's new mark — three glass layers, the lowest lit ember —
@@ -73,8 +119,8 @@ implementation details in the current source before acting.
 
 ## v2 complete: the whole platform in the `/` style — 2026-09-25 (branch `redesign/v2`)
 
-Every route now renders v2 in the style of `/`. v1 is gone. Nothing has
-reached kineticlayers.com; it goes live only when the owner says "launch".
+Every route now renders v2 in the style of `/`. v1 is gone. (Superseded by
+the launch entry above: this did reach kineticlayers.com, on 2026-09-25.)
 
 **What each route is:**
 
@@ -329,8 +375,10 @@ communities over 216 files. Rebuild with `graphify update .`.
 A marketplace for AI design assets — prompts, templates, 3D scenes, workflows.
 Free tier plus a Premium subscription. Next.js 15 App Router, TypeScript.
 
-- **Repo** `github.com/anilandcode/direction-kit` (private)
-- **Live** https://kineticlayers.com — Vercel project `direction-kit`
+- **Repo** `github.com/anilandcode/kinetic-layers` (private, renamed from `direction-kit`)
+- **Live** https://kineticlayers.com — Vercel project `direction-kit` (not
+  the `kinetic-layers` Vercel project linked in this checkout — see the
+  launch entry at the top)
 - **Local** `~/Projects/direction-kit` — **not** in Google Drive. It was, and the
   Drive mount broke builds with `ECANCELED`. Do not move it back.
 
@@ -522,7 +570,19 @@ node --env-file=.env.local tools/import-asset.mjs ./incoming/x --dry-run
 node tools/optimize-clip.mjs clip.mp4              # trim + poster, ~2 MB
 npx wrangler deploy --config workers/media/wrangler.jsonc
 graphify update .                                  # refresh the code graph
-npx vercel --prod
+```
+
+**Deploying to kineticlayers.com is not `npx vercel --prod`.** This checkout
+is linked to the `kinetic-layers` Vercel project, which is not the one the
+domain is on — see the launch entry at the top. To ship a real release:
+
+```bash
+git push origin redesign/v2:main                   # or whatever branch is ready
+git worktree add -q --detach /tmp/kl-deploy main
+cd /tmp/kl-deploy
+vercel link --yes --project direction-kit --cwd .   # links only this worktree
+vercel deploy --prod --yes --cwd .
+cd - && git worktree remove --force /tmp/kl-deploy
 ```
 
 Demo accounts: `demo@kineticlayers.com` (free) and `demo.pro@kineticlayers.com`

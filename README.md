@@ -10,9 +10,12 @@ entitlement and files.
 
 ## Current public experience
 
-On `redesign/v2`, every route is drawn in one look, the cinematic workbench
+**Live at kineticlayers.com since 2026-09-25.** Every route is drawn in one
+look, the cinematic workbench
 ([docs/directions/cinematic/DESIGN.md](docs/directions/cinematic/DESIGN.md)).
-kineticlayers.com still serves `main` until launch.
+The domain runs on the **`direction-kit` Vercel project, not
+`kinetic-layers`** (the one this checkout is linked to) — see HANDOFF.md's
+top entry before deploying anything.
 
 - `/` has a short hero over a WebGL dither field and a four-card deck. The
   library follows at once, then the workbench (how a kit works) and the
