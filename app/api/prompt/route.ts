@@ -22,7 +22,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  let body: { slug?: string };
+  let body: { slug?: string; kind?: string };
   try {
     body = await request.json();
   } catch {
@@ -30,6 +30,9 @@ export async function POST(request: NextRequest) {
   }
 
   const slug = typeof body.slug === "string" ? body.slug.slice(0, 120) : "";
+  /* Which prompt: the reconstruction prompt, or the adaptation prompt. Both
+     sit behind the same gate and draw on the same daily allowance. */
+  const kind = body.kind === "adaptation" ? "adaptation" : "reconstruction";
   if (!slug) return NextResponse.json({ ok: false, message: "Which asset?" }, { status: 400 });
 
   const asset = await getAsset(slug);
@@ -68,7 +71,7 @@ export async function POST(request: NextRequest) {
   /* Only fetched after the check passes. getPromptBody is the one query that
      selects promptBody at all — every other projection omits it, so the text
      cannot leak through a card or a listing by accident. */
-  const prompt = await getPromptBody(slug);
+  const prompt = await getPromptBody(slug, kind);
 
   if (!prompt) {
     /* Nothing was delivered, so nothing should have been charged. */

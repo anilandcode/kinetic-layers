@@ -10,18 +10,17 @@ import s from "@/components/v2/KitDialog.module.css";
  */
 export default function Loading() {
   return (
-    <div data-v2 className={s.layer}>
+    <div data-v2 data-look="cinematic" className={s.layer}>
       <div className={s.veil}>
         <div className={s.panel} aria-busy="true">
           <p className="v-sr" role="status">Loading the kit…</p>
           <div className={s.layout} aria-hidden="true">
-            <div className={s.stage}>
-              <div className={`${s.frame} ${s.skeletonBlock}`} style={{ ["--ratio" as string]: "1.4" }} />
-            </div>
+            <div className={`${s.stage} ${s.skeletonBlock}`} style={{ ["--ratio" as string]: "1.4", borderRadius: 0 }} />
             <div className={s.details}>
               <div className={s.skeletonBlock} style={{ height: 18, width: "40%" }} />
               <div className={s.skeletonBlock} style={{ height: 44, width: "75%" }} />
-              <div className={s.skeletonBlock} style={{ height: 64 }} />
+              <div className={s.skeletonBlock} style={{ height: 150 }} />
+              <div className={s.skeletonBlock} style={{ height: 150 }} />
               <div className={s.skeletonBlock} style={{ height: 52, marginTop: "auto" }} />
             </div>
           </div>

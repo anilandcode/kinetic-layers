@@ -81,7 +81,7 @@ export default function FirstFrame({
             io?.disconnect();
           }
         },
-        { rootMargin: "400px" }
+        { rootMargin: "400px" },
       );
       io.observe(canvas);
     }
@@ -93,7 +93,15 @@ export default function FirstFrame({
     };
   }, [src, fit, eager]);
 
-  return <canvas ref={ref} className={className} role="img" aria-label={alt || undefined} aria-hidden={alt ? undefined : true} />;
+  return (
+    <canvas
+      ref={ref}
+      className={className}
+      role="img"
+      aria-label={alt || undefined}
+      aria-hidden={alt ? undefined : true}
+    />
+  );
 }
 
 /**

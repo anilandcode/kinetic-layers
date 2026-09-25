@@ -286,15 +286,23 @@ export async function searchAssets(q: string, limit = 8): Promise<Asset[]> {
   );
 }
 
-/** The one place a gated prompt is read in full. Callers must check entitlement. */
-export async function getPromptBody(slug: string): Promise<string> {
-  const r = await ask<{ promptBody?: string } | null>(
+/**
+ * The one place a gated prompt is read in full — the reconstruction prompt
+ * by default, or the adaptation prompt. Callers must check entitlement.
+ */
+export async function getPromptBody(
+  slug: string,
+  kind: "reconstruction" | "adaptation" = "reconstruction"
+): Promise<string> {
+  const r = await ask<{ body?: string } | null>(
     null,
-    groq`*[_type == "asset" && slug.current == $slug][0]{ promptBody }`,
+    kind === "adaptation"
+      ? groq`*[_type == "asset" && slug.current == $slug][0]{ "body": adaptationPrompt }`
+      : groq`*[_type == "asset" && slug.current == $slug][0]{ "body": promptBody }`,
     { slug },
     { next: { tags: [`asset:${slug}`] } }
   );
-  return r?.promptBody ?? "";
+  return r?.body ?? "";
 }
 
 /** File storage paths, for the download route only. */

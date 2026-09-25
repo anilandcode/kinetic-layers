@@ -3,6 +3,34 @@
 This document records operational decisions and known traps. Verify material
 implementation details in the current source before acting.
 
+## New logo, full width, prompts in the quick view — 2026-09-25 (branch `redesign/v2`)
+
+- **Logo.** The owner's new mark — three glass layers, the lowest lit ember —
+  replaces the old monochrome squares everywhere:
+  - `components/v2/Mark.tsx` now renders `public/brand/mark.png` (an 8 KB,
+    128px palette PNG cut from the owner's transparent WebP);
+  - `app/icon.png` (96px) is the favicon, and `app/apple-icon.png` (180px, on
+    the dark canvas) the web clip — both replace the generated `icon.tsx` and
+    `apple-icon.tsx`;
+  - both share images embed the same PNG.
+  - The workbench and the MCP orbit now hold it in dark glass rather than
+    white.
+- **Full width.** `--v-max` is `100%`. Every page spans the screen inside the
+  gutter, which now reaches 3rem.
+- **Grid.** The library's scroll reveal is a fade only. The old rise with a
+  stagger left rows out of line while it played.
+- **Quick view:**
+  - the kit fills the whole left of the dialog;
+  - the side panel scrolls above a footer that never covers it;
+  - "What's in this kit" is now **Prompts**. Each published prompt shows its
+    length and first lines, with **Copy prompt** (`components/v2/CopyPrompt.tsx`),
+    followed by the kit's other parts as chips.
+  - Copy fetches from `/api/prompt` — same gate, one daily read, kept after
+    the first copy — and falls back to a select-by-hand box if the browser
+    refuses the clipboard.
+- **`/api/prompt`** takes `kind: "adaptation"` for the adaptation prompt, read
+  by `getPromptBody(slug, kind)`. MCP is unchanged.
+
 ## Tweaks and scroll performance — 2026-09-25 (branch `redesign/v2`)
 
 **Your requested changes:**

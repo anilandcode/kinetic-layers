@@ -29,14 +29,13 @@
 .brand { display: inline-flex; align-items: center; gap: 0.5rem; }
 
 .brandMark {
-  --v-text: #0a0a0b;
-  --v-canvas: #ffffff;
   display: inline-grid;
   width: 34px;
   height: 34px;
   place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 50%;
-  background: #f2f2f0;
+  background: rgb(26, 26, 29);
 }
 
 .crumb,

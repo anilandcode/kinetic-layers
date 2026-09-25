@@ -62,6 +62,13 @@ const nextConfig: NextConfig = {
   // The demand test ships no raster assets at all — every visual is inline
   // SVG or CSS — so the image optimizer has nothing to do.
   images: { unoptimized: true },
+  /* The share images read the mark from disk (app/opengraph-image.tsx and the
+     kit's). A file under public/ is served statically and is not otherwise
+     traced into a function, so name it for both routes. */
+  outputFileTracingIncludes: {
+    "/opengraph-image": ["./public/brand/mark.png"],
+    "/item/[slug]/opengraph-image": ["./public/brand/mark.png"],
+  },
   /**
    * /studio is a redirect, not a page.
    *

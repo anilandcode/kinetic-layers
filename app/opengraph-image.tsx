@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getKits } from "@/lib/v2/data";
 import { SITE_NAME } from "@/lib/kl/site";
@@ -16,6 +18,7 @@ export const contentType = "image/png";
  * fetched — so this is deliberately plain.
  */
 export default async function Image() {
+  const mark = `data:image/png;base64,${(await readFile(join(process.cwd(), "public/brand/mark.png"))).toString("base64")}`;
   const kits = await getKits();
   const free = kits.filter((k) => k.free).length;
 
@@ -38,17 +41,8 @@ export default async function Image() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 26, letterSpacing: 1, color: "#F2F2F0" }}>
-          <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
-            <defs>
-              <linearGradient id="klMarkOg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#F4F4F2" />
-                <stop offset="1" stopColor="#737371" />
-              </linearGradient>
-            </defs>
-            <path d="M4 0H36A4 4 0 0 1 40 4V36A4 4 0 0 1 36 40H10C4.5 40 0 35.5 0 30V4A4 4 0 0 1 4 0Z" fill="url(#klMarkOg)" />
-            <path d="M14 10H36A4 4 0 0 1 40 14V36A4 4 0 0 1 36 40H15C12.2 40 10 37.8 10 35V14A4 4 0 0 1 14 10Z" fill="#FFFFFF" fillOpacity="0.34" />
-            <path d="M23 20H37A3 3 0 0 1 40 23V37A3 3 0 0 1 37 40H22C20.9 40 20 39.1 20 38V23A3 3 0 0 1 23 20Z" fill="#FFFFFF" fillOpacity="0.52" />
-          </svg>
+          {/* eslint-disable-next-line @next/next/no-img-element -- rendered by next/og, not the browser */}
+          <img src={mark} width={34} height={34} alt="" />
           <div>{SITE_NAME}</div>
         </div>
 

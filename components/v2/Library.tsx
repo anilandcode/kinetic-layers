@@ -106,8 +106,10 @@ export default function Library({
     if (next !== `${window.location.pathname}${window.location.search}`) window.history.replaceState(null, "", next);
   }, [filters, sort, q, syncUrl]);
 
-  /* Cards below the fold rise in as they arrive. Cards already on screen at
-     load are left alone, so nothing visible ever blinks out and back. */
+  /* Cards below the fold fade in as they arrive — opacity only: a rise with
+     a stagger left each row out of line while it played (and for longer on
+     a slow machine). Cards already on screen at load are left alone, so
+     nothing visible ever blinks out and back. */
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
@@ -118,7 +120,8 @@ export default function Library({
         ScrollTrigger.batch(below, {
           start: "top 94%",
           once: true,
-          onEnter: (batch) => gsap.from(batch, { y: 28, opacity: 0, duration: 0.7, ease: EASE, stagger: 0.06 }),
+          onEnter: (batch) =>
+            gsap.from(batch, { opacity: 0, duration: 0.6, ease: EASE, stagger: 0.04, clearProps: "opacity" }),
         });
       });
       return () => mm.revert();

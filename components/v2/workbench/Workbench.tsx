@@ -193,7 +193,7 @@ export default function Workbench({
       <div className={s.top}>
         <span className={s.brand}>
           <span className={s.brandMark}>
-            <Mark size={18} />
+            <Mark size={22} />
           </span>
           <span className={s.crumb}>Workbench</span>
           <span className={s.crumbDim}>Kit anatomy</span>
