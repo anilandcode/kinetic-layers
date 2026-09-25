@@ -1,14 +1,15 @@
+/* Luminous and dithered: the kit's hue lit from within, its own picture
+   faint underneath, and a halftone screen breaking the glow into dots toward
+   the shadow — the dark dashboard reference's cards. */
+
 .gradient {
-  --g1: var(--v-silver-1);
-  --g2: var(--v-silver-2);
-  --g3: var(--v-silver-3);
   --l1: hsl(220 14% 62%);
   --l2: hsl(222 12% 34%);
   --l3: hsl(226 14% 10%);
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: var(--v-surface-2);
+  background: var(--l3);
 }
 
 .mesh,
@@ -20,45 +21,10 @@
   pointer-events: none;
 }
 
-/* ---------- Soft: pastel mesh ---------- */
-
+/* A hot core high on one side, the body of the colour, a fall into near-black. */
 .mesh {
-  inset: -30%;
-  z-index: -5;
-  background:
-    radial-gradient(38% 46% at 24% 30%, var(--g1) 0%, transparent 72%),
-    radial-gradient(44% 52% at 78% 24%, var(--g2) 0%, transparent 74%),
-    radial-gradient(52% 56% at 60% 86%, var(--g3) 0%, transparent 76%),
-    linear-gradient(160deg, var(--g2), var(--g3));
-  filter: blur(34px) saturate(1.05);
-}
-
-.smoke { display: none; }
-.halftone { display: none; }
-
-.glow {
-  inset: 0;
-  z-index: -2;
-  background: radial-gradient(34% 44% at calc(var(--mx, 72) * 1%) calc(var(--my, 18) * 1%), rgba(255, 255, 255, 0.55), transparent 70%);
-  mix-blend-mode: soft-light;
-}
-
-.grain {
-  inset: 0;
-  z-index: -1;
-  opacity: var(--v-grain);
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  mix-blend-mode: overlay;
-}
-
-/* ---------- Cinematic: luminous, dithered ---------- */
-
-:global([data-look="cinematic"]) .gradient { background: var(--l3); }
-
-/* The kit's hue lit from within: a hot core high on one side, the body of
-   the colour, and a fall into near-black — the dark dashboard's cards. */
-:global([data-look="cinematic"]) .mesh {
   inset: -20%;
+  z-index: -5;
   background:
     radial-gradient(42% 48% at 26% 18%, var(--l1) 0%, transparent 70%),
     radial-gradient(60% 60% at 82% 40%, var(--l2) 0%, transparent 72%),
@@ -67,8 +33,7 @@
   filter: blur(26px) saturate(1.2);
 }
 
-:global([data-look="cinematic"]) .smoke {
-  display: block;
+.smoke {
   inset: -10%;
   z-index: -4;
   width: 120%;
@@ -80,15 +45,17 @@
   mix-blend-mode: luminosity;
 }
 
-:global([data-look="cinematic"]) .glow {
+/* A highlight that follows the pointer: --mx / --my (0–100) from motion.ts. */
+.glow {
+  inset: 0;
+  z-index: -2;
   background: radial-gradient(40% 50% at calc(var(--mx, 70) * 1%) calc(var(--my, 16) * 1%), rgba(255, 255, 255, 0.3), transparent 70%);
   mix-blend-mode: screen;
 }
 
 /* The dither: a fine dot screen that shows in the shadow and melts into the
    light, so the gradient reads as printed dots toward its dark edge. */
-:global([data-look="cinematic"]) .halftone {
-  display: block;
+.halftone {
   inset: 0;
   z-index: -3;
   background:
@@ -98,41 +65,14 @@
   mask-image: linear-gradient(170deg, transparent 18%, #000 78%);
 }
 
-:global([data-look="cinematic"]) .grain { opacity: 0.09; }
+.grain {
+  inset: 0;
+  z-index: -1;
+  opacity: 0.09;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
 
 @media (prefers-reduced-transparency: reduce) {
   .smoke { display: none !important; }
-}
-
-/* ---------- Cinematic, clean take: the first version's smoke wells ----------
-   /direction/cinematic sets data-cine="clean": the kit's picture as smoke over
-   a low luminous mesh, no halftone. Higher specificity than the rules above,
-   so `/` keeps its luminous, dithered wells. */
-
-:global([data-look="cinematic"] [data-cine="clean"]) .gradient { background: #0d0d0f; }
-
-:global([data-look="cinematic"] [data-cine="clean"]) .mesh {
-  opacity: 0.5;
-  filter: blur(40px) saturate(1.1);
-}
-
-:global([data-look="cinematic"] [data-cine="clean"]) .smoke {
-  inset: -12%;
-  width: 124%;
-  height: 124%;
-  filter: blur(34px) saturate(1.25) brightness(0.62);
-  opacity: 0.9;
-  mix-blend-mode: normal;
-  transform: scale(1.06);
-}
-
-:global([data-look="cinematic"] [data-cine="clean"]) .halftone { display: none; }
-
-:global([data-look="cinematic"] [data-cine="clean"]) .gradient::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(5, 5, 6, 0.55) 100%);
-  pointer-events: none;
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import NoticePage from "@/components/kl/NoticePage";
+import NoticePage from "@/components/v2/NoticePage";
 import { confirmByToken } from "@/lib/kl/newsletter";
 
 /* Nothing here should be indexed or cached: it is a one-time action addressed
@@ -18,9 +18,10 @@ export default async function Confirm({
   if (outcome === "done" || outcome === "already") {
     return (
       <NoticePage
+        tone="good"
         eyebrow="Subscribed"
         title={outcome === "done" ? "You're on the list." : "You were already on the list."}
-        body="One email a week — the new assets and what they were built for. Every one of them can unsubscribe you."
+        body="One email a week — the new kits and what they were built for. Every one of them can unsubscribe you."
         action={{ href: "/library", label: "Browse the library" }}
       />
     );

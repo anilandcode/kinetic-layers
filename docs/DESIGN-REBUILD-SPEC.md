@@ -206,6 +206,13 @@ values unless media proportions require them.
 
 ## 6. Visual foundations
 
+> **Superseded, 2026-09-25.** The visual foundations — type, colour, shape,
+> effects — are now set by
+> [docs/directions/cinematic/DESIGN.md](directions/cinematic/DESIGN.md) and
+> implemented in `styles/kl-foundations.css`. The typeface is General Sans.
+> The text below is kept for its reasoning; where it disagrees, DESIGN.md
+> wins.
+
 ### 6.1 Typography
 
 Retain Maison Neue only if its web licence is confirmed. Use the system sans
@@ -452,6 +459,11 @@ Each requires its own permissions and empty/error states. Third-party content
 cannot reuse product purchase/download components.
 
 ## 10. Motion system
+
+> **Superseded, 2026-09-25.** Motion is GSAP 3.15 (`components/v2/motion.ts`),
+> as described in the Motion section of
+> [docs/directions/cinematic/DESIGN.md](directions/cinematic/DESIGN.md). The
+> reduced-motion rules below still apply.
 
 Framer Motion is the shared interface motion layer. CSS handles simple color,
 border and opacity feedback. GSAP or WebGL may exist inside an isolated demo,

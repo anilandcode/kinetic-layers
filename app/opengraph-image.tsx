@@ -1,9 +1,9 @@
 import { ImageResponse } from "next/og";
-import { getSettings } from "@/lib/sanity/queries";
+import { getKits } from "@/lib/v2/data";
 import { SITE_NAME } from "@/lib/kl/site";
 import { EARLY_ACCESS } from "@/lib/kl/access";
 
-export const alt = "Kinetic Layers — a library worth stealing from";
+export const alt = "Kinetic Layers — original website and motion kits your AI can rebuild";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -16,7 +16,8 @@ export const contentType = "image/png";
  * fetched — so this is deliberately plain.
  */
 export default async function Image() {
-  const settings = await getSettings();
+  const kits = await getKits();
+  const free = kits.filter((k) => k.free).length;
 
   return new ImageResponse(
     (
@@ -28,13 +29,16 @@ export default async function Image() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "linear-gradient(150deg, #F7F7F6 0%, #F7F6F3 58%)",
-          color: "#14161A",
+          /* Home's ember glow, low on the right, over the near-black canvas. */
+          backgroundColor: "#0A0A0B",
+          backgroundImage:
+            "radial-gradient(60% 70% at 85% 95%, rgba(232,131,74,0.55), rgba(194,71,122,0.25) 45%, rgba(10,10,11,0) 75%)",
+          color: "#F2F2F0",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 26, letterSpacing: 6, color: "#17181A" }}>
-          <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
+        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 26, letterSpacing: 1, color: "#F2F2F0" }}>
+          <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
             <defs>
               <linearGradient id="klMarkOg" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0" stopColor="#F4F4F2" />
@@ -45,25 +49,24 @@ export default async function Image() {
             <path d="M14 10H36A4 4 0 0 1 40 14V36A4 4 0 0 1 36 40H15C12.2 40 10 37.8 10 35V14A4 4 0 0 1 14 10Z" fill="#FFFFFF" fillOpacity="0.34" />
             <path d="M23 20H37A3 3 0 0 1 40 23V37A3 3 0 0 1 37 40H22C20.9 40 20 39.1 20 38V23A3 3 0 0 1 23 20Z" fill="#FFFFFF" fillOpacity="0.52" />
           </svg>
-          <div>{SITE_NAME.toUpperCase()}</div>
+          <div>{SITE_NAME}</div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          <div style={{ fontSize: 74, lineHeight: 1.05, letterSpacing: -2, maxWidth: 900 }}>
-            Prompts, templates, scenes and workflows.
+          <div style={{ fontSize: 72, lineHeight: 1.04, letterSpacing: -2, maxWidth: 940 }}>
+            Original website and motion kits your AI can rebuild.
           </div>
-          {/* One string child, not three. Satori requires an explicit
-              display on any element with multiple children, and interpolation
-              splits text into separate nodes — "text {value} text" is three. */}
-          <div style={{ fontSize: 30, color: "#6B6E75", maxWidth: 820 }}>
-            {`Built in one studio, released when ready. ${settings.freeThisMonth} free.`}
+          {/* One string child: Satori needs an explicit display on any element
+              with several children, and interpolation splits text into nodes. */}
+          <div style={{ fontSize: 28, color: "#A1A1A6", maxWidth: 860 }}>
+            Each kit is a finished design with its spec and the prompts that recreate it in your stack.
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 34, fontSize: 22, color: "#6B6E75", letterSpacing: 3 }}>
-          <div>{`${settings.totalAssets} ASSETS`}</div>
-          <div>{`${settings.collectionCount} COLLECTIONS`}</div>
-          <div>{EARLY_ACCESS ? "FREE — EARLY ACCESS" : `$${settings.monthlyPrice}/MONTH`}</div>
+        <div style={{ display: "flex", gap: 34, fontSize: 22, color: "#A1A1A6", letterSpacing: 2 }}>
+          <div>{`${kits.length} ${kits.length === 1 ? "KIT" : "KITS"} · ${free} FREE`}</div>
+          <div>CLAUDE CODE AND CURSOR, OVER MCP</div>
+          <div>{EARLY_ACCESS ? "FREE — EARLY ACCESS" : "PREMIUM PLANNED"}</div>
         </div>
       </div>
     ),

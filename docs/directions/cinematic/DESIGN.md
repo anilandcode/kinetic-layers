@@ -1,26 +1,25 @@
 # Direction B — Cinematic workbench (chosen)
 
-**Status:** chosen by the owner on 2026-09-24. There are two takes to compare:
+**Status:** chosen by the owner on 2026-09-24, and on 2026-09-25 carried to
+every route. It is the only look; the soft direction and the "clean take" at
+`/direction/cinematic` are retired.
 
-- **`/`, the deck take:**
-  - a short centred hero over the dither field, and the four-card deck;
-  - the library;
-  - **the workbench** (`components/v2/workbench/`) in the "How a kit works"
-    slot — the owner placed it there;
-  - the dithered call to action.
-- **`/direction/cinematic`, the clean take** (previews only). This is the
-  first cinematic version the owner liked, refined:
-  - the kit's smoke with SVG-displaced stone at the edges and light from
-    above;
-  - a centred headline whose second clause fades into the smoke;
-  - the glass product window: a light-catching edge, one light sweep, a rail,
-    and working Preview · Anatomy · Prompt tabs;
-  - two glass cards drifting over its edges with the pointer (no tilt);
-  - a row of facts (real figures only);
-  - calm smoke wells on the cards (`data-cine="clean"`);
-  - the node canvas;
-  - glass over smoke to close.
-  - Code: `components/v2/cinematic/CleanHome.tsx`, `ProductWindow.tsx`.
+**`/`, the deck take**, is the source every other page follows:
+
+- a short centred hero over the dither field, and the four-card deck;
+- the library;
+- **the workbench** (`components/v2/workbench/`) in the "How a kit works"
+  slot — the owner placed it there;
+- the dithered call to action (`AccessBand`).
+
+**How the rest of the site follows it:**
+
+- **Inner pages** open with `PageHero`: Home's hero at a third of the
+  height, with the glow top right.
+- **Figures** are the deck's glowing cards (`Gradient` with a named hue)
+  showing dot-matrix numbers — pricing plans and account stats.
+- **Forms and lists** sit on the workbench's glass panels.
+- **The kit page** runs the workbench with `single`.
 
 Kinetic Layers as a dark, atmospheric workbench. It is near-black, and the
 featured kit's own picture is blurred into smoke behind everything. Frosted
@@ -34,7 +33,7 @@ editor. It is moody, precise and tool-like.
 | 1 — Reticla | The floating glass capsule header. The centred headline over dramatic imagery, with dark masses at the edges. The product shown in a glass window under the hero. White pill buttons, and one warm micro-accent. |
 | 2 — Node editor (fox) | The dotted canvas. Glass nodes with coloured port dots. Curved wires. The bottom legend chip. |
 | 5 — Node editor (orange figure) | The warm, low-lit glass. Node fields as dark inset rows. |
-| 4 — Dark gradient dashboard | Luminous gradient cards on black, with the same cards as the soft direction lit from within. |
+| 4 — Dark gradient dashboard | Luminous gradient cards on black: colour lit from within each card. |
 
 ## Principles
 
@@ -71,7 +70,7 @@ copy uses blur 34px, saturation 1.25 and brightness 0.62, with a vignette.
 
 ## Type
 
-- **General Sans**, as in Direction A.
+- **General Sans**, self-hosted (docs/FONTS.md).
 - The headline is centred, weight 500, `clamp(38px → 64px)`, tracking −3.5%,
   balanced.
 - Section kickers are ember at 13px/500, above white titles.
@@ -119,31 +118,36 @@ Four cards, each saying something true:
   - a glass badge with the ember dot;
   - a magnetic white pill and a glass pill;
   - the four-card deck (above).
-- **Kit card:** the same card as Direction A. In this look:
+- **Kit card:**
   - the well is the kit's hue lit from within, with a halftone dither;
   - the edge catches the light under the pointer;
   - six ember anatomy dots show which parts the kit has.
-- **Node canvas:**
-  - a dotted dark canvas with six glass nodes (Reference → Design spec →
-    Reconstruction prompt → Verified output; Design spec → Adaptation prompt
-    → Your brand);
-  - coloured ports (sand, sage, sky, ember), bezier wires measured from the
-    nodes, and a legend chip;
-  - field names only, with no values, because it describes the shape of every
-    kit rather than one kit.
-- **Call to action:** smoke card, a glass panel with the pitch and pills, and
-  dot-matrix figures in ember (real counts only).
+- **Workbench** (`components/v2/workbench/`), the references' node editor:
+  - a kit picker;
+  - a 900 × 760 canvas scaled to fit, with the reference, spec, adaptation,
+    kit and tested-rebuild nodes, and parts the kit lacks drawn as outlines;
+  - a prompt bar and a preview column.
+  - With `single`, the kit page's version: the picker becomes the kit's six
+    parts, there is no preview column, and the canvas fits its height too.
+- **Page hero** (`PageHero`): the ember kicker, the title, the lede and the
+  dither glow top right.
+- **Glass panel** (`Page.module.css` `.panel`): a lit top edge, a dark
+  gradient body and a deep shadow — for forms, lists and tables.
+- **Call to action** (`AccessBand`): a dithered ember-and-rose field, a glass
+  panel with the pitch and pills, and dot-matrix figures (real counts only).
 
 ## Motion (GSAP 3.15)
 
-- **Hero:** the headline clauses rise, and the product window lifts 28px on
-  load (CSS, so it works before hydration).
-- **Cards:** the same glow, lift, ↗ turn and Flip filtering as Direction A.
-- **Node canvas:**
-  - the wires draw themselves in when the canvas scrolls into view
-    (ScrollTrigger, dash offset);
-  - then a small warm pulse runs along each wire forever (a linear dash-offset
-    loop).
+- **Hero:** the headline clauses rise and the deck lifts on load (CSS, so it
+  works before hydration). Inner-page heroes rise the same way, staggered.
+- **Cards:** a pointer glow, a lift, the ↗ turning, and Flip filtering in the library.
+- **Workbench:**
+  - picking a kit redraws the canvas: nodes rise in and the live wires draw
+    themselves (GSAP, dash offset);
+  - then a small warm pulse runs along each live wire (a linear dash-offset
+    loop);
+  - the "you" cursor is the visitor's own pointer, never an invented
+    collaborator.
 - **Reduced motion:** there are no pulses, no draw-in, and content is instant.
 
 ## Do and don't

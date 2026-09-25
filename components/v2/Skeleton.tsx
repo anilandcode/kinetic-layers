@@ -1,4 +1,4 @@
-import { ShellFrame } from "./Shell";
+import { ShellFrame } from "./ShellFrame";
 import l from "./layout.module.css";
 import s from "./Skeleton.module.css";
 

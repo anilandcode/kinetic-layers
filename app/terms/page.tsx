@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL } from "@/lib/kl/site";
 import Link from "next/link";
-import PageShell from "@/components/kl/PageShell";
-import { DraftNote, ProseHero, Terms } from "@/components/kl/Prose";
-import { getViewer } from "@/lib/kl/viewer";
+import { ContentPage, DraftNote, ProseHero, Terms } from "@/components/v2/Prose";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
@@ -13,7 +11,6 @@ export const metadata: Metadata = {
 
 /** Terms of use. What the licence page covers for assets, this covers for the service. */
 export default async function TermsPage() {
-  const viewer = await getViewer();
   const contact = CONTACT_EMAIL;
 
   const items = [
@@ -23,7 +20,7 @@ export default async function TermsPage() {
         <>
           Using the site and the service. What you may do with an asset once you
           have it is a separate document —{" "}
-          <Link href="/license" style={{ color: "var(--amber)" }}>
+          <Link href="/license">
             the licence
           </Link>
           .
@@ -65,7 +62,7 @@ export default async function TermsPage() {
   ];
 
   return (
-    <PageShell>
+    <ContentPage>
         <ProseHero
           eyebrow="Terms"
           title="Short, and meant to be read."
@@ -73,6 +70,6 @@ export default async function TermsPage() {
         />
         <DraftNote contact={contact} />
         <Terms id="terms-list" items={items} />
-      </PageShell>
+      </ContentPage>
   );
 }

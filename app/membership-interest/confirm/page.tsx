@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import NoticePage from "@/components/kl/NoticePage";
+import NoticePage from "@/components/v2/NoticePage";
 import { confirmMembershipInterest } from "@/lib/kl/membership-interest";
 
 export const metadata: Metadata = { title: "Confirm membership interest", robots: { index: false } };
@@ -16,6 +16,7 @@ export default async function ConfirmMembershipInterest({
   if (outcome === "done" || outcome === "already") {
     return (
       <NoticePage
+        tone="good"
         eyebrow="Founding Membership"
         title={outcome === "done" ? "Your interest is confirmed." : "Your interest was already confirmed."}
         body="We will email you when Founding Membership opens. This confirmation does not create a subscription or charge you."

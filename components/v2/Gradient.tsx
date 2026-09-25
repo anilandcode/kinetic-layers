@@ -1,16 +1,12 @@
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import type { Palette } from "@/lib/kl/types";
-import { gradientVars, kitHues, luminousVars } from "@/lib/v2/gradient";
+import { kitHues, luminousVars } from "@/lib/v2/gradient";
 import s from "./Gradient.module.css";
 
 /**
- * The material colour lives in.
- *
- * Soft look: a pastel mesh from the kit's own hues (the Credit Karma and
- * Superpower gradient cards).
- * Cinematic look: the dark dashboard's luminous cards — the kit's hue lit
- * from within, the kit's own picture faint underneath, and a halftone dither
- * over it so the glow breaks into dots toward the shadow.
+ * The material colour lives in: the dark dashboard's luminous cards — the
+ * kit's hue lit from within, the kit's own picture faint underneath, and a
+ * halftone dither over it so the glow breaks into dots toward the shadow.
  *
  * `--mx` / `--my` (0–100), set by an ancestor (components/v2/motion.ts), place
  * a highlight that follows the pointer. A kit with no chromatic colour gets
@@ -40,12 +36,11 @@ export default function Gradient({
   children?: ReactNode;
 } & Record<string, unknown>) {
   const hues = hue !== undefined ? (second !== undefined ? [hue, second] : [hue]) : kitHues(palette);
-  const soft = hue !== undefined ? undefined : gradientVars(palette);
   const glow = hues.length ? luminousVars(hues[0], hues[1]) : undefined;
   return (
     <Tag
       className={`${s.gradient} ${className ?? ""}`}
-      style={{ ...soft, ...glow, ...style }}
+      style={{ ...glow, ...style }}
       data-silver={hues.length ? undefined : ""}
       {...rest}
     >

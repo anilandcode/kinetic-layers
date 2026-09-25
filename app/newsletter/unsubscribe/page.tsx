@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import NoticePage from "@/components/kl/NoticePage";
+import NoticePage from "@/components/v2/NoticePage";
 import { unsubscribeByToken } from "@/lib/kl/newsletter";
 
 export const metadata: Metadata = { title: "Unsubscribed", robots: { index: false } };
@@ -23,6 +23,7 @@ export default async function Unsubscribe({
   if (outcome === "done" || outcome === "already") {
     return (
       <NoticePage
+        tone="good"
         eyebrow="Unsubscribed"
         title={outcome === "done" ? "Done — you're off the list." : "You were already off the list."}
         body="No more weekly emails. Your account, if you have one, is untouched and everything you downloaded is still yours."

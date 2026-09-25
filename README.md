@@ -10,26 +10,33 @@ entitlement and files.
 
 ## Current public experience
 
-- `/` presents 20 attributed MotionSites reference cards with two real Kinetic
-  Layers preview items. Reference cards open an attributed visual popup with a
-  source link; they never expose downloads, entitlements, or Premium actions.
-- `/library`, `/pricing`, and `/contact` are public. `/how` is archived.
-- Collections are retained for local development but intentionally return HTTP
-  404 in production, including collection detail routes.
-- Maison Neue is used for supporting UI and the neutral layered mark is shared
-  across the site icons. Public motion uses Framer Motion and respects
+On `redesign/v2`, every route is drawn in one look, the cinematic workbench
+([docs/directions/cinematic/DESIGN.md](docs/directions/cinematic/DESIGN.md)).
+kineticlayers.com still serves `main` until launch.
+
+- `/` has a short hero over a WebGL dither field and a four-card deck. The
+  library follows at once, then the workbench (how a kit works) and the
+  early-access band.
+- `/library`, `/item/[slug]` (with a quick-view interception), `/pricing`,
+  `/join` and `/account` are all v2, as are the written pages (`/docs`,
+  `/mcp`, `/changelog`, `/license`, `/privacy`, `/terms`) and `/contact`.
+- On previews only, hotlinked MotionSites references appear as "Sample" kits
+  (`lib/v2/samples.ts`). They are never counted, searched or downloadable,
+  and are absent in production.
+- `/how` and the retired collection routes answer 404.
+- The type is General Sans, fetched at build time and never committed
+  ([docs/FONTS.md](docs/FONTS.md)). Motion is GSAP and respects
   `prefers-reduced-motion`.
 
 ## Current design planning
 
-- [Design rebuild specification](docs/DESIGN-REBUILD-SPEC.md) is the current
-  visual authority: information architecture, foundations, components, page
-  requirements, motion, responsive behavior and release quality.
-- [Design rebuild backlog](docs/DESIGN-REBUILD-BACKLOG.md) defines the ordered
-  milestones, dependencies and acceptance evidence.
-- [Master plan](docs/KINETIC-LAYERS-MASTER-PLAN.md) remains the product and
-  business authority. The [older UI review](docs/KINETIC-LAYERS-UI-REVIEW.md)
-  is retained as historical evidence.
+- [Cinematic DESIGN.md](docs/directions/cinematic/DESIGN.md) is the visual
+  authority: tokens, signature effects, components and motion.
+- The [design rebuild specification](docs/DESIGN-REBUILD-SPEC.md) keeps the
+  information architecture and page requirements. Its visual sections defer
+  to DESIGN.md.
+- The [master plan](docs/KINETIC-LAYERS-MASTER-PLAN.md) remains the product and
+  business authority.
 
 ## Who owns what
 

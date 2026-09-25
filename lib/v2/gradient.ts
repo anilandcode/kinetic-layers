@@ -2,18 +2,17 @@ import type { CSSProperties } from "react";
 import type { Palette } from "@/lib/kl/types";
 
 /**
- * A kit's gradient: the soft, heavily blurred colour field inside its card.
+ * A kit's colour: the luminous, dithered glow inside its card.
  *
- * The references (Credit Karma, Superpower, Neka) put colour inside cards as
- * pastel meshes on light and luminous ones on dark. Here the hues come from
- * the kit's own image — Sanity's extracted swatches for real kits, a one-off
- * hue extraction for the preview samples — so every card carries its own
- * colour and no two kits look alike by accident.
+ * The references (the dark gradient dashboard, the node editors) put colour
+ * inside cards as luminous fields on near-black. Here the hues come from the
+ * kit's own image — Sanity's extracted swatches for real kits, a one-off hue
+ * extraction for the preview samples — so every card carries its own colour
+ * and no two kits look alike by accident.
  *
  * Only the hue is taken from the kit. Lightness and saturation are set here,
- * per theme, so a muddy screenshot still yields a clean pastel and a pale one
- * still glows on black. A kit with no chromatic colour at all gets the silver
- * mesh rather than an invented hue.
+ * so a muddy screenshot still glows cleanly on black. A kit with no chromatic
+ * colour at all gets silver rather than an invented hue.
  */
 
 type HSL = [h: number, s: number, l: number];
@@ -36,7 +35,6 @@ function toHsl(hex: string): HSL | null {
 }
 
 const css = ([h, s, l]: HSL) => `hsl(${Math.round(h)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%)`;
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const hueGap = (a: number, b: number) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
 
 /** Up to three distinct, genuinely coloured hues from a palette. */
@@ -58,36 +56,6 @@ export function kitHues(palette?: Palette | null): number[] {
     if (hues.length === 3) break;
   }
   return hues;
-}
-
-/**
- * Three stops for each theme, as CSS custom properties for Gradient.module.css.
- * One hue gets two neighbours (warmer and cooler), the way the references
- * drift green → yellow → orange across a single card.
- */
-export function gradientVars(palette?: Palette | null): CSSProperties | undefined {
-  const hues = kitHues(palette);
-  if (!hues.length) return undefined;
-  const [a, b = a + 34, c = a - 26] = hues;
-  const light: HSL[] = [
-    [a, 0.62, 0.76],
-    [b, 0.7, 0.82],
-    [c, 0.55, 0.86],
-  ];
-  const dark: HSL[] = [
-    [a, 0.72, 0.46],
-    [b, 0.78, 0.52],
-    [c, 0.6, 0.3],
-  ];
-  const norm = (x: HSL): HSL => [((x[0] % 360) + 360) % 360, clamp(x[1], 0, 1), clamp(x[2], 0, 1)];
-  return {
-    "--g1": css(norm(light[0])),
-    "--g2": css(norm(light[1])),
-    "--g3": css(norm(light[2])),
-    "--gd1": css(norm(dark[0])),
-    "--gd2": css(norm(dark[1])),
-    "--gd3": css(norm(dark[2])),
-  } as CSSProperties;
 }
 
 /* ---------------------------------------------------------------------------

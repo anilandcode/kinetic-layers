@@ -212,8 +212,7 @@
   display: grid;
   justify-items: start;
   gap: 1rem;
-  width: min(100%, 36rem);
-  margin: clamp(1rem, 6vh, 4rem) auto 0;
+  margin: 0;
 }
 
 .noticeIcon {

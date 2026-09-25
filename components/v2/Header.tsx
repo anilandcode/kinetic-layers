@@ -177,12 +177,9 @@ function Drawer({
 export default function Header({
   viewer = null,
   pending = false,
-  look = "soft",
 }: {
   viewer?: Viewer | null;
   pending?: boolean;
-  /** Each direction is a whole look, so the theme toggle stays out while they are compared. */
-  look?: "soft" | "cinematic";
 }) {
   const pathname = usePathname() ?? "/";
   const barRef = useRef<HTMLElement | null>(null);
@@ -226,7 +223,7 @@ export default function Header({
   }, [pathname]);
 
   return (
-    <header ref={barRef} className={s.bar} data-scrolled={scrolled ? "" : undefined} data-look={look}>
+    <header ref={barRef} className={s.bar} data-scrolled={scrolled ? "" : undefined} data-look="cinematic">
       <div className={s.row}>
         <Link href="/" className={s.brand} aria-label="Kinetic Layers, home">
           <Mark size={26} />

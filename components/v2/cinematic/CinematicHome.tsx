@@ -34,7 +34,7 @@ export default async function CinematicHome() {
   const bench = await getWorkbenchKits(real);
 
   return (
-    <Shell look="cinematic">
+    <Shell>
       <main className={s.home}>
         {/* ---------- Hero ---------- */}
         <section className={s.hero} aria-labelledby="home-title">

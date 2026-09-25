@@ -3,6 +3,77 @@
 This document records operational decisions and known traps. Verify material
 implementation details in the current source before acting.
 
+## v2 complete: the whole platform in the `/` style — 2026-09-25 (branch `redesign/v2`)
+
+Every route now renders v2 in the style of `/`. v1 is gone. Nothing has
+reached kineticlayers.com; it goes live only when the owner says "launch".
+
+**What each route is:**
+
+- **Inner pages** start with `PageHero` (`components/v2/PageHero.tsx`): an
+  ember kicker, a title and a lede over a small masked `DitherField`. It is
+  short, so the content starts in the first screen. Glass panels, luminous
+  cards and section heads live in `components/v2/Page.module.css`.
+- **`/library`**: the full `Library`, seeded from the URL. `getLibrary`
+  folds in popularity and the viewer's saved kits, and a **Saved** filter
+  appears for a signed-in viewer who has saved something.
+- **`/item/[slug]`**:
+  - the kit in a glass window over its luminous well, with the access panel
+    beside it;
+  - the workbench in single-kit mode (`<Workbench single />`), where the
+    picker becomes the kit's six parts;
+  - each part in full under tabs (`KitDetails`), then related kits.
+  - *Read the full prompt* (`PromptReveal`, via `/api/prompt`) and *Save for
+    later* (`SaveButton`, via `/api/save`) are back; v2 had lost both.
+- **Quick view**: the same window and well, and the six parts lit or
+  outlined.
+- **`/pricing`**: two of the deck's glowing cards, with allowances in the dot
+  matrix from `lib/kl/limits.ts`, then a comparison and a FAQ. Founding
+  Membership is a proposal with an interest list, never a checkout.
+- **`/join` and `/reset-password`**: a glass card over the dithered field
+  (`AuthStage`), running the same server actions.
+- **`/account`**:
+  - Dashboard, with four luminous stat cards, recent downloads and saved kits;
+  - Downloads;
+  - Profile, with name, password and API keys;
+  - Plan.
+  - Reads and actions are unchanged.
+- **Written pages** (`/docs`, `/mcp`, `/changelog`, `/license`, `/privacy`,
+  `/terms`) use `components/v2/Prose.tsx`, with a sticky contents list on
+  `/docs` and `/mcp`.
+- **`/contact`** is three deck cards.
+- **The notices, `not-found` and `error`** are glass cards over the field.
+  `error.tsx` imports `ShellFrame` from its own file, because `Shell.tsx`
+  pulls in the server-only viewer.
+- **Icon and share images** are dark, with the existing mark. The logo is
+  unchanged: the owner put that work on hold.
+
+**Removed:**
+
+- **Routes:**
+  - `/direction/soft` and `/direction/cinematic`, with `SoftHome`,
+    `CleanHome` and `ProductWindow`;
+  - `/bench-preview`, `/design-system` and `/collections`, which were already
+    404 in every deployed environment.
+- **Code:** `components/kl`, `components/legacy` (Analytics moved to
+  `components/v2`), `components/bench`, NodeGraph, NodeCanvas, FeatureCard,
+  Glass, ThemeToggle, Parallax and Waveform.
+- **The soft look**, and every stylesheet except `styles/kl-foundations.css`,
+  which now holds the tokens, the base resets and nothing else.
+- **In the layout:** the theme script and the serif font.
+- **Kept on purpose:**
+  - the archived demand test's components (`ClientRuntime`, `ConceptChrome`,
+    `Wordmark`, `graphics`, `components/concepts`) — see CLAUDE.md;
+  - `/plan`, which keeps its own palette.
+
+**Still open:**
+
+- **Contact address:** locally, `NEXT_PUBLIC_CONTACT_EMAIL` is
+  `hello@directionkit.com`, so `/contact` and the licence show the retired
+  name. Set it to the Kinetic Layers address wherever it is set.
+- **Signed-out `/account`** answers 200 and streams a redirect to
+  `/join?next=/account`. No account content is sent.
+
 ## v2: the owner chose the cinematic direction — 2026-09-24 (branch `redesign/v2`)
 
 `/` now renders the cinematic home, built out to the references with:

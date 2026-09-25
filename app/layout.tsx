@@ -1,21 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { preload } from "react-dom";
-import Analytics from "@/components/legacy/Analytics";
+import Analytics from "@/components/v2/Analytics";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/kl/site";
 import "./globals.css";
-
-/**
- * The design links these three from the Google Fonts CDN. next/font fetches
- * them at build time and serves them from our own origin instead, so the
- * typography is identical and the page still makes no third-party request.
- */
-const serif = Source_Serif_4({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-  variable: "--font-serif",
-  display: "swap",
-});
 
 /**
  * The interface face, standing in until the v2 canvas settles it.
@@ -64,14 +52,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  /* Light is the default ground, so a single near-black bar sat wrong above a
-     warm-white page on mobile. These follow the OS preference; the in-page
-     toggle (localStorage['kl-theme']) is finer-grained than browser chrome
-     can track. */
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F7F6F3" },
-    { media: "(prefers-color-scheme: dark)", color: "#0C0D10" },
-  ],
+  /* One dark look, so one colour for the browser chrome: the canvas. */
+  themeColor: "#0A0A0B",
+  colorScheme: "dark",
 };
 
 /* General Sans is declared with plain @font-face (styles/kl-foundations.css)
@@ -90,42 +73,13 @@ export default function RootLayout({
 }) {
   for (const href of GENERAL_SANS_PRELOAD) preload(href, { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   return (
-    <html
-      lang="en"
-      data-theme="dark"
-      suppressHydrationWarning
-      className={`no-js ${serif.variable} ${sans.variable} ${mono.variable}`}
-    >
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
-        {/* Drops the no-js class before paint, so the reveal starting states
-            only apply when the motion layer can actually clear them. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "document.documentElement.classList.remove('no-js');" +
-              /* Kinetic Layers is light by default. Applied before paint so a
-                 visitor who chose dark never sees the light ground flash
-                 first. Wrapped because storage throws outright in some
-                 privacy modes, and a theme is not worth a blank page. */
-              "try{var t=localStorage.getItem('kl-theme');" +
-              /* ?theme=light|dark shows a theme for this visit only, without
-                 storing it — so a review link can open in either strand. */
-              "var q=/[?&]theme=(light|dark)\\b/.exec(location.search);if(q)t=q[1];" +
-              "document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){}",
-          }}
-        />
         <Analytics />
         {children}
-        {/* The asset popup. It replaced AssetModal, which delegated off
-            a[data-card] and rendered the pre-redesign dark ItemView — still
-            reachable from /collections/[slug], where it opened a dark overlay
-            on a light page.
-
-            The old comment here said an intercepting route could not honour
-            "the URL must not change". Changing it is the point: back closes
-            the overlay, refresh gives the full page, and the link someone
-            copies from the address bar is the one the sitemap already
-            publishes. */}
+        {/* The kit quick view: app/@modal/(.)item intercepts /item/[slug] on a
+            soft navigation. Back closes it, refresh gives the full page, and
+            the address bar holds the kit's real URL. */}
         {modal}
       </body>
     </html>

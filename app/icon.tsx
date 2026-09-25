@@ -6,10 +6,9 @@ export const contentType = "image/png";
 /**
  * The favicon. Generated, so there is no binary to keep in step with the mark.
  *
- * It painted a sage dot on near-black until now — the retired Kiln palette, on a
- * site that is warm-white and amber. The geometry is the same layered glyph the
- * header draws, scaled up to fill the tile: at 32px a small mark inside a large
- * ground is unreadable, so the ground is only a thin surround.
+ * The same layered glyph the header draws, on the near-black canvas, scaled up
+ * to fill the tile: at 32px a small mark inside a large ground is unreadable,
+ * so the ground is only a thin surround.
  */
 export default function Icon() {
   return new ImageResponse(
@@ -21,7 +20,7 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#F7F6F3",
+          background: "#0A0A0B",
           borderRadius: 7,
         }}
       >

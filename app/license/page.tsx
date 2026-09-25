@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL } from "@/lib/kl/site";
-import PageShell from "@/components/kl/PageShell";
-import { getViewer } from "@/lib/kl/viewer";
+import { ContentPage, DraftNote, ProseHero, ProseSection, Terms } from "@/components/v2/Prose";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/license" },
@@ -50,78 +49,34 @@ const TERMS: Array<{ h: string; p: string }> = [
   },
 ];
 
-export default async function License() {
-  const viewer = await getViewer();
+export default function License() {
   const contact = CONTACT_EMAIL;
 
   return (
-    <PageShell>
-        <section className="kl-pad" style={{ paddingBlock: "64px 30px" }}>
-          <div className="kl-prose" data-hero style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <span className="kl-mono" style={{ fontSize: 11, letterSpacing: "0.16em", color: "var(--amber)" }}>
-              License
-            </span>
-            <h1 style={{ fontSize: "clamp(34px,4.4vw,56px)", lineHeight: 1.06, fontWeight: 500, letterSpacing: "-0.035em" }}>
-              Use it in client work. Don&rsquo;t resell it as an asset.
-            </h1>
-            <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)" }}>
-              That is the whole of it. The rest is detail.
-            </p>
-          </div>
-        </section>
+    <ContentPage>
+      <ProseHero
+        eyebrow="Licence"
+        title="Use it in client work. Don’t resell it as an asset."
+        lead="That is the whole of it. The rest is detail."
+      />
 
-        {/* Said plainly and on the page, not buried in a code comment: this
-            text has not been through legal review. */}
-        <section className="shell prose" style={{ paddingBottom: 8 }}>
-          <p
-            role="note"
-            style={{
-              fontSize: 14,
-              lineHeight: 1.65,
-              color: "var(--muted)",
-              border: "1px solid var(--line2)",
-              borderLeft: "2px solid var(--amber)",
-              borderRadius: "12px",
-              background: "var(--card)",
-              padding: "16px 20px",
-            }}
-          >
-            <strong style={{ color: "var(--muted)", fontWeight: 500 }}>Draft.</strong>{" "}
-            These terms are written in plain English to match what the site
-            promises, but they have not been reviewed by a lawyer. They should be
-            before any money changes hands. Questions in the meantime:{" "}
-            <a href={`mailto:${contact}`} style={{ color: "var(--amber)" }}>
-              {contact}
-            </a>
-            .
-          </p>
-        </section>
+      {/* Said plainly and on the page, not buried in a code comment: this
+          text has not been through legal review. */}
+      <DraftNote contact={contact}>
+        These terms are written in plain English to match what the site promises, but they have not been reviewed by a
+        lawyer. They should be before any money changes hands. Questions in the meantime:{" "}
+        <a href={`mailto:${contact}`}>{contact}</a>.
+      </DraftNote>
 
-        <section id="terms" className="shell prose" style={{ paddingBlock: "34px 90px" }}>
-          <dl style={{ display: "flex", flexDirection: "column", gap: 0, margin: 0 }}>
-            {TERMS.map((t) => (
-              <div
-                key={t.h}
-                data-reveal
-                style={{ padding: "24px 0", borderTop: "1px solid var(--line)" }}
-              >
-                <dt style={{ fontSize: 19, fontWeight: 500, letterSpacing: "-0.015em", color: "var(--ink)", marginBottom: 8 }}>
-                  {t.h}
-                </dt>
-                <dd style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: "var(--muted)" }}>{t.p}</dd>
-              </div>
-            ))}
-          </dl>
+      <Terms id="terms" items={TERMS} />
 
-          <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--muted)", paddingTop: 30 }}>
-            Not sure whether something is allowed? Ask rather than guess —{" "}
-            <a href={`mailto:${contact}`} style={{ color: "var(--amber)" }}>
-              {contact}
-            </a>
-            . The licence is the same for every asset and does not depend on
-            what you paid — which, during early access, is nothing.
-          </p>
-        </section>
-      </PageShell>
+      <ProseSection last>
+        <p>
+          Not sure whether something is allowed? Ask rather than guess — <a href={`mailto:${contact}`}>{contact}</a>. The
+          licence is the same for every asset and does not depend on what you paid — which, during early access, is
+          nothing.
+        </p>
+      </ProseSection>
+    </ContentPage>
   );
 }

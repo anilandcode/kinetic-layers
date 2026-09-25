@@ -1,22 +1,4 @@
-/* The pre-redesign stylesheet. Still loaded because it supplies the :root
-   base that the [data-kl]-scoped Kinetic Layers tokens sit on top of, and
-   because components/legacy/* still reads its classes. */
-@import "../styles/legacy.css";
-
-/* The Kinetic Layers palette. Scoped to [data-kl], so it restyles only the
-   screens that opt in — see the note at the top of the file. */
-@import "../styles/kl-tokens.css";
-
-/* Kinetic Layers component styles — also scoped to [data-kl]. */
-@import "../styles/kl.css";
-
-@import "../styles/bench.css";
-
-@import "../styles/bench-item.css";
-@import "../styles/bench-header.css";
-
-@import "../styles/bench-pages.css";
-
-/* Semantic foundations for new components and the review route. Imported
-   last so they can map the current themes without changing legacy consumers. */
+/* The one stylesheet: Kinetic Layers v2's tokens, base and resets. Component
+   styles are CSS Modules beside each component. The archived demand test
+   (app/_archive-direction-kit) imports its own styles. */
 @import "../styles/kl-foundations.css";

@@ -13,7 +13,7 @@ Before doing anything else, in this order:
 1. **`HANDOFF.md`** — the decisions, the traps and what is still broken. It is
    the state of the product; this file is only tooling rules.
 2. **`graphify-out/GRAPH_REPORT.md`** — the code graph. Last refreshed:
-   1228 nodes and 2442 edges over 216 files, in 91 communities. Read it before answering any
+   1391 nodes and 2777 edges over 226 files, in 102 communities. Read it before answering any
    architecture question, and prefer `graphify query "..."` over grep for
    anything that crosses module boundaries.
    Details in the graphify section at the bottom of this file.

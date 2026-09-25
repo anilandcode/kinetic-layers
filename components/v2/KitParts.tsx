@@ -8,6 +8,7 @@ import { ButtonLink, Signal, Tag } from "./Button";
 import { DotNumber } from "./DotMatrix";
 import DownloadButton from "./DownloadButton";
 import SaveButton from "./SaveButton";
+import PromptReveal from "./PromptReveal";
 import Icon from "./Icon";
 import s from "./Kit.module.css";
 
@@ -194,8 +195,9 @@ export function kitPanels(kit: Asset): Partial<Record<NodeId, ReactNode>> {
     reconstruction: kit.promptLength ? (
       <div className={s.panelWords}>
         <h3>Reconstruction prompt</h3>
-        <p>Rebuilds the reference from the spec. The first two lines are public; the rest comes with the kit.</p>
+        <p>Rebuilds the reference from the spec. The first two lines are public; the rest opens with an account.</p>
         <PromptPreview preview={kit.promptPreview} length={kit.promptLength} what="prompt" />
+        {kit.sample ? null : <PromptReveal slug={kit.slug} />}
       </div>
     ) : null,
     output: records.length ? (
@@ -293,24 +295,6 @@ export function FileManifest({ kit }: { kit: Asset }) {
   );
 }
 
-/** The condensed graph for the quick view: the same parts, read-only, in a line. */
-export function GraphStrip({ graph }: { graph: KitGraph }) {
-  const nodes = [...graph.main, ...graph.branch];
-  return (
-    <ol className={s.strip} aria-label="What this kit contains">
-      {nodes.map((n, i) => (
-        <li key={n.id} data-branch={graph.branch.includes(n) ? "" : undefined}>
-          {i > 0 ? <span className={s.stripLink} aria-hidden="true" /> : null}
-          <span className={s.stripNode}>
-            {n.signal ? <Signal /> : null}
-            {n.title}
-          </span>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
 export function SampleNotice({ kit }: { kit: Asset }) {
   if (!kit.sample) return null;
   return (
@@ -322,14 +306,6 @@ export function SampleNotice({ kit }: { kit: Asset }) {
           : "A hotlinked reference, shown on preview deployments only so a full library can be judged. Not a Kinetic Layers kit."}
       </span>
     </p>
-  );
-}
-
-export function RelatedLink({ href, children }: { href: string; children: ReactNode }) {
-  return (
-    <Link href={href} className={s.inlineLink}>
-      {children}
-    </Link>
   );
 }
 

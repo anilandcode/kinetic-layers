@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL } from "@/lib/kl/site";
-import PageShell from "@/components/kl/PageShell";
-import { DraftNote, ProseHero, Terms } from "@/components/kl/Prose";
-import { getViewer } from "@/lib/kl/viewer";
+import { ContentPage, DraftNote, ProseHero, Terms } from "@/components/v2/Prose";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/privacy" },
@@ -20,7 +18,6 @@ export const metadata: Metadata = {
  * checkable in the repo.
  */
 export default async function Privacy() {
-  const viewer = await getViewer();
   const contact = CONTACT_EMAIL;
 
   const items = [
@@ -67,7 +64,7 @@ export default async function Privacy() {
   ];
 
   return (
-    <PageShell>
+    <ContentPage>
         <ProseHero
           eyebrow="Privacy"
           title="We keep what runs the site, and nothing else."
@@ -75,6 +72,6 @@ export default async function Privacy() {
         />
         <DraftNote contact={contact} />
         <Terms id="privacy" items={items} />
-      </PageShell>
+      </ContentPage>
   );
 }

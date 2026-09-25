@@ -1,7 +1,8 @@
 # Direction A — Soft gradient studio
 
-**Preview:** `/direction/soft` (local dev and Vercel previews only; 404 in
-production).
+**Status: retired on 2026-09-25.** The owner chose the cinematic direction
+(docs/directions/cinematic/DESIGN.md). Its route, `SoftHome` and its tokens
+were removed. This file is kept as the record of what was compared.
 
 Kinetic Layers as a calm, product-like studio. The page is a warm grey canvas.
 Everything sits on white rounded cards, and colour lives *inside* cards as soft

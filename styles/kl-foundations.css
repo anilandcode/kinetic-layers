@@ -1,32 +1,20 @@
 /* =============================================================================
-   Kinetic Layers v2 — the one token source.
+   Kinetic Layers — the one stylesheet: tokens, base and resets.
 
-   Two directions on one structure, one per theme:
+   The CINEMATIC WORKBENCH (references: Reticla, the two node editors, the
+   dark gradient dashboard). Near-black under a dotted canvas, luminous and
+   dithered colour inside cards — each kit's own hue — frosted glass, white
+   pills, and a single small warm ember accent. Written up in
+   docs/directions/cinematic/DESIGN.md.
 
-   - Light is the SOFT GRADIENT STUDIO (references: Synthex, Credit Karma,
-     Superpower, Neka). A warm grey canvas, white cards with no borders, and
-     colour living inside cards as pastel gradients built from each kit's own
-     hues. Actions are black pills. No accent colour.
-   - Dark is the CINEMATIC WORKBENCH (references: Reticla, the two node
-     editors, the dark gradient dashboard). Near-black, frosted glass over
-     smoky blurred imagery — each kit's own picture — white pills, and a
-     single small warm ember accent.
-
-   Each is a whole look, chosen by `data-look` on the shell ("soft" or
-   "cinematic"), not by the theme toggle: until the owner picks one, the two
-   are compared side by side at /direction/soft and /direction/cinematic.
-   Their design systems are written up in docs/directions/<look>/DESIGN.md.
-   Scoped to [data-v2] (components/v2/Shell), so none of the v1 [data-kl]
-   stylesheets reach inside. Component styles are CSS Modules beside each
-   component; look-specific rules are prefixed :global([data-look="…"]).
+   Tokens are scoped to [data-v2] (components/v2/ShellFrame). Component styles
+   are CSS Modules beside each component; some still key their rules off
+   :global([data-look="cinematic"]), which the shell always sets.
 
    Measured, not assumed (WCAG 2.2 AA):
-     light  #0E0F10 / #5F6267 / #66696E on #EDEDEB — 16.4 / 5.2 / 4.7
-            on white cards — 19.2 / 6.1 / 5.5
-     dark   #F2F2F0 / #A1A1A6 / #8A8A90 on #0A0A0B — 17.7 / 7.7 / 5.8
-            on #141416 cards — 16.4 / 7.2 / 5.4
-   On a pastel gradient only primary text is used (≥ 11:1); secondary text
-   there falls to ~4:1.
+     #F2F2F0 / #A1A1A6 / #8A8A90 on #0A0A0B — 17.7 / 7.7 / 5.8
+     on #141416 cards — 16.4 / 7.2 / 5.4
+   On a luminous card only white text is used, over a scrim.
    ========================================================================== */
 
 /* General Sans, self-hosted. Fetched at build time and never committed —
@@ -112,60 +100,25 @@
   font-feature-settings: "ss01" on;
 }
 
-/* ---------- Soft (light) ---------- */
-
-[data-v2][data-look="soft"] {
-  color-scheme: light;
-
-  --v-canvas: #ededeb;
-  --v-surface: #ffffff;
-  --v-surface-2: #f5f5f3;
-  --v-surface-3: #e4e4e1;
-  --v-glass: rgba(255, 255, 255, 0.6);
-  --v-glass-strong: rgba(255, 255, 255, 0.82);
-  --v-glass-edge: rgba(255, 255, 255, 0.9);
-  --v-line: rgba(14, 15, 16, 0.07);
-  --v-line-strong: rgba(14, 15, 16, 0.14);
-  --v-shade: 0 1px 2px rgba(24, 24, 20, 0.04), 0 14px 34px -14px rgba(24, 24, 20, 0.12);
-  --v-shade-lift: 0 2px 6px rgba(24, 24, 20, 0.05), 0 34px 70px -28px rgba(24, 24, 20, 0.26);
-  --v-veil: rgba(225, 225, 222, 0.5);
-
-  --v-text: #0e0f10;
-  --v-text-2: #5f6267;
-  --v-text-3: #66696e;
-
-  --v-primary: #0e0f10;
-  --v-on-primary: #ffffff;
-  --v-focus: #0e0f10;
-  --v-ember: #0e0f10;
-  --v-signal: radial-gradient(circle at 35% 35%, #d9f0a8, #8ecf7a 55%, #e9c45c);
-
-  --v-silver-1: #d9dde2;
-  --v-silver-2: #f3f4f6;
-  --v-silver-3: #c9ced6;
-  --v-grain: 0.05;
-}
-
 @media (prefers-reduced-motion: reduce) {
   [data-v2] { --v-fast: 1ms; --v-base: 1ms; --v-slow: 1ms; }
 }
 
-/* legacy.css still paints `body`, `a`, `::selection` and `:focus-visible`
-   globally for the screens that have not moved yet. These resets are wrapped
-   in :where() so they match the legacy rules' specificity exactly — they win
-   only by being imported last. Written as `[data-v2] a` they outranked every
-   single-class module rule (a primary link lost its colour, every <button>
-   its padding). */
-/* `:root[data-theme] …` so it outranks bench.css's `:root[data-theme='dark']
-   body` (#101114), which otherwise left a lighter band under every hero that
-   fades into the canvas. */
-:root[data-theme] body:has([data-v2]) { background: #0a0a0b; }
-/* The cinematic shell is transparent so its fixed dotted canvas
-   (components/v2/fx/Spotlight) can sit behind every section; the body carries
-   the colour. */
-[data-v2][data-look="cinematic"] { background: transparent; }
-:root[data-theme] body:has([data-look="soft"]) { background: #ededeb; }
+/* ---------- Base ---------- */
 
+*, *::before, *::after { box-sizing: border-box; }
+html { color-scheme: dark; background: #0a0a0b; }
+body { min-height: 100vh; margin: 0; background: #0a0a0b; color: #f2f2f0; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, p, figure, blockquote, ul, ol, dl, dd { margin: 0; }
+ul[class], ol[class] { list-style: none; padding: 0; }
+img, svg, video { display: block; max-width: 100%; height: auto; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* The shell is transparent so its fixed dotted canvas (components/v2/fx/
+   Spotlight) can sit behind every section; the body carries the colour. */
+[data-v2][data-look="cinematic"] { background: transparent; }
+
+/* Resets inside the shell, in :where() so any single-class module rule wins. */
 :where([data-v2]) a { color: inherit; text-decoration: none; }
 :where([data-v2]) a:hover { color: inherit; }
 :where([data-v2]) ::selection { background: var(--v-text); color: var(--v-canvas); }
@@ -183,172 +136,19 @@
   white-space: nowrap; border: 0;
 }
 
-/* ==========================================================================
-   v1 compatibility — the [data-kl] foundations the screens that have not been
-   rebuilt still read (the design-system route, PageShell). Removed with v1.
-   ========================================================================== */
-[data-kl] {
-  color-scheme: dark;
-  --canvas: #101114;
-  --surface-1: #191b1e;
-  --surface-2: #222428;
-  --surface-raised: #2a2c31;
-  --text-primary: #eceae5;
-  --text-secondary: #b8b7b1;
-  --text-muted: #9d9c96;
-  --text-inverse: #101114;
-  --border-subtle: #2a2c31;
-  --border-default: #44474e;
-  --border-strong: #747780;
-  --action-primary: #eceae5;
-  --action-primary-hover: #ffffff;
-  --action-secondary: #2a2c31;
-  --status-success: #34d17a;
-  --status-warning: #e0b84f;
-  --status-danger: #ff8585;
-  --status-info: #55b6ff;
-  --focus-ring: #55b6ff;
-  --overlay: rgba(0, 0, 0, 0.72);
-
-  /* One UI face. Geist (OFL) stands in until the v2 canvas chooses between it,
-     General Sans and Satoshi — docs/DESIGN-DIRECTION-V2.md. The previous face
-     was removed because no web licence was ever recorded for it (DR-006). The
-     variables come from next/font in app/layout.tsx. */
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-code: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas,
-    monospace;
-  --type-display: clamp(2.375rem, 5vw, 4.5rem);
-  --type-page-title: clamp(2rem, 3.7vw, 3.5rem);
-  --type-section-title: clamp(1.5rem, 2.6vw, 2.5rem);
-  --type-card-title: clamp(1rem, 1.4vw, 1.375rem);
-  --type-body-large: clamp(1rem, 1.2vw, 1.1875rem);
-  --type-body: clamp(0.875rem, 1vw, 1rem);
-  --type-label: clamp(0.6875rem, 0.8vw, 0.8125rem);
-  --leading-display: 1.02;
-  --leading-heading: 1.12;
-  --leading-body: 1.62;
-
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-24: 6rem;
-
-  --container-reading: 45rem;
-  --container-form: 32.5rem;
-  --container-content: 75rem;
-  --container-gallery: 90rem;
-  --layout-gutter: 1.25rem;
-  --layout-columns: 4;
-
-  --radius-control: 0.625rem;
-  --radius-card: 1rem;
-  --radius-media: 1.5rem;
-  --radius-pill: 999px;
-  --elevation-card: 0 1px 2px rgba(0, 0, 0, 0.28);
-  --elevation-dialog: 0 24px 72px rgba(0, 0, 0, 0.48);
-
-  --motion-fast: 140ms;
-  --motion-base: 180ms;
-  --motion-dialog: 220ms;
-  --motion-editorial: 280ms;
-  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-[data-theme="light"] [data-kl] {
-  color-scheme: light;
-  --canvas: #ffffff;
-  --surface-1: #f7f7f6;
-  --surface-2: #efefed;
-  --surface-raised: #ffffff;
-  --text-primary: #17181a;
-  --text-secondary: #3c3b37;
-  --text-muted: #5c5b56;
-  --text-inverse: #ffffff;
-  --border-subtle: #e4e4e1;
-  --border-default: #c8c8c2;
-  --border-strong: #73736e;
-  --action-primary: #17181a;
-  --action-primary-hover: #000000;
-  --action-secondary: #efefed;
-  --status-success: #15783b;
-  --status-warning: #8a5b00;
-  --status-danger: #b42318;
-  --status-info: #0969a8;
-  --focus-ring: #087fc1;
-  --overlay: rgba(12, 13, 15, 0.66);
-  --elevation-card: 0 1px 2px rgba(18, 19, 22, 0.08);
-  --elevation-dialog: 0 24px 72px rgba(18, 19, 22, 0.2);
-}
-
-@media (min-width: 48rem) {
-  [data-kl] { --layout-gutter: 1.75rem; --layout-columns: 8; }
-}
-
-@media (min-width: 64rem) {
-  [data-kl] { --layout-gutter: 2.5rem; --layout-columns: 12; }
-}
-
-@media (min-width: 90rem) {
-  [data-kl] { --layout-gutter: 3.5rem; }
-}
-
-[data-kl] .ds-skip-link {
+/* /plan's skip link (the page keeps its own palette, outside the shell). */
+.skip-link {
   position: fixed;
   z-index: 200;
-  top: var(--space-3);
-  left: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-control);
-  background: var(--action-primary);
-  color: var(--text-inverse);
-  font: 600 0.875rem/1 var(--font-sans);
-  transform: translateY(calc(-100% - var(--space-6)));
-  transition: transform var(--motion-fast) var(--motion-ease);
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: #f2f2f0;
+  color: #0a0a0b;
+  font-weight: 600;
+  transform: translateY(calc(-100% - 1.5rem));
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-[data-kl] .ds-skip-link:focus { transform: translateY(0); }
-[data-kl] :where(.ds-review) { background: var(--canvas); color: var(--text-secondary); font-family: var(--font-sans); }
-[data-kl] :where(.ds-review) :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
-
-[data-kl] .ds-container {
-  width: min(100%, var(--container-content));
-  margin-inline: auto;
-  padding-inline: var(--layout-gutter);
-}
-[data-kl] .ds-container[data-size="reading"] { max-width: var(--container-reading); }
-[data-kl] .ds-container[data-size="form"] { max-width: var(--container-form); }
-[data-kl] .ds-container[data-size="gallery"] { max-width: var(--container-gallery); }
-[data-kl] .ds-section { padding-block: var(--space-16); }
-[data-kl] .ds-stack { display: grid; gap: var(--space-6); }
-[data-kl] .ds-cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
-[data-kl] .ds-grid { display: grid; grid-template-columns: repeat(var(--layout-columns), minmax(0, 1fr)); gap: var(--space-4); }
-
-[data-kl] .ds-button {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  padding: 0 var(--space-6);
-  border: 1px solid transparent;
-  border-radius: var(--radius-control);
-  background: var(--action-primary);
-  color: var(--text-inverse);
-  font: 600 0.875rem/1 var(--font-sans);
-  transition: background-color var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease), opacity var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
-}
-[data-kl] .ds-button:hover { background: var(--action-primary-hover); color: var(--text-inverse); }
-[data-kl] .ds-button:active { transform: scale(0.99); }
-[data-kl] .ds-button[data-variant="secondary"] { border-color: var(--border-default); background: var(--action-secondary); color: var(--text-primary); }
-[data-kl] .ds-button[data-variant="quiet"] { background: transparent; color: var(--text-primary); }
-[data-kl] .ds-button:disabled { cursor: not-allowed; opacity: 0.48; }
-
-@media (prefers-reduced-motion: reduce) {
-  [data-kl] { --motion-fast: 1ms; --motion-base: 1ms; --motion-dialog: 1ms; --motion-editorial: 1ms; }
-  [data-kl] .ds-button:active { transform: none; }
-}
+.skip-link:focus { transform: none; }
