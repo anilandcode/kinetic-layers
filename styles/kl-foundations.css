@@ -1,5 +1,6 @@
 /* Semantic foundations for all new Kinetic Layers components. Historical
-   tokens remain compatibility-only until their consumers are migrated. */
+   tokens remain compatibility-only until their consumers are migrated. The
+   launch system is intentionally dark-only; do not add a light override here. */
 [data-kl] {
   color-scheme: dark;
   --canvas: #101114;
@@ -69,32 +70,6 @@
   --motion-dialog: 220ms;
   --motion-editorial: 280ms;
   --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-[data-theme="light"] [data-kl] {
-  color-scheme: light;
-  --canvas: #ffffff;
-  --surface-1: #f7f7f6;
-  --surface-2: #efefed;
-  --surface-raised: #ffffff;
-  --text-primary: #17181a;
-  --text-secondary: #3c3b37;
-  --text-muted: #5c5b56;
-  --text-inverse: #ffffff;
-  --border-subtle: #e4e4e1;
-  --border-default: #c8c8c2;
-  --border-strong: #73736e;
-  --action-primary: #17181a;
-  --action-primary-hover: #000000;
-  --action-secondary: #efefed;
-  --status-success: #15783b;
-  --status-warning: #8a5b00;
-  --status-danger: #b42318;
-  --status-info: #0969a8;
-  --focus-ring: #087fc1;
-  --overlay: rgba(12, 13, 15, 0.66);
-  --elevation-card: 0 1px 2px rgba(18, 19, 22, 0.08);
-  --elevation-dialog: 0 24px 72px rgba(18, 19, 22, 0.2);
 }
 
 @media (min-width: 48rem) {

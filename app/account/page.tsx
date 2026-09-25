@@ -54,10 +54,7 @@ export default async function AccountDashboard() {
 
   return (
     <>
-      <section
-        className="kl-pad"
-        style={{ paddingBottom: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 12 }}
-      >
+      <section className="kl-pad kl-account-stat-grid">
         <AccountStat label="Downloaded" value={String(unique)} note={`of ${settings.totalAssets} assets`} big />
         <AccountStat label="This month" value={String(thisMonth)} note={thisMonth === 1 ? "1 file" : `${thisMonth} files`} big />
         <AccountStat label="Saved" value={String(savedTotal)} note="saved items" big />
@@ -73,21 +70,17 @@ export default async function AccountDashboard() {
         />
       </section>
 
-      <section
-        className="kl-pad"
-        style={{ paddingBlock: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(360px,100%),1fr))", gap: 12, alignItems: "start" }}
-      >
-        <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", background: "var(--board)", padding: 24, display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600 }}>Saved</h2>
-            <div style={{ flex: 1 }} />
-            <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
+      <section className="kl-pad kl-account-summary-grid">
+        <div data-reveal className="kl-account-panel">
+          <div className="kl-account-panel-head">
+            <h2>Saved</h2>
+            <span className="kl-mono kl-account-panel-count">
               {savedTotal}
             </span>
           </div>
 
           {savedTotal === 0 ? (
-            <p style={{ fontSize: 14, color: "var(--muted)" }}>
+            <p className="kl-account-panel-copy">
               Nothing saved. The bookmark on an item page keeps it here.
             </p>
           ) : (
@@ -102,9 +95,9 @@ export default async function AccountDashboard() {
           )}
         </div>
 
-        <div data-reveal style={{ borderRadius: 10, border: "1px solid var(--line)", background: "var(--board)", padding: 24, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
-          <h2 style={{ fontSize: 16, fontWeight: 600 }}>Downloads</h2>
-          <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--muted)" }}>
+        <div data-reveal className="kl-account-panel kl-account-panel--actions">
+          <h2>Downloads</h2>
+          <p className="kl-account-panel-copy">
             {rows.length === 0
               ? settings.freeThisMonth > 0
                 ? `Nothing yet. The ${settings.freeThisMonth} free assets are a good place to start.`
@@ -122,16 +115,16 @@ export default async function AccountDashboard() {
 
 function Row({ label, kind, href }: { label: string; kind: string; href?: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0 }}>
-        <span style={{ fontSize: 14, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+    <div className="kl-account-saved-row">
+      <div className="kl-account-saved-copy">
+        <span className="kl-account-saved-name">
           {label}
         </span>
-        <span className="kl-mono" style={{ fontSize: 10, letterSpacing: 0, color: "var(--muted)" }}>
+        <span className="kl-mono kl-account-saved-kind">
           {kind}
         </span>
       </div>
-      {href ? <Link href={href} style={{ fontSize: 13, color: "var(--muted)" }}>Open</Link> : <span style={{ fontSize: 12, color: "var(--muted)" }}>Coming back soon</span>}
+      {href ? <Link href={href} className="kl-account-saved-link">Open</Link> : <span className="kl-account-saved-status">Coming back soon</span>}
     </div>
   );
 }

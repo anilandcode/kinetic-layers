@@ -25,9 +25,9 @@ export default async function AccountLayout({ children }: { children: ReactNode 
 
   return (
     <PageShell>
-      <section className="kl-pad" style={{ paddingBlock: "72px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-        <div data-hero style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <span className="kl-mono" style={{ fontSize: 11, letterSpacing: 0, color: "var(--amber)" }}>
+      <section className="kl-pad kl-account-header">
+        <div data-hero className="kl-account-header-copy">
+          <span className="kl-mono kl-account-plan-label">
             {viewer.premium ? `Premium${renews ? ` · renews ${renews}` : ""}` : "Free plan"}
           </span>
           <h1 className="kl-prose-h1">

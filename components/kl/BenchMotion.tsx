@@ -9,6 +9,7 @@ type MotionSectionProps = {
   className?: string;
   as?: "div" | "section";
   delay?: number;
+  id?: string;
   "aria-label"?: string;
   "aria-labelledby"?: string;
 };

@@ -60,7 +60,7 @@ export default function DesignSystem() {
 
         <section id="colors" className="ds-section">
           <div className="ds-container" data-size="gallery">
-            <SectionTitle eyebrow="01 · Color" title="Semantic, not decorative" copy="New components name purpose instead of inheriting historical color names. Use the theme control in the header to inspect both palettes." />
+            <SectionTitle eyebrow="01 · Color" title="Semantic, not decorative" copy="New components name purpose instead of inheriting historical color names. The launch system is deliberately dark-only." />
             <div className={styles.swatchGrid}>
               {COLORS.map(([name, token, note]) => (
                 <article className={styles.swatch} key={token}>
@@ -250,7 +250,7 @@ export default function DesignSystem() {
 
         <section className="ds-section">
           <div className="ds-container" data-size="reading">
-            <SectionTitle eyebrow="11 · Release gate" title="What must be true before migration" copy="Verify the real catalogue at 390, 768, 1024 and 1440 pixels in both themes. Confirm the Maison Neue web licence, then migrate Homepage, Library and Product surfaces through shared components." />
+            <SectionTitle eyebrow="11 · Release gate" title="What must be true before migration" copy="Verify the real catalogue at 390, 768, 1024 and 1440 pixels in the dark launch theme. Confirm the Maison Neue web licence, then migrate Homepage, Library and Product surfaces through shared components." />
           </div>
         </section>
       </div>

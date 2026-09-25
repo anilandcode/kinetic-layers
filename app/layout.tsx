@@ -42,14 +42,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  /* Light is the default ground, so a single near-black bar sat wrong above a
-     warm-white page on mobile. These follow the OS preference; the in-page
-     toggle (localStorage['kl-theme']) is finer-grained than browser chrome
-     can track. */
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F7F6F3" },
-    { media: "(prefers-color-scheme: dark)", color: "#0C0D10" },
-  ],
+  themeColor: "#101114",
 };
 
 export default function RootLayout({
@@ -68,18 +61,12 @@ export default function RootLayout({
       className={`no-js ${serif.variable}`}
     >
       <body>
-        {/* Drops the no-js class before paint, so the reveal starting states
-            only apply when the motion layer can actually clear them. */}
+        {/* Drops the no-js class before paint, so reveal starting states only
+            apply when the motion layer can clear them. Kinetic Layers launches
+            dark-only; no persisted theme preference is read or written. */}
         <script
           dangerouslySetInnerHTML={{
-            __html:
-              "document.documentElement.classList.remove('no-js');" +
-              /* Kinetic Layers is light by default. Applied before paint so a
-                 visitor who chose dark never sees the light ground flash
-                 first. Wrapped because storage throws outright in some
-                 privacy modes, and a theme is not worth a blank page. */
-              "try{var t=localStorage.getItem('kl-theme');" +
-              "document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){}",
+            __html: "document.documentElement.classList.remove('no-js');",
           }}
         />
         <Analytics />
