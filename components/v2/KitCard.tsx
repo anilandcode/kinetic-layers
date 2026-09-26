@@ -46,7 +46,7 @@ export default function KitCard({ kit, priority = false }: { kit: Asset; priorit
             <i />
           </span>
           <span className={s.windowMedia}>
-            <Media still={still} clip={clip} alt="" priority={priority} />
+            <Media still={still} clip={clip} alt="" play="auto" priority={priority} />
           </span>
         </span>
         {kit.sample ? (

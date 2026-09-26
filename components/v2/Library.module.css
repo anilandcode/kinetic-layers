@@ -140,6 +140,13 @@
   gap: clamp(0.75rem, 1.4vw, 1.25rem);
 }
 
+/* Auto-fill keeps adding columns as the viewport grows — 5 at 1920px, more on
+   an ultrawide. Past 1440px the cards would rather stay this size than
+   multiply, so the column count is pinned at 4 instead of left to fit. */
+@media (min-width: 1440px) {
+  .grid { grid-template-columns: repeat(4, 1fr); }
+}
+
 .more { display: flex; justify-content: center; padding-top: 1.5rem; }
 
 .more button {

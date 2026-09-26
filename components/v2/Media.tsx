@@ -14,8 +14,9 @@ import s from "./Media.module.css";
  * under reduced motion or on a coarse pointer in the grid, and it frees its
  * buffer when it leaves. Only the styling is v2's.
  *
- *   play="hover"  the grid — attaches on pointer or keyboard focus of the card
- *   play="auto"   a kit page or dialog — attaches when scrolled into view
+ *   play="hover"  attaches on pointer or keyboard focus of the card
+ *   play="auto"   the grid, a kit page or a dialog — attaches when scrolled
+ *                 into view, so a clip runs on its own once it's on screen
  *
  * An animated still (the preview samples' GIFs) is treated the same way: its
  * first frame is the still, and the animation is the "clip", mounted on
