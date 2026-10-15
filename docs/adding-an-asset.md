@@ -105,7 +105,14 @@ afterwards.
 
 ## By hand
 
-For a tagline or a prompt, open the Studio, edit the asset, publish.
+For a tagline, open the Studio, edit the asset, publish.
+
+Prompts are different: the **Reconstruction prompt (paid)** and **Adaptation
+prompt (paid)** fields save privately as you type and do not wait for Publish.
+They are stored in a private `paid.<id>` document, never on the asset, because
+the dataset is public and anything on the asset can be read through the API.
+The same goes for a website's **Code**, **Design system** and **Project ZIP**
+(the ZIP uploads straight to the private R2 bucket).
 
 It goes live within seconds. A Sanity webhook (set up 2026-10-15) calls
 `https://kineticlayers.com/api/revalidate` on every create, update and delete,

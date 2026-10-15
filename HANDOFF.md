@@ -3,6 +3,44 @@
 This document records operational decisions and known traps. Verify material
 implementation details in the current source before acting.
 
+## Paid content stays private on the free Sanity plan — 2026-10-15
+
+The public dataset served every kit prompt to anyone who queried the API
+(tested: 15 readable with no token). A private dataset needs a paid plan, and
+the owner wants to stay free. What Sanity does offer on a public dataset: a
+document whose `_id` sits under a path (`paid.x`, anything with a dot) is only
+served to authenticated requests — measured, anonymous reads miss it even by
+exact id. That rule, not "new document types", is what hid `tag.*` (trap 20,
+now corrected).
+
+- **Paid text lives in `paid.<parentId>`** (`lib/kl/paid.ts`): kit `prompt` and
+  `adaptationPrompt`, website `code` and `design`, and the website ZIP's
+  storage key. The site reads them with `SANITY_API_READ_TOKEN`; card lengths
+  and the two-line teaser are computed server-side as before.
+- **The Studio fields look the same** (`paidPrompt`, `paidAdaptation`,
+  `paidCode`, `paidDesign` on the documents) but store nothing there:
+  `sanity/components/PaidText.tsx` reads and writes the private document and
+  saves as you type — it does **not** wait for Publish.
+- **Website ZIPs go to the private R2 bucket**, never Sanity's CDN (where the
+  public API lists every file). The Studio's **Upload ZIP** button
+  (`PaidZip.tsx`) writes a `paid.upload.<nonce>` ticket with the member's
+  session; `/api/studio/zip-upload` reads it with the server token (so only a
+  member can have written it), signs a 15-minute PUT URL, and the browser PUTs
+  straight to R2. Downloads are the usual one-minute signed links. The bucket's
+  CORS allows PUT from `https://kineticlayers.sanity.studio` and
+  `http://localhost:3333` only — the hosted Studio runs in an iframe on that
+  origin inside sanity.io's dashboard.
+- **Migrated:** `tools/migrate-paid-content.mjs --copy` then `--strip` moved
+  the 15 placeholder prompts and removed the public copies; the anonymous API
+  now returns 0 prompts, 0 paid documents, 0 ZIP files. `import-asset.mjs`
+  writes prompts to the private document too.
+- **The webhook** now also fires for `paidContent`, which revalidates the
+  `asset` and `website` tags (a paid document has no slug of its own).
+- **Never** give a paid document a plain id, and never add a field that stores
+  paid text on a kit or website — it would be public the moment it is saved.
+- Studio note: the 15 placeholder kits show "Invalid property value" on their
+  legacy `clip`/`tags` values. Pre-existing, unrelated; don't press "Reset".
+
 ## Cards, 404s, navigation, and the Websites section — 2026-10-15
 
 **Deploying (unchanged, still true):** `direction-kit` does not deploy from git.
@@ -47,10 +85,9 @@ inside it, `vercel deploy --prod`. A Vercel build once failed inside
   full-page screenshot, tagline, live URL, tags, optional hex colours, project
   ZIP, code Markdown, design-system Markdown). Same gate and daily allowance
   as kits: `/api/prompt` and `/api/download` take `type: "website"`; usage and
-  download rows are keyed `website:<slug>`. The ZIP is a Studio upload on
-  Sanity's CDN, revealed only by the gated route — a deliberate exception to
-  the "no upload field for paid files" rule above the asset schema, chosen so
-  everything is edited in the Studio. Cloudflare clamps any output side to
+  download rows are keyed `website:<slug>`. (The ZIP was first a Sanity file
+  upload; superseded the same day — see "Paid content stays private" below.)
+  Cloudflare clamps any output side to
   8192px, so very tall screenshots are served narrower (`fullShot`), and the
   Studio warns past 8192px. `/websites` is noindex and out of the sitemap
   until the first website exists.
@@ -568,13 +605,12 @@ The rest were learned on 2026-09-09/10.
     only one in the list. An R2 custom domain makes a bucket publicly readable.
     Nothing of value leaked (six sub-1 KB placeholders), and it is corrected, but
     that bucket must never carry a custom domain again.
-20. **Anonymous Sanity reads do not return newly created document types.** The
-    dataset's `aclMode` is `public` and this client sent no token for months,
-    which held only because every type predated the problem. Adding `tag` broke
-    it: authenticated reads see all 33, anonymous sees zero, and so does a
-    throwaway type created to test it. Deploying the schema changes nothing.
-    `SANITY_API_READ_TOKEN` is the fix; without it every tag dereferences to
-    nothing and the Category menu is empty.
+20. **Anonymous Sanity reads skip any document whose `_id` contains a dot.**
+    This was first read as "new types are invisible" — wrong. The seeded tags
+    have ids like `tag.hero`, and a public dataset only serves `_id in
+    path("*")` (no dot) without a token; a new type with a plain id is public.
+    `SANITY_API_READ_TOKEN` is what lets the site read them, and the same rule
+    is what keeps `paid.*` private (see the paid-content entry at the top).
 21. **`signInWithOAuth` never asks whether the provider exists.** It composes the
     authorize URL locally and returns it with no error, so a guard written
     against `error || !data.url` can never fire. The visitor finds out by being
@@ -645,16 +681,13 @@ restores the paywall exactly as it was.
 9. **The legal pages are drafts** and say so on the page. Review before charging.
 10. ~~**`/changelog` shows fictional seed Drop documents.**~~ Fixed 2026-09-25
     with `hasRealId` (commit 2f6f3e3).
-11. **Make the Sanity dataset private.** Anonymous API reads return every
-    asset's `prompt`, `notes` and file paths (tested 2026-10-15: 15 prompts
-    readable with no token) — and the website `codeMarkdown`/`designMarkdown`
-    the same way once any is published. The paywall is bypassable until this is
-    done: sanity.io/manage → Datasets, or
-    `npx sanity dataset visibility set production private`. The app already
-    reads with `SANITY_API_READ_TOKEN`; previews on `kinetic-layers` (no token)
-    will then show an empty catalogue, which is expected.
-12. **Confirm a signed-in website ZIP download.** The anonymous paths were
-    tested live (401/404/429); the success path needs a real account.
+11. ~~**Make the Sanity dataset private.**~~ Not possible on the free plan, and
+    the owner chose to stay free — solved instead with private `paid.*`
+    documents and the private R2 bucket (entry at the top, 2026-10-15).
+12. **Confirm a signed-in website ZIP download, and one real Upload ZIP click
+    in the Studio.** The upload API, R2 CORS and storage were tested end to end
+    from a script; a browser file pick inside the Studio iframe could not be
+    automated. Anonymous download paths were tested live (401/404/429).
 
 **Known hazard, not yet bitten:**
 `supabase/migrations/20260907130000_premium_contract.sql` is deliberately unrun —
