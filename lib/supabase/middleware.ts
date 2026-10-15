@@ -26,9 +26,12 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  /* getUser, not getSession: it revalidates against the auth server rather
-     than trusting a cookie that could have been tampered with. */
-  await supabase.auth.getUser();
+  /* getClaims, not getSession: it verifies the JWT's signature, so a tampered
+     cookie is still refused. Unlike getUser it does that locally against the
+     project's published keys instead of a network round trip on every request
+     and every link prefetch, and it still refreshes — and re-sets the cookies
+     above — when the token has expired. */
+  await supabase.auth.getClaims();
 
   return response;
 }

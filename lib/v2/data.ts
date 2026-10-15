@@ -1,6 +1,7 @@
 import "server-only";
 import { getAsset, getAssets, getRelated } from "@/lib/sanity/queries";
 import { hasRealPreview } from "@/lib/kl/preview-ready";
+import { toSlug } from "@/lib/kl/slug";
 import { getPopularity } from "@/lib/kl/popularity";
 import { createClient } from "@/lib/supabase/server";
 import type { Asset, Viewer } from "@/lib/kl/types";
@@ -46,8 +47,18 @@ export async function getSavedSlugs(viewer: Viewer | null): Promise<string[]> {
   return (data ?? []).map((r: { asset_slug: string }) => r.asset_slug);
 }
 
-export async function getKit(slug: string): Promise<Asset | null> {
-  const kit = getSample(slug) ?? (await getAsset(slug));
+/**
+ * A kit by the slug in its URL, which may be an old non-canonical one
+ * ("Nevoro Studio"). The canonical form is tried first, then the slug as
+ * written, so a link from before the slug migration still finds its kit and
+ * the page can redirect it.
+ */
+export async function getKit(raw: string): Promise<Asset | null> {
+  const canonical = toSlug(raw);
+  const kit =
+    getSample(raw) ??
+    (canonical && canonical !== raw ? await getAsset(canonical) : null) ??
+    (await getAsset(raw));
   if (!kit) return null;
   /* GROQ answers null, not [], for an absent array; normalise once here so no
      component has to remember. */

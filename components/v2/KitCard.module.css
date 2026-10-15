@@ -36,49 +36,17 @@
   pointer-events: none;
 }
 
-.well {
+/* The kit fills the card's top edge to edge — no well, no window frame. */
+.media {
+  position: relative;
+  display: block;
   aspect-ratio: 4 / 3.1;
-  border-radius: var(--v-r-inner);
-}
-
-/* The kit's page, rising out of the well like a browser window. */
-.window {
-  position: absolute;
-  left: 4.5%;
-  right: 4.5%;
-  top: 6%;
-  bottom: -2px;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
-  border-radius: 12px 12px 0 0;
-  background: var(--v-surface);
-  box-shadow:
-    0 0 0 1px rgba(14, 15, 16, 0.06),
-    0 24px 48px -20px rgba(14, 15, 16, 0.35);
-  transition: transform var(--v-slow) var(--v-ease), box-shadow var(--v-slow) var(--v-ease);
-}
-
-:global([data-look="cinematic"]) .window {
+  border-radius: var(--v-r-inner);
   background: #111113;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    0 30px 60px -24px rgba(0, 0, 0, 0.9);
 }
 
-.windowBar {
-  display: flex;
-  flex: none;
-  gap: 4px;
-  align-items: center;
-  height: 18px;
-  padding: 0 9px;
-  background: color-mix(in oklab, var(--v-surface) 92%, var(--v-text));
-}
-
-.windowBar i { width: 5px; height: 5px; border-radius: 50%; background: color-mix(in oklab, var(--v-text) 22%, transparent); }
-
-.windowMedia { position: relative; flex: 1; min-height: 0; }
+.mediaInner { transition: transform var(--v-slow) var(--v-ease); }
 
 .flag { position: absolute; top: 8px; left: 8px; z-index: 2; }
 
@@ -115,14 +83,14 @@
   .card:hover,
   .card:focus-visible { box-shadow: var(--v-shade-lift); }
   :global([data-look="cinematic"]) .card:hover { box-shadow: inset 0 0 0 1px var(--v-line-strong), var(--v-shade-lift); }
-  .card:hover .window,
-  .card:focus-visible .window { transform: translateY(-8px); }
+  .card:hover .mediaInner,
+  .card:focus-visible .mediaInner { transform: scale(1.03); }
   .card:hover .arrow,
   .card:focus-visible .arrow { transform: rotate(45deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card:hover .window,
-  .card:focus-visible .window,
+  .card:hover .mediaInner,
+  .card:focus-visible .mediaInner,
   .card:hover .arrow { transform: none; }
 }

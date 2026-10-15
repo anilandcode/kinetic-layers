@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import { getAsset } from "@/lib/sanity/queries";
+import { decodeParam } from "@/lib/kl/slug";
+import { getKit } from "@/lib/v2/data";
 import { SITE_NAME } from "@/lib/kl/site";
 import { ditherColors, HUES, kitHue } from "@/lib/v2/gradient";
 
@@ -19,8 +20,7 @@ export const contentType = "image/png";
  */
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const mark = `data:image/png;base64,${(await readFile(join(process.cwd(), "public/brand/mark.png"))).toString("base64")}`;
-  const { slug } = await params;
-  const asset = await getAsset(slug);
+  const asset = await getKit(decodeParam((await params).slug));
 
   /* The kit's own hue, glowing low on the right of the near-black canvas —
      the same colour its card and kit page carry. */

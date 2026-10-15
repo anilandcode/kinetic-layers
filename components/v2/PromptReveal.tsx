@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "./Button";
 import s from "./Kit.module.css";
+import { itemHref } from "@/lib/kl/slug";
 
 type Result =
   | { state: "idle" | "loading" }
@@ -78,7 +79,7 @@ export default function PromptReveal({ slug }: { slug: string }) {
         <p role="status" className={s.revealRefused}>
           {result.message}{" "}
           {result.reason === "needs-account" ? (
-            <Link href={`/join?next=/item/${slug}`} className={s.inlineLink}>
+            <Link href={`/join?next=${encodeURIComponent(itemHref(slug))}`} className={s.inlineLink}>
               Join free
             </Link>
           ) : result.reason === "needs-premium" ? (

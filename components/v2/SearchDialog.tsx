@@ -8,6 +8,7 @@ import type { Asset } from "@/lib/kl/types";
 import Icon from "./Icon";
 import { useDialog } from "./useDialog";
 import s from "./SearchDialog.module.css";
+import { itemHref } from "@/lib/kl/slug";
 
 /**
  * ⌘K search. Same backend as before — /api/search returns public catalogue
@@ -52,7 +53,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
   const go = useCallback(
     (slug: string) => {
       onClose();
-      router.push(`/item/${slug}`);
+      router.push(itemHref(slug));
     },
     [onClose, router]
   );

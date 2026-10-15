@@ -12,6 +12,7 @@ import StatCard from "@/components/v2/account/StatCard";
 import { ButtonLink } from "@/components/v2/Button";
 import p from "@/components/v2/Page.module.css";
 import a from "@/components/v2/account/Account.module.css";
+import { itemHref } from "@/lib/kl/slug";
 
 export const metadata: Metadata = { title: "Account", robots: { index: false, follow: false } };
 
@@ -191,7 +192,7 @@ function KitRow({
         {still ? <img src={still} alt="" loading="lazy" decoding="async" /> : null}
       </span>
       <span className={a.rowMain}>
-        <Link href={`/item/${slug}`} className={a.rowTitle}>
+        <Link href={itemHref(slug)} className={a.rowTitle}>
           {kit?.name ?? name ?? slug}
         </Link>
         {meta ? <span className={a.rowMeta}>{meta}</span> : null}

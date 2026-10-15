@@ -6,6 +6,7 @@ import { describeReset } from "@/lib/kl/limits";
 import { getAsset, getAssets, getPromptBody, searchAssets } from "@/lib/sanity/queries";
 import { SITE_URL } from "@/lib/kl/site";
 import type { Viewer } from "@/lib/kl/types";
+import { itemHref } from "@/lib/kl/slug";
 
 /**
  * MCP server, over streamable HTTP.
@@ -112,7 +113,7 @@ async function runTool(
     const lines = hits.slice(0, 25).map((a) => {
       const access = a.free ? "free" : "Premium only";
       const bits = [a.type, ...(a.tags ?? []).slice(0, 2)].filter(Boolean).join(" · ");
-      return `${a.name}\n  slug: ${a.slug}\n  ${bits} — ${access}\n  ${SITE_URL}/item/${a.slug}`;
+      return `${a.name}\n  slug: ${a.slug}\n  ${bits} — ${access}\n  ${SITE_URL}${itemHref(a.slug)}`;
     });
     return {
       text: `${hits.length} result${hits.length === 1 ? "" : "s"}${hits.length > 25 ? " (showing 25)" : ""}:\n\n${lines.join("\n\n")}`,

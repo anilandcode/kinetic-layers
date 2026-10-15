@@ -298,7 +298,7 @@ export async function getPromptBody(
     null,
     kind === "adaptation"
       ? groq`*[_type == "asset" && slug.current == $slug][0]{ "body": adaptationPrompt }`
-      : groq`*[_type == "asset" && slug.current == $slug][0]{ "body": promptBody }`,
+      : groq`*[_type == "asset" && slug.current == $slug][0]{ "body": coalesce(prompt, promptBody) }`,
     { slug },
     { next: { tags: [`asset:${slug}`] } }
   );

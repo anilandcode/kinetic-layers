@@ -1,4 +1,14 @@
 import { defineField, defineType, type SchemaTypeDefinition } from "sanity";
+import { isCanonicalSlug, toSlug } from "../../lib/kl/slug";
+
+/* A typed slug like "Nevoro Studio" 404'd on the site. Generate now produces
+   the canonical form, and anything else typed by hand is refused. */
+const canonicalSlug = (r: any) =>
+  r.required().custom((value: { current?: string } | undefined) =>
+    !value?.current || isCanonicalSlug(value.current)
+      ? true
+      : `Use lowercase letters, numbers and hyphens only — e.g. "${toSlug(value.current) || "jungle-mind"}". Press Generate to fix it.`
+  );
 
 /**
  * Kinetic Layers content schemas.
@@ -185,6 +195,7 @@ const asset = defineType({
       group: "main",
       options: {
         maxLength: 96,
+        slugify: toSlug,
         /* Async so an empty name can still produce a slug: it reads the
            uploaded asset's original filename rather than making the author
            invent one. */
@@ -202,7 +213,7 @@ const asset = defineType({
           return "asset";
         },
       },
-      validation: (r) => r.required(),
+      validation: canonicalSlug,
     }),
 
     defineField({

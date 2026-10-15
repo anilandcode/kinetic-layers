@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { getAsset, getSettings } from "@/lib/sanity/queries";
+import { getSettings } from "@/lib/sanity/queries";
+import { decodeParam } from "@/lib/kl/slug";
+import { getKit } from "@/lib/v2/data";
 import { getViewer, gateReason } from "@/lib/kl/viewer";
 import { promptGateReason } from "@/lib/kl/gate";
 import { createClient } from "@/lib/supabase/server";
@@ -26,9 +28,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug: raw } = await params;
-  const slug = raw.slice(0, 120);
+  const slug = decodeParam(raw).slice(0, 120);
 
-  const [asset, viewer, settings] = await Promise.all([getAsset(slug), getViewer(), getSettings()]);
+  const [asset, viewer, settings] = await Promise.all([getKit(slug), getViewer(), getSettings()]);
   if (!asset) return NextResponse.json({ ok: false, message: "No such asset." }, { status: 404 });
 
   /* Read through the viewer's own session so RLS decides what comes back,
@@ -39,7 +41,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
     const { data } = (await supabase!
       .from("saved_assets")
       .select("asset_slug")
-      .eq("asset_slug", slug)
+      .eq("asset_slug", asset.slug)
       .maybeSingle()) ?? { data: null };
     saved = Boolean(data);
   }

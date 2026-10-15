@@ -4,11 +4,11 @@ import Link from "next/link";
 import type { Asset } from "@/lib/kl/types";
 import { clip as clipUrl, CARD_W } from "@/lib/kl/media";
 import { kitGraph, stillFor, tierLabel, typeLabel, type NodeId } from "@/lib/v2/kit";
-import Gradient from "./Gradient";
 import Media from "./Media";
 import { Arrow, Signal, Tag } from "./Button";
 import { usePointerGlow } from "./motion";
 import s from "./KitCard.module.css";
+import { itemHref } from "@/lib/kl/slug";
 
 /* The six parts a finished kit has, in order — one dot each on the card. */
 const ANATOMY: NodeId[] = ["reference", "spec", "reconstruction", "output", "adaptation", "brand"];
@@ -16,11 +16,10 @@ const ANATOMY: NodeId[] = ["reference", "spec", "reconstruction", "output", "ada
 /**
  * A kit in the library, built like the references' cards.
  *
- * A rounded card holding a gradient well — the kit's own colours, pastel on
- * light and smoke-over-glow on dark — with the kit's page rising out of it
- * like a browser window, then the name, one dot per kit part it really has,
- * and the round ↗. On hover the glow follows the pointer, the window lifts
- * and the arrow turns. No tilt.
+ * A rounded card whose top is the kit itself — the still or the looping clip,
+ * edge to edge, with no frame around it — then the name, one dot per kit part
+ * it really has, and the round ↗. On hover the hairline glow follows the
+ * pointer, the media eases in a touch and the arrow turns. No tilt.
  *
  * `data-flip-id` lets the library animate filtering with GSAP Flip, and lets
  * the quick view morph out of this card.
@@ -35,26 +34,15 @@ export default function KitCard({ kit, priority = false }: { kit: Asset; priorit
   const parts = ANATOMY.filter((id) => has.has(id)).length;
 
   return (
-    <Link ref={ref} href={`/item/${kit.slug}`} className={s.card} data-flip-id={`kit-${kit.slug}`} data-sample={kit.sample ? "" : undefined}>
-      {/* No blurred copy of the image in the well: the window already shows it,
-          and 22 blurred, blended copies were a real cost while scrolling. */}
-      <Gradient palette={kit.palette} className={s.well}>
-        <span className={s.window} data-kit-media={kit.slug}>
-          <span className={s.windowBar} aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-          <span className={s.windowMedia}>
-            <Media still={still} clip={clip} alt="" play="auto" priority={priority} />
-          </span>
-        </span>
+    <Link ref={ref} href={itemHref(kit.slug)} className={s.card} data-flip-id={`kit-${kit.slug}`} data-sample={kit.sample ? "" : undefined}>
+      <span className={s.media} data-kit-media={kit.slug}>
+        <Media still={still} clip={clip} alt="" play="auto" priority={priority} className={s.mediaInner} />
         {kit.sample ? (
           <Tag tone="sample" className={s.flag}>
             Sample
           </Tag>
         ) : null}
-      </Gradient>
+      </span>
       <span className={s.foot}>
         <span className={s.words}>
           <span className={s.name}>{kit.name}</span>

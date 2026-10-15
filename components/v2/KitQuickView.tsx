@@ -8,6 +8,7 @@ import Icon, { type IconName } from "./Icon";
 import CopyPrompt from "./CopyPrompt";
 import { kitAccess } from "./KitParts";
 import s from "./KitDialog.module.css";
+import { itemHref } from "@/lib/kl/slug";
 
 /* The parts that are not prompts, shown as a line of lit or dimmed chips. */
 const OTHER_PARTS: Array<{ id: NodeId; title: string; icon: IconName }> = [
@@ -141,7 +142,7 @@ export default function KitQuickView({ kit, viewer }: { kit: Asset; viewer: View
           {access.action}
           {/* A real navigation, not a soft one: from inside the interception a
               Link would match (.)item again and re-open the dialog. */}
-          <a href={`/item/${kit.slug}`} className={s.open}>
+          <a href={itemHref(kit.slug)} className={s.open}>
             Open the full kit
             <Icon name="arrowUpRight" size={16} />
           </a>

@@ -11,6 +11,7 @@ import DotGrid from "../fx/DotGrid";
 import Fluted from "../fx/Fluted";
 import DeckCard from "./DeckCard";
 import s from "./HeroDeck.module.css";
+import { itemHref } from "@/lib/kl/slug";
 
 /**
  * The hero deck — the four glowing cards of the dark dashboard reference,
@@ -76,7 +77,7 @@ export default function HeroDeck({ real, feature }: { real: Asset[]; feature?: A
 
       {/* 2 — The featured kit, behind fluted glass */}
       {feature ? (
-        <DeckCard href={`/item/${feature.slug}`} label={`Featured kit: ${feature.name}`} className={s.flutedCard}>
+        <DeckCard href={itemHref(feature.slug)} label={`Featured kit: ${feature.name}`} className={s.flutedCard}>
           <span className={s.flutedWrap}>
             {stillFor(feature, 900) ? <Fluted src={stillFor(feature, 900)!} ribs={11} zoom={1.7} /> : null}
           </span>

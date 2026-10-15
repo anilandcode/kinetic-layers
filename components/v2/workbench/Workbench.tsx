@@ -11,6 +11,7 @@ import { StillImage } from "../FirstFrame";
 import Mark from "../Mark";
 import { EASE, gsap, MOTION_OK } from "../motion";
 import s from "./Workbench.module.css";
+import { itemHref } from "@/lib/kl/slug";
 
 /**
  * The workbench — Home as the node editors in the owner's references.
@@ -172,7 +173,7 @@ export default function Workbench({
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, ctrlKey: true, bubbles: true }));
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/item/${kit.slug}`);
+      await navigator.clipboard.writeText(`${window.location.origin}${itemHref(kit.slug)}`);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
@@ -181,7 +182,7 @@ export default function Workbench({
   };
 
   const tools: Array<{ icon: IconName; label: string; href?: string; onClick?: () => void; active?: boolean }> = [
-    { icon: "arrowUpRight", label: "Open the kit", href: `/item/${kit.slug}`, active: true },
+    { icon: "arrowUpRight", label: "Open the kit", href: itemHref(kit.slug), active: true },
     { icon: "search", label: "Search kits", onClick: openSearch },
     { icon: "file", label: copied ? "Link copied" : "Copy the kit's link", onClick: copyLink },
     { icon: "prompt", label: "Use it over MCP", href: "/mcp" },
@@ -225,7 +226,7 @@ export default function Workbench({
           </span>
         ) : (
           <span className={s.actions}>
-            <Link href={`/item/${kit.slug}`} className={s.white}>
+            <Link href={itemHref(kit.slug)} className={s.white}>
               <Icon name="arrowUpRight" size={14} /> Open kit
             </Link>
             <Link href="/join" className={s.dark}>
@@ -531,7 +532,7 @@ export default function Workbench({
               </div>
             </div>
             <div className={s.previewTools}>
-              <Link href={`/item/${kit.slug}`} className={s.square} aria-label="Open the kit">
+              <Link href={itemHref(kit.slug)} className={s.square} aria-label="Open the kit">
                 <Icon name="arrowUpRight" size={14} />
               </Link>
               <button type="button" className={s.square} onClick={copyLink} aria-label="Copy the kit's link">

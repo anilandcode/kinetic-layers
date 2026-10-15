@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAssetSlugs } from "@/lib/sanity/queries";
 import { SITE_URL } from "@/lib/kl/site";
+import { itemHref } from "@/lib/kl/slug";
 
 /**
  * Sitemap, generated from the catalogue rather than maintained by hand.
@@ -23,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...still,
     ...assets.map((slug) => ({
-      url: `${SITE_URL}/item/${slug}`,
+      url: `${SITE_URL}${itemHref(slug)}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.8,

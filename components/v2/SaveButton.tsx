@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button, ButtonLink } from "./Button";
+import { itemHref } from "@/lib/kl/slug";
 
 /**
  * Save a kit for later — it then shows under Saved in the library and on the
@@ -26,7 +27,7 @@ export default function SaveButton({
 
   if (!signedIn) {
     return (
-      <ButtonLink href={`/join?next=${encodeURIComponent(`/item/${slug}`)}`} variant="secondary" icon="bookmark" className={className}>
+      <ButtonLink href={`/join?next=${encodeURIComponent(itemHref(slug))}`} variant="secondary" icon="bookmark" className={className}>
         Sign in to save
       </ButtonLink>
     );

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import Icon from "./Icon";
 import s from "./KitDialog.module.css";
+import { itemHref } from "@/lib/kl/slug";
 
 type State =
   | { at: "idle" | "loading" }
@@ -102,7 +103,7 @@ export default function CopyPrompt({
         {state.at === "refused" && state.reason === "needs-account" ? (
           <>
             {" "}
-            <Link href={`/join?next=/item/${slug}`}>Join free</Link>
+            <Link href={`/join?next=${encodeURIComponent(itemHref(slug))}`}>Join free</Link>
           </>
         ) : null}
         {state.at === "refused" && state.reason === "needs-premium" ? (

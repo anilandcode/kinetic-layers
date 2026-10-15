@@ -11,6 +11,7 @@ import SaveButton from "./SaveButton";
 import PromptReveal from "./PromptReveal";
 import Icon from "./Icon";
 import s from "./Kit.module.css";
+import { itemHref } from "@/lib/kl/slug";
 
 /* ---------------------------------------------------------------------------
    Access: one decision, the same one the old item page made, in v2 words.
@@ -54,7 +55,7 @@ export function kitAccess(kit: Asset, viewer: Viewer | null): Access {
         : "The preview is published. Files are listed here when they are ready.",
       open: false,
       action: (
-        <ButtonLink href={`/join?next=/item/${kit.slug}`} size="lg" icon="arrow" className={s.wide}>
+        <ButtonLink href={`/join?next=${encodeURIComponent(itemHref(kit.slug))}`} size="lg" icon="arrow" className={s.wide}>
           Join free
         </ButtonLink>
       ),
