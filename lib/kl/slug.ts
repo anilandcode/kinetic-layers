@@ -34,3 +34,17 @@ export function decodeParam(param: string): string {
 
 export const itemHref = (slug: string) => `/item/${encodeURIComponent(slug)}`;
 export const websiteHref = (slug: string) => `/websites/${encodeURIComponent(slug)}`;
+
+/**
+ * Usage and download rows key everything by `asset_slug`. A website's rows use
+ * `website:<slug>`, so they never collide with a kit of the same slug and need
+ * no schema change; these read the key back.
+ */
+const WEBSITE_KEY = "website:";
+export const websiteKey = (slug: string) => `${WEBSITE_KEY}${slug}`;
+export const deliverableOf = (key: string): { type: "asset" | "website"; slug: string } =>
+  key.startsWith(WEBSITE_KEY) ? { type: "website", slug: key.slice(WEBSITE_KEY.length) } : { type: "asset", slug: key };
+export const deliverableHref = (key: string) => {
+  const d = deliverableOf(key);
+  return d.type === "website" ? websiteHref(d.slug) : itemHref(d.slug);
+};

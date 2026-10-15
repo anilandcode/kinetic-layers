@@ -1,5 +1,6 @@
 import { defineField, defineType, type SchemaTypeDefinition } from "sanity";
 import { isCanonicalSlug, toSlug } from "../../lib/kl/slug";
+import { WEBSITE_CATEGORIES } from "../../lib/kl/website-categories";
 
 /* A typed slug like "Nevoro Studio" 404'd on the site. Generate now produces
    the canonical form, and anything else typed by hand is refused. */
@@ -504,6 +505,139 @@ const drop = defineType({
   preview: { select: { title: "title", subtitle: "meta" } },
 });
 
+/* Cloudflare clamps an output side to this, and the website's page shows the
+   screenshot at full length — past it, the page comes back narrower. */
+const SHOT_MAX_H = 8192;
+
+/**
+ * A complete, ready-made website: /websites and /websites/[slug].
+ *
+ * Unlike an asset's files[], the ZIP here is a Studio upload — the owner chose
+ * editing everything in the Studio over the private-bucket CLI route. That puts
+ * the file on Sanity's CDN under a content-hash URL nobody can guess, and only
+ * /api/download (behind the gate) ever reveals it. Someone entitled could share
+ * that link, exactly as they could share the file itself.
+ *
+ * The two Markdown fields are gated the same way the kit prompt is: they never
+ * appear in a listing projection, only through /api/prompt. That only holds
+ * against the raw Sanity API once the dataset is private — see HANDOFF.
+ */
+const website = defineType({
+  name: "website",
+  title: "Website",
+  type: "document",
+  groups: [
+    { name: "main", title: "Website", default: true },
+    { name: "deliverables", title: "Code & design" },
+  ],
+  fields: [
+    defineField({ name: "name", type: "string", group: "main", validation: (r) => r.required() }),
+    defineField({
+      name: "slug",
+      type: "slug",
+      group: "main",
+      options: { source: "name", maxLength: 96, slugify: toSlug },
+      validation: canonicalSlug,
+    }),
+    defineField({
+      name: "category",
+      type: "string",
+      group: "main",
+      options: { list: [...WEBSITE_CATEGORIES] },
+      description: "The filter pill it appears under on /websites.",
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: "tier",
+      type: "string",
+      group: "main",
+      options: { list: [...TIERS], layout: "radio", direction: "horizontal" },
+      initialValue: "Premium",
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: "screenshot",
+      title: "Full-page screenshot",
+      type: "image",
+      group: "main",
+      options: { storeOriginalFilename: true },
+      description:
+        "The whole page, top to bottom. 1440px wide reads best, and under 8,192px tall keeps it sharp. The grid shows the top of it; the website's page shows all of it.",
+      validation: (r) => [
+        r.required(),
+        r
+          .custom(async (value: any, ctx: any) => {
+            const ref = value?.asset?._ref;
+            if (!ref || !ctx?.getClient) return true;
+            const h: number | null = await ctx
+              .getClient({ apiVersion: "2026-08-25" })
+              .fetch("*[_id == $id][0].metadata.dimensions.height", { id: ref });
+            return typeof h !== "number" || h <= SHOT_MAX_H
+              ? true
+              : `${h}px tall. Over ${SHOT_MAX_H}px it shows at a reduced width on the website's page — crop or export it shorter if you can.`;
+          })
+          .warning(),
+      ],
+    }),
+    defineField({ name: "tagline", type: "string", group: "main" }),
+    defineField({ name: "liveUrl", title: "Live site", type: "url", group: "main" }),
+    defineField({
+      name: "tags",
+      type: "array",
+      group: "main",
+      of: [{ type: "reference", to: [{ type: "tag" }] }],
+      description: "Used for “More like this”.",
+    }),
+    defineField({
+      name: "colors",
+      title: "Colours",
+      type: "array",
+      group: "main",
+      of: [{ type: "string" }],
+      description: "Optional hex values, e.g. #0A0A0B. Leave empty to use the colours measured from the screenshot.",
+      validation: (r) =>
+        r.custom((list: string[] | undefined) =>
+          !list || list.every((c) => /^#[0-9a-fA-F]{6}$/.test(c)) ? true : "Use six-digit hex values like #E8834A."
+        ),
+    }),
+    defineField({
+      name: "zip",
+      title: "Project ZIP",
+      type: "file",
+      group: "deliverables",
+      options: { accept: ".zip,application/zip", storeOriginalFilename: true },
+      description: "The complete project. Downloaded only through the gate.",
+    }),
+    defineField({
+      name: "codeMarkdown",
+      title: "Code (Markdown)",
+      type: "text",
+      group: "deliverables",
+      rows: 14,
+      description: "The complete code as Markdown — each file in a fenced code block under its path. Visitors copy it or download it as a .md.",
+    }),
+    defineField({
+      name: "designMarkdown",
+      title: "Design system (Markdown)",
+      type: "text",
+      group: "deliverables",
+      rows: 14,
+      description: "Colours, type, spacing, components and motion, as Markdown.",
+    }),
+    defineField({ name: "featured", type: "boolean", group: "main", initialValue: false }),
+    defineField({
+      name: "publishedAt",
+      type: "datetime",
+      group: "main",
+      initialValue: () => new Date().toISOString(),
+    }),
+  ],
+  orderings: [{ title: "Newest", name: "newest", by: [{ field: "publishedAt", direction: "desc" }] }],
+  preview: {
+    select: { title: "name", subtitle: "category", media: "screenshot" },
+  },
+});
+
 /** Site-wide numbers the design shows in the hero and the pricing copy. */
 const settings = defineType({
   name: "settings",
@@ -526,6 +660,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   tag,
   collection,
   drop,
+  website,
   settings,
   fileEntry,
 ];

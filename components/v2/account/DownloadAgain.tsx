@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { Button } from "../Button";
 import s from "./Account.module.css";
+import { deliverableOf } from "@/lib/kl/slug";
 
 /**
  * Re-download a file from the history list. The signed URL is short-lived, so
  * it is minted per click through the same /api/download the kit page uses —
  * and entitlement can lapse in between, so a refusal is said, not swallowed.
+ * `slug` is the history row's key: a kit slug, or `website:<slug>`.
  */
 export default function DownloadAgain({ slug, file }: { slug: string; file?: string | null }) {
   const [busy, setBusy] = useState(false);
@@ -20,7 +22,7 @@ export default function DownloadAgain({ slug, file }: { slug: string; file?: str
       const res = await fetch("/api/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, file: file ?? undefined }),
+        body: JSON.stringify({ ...deliverableOf(slug), file: file ?? undefined }),
       });
       const json = await res.json();
       if (!res.ok) {

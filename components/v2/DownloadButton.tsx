@@ -12,12 +12,15 @@ import s from "./Kit.module.css";
  */
 export default function DownloadButton({
   slug,
+  type = "asset",
   file,
   label = "Download",
   size = "lg",
   variant = "primary",
 }: {
   slug: string;
+  /** A kit's file, or a website's project ZIP. */
+  type?: "asset" | "website";
   file?: string;
   label?: string;
   size?: "sm" | "md" | "lg";
@@ -33,7 +36,7 @@ export default function DownloadButton({
       const response = await fetch("/api/download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, file }),
+        body: JSON.stringify({ slug, type, file }),
       });
       const result = await response.json();
       if (!response.ok || !result.url) {

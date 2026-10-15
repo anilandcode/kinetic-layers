@@ -87,6 +87,33 @@ export const clip = (src?: string | null, w = CARD_W, seconds = 6) =>
 export const frame = (src?: string | null, w = CARD_W) =>
   !MIRROR ? undefined : cdnCgi("media", `mode=frame,time=0s,width=${w}`, toMediaHost(src));
 
+/**
+ * The top of a tall full-page screenshot, cropped to a card — the websites
+ * grid. Through Cloudflare when the mirror is on; otherwise Sanity's own image
+ * API does the same crop. Pair it with `object-position: top` in CSS so an
+ * un-transformed original still shows its top.
+ */
+export function cropTop(src: string | null | undefined, w: number, h: number): string | undefined {
+  if (!src) return undefined;
+  if (MIRROR) return cdnCgi("image", `width=${w},height=${h},fit=cover,gravity=top,quality=85,format=auto`, toMediaHost(src));
+  const u = mediaUrl(src);
+  return u && /^https?:\/\/cdn\.sanity\.io\/images\//i.test(u) ? `${u}?w=${w}&h=${h}&fit=crop&crop=top&auto=format` : u;
+}
+
+/* Cloudflare clamps any output side to this — measured: a 1440×9000 page asked
+   for at width=1400 came back 1311×8192. */
+const MAX_OUT = 8192;
+
+/**
+ * A screenshot at full length. Width is capped so the output height stays
+ * within Cloudflare's limit, so the width asked for is the width delivered and a
+ * very tall page simply comes back narrower.
+ */
+export function fullShot(src: string | null | undefined, w: number, dims?: { width?: number; height?: number }) {
+  const fit = dims?.width && dims?.height ? Math.min(w, Math.floor((MAX_OUT * dims.width) / dims.height)) : w;
+  return img(src, fit);
+}
+
 /** The convention the dummy generator and the upload script both follow. */
 export const posterPath = (slug: string, shot = "card") => `${slug}/${shot}.webp`;
 export const clipPath = (slug: string, shot = "card") => `${slug}/${shot}.mp4`;

@@ -12,10 +12,12 @@ import { ButtonLink } from "./Button";
 import { useDialog } from "./useDialog";
 import s from "./Header.module.css";
 
-/* Library and Pricing are the navigation; search, theme and the account are
-   utilities; everything else is in the footer (docs/DESIGN-DIRECTION-V2.md). */
+/* Library, Websites and Pricing are the navigation; search, theme and the
+   account are utilities; everything else is in the footer
+   (docs/DESIGN-DIRECTION-V2.md). */
 const NAV = [
   { href: "/library", label: "Library" },
+  { href: "/websites", label: "Websites" },
   { href: "/pricing", label: "Pricing" },
   { href: "/docs", label: "Docs" },
 ];

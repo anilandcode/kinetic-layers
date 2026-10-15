@@ -9,7 +9,7 @@ import DownloadAgain from "@/components/v2/account/DownloadAgain";
 import { ButtonLink } from "@/components/v2/Button";
 import p from "@/components/v2/Page.module.css";
 import a from "@/components/v2/account/Account.module.css";
-import { itemHref } from "@/lib/kl/slug";
+import { deliverableHref } from "@/lib/kl/slug";
 
 export const metadata: Metadata = { title: "Downloads", robots: { index: false, follow: false } };
 
@@ -69,7 +69,7 @@ export default async function AccountDownloads({ searchParams }: { searchParams:
                   {still ? <img src={still} alt="" loading="lazy" decoding="async" /> : null}
                 </span>
                 <span className={a.rowMain}>
-                  <Link href={itemHref(d.asset_slug)} className={a.rowTitle}>
+                  <Link href={deliverableHref(d.asset_slug)} className={a.rowTitle}>
                     {kit?.name ?? d.asset_name ?? d.asset_slug}
                   </Link>
                   <span className={a.rowMeta}>

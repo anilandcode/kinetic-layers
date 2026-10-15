@@ -4,6 +4,8 @@ import { getViewer, canDownload } from "@/lib/kl/viewer";
 import { consumeQuota, quotaRefusal, refund, subjectFor } from "@/lib/kl/quota";
 import { getAsset, getAssetFiles } from "@/lib/sanity/queries";
 import { signedDownloadUrl } from "@/lib/kl/storage";
+import { getWebsite, getWebsiteDeliverable } from "@/lib/sanity/websites";
+import { websiteKey } from "@/lib/kl/slug";
 
 /**
  * The gate.
@@ -22,7 +24,7 @@ export const dynamic = "force-dynamic";
 const SIGNED_URL_TTL = 60; // seconds
 
 export async function POST(request: NextRequest) {
-  let body: { slug?: string; file?: string };
+  let body: { slug?: string; file?: string; type?: string };
   try {
     body = await request.json();
   } catch {
@@ -31,6 +33,7 @@ export async function POST(request: NextRequest) {
 
   const slug = typeof body.slug === "string" ? body.slug.slice(0, 120) : "";
   if (!slug) return NextResponse.json({ ok: false, message: "Which asset?" }, { status: 400 });
+  if (body.type === "website") return websiteZip(request, slug);
 
   const asset = await getAsset(slug);
   if (!asset) return NextResponse.json({ ok: false, message: "No such asset." }, { status: 404 });
@@ -110,6 +113,63 @@ export async function POST(request: NextRequest) {
     url: signedUrl,
     name: file.name,
     expiresIn: SIGNED_URL_TTL,
+    remaining: quota.remaining,
+    limit: quota.limit,
+  });
+}
+
+/**
+ * A website's project ZIP. Same gate and allowance as a kit's files; the file
+ * itself is a Studio upload on Sanity's CDN (see the website schema), so the URL
+ * handed back is that file with `?dl=` to force a download under a clean name.
+ * It is only ever revealed here, after the gate has passed and a unit is spent.
+ */
+async function websiteZip(request: NextRequest, slug: string) {
+  const site = await getWebsite(slug);
+  if (!site) return NextResponse.json({ ok: false, message: "No such website." }, { status: 404 });
+
+  const viewer = await getViewer();
+  if (!canDownload(viewer, site)) {
+    return NextResponse.json(
+      {
+        ok: false,
+        reason: viewer ? "needs-premium" : "needs-account",
+        message: viewer ? "This one is included with Premium." : "Create a free account to download this.",
+      },
+      { status: viewer ? 403 : 401 }
+    );
+  }
+
+  const key = websiteKey(slug);
+  const subject = await subjectFor(viewer, request);
+  const quota = await consumeQuota(subject, "download", key);
+  if (!quota.allowed) {
+    const { body: refusal, retryAfter } = quotaRefusal("download", quota);
+    return NextResponse.json(refusal, {
+      status: 429,
+      headers: retryAfter ? { "Retry-After": String(retryAfter) } : undefined,
+    });
+  }
+
+  const zip = await getWebsiteDeliverable(slug);
+  if (!zip?.zipUrl) {
+    await refund(quota.usageId);
+    return NextResponse.json({ ok: false, message: "The project ZIP has not been uploaded yet." }, { status: 409 });
+  }
+
+  const name = `${slug}.zip`;
+  await admin().from("downloads").insert({
+    user_id: viewer!.id,
+    asset_slug: key,
+    asset_name: site.name,
+    file_name: name,
+    bytes: zip.zipBytes,
+  });
+
+  return NextResponse.json({
+    ok: true,
+    url: `${zip.zipUrl}?dl=${encodeURIComponent(name)}`,
+    name,
     remaining: quota.remaining,
     limit: quota.limit,
   });

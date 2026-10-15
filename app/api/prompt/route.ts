@@ -3,6 +3,8 @@ import { getViewer } from "@/lib/kl/viewer";
 import { canReadPrompt } from "@/lib/kl/gate";
 import { consumeQuota, quotaRefusal, refund, subjectFor } from "@/lib/kl/quota";
 import { getAsset, getPromptBody } from "@/lib/sanity/queries";
+import { getWebsite, getWebsiteDeliverable } from "@/lib/sanity/websites";
+import { websiteKey } from "@/lib/kl/slug";
 
 /**
  * The other half of the gate.
@@ -12,17 +14,19 @@ import { getAsset, getPromptBody } from "@/lib/sanity/queries";
  * existed no entitled visitor could ever read past the two-line preview — the
  * gate blocked everyone equally, which is a paywall that only takes.
  *
- * It asks the same question, with the same function, as the download route:
- * `canDownload`. There is deliberately no second copy of the rule here. If the
- * two ever disagree about who may read a prompt versus who may download its
- * files, that is a bug, and sharing the function makes it impossible.
+ * It asks `canReadPrompt` from lib/kl/gate.ts — the one rule, shared with the
+ * client — so the button and the route cannot disagree about who may read.
+ *
+ * `type: "website"` serves a website's code or design-system Markdown through
+ * the same gate and the same daily allowance; the usage row is keyed
+ * `website:<slug>` so it never collides with a kit.
  */
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  let body: { slug?: string; kind?: string };
+  let body: { slug?: string; kind?: string; type?: string };
   try {
     body = await request.json();
   } catch {
@@ -30,10 +34,12 @@ export async function POST(request: NextRequest) {
   }
 
   const slug = typeof body.slug === "string" ? body.slug.slice(0, 120) : "";
+  if (!slug) return NextResponse.json({ ok: false, message: "Which asset?" }, { status: 400 });
+  if (body.type === "website") return websiteText(request, slug, body.kind === "design" ? "design" : "code");
+
   /* Which prompt: the reconstruction prompt, or the adaptation prompt. Both
      sit behind the same gate and draw on the same daily allowance. */
   const kind = body.kind === "adaptation" ? "adaptation" : "reconstruction";
-  if (!slug) return NextResponse.json({ ok: false, message: "Which asset?" }, { status: 400 });
 
   const asset = await getAsset(slug);
   if (!asset) return NextResponse.json({ ok: false, message: "No such asset." }, { status: 404 });
@@ -90,4 +96,43 @@ export async function POST(request: NextRequest) {
     remaining: quota.remaining,
     limit: quota.limit,
   });
+}
+
+/** A website's code or design system: same gate, same allowance as a prompt. */
+async function websiteText(request: NextRequest, slug: string, kind: "code" | "design") {
+  const site = await getWebsite(slug);
+  if (!site) return NextResponse.json({ ok: false, message: "No such website." }, { status: 404 });
+
+  const viewer = await getViewer();
+  if (!canReadPrompt(viewer, site)) {
+    return NextResponse.json(
+      {
+        ok: false,
+        reason: viewer ? "needs-premium" : "needs-account",
+        message: viewer ? "This one is included with Premium." : "Create a free account to read this.",
+      },
+      { status: viewer ? 403 : 401 }
+    );
+  }
+
+  const subject = await subjectFor(viewer, request);
+  const quota = await consumeQuota(subject, "prompt", websiteKey(slug));
+  if (!quota.allowed) {
+    const { body: refusal, retryAfter } = quotaRefusal("prompt", quota);
+    return NextResponse.json(refusal, {
+      status: 429,
+      headers: retryAfter ? { "Retry-After": String(retryAfter) } : undefined,
+    });
+  }
+
+  const text = (await getWebsiteDeliverable(slug))?.[kind] ?? "";
+  if (!text) {
+    await refund(quota.usageId);
+    return NextResponse.json(
+      { ok: false, message: kind === "design" ? "No design system attached yet." : "No code attached yet." },
+      { status: 409 }
+    );
+  }
+
+  return NextResponse.json({ ok: true, text, remaining: quota.remaining, limit: quota.limit });
 }

@@ -88,6 +88,32 @@ export type Asset = {
   illustrative?: boolean;
 };
 
+/**
+ * A ready-made website (/websites). `free` mirrors Asset's so the same gate
+ * functions decide access. The code, design system and ZIP are never on this
+ * shape — only their sizes, so a card knows what is on offer.
+ */
+export type Website = {
+  slug: string;
+  name: string;
+  category: string;
+  free: boolean;
+  tagline?: string;
+  liveUrl?: string;
+  screenshot?: string;
+  width?: number;
+  height?: number;
+  palette?: Palette | null;
+  /** Hex values set in the Studio, overriding the measured palette. */
+  colors?: string[];
+  tags: string[];
+  featured?: boolean;
+  publishedAt?: string;
+  codeLength: number;
+  designLength: number;
+  zipBytes?: number | null;
+};
+
 export type Palette = {
   /** Hues measured by hand for preview samples; Sanity never supplies this. */
   hues?: string[];

@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getAssetSlugs } from "@/lib/sanity/queries";
+import { getWebsiteSlugs } from "@/lib/sanity/websites";
 import { SITE_URL } from "@/lib/kl/site";
-import { itemHref } from "@/lib/kl/slug";
+import { itemHref, websiteHref } from "@/lib/kl/slug";
 
 /**
  * Sitemap, generated from the catalogue rather than maintained by hand.
@@ -11,10 +12,11 @@ import { itemHref } from "@/lib/kl/slug";
  * to a sign-in form helps nobody.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const assets = await getAssetSlugs();
+  const [assets, websites] = await Promise.all([getAssetSlugs(), getWebsiteSlugs()]);
   const now = new Date();
 
-  const still = ["", "/library", "/pricing", "/contact", "/changelog", "/license", "/docs", "/mcp", "/privacy", "/terms"].map((path) => ({
+  /* /websites is listed only once it has something on it — the empty index is noindex. */
+  const still = ["", "/library", ...(websites.length ? ["/websites"] : []), "/pricing", "/contact", "/changelog", "/license", "/docs", "/mcp", "/privacy", "/terms"].map((path) => ({
     url: `${SITE_URL}${path}`,
     lastModified: now,
     changeFrequency: (path === "" ? "daily" : "weekly") as "daily" | "weekly",
@@ -25,6 +27,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...still,
     ...assets.map((slug) => ({
       url: `${SITE_URL}${itemHref(slug)}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+    ...websites.map((slug) => ({
+      url: `${SITE_URL}${websiteHref(slug)}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.8,
