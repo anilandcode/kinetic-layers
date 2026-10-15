@@ -3,6 +3,58 @@
 This document records operational decisions and known traps. Verify material
 implementation details in the current source before acting.
 
+## Cards, 404s, navigation, and the Websites section — 2026-10-15
+
+**Deploying (unchanged, still true):** `direction-kit` does not deploy from git.
+Build a disposable worktree at the commit, `vercel link --project direction-kit`
+inside it, `vercel deploy --prod`. A Vercel build once failed inside
+`next/font` fetching Inter for `app/plan` — a transient Google Fonts response;
+`vercel deploy --prod --force` passed with no code change.
+
+**Pushing:** this machine has two GitHub logins and the active one
+(`anilpervaiz`) cannot push to `anilandcode/kinetic-layers`. Commits
+`e2efec6`…`702c010` were deployed from local and are not on GitHub until
+`gh auth switch -u anilandcode` and a push of `redesign/v2` and `main`.
+
+- **Kit 404s — fixed.** Slugs typed by hand with spaces ("Nevoro Studio") 404'd:
+  Next 15.5 hands the page its param still percent-encoded and the lookup
+  matched nothing. `lib/kl/slug.ts` is the one slug rule now (imported by the
+  Studio, the tools and the app): the Studio's Generate produces it and
+  validation refuses anything else; every link goes through `itemHref`;
+  middleware 308s `/item/<non-canonical>` to the canonical slug before
+  anything renders (the page can only meta-refresh, because its loading
+  boundary has already streamed). `tools/migrate-slugs.mjs --apply` moved the
+  seven bad slugs in Sanity and in the Supabase rows keyed by slug.
+- **Copy prompt returned 409 for every Studio-written kit** — `getPromptBody`
+  read only the legacy `promptBody`. Now `coalesce(prompt, promptBody)`.
+- **The Sanity webhook exists** (id `bMgMSNfVFk3FSEga`): POST
+  `https://kineticlayers.com/api/revalidate`, production, create/update/delete,
+  filter `_type in ["asset","collection","drop","settings","tag","website"]`,
+  projection `{_type, slug}`. `SANITY_REVALIDATE_SECRET` was rotated on
+  `direction-kit` to match; it is in no file. Attempts are visible at
+  sanity.io/manage → API → Webhooks.
+- **Navigation no longer blanks the header.** Pages live in the `app/(site)`
+  route group, whose layout draws `ShellFrame` once; only `#main` swaps and the
+  skeleton paints inside it. The viewer reaches the header as an unawaited
+  promise resolved in Suspense, so first paint never waits on Supabase.
+  `Shell.tsx` is gone. Root `error.tsx`/`not-found.tsx` still draw their own
+  frame (they render outside the group). Middleware verifies the session with
+  `getClaims()` instead of a `getUser()` round trip.
+- **Cards** have no gradient well or browser frame — the still or clip fills the
+  card's top edge to edge.
+- **Websites section** — `/websites`, `/websites/[slug]`, a `website` type in
+  the Studio (name, slug, category from `lib/kl/website-categories.ts`, tier,
+  full-page screenshot, tagline, live URL, tags, optional hex colours, project
+  ZIP, code Markdown, design-system Markdown). Same gate and daily allowance
+  as kits: `/api/prompt` and `/api/download` take `type: "website"`; usage and
+  download rows are keyed `website:<slug>`. The ZIP is a Studio upload on
+  Sanity's CDN, revealed only by the gated route — a deliberate exception to
+  the "no upload field for paid files" rule above the asset schema, chosen so
+  everything is edited in the Studio. Cloudflare clamps any output side to
+  8192px, so very tall screenshots are served narrower (`fullShot`), and the
+  Studio warns past 8192px. `/websites` is noindex and out of the sitemap
+  until the first website exists.
+
 ## Launched: kineticlayers.com now runs the v2 redesign — 2026-09-25
 
 The owner asked to go live. Investigation first, since HANDOFF and README
@@ -584,16 +636,25 @@ restores the paywall exactly as it was.
    on `/join` 2026-09-25), but nobody has completed a real sign-in with it
    yet. Callback `https://ubftlspopkfwwazwsinv.supabase.co/auth/v1/callback`.
    The buttons reappear on their own within five minutes of enabling.
-6. **The Sanity revalidation webhook.** `sanity hook list` returns nothing, so an
-   edit appears when the fetch's own hour expires. See `docs/adding-an-asset.md`.
+6. ~~**The Sanity revalidation webhook.**~~ **Done 2026-10-15** — see the
+   entry at the top. Publishing in the Studio shows on the site in seconds.
 7. **Production `ADMIN_TOKEN` is 11 characters**, and it guards
    `/api/admin/grant`.
 8. **The R2 token is Admin Read & Write on all buckets.** Narrow it to Object
    Read & Write on the two it needs.
 9. **The legal pages are drafts** and say so on the page. Review before charging.
-10. **`/changelog` shows fictional seed Drop documents.** `getDrops()` has no
-    seed filter (unlike assets' `hasRealPreview()`) — decide whether to filter
-    in code, delete the seed drops in Sanity, or both.
+10. ~~**`/changelog` shows fictional seed Drop documents.**~~ Fixed 2026-09-25
+    with `hasRealId` (commit 2f6f3e3).
+11. **Make the Sanity dataset private.** Anonymous API reads return every
+    asset's `prompt`, `notes` and file paths (tested 2026-10-15: 15 prompts
+    readable with no token) — and the website `codeMarkdown`/`designMarkdown`
+    the same way once any is published. The paywall is bypassable until this is
+    done: sanity.io/manage → Datasets, or
+    `npx sanity dataset visibility set production private`. The app already
+    reads with `SANITY_API_READ_TOKEN`; previews on `kinetic-layers` (no token)
+    will then show an empty catalogue, which is expected.
+12. **Confirm a signed-in website ZIP download.** The anonymous paths were
+    tested live (401/404/429); the success path needs a real account.
 
 **Known hazard, not yet bitten:**
 `supabase/migrations/20260907130000_premium_contract.sql` is deliberately unrun —

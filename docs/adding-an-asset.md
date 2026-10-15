@@ -107,17 +107,16 @@ afterwards.
 
 For a tagline or a prompt, open the Studio, edit the asset, publish.
 
-How fast it goes live depends on one thing that is **not currently set up**.
-`app/api/revalidate/route.ts` invalidates just the tags an edit touched, but no
-Sanity webhook calls it — `sanity hook list` returns nothing. Until one exists,
-an edit appears when the fetch's own hour expires (`revalidate: 3600` in
-`lib/sanity/queries.ts`), not in seconds.
+It goes live within seconds. A Sanity webhook (set up 2026-10-15) calls
+`https://kineticlayers.com/api/revalidate` on every create, update and delete,
+and that route clears just the cache tags the edit touched. If an edit ever
+takes an hour to show, check the webhook's recent attempts at sanity.io/manage
+→ API → Webhooks — a 401 there means `SANITY_REVALIDATE_SECRET` on Vercel and
+the webhook's secret no longer match.
 
-To wire it up, in the Sanity dashboard under **API → Webhooks**, add one
-pointing at `https://kineticlayers.com/api/revalidate`: POST, dataset
-`production`, trigger on create/update/delete, projection
-`{_type, slug}`, and the secret set to `SANITY_REVALIDATE_SECRET`. The CLI's
-`sanity hook create` can do it too, but only interactively.
+Slugs are lowercase letters, numbers and hyphens only. Press **Generate** next
+to the slug field; anything typed with spaces or capitals is refused, because
+it used to publish a kit whose page 404'd.
 
 It is live at **https://kineticlayers.sanity.studio** — sign in with the Sanity
 account the project belongs to. To run it locally, or to push changes to the
