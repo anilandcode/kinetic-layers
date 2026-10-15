@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { decodeParam, toSlug } from "@/lib/kl/slug";
 
 export async function middleware(request: NextRequest) {
   /**
@@ -28,6 +29,22 @@ export async function middleware(request: NextRequest) {
       headers: { "Cache-Control": "no-store", "Content-Type": "text/plain; charset=utf-8" },
     });
   }
+  /* An old link to a non-canonical slug ("/item/Nevoro%20Studio") gets a real
+     308 here. The page redirects too, but by then its loading boundary has
+     started streaming, so all it can send is a 200 with a meta refresh. Every
+     published slug is canonical now — the Studio enforces it — so the
+     canonical form is always the one that exists. */
+  const slugged = pathname.match(/^\/(item|websites)\/([^/]+)$/);
+  if (slugged) {
+    const raw = decodeParam(slugged[2]);
+    const canonical = toSlug(raw);
+    if (canonical && canonical !== raw) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${slugged[1]}/${canonical}`;
+      return NextResponse.redirect(url, 308);
+    }
+  }
+
   const code = searchParams.get("code");
 
   if (code && pathname !== "/auth/callback") {
