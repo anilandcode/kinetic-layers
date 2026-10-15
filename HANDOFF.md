@@ -49,10 +49,10 @@ inside it, `vercel deploy --prod`. A Vercel build once failed inside
 `next/font` fetching Inter for `app/plan` — a transient Google Fonts response;
 `vercel deploy --prod --force` passed with no code change.
 
-**Pushing:** this machine has two GitHub logins and the active one
-(`anilpervaiz`) cannot push to `anilandcode/kinetic-layers`. Commits
-`e2efec6`…`702c010` were deployed from local and are not on GitHub until
-`gh auth switch -u anilandcode` and a push of `redesign/v2` and `main`.
+**Pushing:** this machine has two GitHub logins; only `anilandcode` can push
+to `anilandcode/kinetic-layers`. The owner switched to it on 2026-10-16
+(`gh auth switch -u anilandcode`) and everything is pushed. If a push 403s
+again, check `gh auth status` for the active account first.
 
 - **Kit 404s — fixed.** Slugs typed by hand with spaces ("Nevoro Studio") 404'd:
   Next 15.5 hands the page its param still percent-encoded and the lookup
