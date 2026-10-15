@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { HUES } from "@/lib/v2/gradient";
-import Shell from "./Shell";
 import PageHero from "./PageHero";
 import ProseToc from "./ProseToc";
 import l from "./layout.module.css";
@@ -15,9 +14,9 @@ import s from "./Prose.module.css";
 
 export function ContentPage({ children }: { children: ReactNode }) {
   return (
-    <Shell>
+    <>
       <main className={p.page}>{children}</main>
-    </Shell>
+    </>
   );
 }
 

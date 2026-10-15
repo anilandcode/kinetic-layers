@@ -3,7 +3,6 @@ import { getViewer } from "@/lib/kl/viewer";
 import { getKitsForDisplay, getWorkbenchKits } from "@/lib/v2/data";
 import { ditherColors, HUES, kitHue } from "@/lib/v2/gradient";
 import Library from "../Library";
-import Shell from "../Shell";
 import AccessBand from "../AccessBand";
 import { ButtonLink } from "../Button";
 import DitherField from "../fx/DitherField";
@@ -34,7 +33,7 @@ export default async function CinematicHome() {
   const bench = await getWorkbenchKits(real);
 
   return (
-    <Shell>
+    <>
       <main className={s.home}>
         {/* ---------- Hero ---------- */}
         <section className={s.hero} aria-labelledby="home-title">
@@ -102,6 +101,6 @@ export default async function CinematicHome() {
           <AccessBand viewer={viewer} published={real.length} free={free} />
         </section>
       </main>
-    </Shell>
+    </>
   );
 }

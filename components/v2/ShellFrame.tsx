@@ -8,23 +8,20 @@ import s from "./layout.module.css";
 /**
  * The frame every v2 screen renders inside.
  *
+ * It lives in app/(site)/layout.tsx, so it is mounted once and survives
+ * navigation: only `#main` swaps, and a loading boundary paints inside it
+ * rather than repainting the header, footer and canvas on every click.
+ *
+ * `viewer` is a promise the header resolves on its own, so the frame streams
+ * before the session is known — a cold Supabase can take seconds, and the page
+ * should not wait on the account slot. With no promise (the root error and
+ * not-found boundaries), the slot stays a placeholder.
+ *
  * `data-v2` scopes the tokens in styles/kl-foundations.css. `data-look` is
  * always "cinematic" — the one direction, chosen by the owner — and stays as
  * an attribute because component styles key their cinematic rules off it.
- *
- * Synchronous, so a loading boundary or the error boundary can paint it
- * without waiting on a session — `pending` draws the header's account slot as
- * a placeholder.
  */
-export function ShellFrame({
-  viewer = null,
-  pending = false,
-  children,
-}: {
-  viewer?: Viewer | null;
-  pending?: boolean;
-  children: ReactNode;
-}) {
+export function ShellFrame({ viewer, children }: { viewer?: Promise<Viewer | null>; children: ReactNode }) {
   return (
     <div data-v2 data-look="cinematic" className={s.shell}>
       <a href="#main" className={s.skip}>
@@ -32,7 +29,7 @@ export function ShellFrame({
       </a>
       {/* The dotted canvas under every screen, brightening round the pointer. */}
       <Spotlight />
-      <Header viewer={viewer} pending={pending} />
+      <Header viewer={viewer} />
       <div id="main" className={s.main} tabIndex={-1}>
         {children}
       </div>

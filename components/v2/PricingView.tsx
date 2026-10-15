@@ -4,7 +4,6 @@ import { LIMITS } from "@/lib/kl/limits";
 import { getViewer } from "@/lib/kl/viewer";
 import { getKits } from "@/lib/v2/data";
 import { HUES } from "@/lib/v2/gradient";
-import Shell from "./Shell";
 import PageHero, { SectionHead } from "./PageHero";
 import Gradient from "./Gradient";
 import InterestForm from "./InterestForm";
@@ -113,7 +112,7 @@ export default async function PricingView() {
   const currentAction = viewer ? "Browse the library" : "Create a free account";
 
   return (
-    <Shell>
+    <>
       <main className={p.page}>
         <PageHero
           id="pricing-title"
@@ -296,6 +295,6 @@ export default async function PricingView() {
           </div>
         </section>
       </main>
-    </Shell>
+    </>
   );
 }

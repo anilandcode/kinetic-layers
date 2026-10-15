@@ -1,4 +1,3 @@
-import Shell from "./Shell";
 import AuthStage from "./AuthStage";
 import Icon from "./Icon";
 import { ButtonLink } from "./Button";
@@ -24,7 +23,7 @@ export default function NoticePage({
   tone?: "good" | "neutral";
 }) {
   return (
-    <Shell>
+    <>
       <main>
         <AuthStage labelledBy="notice-title">
           <div className={p.notice}>
@@ -44,6 +43,6 @@ export default function NoticePage({
           </div>
         </AuthStage>
       </main>
-    </Shell>
+    </>
   );
 }

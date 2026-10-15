@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, use, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Viewer } from "@/lib/kl/types";
 import Icon from "./Icon";
@@ -92,6 +92,45 @@ function AccountMenu({ viewer }: { viewer: Viewer }) {
   );
 }
 
+/* The session arrives as a promise so the header can paint before it does. */
+function AccountSlot({ viewer }: { viewer: Promise<Viewer | null> }) {
+  const who = use(viewer);
+  return who ? (
+    <AccountMenu viewer={who} />
+  ) : (
+    <span className={s.auth}>
+      <Link href="/join?mode=signin" className={s.signin}>Sign in</Link>
+      <ButtonLink href="/join" size="sm">Join free</ButtonLink>
+    </span>
+  );
+}
+
+function DrawerAccount({ viewer, onClose }: { viewer: Promise<Viewer | null>; onClose: () => void }) {
+  const who = use(viewer);
+  return who ? (
+    <div className={s.drawerAccount}>
+      <span className={s.who}>
+        <span>{who.name || "Signed in"}</span>
+        {who.email ? <span className={s.whoMail}>{who.email}</span> : null}
+      </span>
+      <Link href="/account" onClick={onClose}>Dashboard</Link>
+      <Link href="/account/downloads" onClick={onClose}>Downloads</Link>
+      <form action="/auth/signout" method="post">
+        <button type="submit">Sign out</button>
+      </form>
+    </div>
+  ) : (
+    <div className={s.drawerCta}>
+      <ButtonLink href="/join" size="lg" onClick={onClose}>
+        Join free
+      </ButtonLink>
+      <ButtonLink href="/join?mode=signin" variant="secondary" size="lg" onClick={onClose}>
+        Sign in
+      </ButtonLink>
+    </div>
+  );
+}
+
 function Drawer({
   open,
   onClose,
@@ -100,7 +139,7 @@ function Drawer({
 }: {
   open: boolean;
   onClose: () => void;
-  viewer: Viewer | null;
+  viewer?: Promise<Viewer | null>;
   pathname: string;
 }) {
   const panel = useRef<HTMLDivElement | null>(null);
@@ -144,40 +183,17 @@ function Drawer({
 
         <div className={s.drawerFoot}>
           {viewer ? (
-            <div className={s.drawerAccount}>
-              <span className={s.who}>
-                <span>{viewer.name || "Signed in"}</span>
-                {viewer.email ? <span className={s.whoMail}>{viewer.email}</span> : null}
-              </span>
-              <Link href="/account" onClick={onClose}>Dashboard</Link>
-              <Link href="/account/downloads" onClick={onClose}>Downloads</Link>
-              <form action="/auth/signout" method="post">
-                <button type="submit">Sign out</button>
-              </form>
-            </div>
-          ) : (
-            <div className={s.drawerCta}>
-              <ButtonLink href="/join" size="lg" onClick={onClose}>
-                Join free
-              </ButtonLink>
-              <ButtonLink href="/join?mode=signin" variant="secondary" size="lg" onClick={onClose}>
-                Sign in
-              </ButtonLink>
-            </div>
-          )}
+            <Suspense fallback={null}>
+              <DrawerAccount viewer={viewer} onClose={onClose} />
+            </Suspense>
+          ) : null}
         </div>
       </div>
     </div>
   );
 }
 
-export default function Header({
-  viewer = null,
-  pending = false,
-}: {
-  viewer?: Viewer | null;
-  pending?: boolean;
-}) {
+export default function Header({ viewer }: { viewer?: Promise<Viewer | null> }) {
   const pathname = usePathname() ?? "/";
   const barRef = useRef<HTMLElement | null>(null);
   /* The bar's backdrop-filter makes it the containing block for anything
@@ -242,15 +258,12 @@ export default function Header({
             <kbd className={s.kbd} aria-hidden="true">⌘K</kbd>
           </button>
           <span className={s.desktopOnly}>
-            {pending ? (
-              <span className={s.pending} aria-hidden="true" />
-            ) : viewer ? (
-              <AccountMenu viewer={viewer} />
+            {viewer ? (
+              <Suspense fallback={<span className={s.pending} aria-hidden="true" />}>
+                <AccountSlot viewer={viewer} />
+              </Suspense>
             ) : (
-              <span className={s.auth}>
-                <Link href="/join?mode=signin" className={s.signin}>Sign in</Link>
-                <ButtonLink href="/join" size="sm">Join free</ButtonLink>
-              </span>
+              <span className={s.pending} aria-hidden="true" />
             )}
           </span>
           <button

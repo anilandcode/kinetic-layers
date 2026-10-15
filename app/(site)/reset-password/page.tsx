@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/kl/viewer";
-import Shell from "@/components/v2/Shell";
 import AuthStage from "@/components/v2/AuthStage";
 import PasswordForm from "@/components/v2/PasswordForm";
 import f from "@/components/v2/Form.module.css";
@@ -15,7 +14,7 @@ export default async function ResetPassword() {
   if (!viewer) redirect("/join?error=" + encodeURIComponent("That reset link has expired. Ask for another."));
 
   return (
-    <Shell>
+    <>
       <main>
         <AuthStage labelledBy="reset-title">
           <div className={f.auth}>
@@ -31,6 +30,6 @@ export default async function ResetPassword() {
           </div>
         </AuthStage>
       </main>
-    </Shell>
+    </>
   );
 }

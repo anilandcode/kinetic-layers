@@ -7,7 +7,6 @@ import { HUES, kitHue } from "@/lib/v2/gradient";
 import Gradient from "./Gradient";
 import Media from "./Media";
 import KitCard from "./KitCard";
-import Shell from "./Shell";
 import PageHero, { SectionHead } from "./PageHero";
 import KitDetails, { type DetailTab } from "./KitDetails";
 import Workbench from "./workbench/Workbench";
@@ -59,7 +58,7 @@ export default function KitView({
   ).filter((t) => Boolean(t.body));
 
   return (
-    <Shell>
+    <>
       <main className={p.page}>
         <PageHero
           id="kit-title"
@@ -151,6 +150,6 @@ export default function KitView({
           </section>
         ) : null}
       </main>
-    </Shell>
+    </>
   );
 }

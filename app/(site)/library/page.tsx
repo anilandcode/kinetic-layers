@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { getViewer } from "@/lib/kl/viewer";
 import { getLibrary } from "@/lib/v2/data";
-import Shell from "@/components/v2/Shell";
 import PageHero from "@/components/v2/PageHero";
 import Library from "@/components/v2/Library";
 import AccessBand from "@/components/v2/AccessBand";
@@ -33,7 +32,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
   const price = one(params.price);
 
   return (
-    <Shell>
+    <>
       <main className={p.page}>
         <PageHero
           compact
@@ -63,6 +62,6 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
           <AccessBand viewer={viewer} published={real.length} free={free} />
         </section>
       </main>
-    </Shell>
+    </>
   );
 }

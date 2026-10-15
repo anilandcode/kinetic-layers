@@ -6,7 +6,6 @@ import { EARLY_ACCESS } from "@/lib/kl/access";
 import { LIMITS } from "@/lib/kl/limits";
 import { HUES } from "@/lib/v2/gradient";
 import { enabledProviders } from "@/lib/supabase/providers";
-import Shell from "@/components/v2/Shell";
 import AuthStage from "@/components/v2/AuthStage";
 import AuthForm from "@/components/v2/AuthForm";
 import Gradient from "@/components/v2/Gradient";
@@ -43,7 +42,7 @@ export default async function Join({
   ];
 
   return (
-    <Shell>
+    <>
       <main>
         <AuthStage
           labelledBy="auth-title"
@@ -75,6 +74,6 @@ export default async function Join({
           />
         </AuthStage>
       </main>
-    </Shell>
+    </>
   );
 }

@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/kl/viewer";
 import { EARLY_ACCESS } from "@/lib/kl/access";
 import { HUES } from "@/lib/v2/gradient";
-import Shell from "@/components/v2/Shell";
 import PageHero from "@/components/v2/PageHero";
 import AccountTabs from "@/components/v2/account/AccountTabs";
 import l from "@/components/v2/layout.module.css";
@@ -32,7 +31,7 @@ export default async function AccountLayout({ children }: { children: ReactNode 
       : "Free plan";
 
   return (
-    <Shell>
+    <>
       <main className={p.page}>
         <PageHero
           compact
@@ -48,6 +47,6 @@ export default async function AccountLayout({ children }: { children: ReactNode 
           <div className={a.body}>{children}</div>
         </div>
       </main>
-    </Shell>
+    </>
   );
 }
