@@ -106,6 +106,28 @@ export async function putObject(
 }
 
 /**
+ * A URL the browser can PUT one file to, and then stops working — how the
+ * Studio uploads a website ZIP straight into the private bucket without the
+ * bytes passing through this app. The bucket's CORS allows the Studio origin
+ * to PUT; the signature is what decides which key, so it is minted only after
+ * app/api/studio/zip-upload has checked the request came from a member.
+ */
+export async function signedUploadUrl(key: string, contentType: string, ttlSeconds: number): Promise<string> {
+  if (STORAGE_DRIVER !== "r2") throw new StorageError("Direct uploads need STORAGE_DRIVER=r2.");
+  const { bucket } = r2Config();
+  const { PutObjectCommand } = await import("@aws-sdk/client-s3");
+  const { getSignedUrl } = await import("@aws-sdk/s3-request-presigner");
+  const s3 = await r2Client();
+  try {
+    return await getSignedUrl(s3, new PutObjectCommand({ Bucket: bucket, Key: key, ContentType: contentType }), {
+      expiresIn: ttlSeconds,
+    });
+  } catch (e) {
+    throw new StorageError(`R2 upload signing failed for ${key}`, e);
+  }
+}
+
+/**
  * A URL that downloads this object and then stops working.
  *
  * `filename` becomes a Content-Disposition attachment, so the browser saves the

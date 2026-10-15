@@ -2,17 +2,19 @@ import "server-only";
 import { groq } from "next-sanity";
 import { sanity } from "./client";
 import type { Website } from "@/lib/kl/types";
+import { PAID_PREFIX, type PaidZip } from "@/lib/kl/paid";
 
 /**
  * Every read the Websites section makes.
  *
- * The card projection carries the sizes of the code, the design system and the
- * ZIP — never the bodies or the file URL. Those leave Sanity only through
+ * The deliverables are not on the website document: the code, the design
+ * system and the ZIP's storage key live in its private `paid.<id>` document
+ * (lib/kl/paid.ts), which the public API cannot read. The card projection
+ * carries only their sizes; the bodies and the key leave Sanity through
  * getWebsiteDeliverable, which only the gated API routes call.
- *
- * `website` is a newer document type, so it is invisible to anonymous reads on
- * this dataset; the client's server token is what makes it load at all.
  */
+const PAID = `*[_id == "${PAID_PREFIX}" + ^._id][0]`;
+
 const CARD = groq`{
   "slug": slug.current,
   name,
@@ -31,9 +33,9 @@ const CARD = groq`{
   "tags": coalesce(tags[defined(@->title)]->title, []),
   "featured": coalesce(featured, false),
   publishedAt,
-  "codeLength": length(coalesce(codeMarkdown, "")),
-  "designLength": length(coalesce(designMarkdown, "")),
-  "zipBytes": zip.asset->size
+  "codeLength": length(coalesce(${PAID}.code, "")),
+  "designLength": length(coalesce(${PAID}.design, "")),
+  "zipBytes": ${PAID}.zip.bytes
 }`;
 
 const LISTED = groq`_type == "website" && defined(slug.current) && defined(screenshot.asset)`;
@@ -100,18 +102,18 @@ export async function getWebsiteRelated(site: Website, limit = 4): Promise<Websi
 
 export type WebsiteKind = "code" | "design";
 
-/** The gated bodies and file. API routes only — callers must check entitlement. */
+/** The gated bodies and the ZIP's storage key. API routes only — callers must check entitlement. */
 export async function getWebsiteDeliverable(
   slug: string
-): Promise<{ code: string; design: string; zipUrl: string | null; zipBytes: number | null } | null> {
-  const r = await ask<{ code?: string; design?: string; zipUrl?: string; zipBytes?: number } | null>(
+): Promise<{ code: string; design: string; zip: PaidZip | null } | null> {
+  const r = await ask<{ code?: string; design?: string; zip?: PaidZip } | null>(
     null,
-    groq`*[${LISTED} && slug.current == $slug][0]{
-      "code": codeMarkdown, "design": designMarkdown, "zipUrl": zip.asset->url, "zipBytes": zip.asset->size
-    }`,
+    groq`*[${LISTED} && slug.current == $slug][0]{ "code": ${PAID}.code, "design": ${PAID}.design, "zip": ${PAID}.zip }`,
     { slug },
-    { next: { tags: [`website:${slug}`] } }
+    /* "website" too: an edit to the paid document revalidates by type, since it
+       carries no slug of its own (app/api/revalidate/route.ts). */
+    { next: { tags: ["website", `website:${slug}`] } }
   );
   if (!r) return null;
-  return { code: r.code ?? "", design: r.design ?? "", zipUrl: r.zipUrl ?? null, zipBytes: r.zipBytes ?? null };
+  return { code: r.code ?? "", design: r.design ?? "", zip: r.zip?.storagePath ? r.zip : null };
 }

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { revalidateTag } from "next/cache";
 import { parseBody } from "next-sanity/webhook";
+import { PAID_TYPE } from "@/lib/kl/paid";
 
 /**
  * Sanity webhook. Invalidates only the tags an edit actually touched, so a
@@ -25,8 +26,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, message: "No document type." }, { status: 400 });
     }
 
-    const tags = [body._type];
-    if (body.slug?.current) tags.push(`${body._type}:${body.slug.current}`);
+    /* A paid document (prompts, code, design, ZIP key) has no slug and belongs
+       to a kit or a website; refreshing both lists is cheap and always right. */
+    const tags =
+      body._type === PAID_TYPE ? ["asset", "website"] : [body._type, ...(body.slug?.current ? [`${body._type}:${body.slug.current}`] : [])];
     tags.forEach(revalidateTag);
 
     return NextResponse.json({ ok: true, revalidated: tags });

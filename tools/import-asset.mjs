@@ -153,7 +153,6 @@ const doc = {
   clip: `${slug}/card.mp4`,
   aspect: meta.aspect ?? 1.6,
   files: files.map(({ _local, ...f }) => f),
-  ...(meta.prompt || meta.promptBody ? { prompt: meta.prompt ?? meta.promptBody } : {}),
   /* `notes` is plain markdown now, so design.md can be pasted or piped in
      without being parsed into blocks first. */
   ...(meta.notes ? { notes: meta.notes } : {}),
@@ -163,7 +162,15 @@ const doc = {
 console.log(`\n${meta.name}  (${slug})`);
 console.log(`  ${doc.type} · ${doc.tier}${meta.tags?.length ? " · " + meta.tags.join(", ") : ""}`);
 console.log(`  ${files.length} file(s), ${human(files.reduce((n, f) => n + f.bytes, 0))} total`);
-console.log(`  prompt: ${doc.prompt ? `${doc.prompt.length} chars` : "none"}`);
+/* The prompt never goes on the asset: the dataset is public, so it lives in the
+   private paid.<id> document (lib/kl/paid.ts). */
+const prompt = meta.prompt ?? meta.promptBody;
+const adaptation = meta.adaptationPrompt;
+const paid =
+  prompt || adaptation
+    ? { _id: `paid.${doc._id}`, _type: "paidContent", parent: doc._id, ...(prompt ? { prompt } : {}), ...(adaptation ? { adaptationPrompt: adaptation } : {}) }
+    : null;
+console.log(`  prompt: ${prompt ? `${prompt.length} chars (private)` : "none"}`);
 console.log(`  notes : ${doc.notes ? `${doc.notes.length} chars` : "none"}`);
 
 if (dryRun) {
@@ -189,7 +196,7 @@ for (const f of files) {
 const res = await fetch(`https://${PID}.api.sanity.io/v2024-01-01/data/mutate/${DS}`, {
   method: "POST",
   headers: { "Content-Type": "application/json", Authorization: `Bearer ${TOKEN}` },
-  body: JSON.stringify({ mutations: [{ createOrReplace: doc }] }),
+  body: JSON.stringify({ mutations: [{ createOrReplace: doc }, ...(paid ? [{ createOrReplace: paid }] : [])] }),
 });
 if (!res.ok) die(`Sanity mutate ${res.status}: ${(await res.text()).slice(0, 300)}`);
 

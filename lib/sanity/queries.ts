@@ -2,12 +2,13 @@ import "server-only";
 import { groq } from "next-sanity";
 import { sanity } from "./client";
 import type { Asset, Collection, Drop, Settings } from "@/lib/kl/types";
+import { PAID_PREFIX } from "@/lib/kl/paid";
 
 /**
  * Every read the site makes.
  *
  * Cached by tag so a Studio edit invalidates exactly what it touched — see
- * app/api/revalidate/route.ts. Nothing here selects `promptBody` or a file's
+ * app/api/revalidate/route.ts. Nothing here selects a prompt's text or a file's
  * `storagePath`: those are gated, and the gate is enforced where the download
  * happens, not by hoping a component forgets to render them.
  */
@@ -61,12 +62,17 @@ const MEDIA = groq`
   }
 `;
 
+/* The kit's paid document — its prompts — which the public API cannot read
+   (lib/kl/paid.ts). Only lengths and the two-line teaser leave it here; the
+   full text is read by getPromptBody alone, after the gate. */
+const PAID = `*[_id == "${PAID_PREFIX}" + ^._id][0]`;
+
 const ASSET_CARD = groq`{
   "slug": slug.current,
   "type": upper(coalesce(type, "")), tagline,
   "featured": coalesce(featured, false), priority,
   ${MEDIA},
-  "promptLength": length(coalesce(prompt, promptBody, ""))
+  "promptLength": length(coalesce(${PAID}.prompt, ""))
 }`;
 
 const ASSET_FULL = groq`{
@@ -76,14 +82,14 @@ const ASSET_FULL = groq`{
   "notes": coalesce(notes, ""),
   ${MEDIA},
   "files": coalesce(files[]{ name, meta, tag, bytes }, []),
-  "promptLength": length(coalesce(prompt, promptBody, "")),
-  "promptPreview": array::join(string::split(coalesce(prompt, promptBody, ""), "\\n")[0..1], "\\n"),
+  "promptLength": length(coalesce(${PAID}.prompt, "")),
+  "promptPreview": array::join(string::split(coalesce(${PAID}.prompt, ""), "\\n")[0..1], "\\n"),
   "drop": drop->{ title, "slug": slug.current, meta, tag },
   "width": media.asset->metadata.dimensions.width,
   "height": media.asset->metadata.dimensions.height,
   publishedAt, version, releaseStatus,
-  "adaptationLength": length(coalesce(adaptationPrompt, "")),
-  "adaptationPreview": array::join(string::split(coalesce(adaptationPrompt, ""), "\\n")[0..1], "\\n"),
+  "adaptationLength": length(coalesce(${PAID}.adaptationPrompt, "")),
+  "adaptationPreview": array::join(string::split(coalesce(${PAID}.adaptationPrompt, ""), "\\n")[0..1], "\\n"),
   "verifications": verifications[defined(tool) && defined(result)]{
     tool, model, date, result, note, "comparison": comparison.asset->url
   }
@@ -297,10 +303,12 @@ export async function getPromptBody(
   const r = await ask<{ body?: string } | null>(
     null,
     kind === "adaptation"
-      ? groq`*[_type == "asset" && slug.current == $slug][0]{ "body": adaptationPrompt }`
-      : groq`*[_type == "asset" && slug.current == $slug][0]{ "body": coalesce(prompt, promptBody) }`,
+      ? groq`*[_type == "asset" && slug.current == $slug][0]{ "body": ${PAID}.adaptationPrompt }`
+      : groq`*[_type == "asset" && slug.current == $slug][0]{ "body": ${PAID}.prompt }`,
     { slug },
-    { next: { tags: [`asset:${slug}`] } }
+    /* "asset" too: an edit to the paid document revalidates by type, since
+       it carries no slug of its own (app/api/revalidate/route.ts). */
+    { next: { tags: ["asset", `asset:${slug}`] } }
   );
   return r?.body ?? "";
 }

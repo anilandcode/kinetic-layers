@@ -119,10 +119,10 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * A website's project ZIP. Same gate and allowance as a kit's files; the file
- * itself is a Studio upload on Sanity's CDN (see the website schema), so the URL
- * handed back is that file with `?dl=` to force a download under a clean name.
- * It is only ever revealed here, after the gate has passed and a unit is spent.
+ * A website's project ZIP. Same gate, allowance and private bucket as a kit's
+ * files: the key lives in the website's private paid document, and the URL
+ * handed back is a one-minute signed link, minted only after the gate passed
+ * and a unit was spent.
  */
 async function websiteZip(request: NextRequest, slug: string) {
   const site = await getWebsite(slug);
@@ -151,26 +151,32 @@ async function websiteZip(request: NextRequest, slug: string) {
     });
   }
 
-  const zip = await getWebsiteDeliverable(slug);
-  if (!zip?.zipUrl) {
+  const zip = (await getWebsiteDeliverable(slug))?.zip;
+  if (!zip) {
     await refund(quota.usageId);
     return NextResponse.json({ ok: false, message: "The project ZIP has not been uploaded yet." }, { status: 409 });
   }
 
   const name = `${slug}.zip`;
+  let url: string;
+  try {
+    url = await signedDownloadUrl(zip.storagePath, name, SIGNED_URL_TTL);
+  } catch (err) {
+    console.error("signing failed:", err instanceof Error ? err.message : err);
+    await refund(quota.usageId);
+    return NextResponse.json(
+      { ok: false, message: "Could not prepare that download. Try again in a moment." },
+      { status: 500 }
+    );
+  }
+
   await admin().from("downloads").insert({
     user_id: viewer!.id,
     asset_slug: key,
     asset_name: site.name,
     file_name: name,
-    bytes: zip.zipBytes,
+    bytes: zip.bytes ?? null,
   });
 
-  return NextResponse.json({
-    ok: true,
-    url: `${zip.zipUrl}?dl=${encodeURIComponent(name)}`,
-    name,
-    remaining: quota.remaining,
-    limit: quota.limit,
-  });
+  return NextResponse.json({ ok: true, url, name, expiresIn: SIGNED_URL_TTL, remaining: quota.remaining, limit: quota.limit });
 }

@@ -1,6 +1,8 @@
 import { defineField, defineType, type SchemaTypeDefinition } from "sanity";
 import { isCanonicalSlug, toSlug } from "../../lib/kl/slug";
 import { WEBSITE_CATEGORIES } from "../../lib/kl/website-categories";
+import { paidText } from "../components/PaidText";
+import { PaidZipInput } from "../components/PaidZip";
 
 /* A typed slug like "Nevoro Studio" 404'd on the site. Generate now produces
    the canonical form, and anything else typed by hand is refused. */
@@ -266,14 +268,17 @@ const asset = defineType({
       group: "words",
       description: "Optional. Paste design.md here — markdown is fine.",
     }),
+    /* Paid fields store nothing on this document — the dataset is public, so
+       the input keeps the text in the kit's private paid.<id> document
+       (lib/kl/paid.ts). New names, so no old public value can resurface. */
     defineField({
-      name: "prompt",
-      title: "Gated prompt text",
+      name: "paidPrompt",
+      title: "Reconstruction prompt (paid)",
       type: "text",
-      rows: 6,
       group: "words",
       description:
-        "The full prompt. Only the first two lines are ever sent to an unentitled visitor; the rest is counted, not shipped.",
+        "The full prompt. Kept private — only the first two lines are ever shown to a visitor who has not unlocked it.",
+      components: { input: paidText("prompt") },
     }),
 
     /**
@@ -301,13 +306,13 @@ const asset = defineType({
       options: { list: ["In progress", "Released", "Deprecated"], layout: "radio", direction: "horizontal" },
     }),
     defineField({
-      name: "adaptationPrompt",
-      title: "Adaptation prompt (gated)",
+      name: "paidAdaptation",
+      title: "Adaptation prompt (paid)",
       type: "text",
-      rows: 6,
       group: "release",
       description:
-        "Optional. The prompt that adapts this kit to another brand. Gated exactly like the reconstruction prompt: only the first two lines are ever sent to a visitor.",
+        "Optional. The prompt that adapts this kit to another brand. Kept private like the reconstruction prompt.",
+      components: { input: paidText("adaptationPrompt") },
     }),
     defineField({
       name: "verifications",
@@ -512,15 +517,11 @@ const SHOT_MAX_H = 8192;
 /**
  * A complete, ready-made website: /websites and /websites/[slug].
  *
- * Unlike an asset's files[], the ZIP here is a Studio upload — the owner chose
- * editing everything in the Studio over the private-bucket CLI route. That puts
- * the file on Sanity's CDN under a content-hash URL nobody can guess, and only
- * /api/download (behind the gate) ever reveals it. Someone entitled could share
- * that link, exactly as they could share the file itself.
- *
- * The two Markdown fields are gated the same way the kit prompt is: they never
- * appear in a listing projection, only through /api/prompt. That only holds
- * against the raw Sanity API once the dataset is private — see HANDOFF.
+ * The deliverables never sit on this document. The dataset is public — a
+ * private one needs a paid Sanity plan — so the code, the design system and
+ * the ZIP's key live in the website's private `paid.<id>` document, and the
+ * ZIP itself in the private R2 bucket (sanity/components/PaidZip.tsx). Only
+ * /api/prompt and /api/download, behind the gate, read them.
  */
 const website = defineType({
   name: "website",
@@ -601,28 +602,28 @@ const website = defineType({
         ),
     }),
     defineField({
-      name: "zip",
+      name: "paidZip",
       title: "Project ZIP",
-      type: "file",
+      type: "string",
       group: "deliverables",
-      options: { accept: ".zip,application/zip", storeOriginalFilename: true },
-      description: "The complete project. Downloaded only through the gate.",
+      description: "The complete project. Uploads straight to the private bucket; only the paywall hands out a link.",
+      components: { input: PaidZipInput },
     }),
     defineField({
-      name: "codeMarkdown",
+      name: "paidCode",
       title: "Code (Markdown)",
       type: "text",
       group: "deliverables",
-      rows: 14,
       description: "The complete code as Markdown — each file in a fenced code block under its path. Visitors copy it or download it as a .md.",
+      components: { input: paidText("code") },
     }),
     defineField({
-      name: "designMarkdown",
+      name: "paidDesign",
       title: "Design system (Markdown)",
       type: "text",
       group: "deliverables",
-      rows: 14,
       description: "Colours, type, spacing, components and motion, as Markdown.",
+      components: { input: paidText("design") },
     }),
     defineField({ name: "featured", type: "boolean", group: "main", initialValue: false }),
     defineField({
